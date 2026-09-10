@@ -1,0 +1,1 @@
+const fs=require('fs');let s=fs.readFileSync('.audit/site.js','utf8');for(const term of ['127','36 tháng','tháng đã nạp','Theo tổng số','Không có số liệu.','api/']){let i=s.indexOf(term);console.log(term,i,s.slice(Math.max(0,i-350),i+750))}

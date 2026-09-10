@@ -1,0 +1,3795 @@
+===== original app-readable.js lines 10700-11545 =====
+const zf = [
+    {
+      location_code: "001",
+      location_name: "Quận Ba Đình",
+      name_slug: "ba_dinh",
+    },
+    {
+      location_code: "002",
+      location_name: "Quận Hoàn Kiếm",
+      name_slug: "hoan_kiem",
+    },
+    { location_code: "003", location_name: "Quận Tây Hồ", name_slug: "tay_ho" },
+    {
+      location_code: "004",
+      location_name: "Quận Long Biên",
+      name_slug: "long_bien",
+    },
+    {
+      location_code: "005",
+      location_name: "Quận Cầu Giấy",
+      name_slug: "cau_giay",
+    },
+    {
+      location_code: "006",
+      location_name: "Quận Đống Đa",
+      name_slug: "dong_da",
+    },
+    {
+      location_code: "007",
+      location_name: "Quận Hai Bà Trưng",
+      name_slug: "hai_ba_trung",
+    },
+    {
+      location_code: "008",
+      location_name: "Quận Hoàng Mai",
+      name_slug: "hoang_mai",
+    },
+    {
+      location_code: "009",
+      location_name: "Quận Thanh Xuân",
+      name_slug: "thanh_xuan",
+    },
+    {
+      location_code: "016",
+      location_name: "Huyện Sóc Sơn",
+      name_slug: "soc_son",
+    },
+    {
+      location_code: "017",
+      location_name: "Huyện Đông Anh",
+      name_slug: "dong_anh",
+    },
+    {
+      location_code: "018",
+      location_name: "Huyện Gia Lâm",
+      name_slug: "gia_lam",
+    },
+    {
+      location_code: "019",
+      location_name: "Quận Nam Từ Liêm",
+      name_slug: "nam_tu_liem",
+    },
+    {
+      location_code: "020",
+      location_name: "Huyện Thanh Trì",
+      name_slug: "thanh_tri",
+    },
+    {
+      location_code: "021",
+      location_name: "Quận Bắc Từ Liêm",
+      name_slug: "bac_tu_liem",
+    },
+    {
+      location_code: "250",
+      location_name: "Huyện Mê Linh",
+      name_slug: "me_linh",
+    },
+    {
+      location_code: "268",
+      location_name: "Quận Hà Đông",
+      name_slug: "ha_dong",
+    },
+    {
+      location_code: "269",
+      location_name: "Thị xã Sơn Tây",
+      name_slug: "son_tay",
+    },
+    { location_code: "271", location_name: "Huyện Ba Vì", name_slug: "ba_vi" },
+    {
+      location_code: "272",
+      location_name: "Huyện Phúc Thọ",
+      name_slug: "phuc_tho",
+    },
+    {
+      location_code: "273",
+      location_name: "Huyện Đan Phượng",
+      name_slug: "dan_phuong",
+    },
+    {
+      location_code: "274",
+      location_name: "Huyện Hoài Đức",
+      name_slug: "hoai_duc",
+    },
+    {
+      location_code: "275",
+      location_name: "Huyện Quốc Oai",
+      name_slug: "quoc_oai",
+    },
+    {
+      location_code: "276",
+      location_name: "Huyện Thạch Thất",
+      name_slug: "thach_that",
+    },
+    {
+      location_code: "277",
+      location_name: "Huyện Chương Mỹ",
+      name_slug: "chuong_my",
+    },
+    {
+      location_code: "278",
+      location_name: "Huyện Thanh Oai",
+      name_slug: "thanh_oai",
+    },
+    {
+      location_code: "279",
+      location_name: "Huyện Thường Tín",
+      name_slug: "thuong_tin",
+    },
+    {
+      location_code: "280",
+      location_name: "Huyện Phú Xuyên",
+      name_slug: "phu_xuyen",
+    },
+    {
+      location_code: "281",
+      location_name: "Huyện Ứng Hòa",
+      name_slug: "ung_hoa",
+    },
+    {
+      location_code: "282",
+      location_name: "Huyện Mỹ Đức",
+      name_slug: "my_duc",
+    },
+  ],
+  Vn = new Map();
+function e2(e, t = {}) {
+  const n = new URLSearchParams();
+  for (const r of Object.keys(t).sort()) t[r] && n.set(r, t[r]);
+  return n.size ? `${e}?${n}` : e;
+}
+function Sz() {
+  for (const [e, t] of Vn) t.settled && Vn.delete(e);
+}
+async function $w(e, t = {}, n) {
+  const r = e2(e, t);
+  if (n != null && n.aborted) throw new DOMException("Aborted", "AbortError");
+  let i = Vn.get(r);
+  if (
+    (i != null &&
+      i.settled &&
+      i.expires <= Date.now() &&
+      (Vn.delete(r), (i = void 0)),
+    !i)
+  ) {
+    const u = new AbortController(),
+      l = {
+        controller: u,
+        users: 0,
+        settled: !1,
+        expires: 0,
+        promise: Promise.resolve(),
+      };
+    ((l.promise = (async () => {
+      var f;
+      const c = setTimeout(
+        () => u.abort(new Error("API phản hồi quá lâu. Vui lòng thử lại.")),
+        3e4,
+      );
+      try {
+        const h = await fetch(r, { signal: u.signal });
+        if (!h.ok) throw new Error(`${e} -> HTTP ${h.status}`);
+        if (!(
+          (f = h.headers.get("content-type")) != null &&
+          f.includes("application/json")
+        ))
+          throw new Error(
+            `${e} -> API không trả JSON. Kiểm tra cấu hình dịch vụ dữ liệu.`,
+          );
+        const p = await h.json();
+        if (["/api/wards", "/api/periods"].includes(e) && !Array.isArray(p))
+          throw new Error("Danh mục không đúng định dạng.");
+        ((l.settled = !0),
+          (l.expires = ["/api/wards", "/api/periods"].includes(e)
+            ? 1 / 0
+            : Date.now() + 3e4));
+        for (const [v, y] of Vn) {
+          if (Vn.size <= 50) break;
+          y.settled &&
+            !["/api/wards", "/api/periods"].includes(v) &&
+            Vn.delete(v);
+        }
+        return p;
+      } finally {
+        clearTimeout(c);
+      }
+    })().catch((c) => {
+      throw (Vn.get(r) === l && Vn.delete(r), c);
+    })),
+      Vn.set(r, l),
+      (i = l));
+  }
+  const o = i;
+  return (
+    o.users++,
+    new Promise((u, l) => {
+      let c = !1;
+      const f = () =>
+          c
+            ? !1
+            : ((c = !0),
+              n == null || n.removeEventListener("abort", h),
+              o.users--,
+              queueMicrotask(() => {
+                !o.users &&
+                  !o.settled &&
+                  (Vn.get(r) === o && Vn.delete(r), o.controller.abort());
+              }),
+              !0),
+        h = () => {
+          f() && l(new DOMException("Aborted", "AbortError"));
+        };
+      (n == null || n.addEventListener("abort", h, { once: !0 }),
+        o.promise.then(
+          (p) => {
+            f() && u(p);
+          },
+          (p) => {
+            f() && l(p);
+          },
+        ));
+    })
+  );
+}
+function t2() {
+  (Sz(), window.dispatchEvent(new Event("nsnn:refresh")));
+}
+function Yt({ loading: e, error: t, children: n }) {
+  return e
+    ? k.jsx("div", {
+        role: "status",
+        "aria-busy": "true",
+        className:
+          "min-h-28 rounded-lg border border-line bg-card p-4 text-sm text-muted",
+        children: "Đang tải dữ liệu…",
+      })
+    : t
+      ? k.jsxs("div", {
+          role: "alert",
+          className:
+            "min-h-28 rounded-lg border border-line bg-card p-4 text-sm text-muted",
+          children: [
+            "Không tải được dữ liệu. ",
+            k.jsx("button", {
+              className: "underline",
+              onClick: t2,
+              children: "Thử lại",
+            }),
+          ],
+        })
+      : k.jsx(k.Fragment, { children: n });
+}
+function Bf(e, t, n) {
+  if (!/^\d{4}$/.test(e)) return "unknown";
+  const r = Number(e);
+  if (r < 2025) return "historical";
+  if (r > 2025) return "current";
+  if (n) {
+    const i = Number(n);
+    return !Number.isInteger(i) || i < 1 || i > 12
+      ? "unknown"
+      : i < 7
+        ? "historical"
+        : "current";
+  }
+  if (t) {
+    const i = Number(t);
+    return !Number.isInteger(i) || i < 1 || i > 4
+      ? "unknown"
+      : i < 3
+        ? "historical"
+        : "current";
+  }
+  return "mixed";
+}
+const n2 = M.createContext(null);
+function Oz({ children: e }) {
+  const t = M.useRef(0),
+    [n, r] = M.useState(!1),
+    i = () => {
+      (t.current++, t.current === 1 && r(!0));
+    },
+    o = () => {
+      ((t.current = Math.max(0, t.current - 1)), t.current === 0 && r(!1));
+    };
+  return k.jsx(n2.Provider, {
+    value: { isLoading: n, start: i, end: o },
+    children: e,
+  });
+}
+function Dw() {
+  const e = M.useContext(n2);
+  if (!e)
+    throw new Error("useGlobalLoading() phải gọi trong <LoadingProvider>");
+  return e;
+}
+function He(e) {
+  if (e == null) return "—";
+  const t = Math.abs(e);
+  return t >= 1e12
+    ? (e / 1e12).toLocaleString("vi-VN", { maximumFractionDigits: 2 }) +
+        " nghìn tỷ"
+    : t >= 1e9
+      ? (e / 1e9).toLocaleString("vi-VN", { maximumFractionDigits: 1 }) + " tỷ"
+      : t >= 1e6
+        ? (e / 1e6).toLocaleString("vi-VN", { maximumFractionDigits: 1 }) +
+          " triệu"
+        : e.toLocaleString("vi-VN");
+}
+function Sb(e) {
+  return e == null ? "—" : Math.round(e).toLocaleString("vi-VN") + " đ";
+}
+const Pz = new Intl.Collator("vi");
+function r2(e) {
+  return (t, n) => Pz.compare(e(t), e(n));
+}
+function Ob(e, t) {
+  return e == null || t == null || t === 0 ? null : ((e - t) / t) * 100;
+}
+function Az() {
+  const [e, t] = M.useState([]),
+    [n, r] = M.useState(!1),
+    [i, o] = M.useState(null);
+  return (
+    M.useEffect(() => {
+      $w("/api/wards")
+        .then((u) => {
+          if (!Array.isArray(u))
+            throw new Error("Danh mục địa bàn không đúng định dạng.");
+          (t([...u].sort(r2((l) => l.location_name))), o(null));
+        })
+        .catch((u) => o(String(u)))
+        .finally(() => r(!0));
+    }, []),
+    { rows: e, ready: n, error: i }
+  );
+}
+function Bi(e) {
+  const t = e.trim(),
+    n = /^(\d{4})y$/i.exec(t);
+  if (n) return { year: n[1] };
+  const r = /^(\d{4})([qm])(\d{1,2})$/i.exec(t);
+  if (!r) return null;
+  const [, i, o, u] = r,
+    l = Number(u);
+  return o.toLowerCase() === "q"
+    ? l >= 1 && l <= 4
+      ? { year: i, quarter: String(l) }
+      : null
+    : l >= 1 && l <= 12
+      ? { year: i, month: String(l) }
+      : null;
+}
+function yo(e) {
+  return e.month
+    ? `${e.year}m${Number(e.month)}`
+    : e.quarter
+      ? `${e.year}q${Number(e.quarter)}`
+      : `${e.year}y`;
+}
+function Co(e) {
+  return e.month
+    ? `Tháng ${Number(e.month)}/${e.year}`
+    : e.quarter
+      ? `Quý ${Number(e.quarter)}/${e.year}`
+      : `Cả năm ${e.year}`;
+}
+function i2(e, t) {
+  return e.find((n) =>
+    String(n.year) !== t.year
+      ? !1
+      : t.month
+        ? String(n.month) === t.month
+        : t.quarter
+          ? n.month === null && String(n.quarter) === t.quarter
+          : n.quarter === null && n.month === null,
+  );
+}
+function o2(e, t) {
+  return i2(e, t) !== void 0;
+}
+function cP(e) {
+  return e.month == null && e.quarter == null
+    ? e.year * 100 + 12
+    : e.year * 100 + (e.month ?? e.quarter * 3);
+}
+function Ez(e) {
+  const t = e.month ?? (e.quarter != null ? e.quarter * 3 - 2 : 1);
+  return e.year * 100 + t;
+}
+function Tz(e, t) {
+  const n = t.getFullYear() * 100 + (t.getMonth() + 1),
+    r = e.filter((l) => Ez(l) <= n),
+    i = r.length ? r : e,
+    o = Math.max(0, ...i.map((l) => l.n_ward_with_data ?? 0));
+  if (o === 0) return i;
+  const u = i.filter((l) => (l.n_ward_with_data ?? 0) >= o * 0.5);
+  return u.length ? u : i;
+}
+function kz(e, t = new Date()) {
+  if (!e.length) return { a: "", b: "" };
+  const n = (f) =>
+      f.month != null
+        ? { year: String(f.year), month: String(f.month) }
+        : f.quarter != null
+          ? { year: String(f.year), quarter: String(f.quarter) }
+          : { year: String(f.year) },
+    r = Tz(e, t),
+    i = [...r].sort((f, h) => cP(h) - cP(f)),
+    o = i[0],
+    u = n(o),
+    l = { ...u, year: String(Number(u.year) - 1) };
+  if (o2(r, l)) return { a: yo(l), b: yo(u) };
+  const c = i[1];
+  return c ? { a: yo(n(c)), b: yo(u) } : { a: yo(u), b: yo(u) };
+}
+const Po = Object.assign(Object.create(null), {
+    "tong-so": "TỔNG SỐ",
+    "thu-nsnn": "THU NGÂN SÁCH NHÀ NƯỚC",
+    "tong-so-tru-hoan-thue": "TỔNG SỐ (Đã loại trừ hoàn thuế GTGT)",
+  }),
+  a2 = Object.assign(
+    Object.create(null),
+    Object.fromEntries(Object.entries(Po).map(([e, t]) => [t, e])),
+  ),
+  fP = new Set([
+    "year",
+    "quarter",
+    "month",
+    "acc",
+    "item",
+    "ward",
+    "location",
+    "tab",
+    "cmpa",
+    "cmpb",
+    "district",
+  ]),
+  Cz = Object.assign(Object.create(null), {
+    quater: "quarter",
+    quarters: "quarter",
+    months: "month",
+    years: "year",
+    wards: "ward",
+    ward_id: "ward",
+    ward_code: "ward",
+    tabs: "tab",
+  });
+function dP(e) {
+  return e.trim().toLowerCase().replace(/-/g, "_");
+}
+function jz(e) {
+  var S, E, T;
+  const t = new URLSearchParams(e.split("#")[0]),
+    n = { ignored: [] },
+    r = (_, A, C) => n.ignored.push({ param: _, value: A, reason: C });
+  for (const _ of new Set(t.keys()))
+    if (fP.has(_))
+      t.getAll(_).length > 1 &&
+        r(
+          _,
+          t.getAll(_).slice(1).join(", "),
+          "tham số lặp lại, chỉ lấy giá trị đầu tiên",
+        );
+    else {
+      const A = _.toLowerCase(),
+        C = Cz[A] ?? (fP.has(A) ? A : void 0);
+      r(
+        _,
+        t.get(_) ?? "",
+        C
+          ? `không nhận ra tên tham số (ý bạn là "${C}"?)`
+          : "không nhận ra tên tham số",
+      );
+    }
+  const i = t.get("year");
+  i !== null &&
+    i.trim() !== "" &&
+    (/^\d{4}$/.test(i.trim())
+      ? (n.year = i.trim())
+      : r("year", i, "phải là năm 4 chữ số"));
+  const o = t.get("quarter");
+  if (o !== null && o.trim() !== "") {
+    const _ = /^q?([1-4])$/i.exec(o.trim());
+    _ ? (n.quarter = _[1]) : r("quarter", o, "phải là 1..4 (hoặc q1..q4)");
+  }
+  const u = t.get("month");
+  if (u !== null && u.trim() !== "") {
+    const _ = /^(0?[1-9]|1[0-2])$/.exec(u.trim());
+    _ ? (n.month = String(Number(_[1]))) : r("month", u, "phải là 1..12");
+  }
+  n.month &&
+    n.quarter &&
+    String(Math.ceil(Number(n.month) / 3)) !== n.quarter &&
+    (r(
+      "quarter",
+      n.quarter,
+      `tháng ${n.month} không thuộc quý ${n.quarter}, đã bỏ quý`,
+    ),
+    delete n.quarter);
+  const l = t.get("acc");
+  if (l !== null && l.trim() !== "") {
+    const _ = l.trim().toUpperCase();
+    _ === "PERIOD" || _ === "YTD"
+      ? (n.acc = _)
+      : r("acc", l, "chỉ nhận PERIOD hoặc YTD");
+  }
+  const c = t.get("item");
+  if (c !== null && c.trim() !== "") {
+    const _ = c.trim();
+    Po[_.toLowerCase()]
+      ? (n.item = Po[_.toLowerCase()])
+      : a2[_]
+        ? (n.item = _)
+        : r(
+            "item",
+            c,
+            `chỉ nhận ${Object.keys(Po).join(" | ")} (hoặc chuỗi tiếng Việt gốc)`,
+          );
+  }
+  const f = (S = t.get("district")) == null ? void 0 : S.trim();
+  f &&
+    (/^[a-zA-Z0-9_-]+$/.test(f)
+      ? (n.district = dP(f))
+      : r("district", f, "mã hoặc slug quận/huyện không hợp lệ"));
+  const h = ((E = t.get("ward")) == null ? void 0 : E.trim()) || null,
+    p = ((T = t.get("location")) == null ? void 0 : T.trim()) || null;
+  h !== null &&
+    p !== null &&
+    r("location", p, 'trùng với tham số "ward", đã bỏ qua');
+  const v = h !== null ? "ward" : "location",
+    y = h ?? p;
+  if (y !== null) {
+    const _ = y;
+    /^\d{5}$/.test(_)
+      ? (n.wardCode = _)
+      : /^[a-zA-Z0-9_-]+$/.test(_)
+        ? (n.wardSlug = dP(_))
+        : r(v, y, "phải là mã 5 chữ số hoặc slug tên phường/xã");
+  }
+  const w = t.get("tab");
+  if (w !== null && w.trim() !== "") {
+    const _ = w.trim().toLowerCase();
+    _ === "detail" || _ === "overview" || _ === "compare"
+      ? (n.tab = _)
+      : r("tab", w, "chỉ nhận detail, overview hoặc compare");
+  }
+  const b = (_) => {
+      var N;
+      const A = ((N = t.get(_)) == null ? void 0 : N.trim()) || null;
+      if (A === null) return;
+      const C = Bi(A);
+      if (C) return yo(C);
+      r(_, A, "phải là dạng 2024q1, 2025m3 hoặc 2024y");
+    },
+    g = b("cmpa"),
+    P = b("cmpb");
+  return (g && (n.cmpa = g), P && (n.cmpb = P), n);
+}
+function Nz(e, t) {
+  const n = new URLSearchParams();
+  if (
+    (e.year && n.set("year", e.year),
+    e.quarter && n.set("quarter", e.quarter),
+    e.month && n.set("month", e.month),
+    n.set("acc", e.acc),
+    n.set("item", a2[e.item] ?? e.item),
+    e.ward)
+  ) {
+    const r = t(e.ward);
+    n.set("ward", (r ?? e.ward).replace(/_/g, "-"));
+  }
+  return (
+    e.district && n.set("district", e.district.replace(/_/g, "-")),
+    n.set("tab", e.tab),
+    e.cmpa && n.set("cmpa", e.cmpa),
+    e.cmpb && n.set("cmpb", e.cmpb),
+    `?${n.toString()}`
+  );
+}
+const u2 = [
+    { value: Po["tong-so"], label: "TỔNG SỐ" },
+    { value: Po["thu-nsnn"], label: "THU NGÂN SÁCH NHÀ NƯỚC" },
+    {
+      value: Po["tong-so-tru-hoan-thue"],
+      label: "TỔNG SỐ (trừ hoàn thuế GTGT)",
+    },
+  ],
+  s2 = M.createContext(null),
+  Ze = jz(window.location.search);
+function hP(e, t) {
+  return [
+    ...new Set(
+      e
+        .filter((n) => String(n.year) === t && n.quarter != null)
+        .map((n) => n.quarter),
+    ),
+  ].sort((n, r) => n - r);
+}
+function pP(e, t, n) {
+  return [
+    ...new Set(
+      e
+        .filter(
+          (r) =>
+            String(r.year) === t &&
+            (!n || String(r.quarter) === n) &&
+            r.month != null,
+        )
+        .map((r) => r.month),
+    ),
+  ].sort((r, i) => r - i);
+}
+function Mz({ children: e }) {
+  var Le, Me;
+  const [t, n] = M.useState([]),
+    [r, i] = M.useState(Ze.year ?? ""),
+    [o, u] = M.useState(Ze.quarter ?? ""),
+    [l, c] = M.useState(Ze.month ?? ""),
+    [f, h] = M.useState(Ze.acc ?? "PERIOD"),
+    [p, v] = M.useState(Ze.item ?? u2[0].value),
+    [y, w] = M.useState(Ze.wardCode ?? null),
+    [b, g] = M.useState(Ze.tab ?? "detail"),
+    [P, S] = M.useState(Ze.cmpa ?? ""),
+    [E, T] = M.useState(Ze.cmpb ?? ""),
+    [_, A] = M.useState(Ze.ignored),
+    [C, N] = M.useState(() => {
+      const he = zf.find(
+        (Pe) =>
+          Pe.name_slug === Ze.district || Pe.location_code === Ze.district,
+      );
+      return (he == null ? void 0 : he.name_slug) ?? null;
+    }),
+    $ = b !== "compare" && Bf(r, o, l) === "historical",
+    V = $ ? null : y,
+    L = $ && b === "detail" ? C : null,
+    [F, W] = M.useState(!1),
+    [I, R] = M.useState(!1),
+    [D, H] = M.useState(null),
+    { rows: B, ready: X, error: U } = Az(),
+    { start: z, end: K } = Dw(),
+    te = (he, Pe, Be) =>
+      A((ft) =>
+        ft.some((Ht) => Ht.param === he)
+          ? ft
+          : [...ft, { param: he, value: Pe, reason: Be }],
+      );
+  (M.useEffect(() => {
+    (z(),
+      $w("/api/periods")
+        .then((he) => {
+          if (!Array.isArray(he))
+            throw new Error("Danh mục kỳ không đúng định dạng.");
+          (H(null), n(he));
+          const Pe = he.reduce((wt, Qe) => (Qe.year > wt ? Qe.year : wt), 0),
+            Be = Ze.year,
+            ft = !!(Be && he.some((wt) => String(wt.year) === Be));
+          Be && !ft
+            ? (i(Pe ? String(Pe) : ""),
+              te("year", Be, "năm này không có dữ liệu"))
+            : !Be && Pe && i(String(Pe));
+          const Ht = ft ? Be : String(Pe);
+          (Ze.quarter &&
+            (he.some(
+              (Qe) =>
+                String(Qe.year) === Ht && String(Qe.quarter) === Ze.quarter,
+            ) ||
+              (u(""), te("quarter", Ze.quarter, `năm ${Ht} không có quý này`))),
+            Ze.month &&
+              (he.some(
+                (Qe) => String(Qe.year) === Ht && String(Qe.month) === Ze.month,
+              ) ||
+                (c(""),
+                te("month", Ze.month, `năm ${Ht} không có tháng này`))));
+          for (const [wt, Qe] of [
+            ["cmpa", Ze.cmpa],
+            ["cmpb", Ze.cmpb],
+          ]) {
+            if (!Qe) continue;
+            const dn = Bi(Qe);
+            (dn && o2(he, dn)) ||
+              (te(wt, Qe, "kỳ này không có dữ liệu"),
+              wt === "cmpa" ? S("") : T(""));
+          }
+        })
+        .catch((he) => H(String(he)))
+        .finally(() => {
+          (R(!0), K());
+        }));
+  }, []),
+    M.useEffect(() => {
+      if (X && (W(!0), B.length !== 0))
+        if (Ze.wardSlug) {
+          const he = B.find((Pe) => Pe.name_slug === Ze.wardSlug);
+          he
+            ? w(he.location_code)
+            : te(
+                "ward",
+                Ze.wardSlug.replace(/_/g, "-"),
+                "không có phường/xã nào tên vậy",
+              );
+        } else
+          Ze.wardCode &&
+            (B.find((Pe) => Pe.location_code === Ze.wardCode) ||
+              (w(null), te("ward", Ze.wardCode, "không có mã địa bàn này")));
+    }, [X, B]));
+  const se = I && X && F,
+    le = M.useMemo(() => {
+      const he = new Map(B.map((Pe) => [Pe.location_code, Pe.name_slug]));
+      return (Pe) => he.get(Pe);
+    }, [B]);
+  M.useEffect(() => {
+    !se ||
+      D ||
+      U ||
+      window.history.replaceState(
+        null,
+        "",
+        Nz(
+          {
+            year: r,
+            quarter: o,
+            month: l,
+            acc: f,
+            item: p,
+            ward: V,
+            district: L,
+            tab: b,
+            cmpa: P,
+            cmpb: E,
+          },
+          le,
+        ),
+      );
+  }, [se, r, o, l, f, p, V, L, b, P, E, le, D, U]);
+  const de = M.useMemo(
+      () => [...new Set(t.map((he) => he.year))].sort((he, Pe) => Pe - he),
+      [t],
+    ),
+    Oe = M.useMemo(() => hP(t, r), [t, r]),
+    we = M.useMemo(() => pP(t, r, o), [t, r, o]),
+    re = M.useCallback((he) => w(he || null), []),
+    _e = M.useCallback((he) => {
+      (N(zf.some((Pe) => Pe.name_slug === he) ? he : null),
+        w(null),
+        g("detail"));
+    }, []),
+    Ae = (he, Pe, Be) => {
+      (Bf(r, o, l) === "historical") !== (Bf(he, Pe, Be) === "historical") &&
+        (w(null), N(null));
+    },
+    ie = {
+      historicalAreas: $,
+      district: L,
+      districtName:
+        ((Le = zf.find((he) => he.name_slug === L)) == null
+          ? void 0
+          : Le.location_name) ?? null,
+      selectDistrict: _e,
+      catalogError: D ?? U,
+      catalogReady: se && !D && !U,
+      wardsReady: X,
+      periodsReady: I,
+      wardCatalog: B,
+      year: r,
+      quarter: o,
+      month: l,
+      acc: f,
+      item: p,
+      ward: V,
+      tab: b,
+      years: de,
+      quartersInYear: Oe,
+      monthsInQuarter: we,
+      periods: t,
+      setYear: (he) => {
+        i(he);
+        const Pe = hP(t, he).some((ft) => String(ft) === o) ? o : "";
+        u(Pe);
+        const Be = pP(t, he, Pe).some((ft) => String(ft) === l) ? l : "";
+        (Ae(he, Pe, Be), c(Be));
+      },
+      setQuarter: (he) => {
+        (Ae(r, he, ""), u(he), c(""));
+      },
+      setMonth: (he) => {
+        (Ae(r, o, he), c(he));
+      },
+      setAcc: h,
+      setItem: v,
+      selectWard: re,
+      switchTab: g,
+      apiParams: { year: r, quarter: o, month: l, acc: f, item: p, ward: V },
+      ignored: _,
+      clearIgnored: () => A([]),
+      wardSlug: V ? (le(V) ?? null) : null,
+      wardName: V
+        ? (((Me = B.find((he) => he.location_code === V)) == null
+            ? void 0
+            : Me.location_name) ?? V)
+        : null,
+      cmpa: P,
+      cmpb: E,
+      setCompare: (he, Pe) => {
+        (S(he), T(Pe));
+      },
+    };
+  return k.jsx(s2.Provider, { value: ie, children: e });
+}
+function et() {
+  const e = M.useContext(s2);
+  if (!e) throw new Error("useFilters() phải gọi trong <FiltersProvider>");
+  return e;
+}
+function Ui(e, t) {
+  return e == null || t == null
+    ? NaN
+    : e < t
+      ? -1
+      : e > t
+        ? 1
+        : e >= t
+          ? 0
+          : NaN;
+}
+function Iz(e, t) {
+  return e == null || t == null
+
+===== original app-readable.js lines 21134-22018 =====
+function Ut({ title: e, headerAction: t, className: n, children: r }) {
+  return k.jsxs("div", {
+    className: Ro("rounded-lg border border-line bg-card p-4", n),
+    children: [
+      k.jsxs("div", {
+        className: "mb-2.5 flex items-center justify-between gap-2",
+        children: [
+          k.jsx("h2", {
+            className: "m-0 text-[.85rem] uppercase tracking-wide text-muted",
+            children: e,
+          }),
+          t,
+        ],
+      }),
+      r,
+    ],
+  });
+}
+const ox = "nsnn:reset-zoom";
+function T6() {
+  window.dispatchEvent(new Event(ox));
+}
+function RA() {
+  const e = getComputedStyle(document.documentElement),
+    t = ["--m1", "--m2", "--m3", "--m4", "--m5"].map((r) =>
+      e.getPropertyValue(r).trim(),
+    ),
+    n = e.getPropertyValue("--nodata").trim();
+  return { bins: t, nodata: n };
+}
+const k6 = (e) => Math.max(0, Math.min(4, Math.floor(e * 5 - 1e-9))),
+  Cs = 800,
+  js = 800;
+function $A({ wardRows: e }) {
+  const { year: t, quarter: n, month: r } = et(),
+    i = Bf(t, n, r),
+    o = i === "unknown" || i === "mixed",
+    u = i === "historical",
+    l = u
+      ? "/data/hanoi_30_districts_pre_2025.geojson"
+      : "/data/hanoi_126_wards.geojson";
+  return k.jsx(
+    C6,
+    { source: l, historical: u, preview: o, wardRows: u || o ? [] : e },
+    `${l}:${o}`,
+  );
+}
+function C6({ wardRows: e, source: t, historical: n, preview: r }) {
+  const i = M.useRef(null),
+    o = M.useRef(null),
+    u = M.useRef(null),
+    l = M.useRef(null),
+    { wardSlug: c, selectWard: f, district: h, selectDistrict: p } = et(),
+    v = n ? h : c,
+    { start: y, end: w } = Dw(),
+    [b, g] = M.useState(!1),
+    [P, S] = M.useState(!1),
+    E = M.useRef({});
+  return (
+    M.useEffect(() => {
+      let T = !1;
+      const _ = new AbortController();
+      return (
+        y(),
+        (async () => {
+          try {
+            const A = await fetch(t, { signal: _.signal }).then((W) => {
+              if (!W.ok) throw new Error(`Map HTTP ${W.status}`);
+              return W.json();
+            });
+            if (T || !i.current) return;
+            const C = Fi(i.current)
+                .attr("viewBox", `0 0 ${Cs} ${js}`)
+                .attr("preserveAspectRatio", "xMidYMid meet"),
+              N = C.append("g"),
+              $ = x8().fitSize([Cs, js], A),
+              V = s8($),
+              L = $W()
+                .scaleExtent([1, 12])
+                .filter((W) =>
+                  W.type !== "wheel" ? !W.ctrlKey && !W.button : W.ctrlKey,
+                )
+                .on("zoom", (W) => N.attr("transform", W.transform));
+            C.call(L);
+            const F = N.selectAll("path")
+              .data(A.features)
+              .join("path")
+              .attr("d", V)
+              .attr("fill", "var(--nodata)")
+              .attr("stroke", "#fff")
+              .attr("stroke-width", 0.7);
+            ((E.current = { svg: C, g: N, paths: F, geo: A, path: V, zoom: L }),
+              g(!0));
+          } catch {
+            T || S(!0);
+          } finally {
+            w();
+          }
+        })(),
+        () => {
+          var A, C, N;
+          ((T = !0),
+            _.abort(),
+            (A = E.current.svg) == null || A.interrupt().on(".zoom", null),
+            (C = E.current.paths) == null || C.interrupt(),
+            (N = E.current.g) == null || N.remove(),
+            (E.current = {}));
+        }
+      );
+    }, [t]),
+    M.useEffect(() => {
+      const { paths: T, geo: _, svg: A, path: C, zoom: N } = E.current;
+      if (!b || !T || !_ || !A || !C || !N || !o.current) return;
+      const { bins: $, nodata: V } = RA(),
+        L = new Map(e.map((B) => [B.name_slug, B])),
+        F = Math.max(0, ...e.map((B) => B.amount)),
+        W = (B) => (B == null ? V : F ? $[k6(B / F)] : $[0]),
+        I = o.current,
+        R = v ? _.features.find((B) => B.properties.name_slug === v) : null,
+        D = () => l.current.getBoundingClientRect(),
+        H = () => {
+          if (!R || !i.current || !l.current) {
+            I.style.opacity = "0";
+            return;
+          }
+          const B = i.current.getBoundingClientRect(),
+            X = D(),
+            U = UI(A.node()),
+            [z, K] = U.apply(C.centroid(R)),
+            te = L.get(R.properties.name_slug);
+          ((I.style.opacity = "1"),
+            (I.style.left = `${B.left - X.left + (z / Cs) * B.width}px`),
+            (I.style.top = `${B.top - X.top + (K / js) * B.height}px`),
+            (I.innerHTML = `<b>${R.properties.name}</b><br>${n ? "Ranh giới quận/huyện trước 01/07/2025" : r ? "Ranh giới phường/xã từ 01/07/2025" : te ? He(te.amount) : "chưa có số liệu"}`));
+        };
+      if (
+        (T.on("mousemove", (B, X) => {
+          const U = L.get(X.properties.name_slug),
+            z = D();
+          ((I.style.opacity = "1"),
+            (I.style.left = `${B.clientX - z.left + 12}px`),
+            (I.style.top = `${B.clientY - z.top + 12}px`),
+            (I.innerHTML = `<b>${X.properties.name}</b><br>${n ? "Ranh giới quận/huyện trước 01/07/2025" : r ? "Ranh giới phường/xã từ 01/07/2025" : U ? He(U.amount) : "chưa có số liệu"}`));
+        })
+          .on("mouseleave", H)
+          .on("click", (B, X) => {
+            if (n) {
+              p(X.properties.name_slug);
+              return;
+            }
+            const U = L.get(X.properties.name_slug);
+            U && f(U.location_code);
+          })
+          .classed("ward-hl", (B) => B.properties.name_slug === v)
+          .transition()
+          .duration(450)
+          .attr("fill", (B) => {
+            var X;
+            return W(
+              (X = L.get(B.properties.name_slug)) == null ? void 0 : X.amount,
+            );
+          }),
+        R &&
+          T.filter(
+            (B) => B.properties.name_slug === R.properties.name_slug,
+          ).raise(),
+        !R)
+      )
+        (A.transition().duration(500).call(N.transform, qa),
+          (I.style.opacity = "0"));
+      else {
+        const [[B, X], [U, z]] = C.bounds(R),
+          K = U - B,
+          te = z - X;
+        if (K && te) {
+          const le = Math.min(12, Math.min(Cs / K, js / te) / 1.4),
+            de = (B + U) / 2,
+            Oe = (X + z) / 2,
+            we = qa
+              .translate(Cs / 2, js / 2)
+              .scale(le)
+              .translate(-de, -Oe);
+          A.transition().duration(500).call(N.transform, we).on("end", H);
+        } else H();
+      }
+    }, [b, e, v, f, p, n, r]),
+    M.useEffect(() => {
+      const T = () => {
+        const { svg: _, zoom: A } = E.current;
+        _ && A && _.transition().duration(400).call(A.transform, qa);
+      };
+      return (
+        window.addEventListener(ox, T),
+        () => window.removeEventListener(ox, T)
+      );
+    }, []),
+    M.useEffect(() => {
+      if (!b || !u.current) return;
+      const { bins: T, nodata: _ } = RA(),
+        A = ["Thấp", "Trung bình", "Cao", "", "Rất cao"];
+      u.current.innerHTML =
+        A.map((C, N) => `<i style="background:${T[N]}"></i>${C}`).join("") +
+        `<i style="background:${_}"></i>chưa có số liệu`;
+    }, [b]),
+    k.jsxs(Ut, {
+      title: n
+        ? "Bản đồ 30 quận/huyện trước 01/07/2025"
+        : "Bản đồ 126 phường/xã từ 01/07/2025",
+      className: "lg:sticky lg:top-4",
+      children: [
+        P &&
+          k.jsx("p", {
+            role: "alert",
+            className: "text-sm text-muted",
+            children: "Không tải được bản đồ. Vui lòng thử tải lại trang.",
+          }),
+        k.jsxs("div", {
+          ref: l,
+          className: "relative",
+          children: [
+            k.jsx("svg", {
+              ref: i,
+              className:
+                "w-full [&_path]:cursor-pointer [&_path]:stroke-white [&_path.ward-hl]:stroke-ink [&_path.ward-hl]:stroke-1",
+            }),
+            k.jsx("div", {
+              ref: o,
+              className:
+                "pointer-events-none absolute z-50 rounded-[.3rem] bg-[#111c] px-2.5 py-1.5 text-[.82rem] text-white opacity-0 transition-opacity",
+            }),
+          ],
+        }),
+        !n &&
+          k.jsx("p", {
+            className: "mt-2 text-xs text-muted",
+            children: "© OpenStreetMap contributors (ODbL).",
+          }),
+        k.jsx("div", {
+          style: n || r || P ? { display: "none" } : void 0,
+          ref: u,
+          className:
+            "mt-2.5 flex flex-wrap items-center gap-1.5 text-[.76rem] text-muted [&_i]:mr-1 [&_i]:inline-block [&_i]:h-2.5 [&_i]:w-2.5 [&_i]:rounded-sm",
+        }),
+      ],
+    })
+  );
+}
+const Sa =
+    "rounded-[.35rem] border border-line bg-card px-2 py-1.5 text-sm text-ink",
+  ho = "grid gap-1 text-[.78rem] text-muted";
+function j6() {
+  const e = et(),
+    t = e.tab === "compare",
+    n = e.tab === "compare",
+    r = e.tab === "compare" && e.ward === null,
+    i = M.useMemo(
+      () =>
+        [...(e.historicalAreas ? zf : e.wardCatalog)].sort(
+          r2((o) => o.location_name),
+        ),
+      [e.historicalAreas, e.wardCatalog],
+    );
+  return k.jsxs("div", {
+    className:
+      "flex flex-wrap items-end gap-3 rounded-lg border border-line bg-card p-3",
+    children: [
+      !t &&
+        k.jsxs(k.Fragment, {
+          children: [
+            k.jsxs("label", {
+              className: ho,
+              children: [
+                "Năm",
+                k.jsx("select", {
+                  disabled: !e.periodsReady,
+                  className: Sa,
+                  value: e.year,
+                  onChange: (o) => e.setYear(o.target.value),
+                  children: e.years.map((o) =>
+                    k.jsx("option", { value: o, children: o }, o),
+                  ),
+                }),
+              ],
+            }),
+            k.jsxs("label", {
+              className: ho,
+              title:
+                "Xem theo quý (số Kho Bạc gộp sẵn, không phải tự cộng 3 tháng).",
+              children: [
+                "Quý",
+                k.jsxs("select", {
+                  disabled: !e.periodsReady || !!e.catalogError,
+                  className: Sa,
+                  value: e.quarter,
+                  onChange: (o) => e.setQuarter(o.target.value),
+                  children: [
+                    k.jsx("option", { value: "", children: "Tất cả quý" }),
+                    e.quartersInYear.map((o) =>
+                      k.jsxs("option", { value: o, children: ["Quý ", o] }, o),
+                    ),
+                  ],
+                }),
+              ],
+            }),
+            k.jsxs("label", {
+              className: ho,
+              title: "Xem theo 1 tháng.",
+              children: [
+                "Tháng",
+                k.jsxs("select", {
+                  disabled: !e.periodsReady || !!e.catalogError,
+                  className: Sa,
+                  value: e.month,
+                  onChange: (o) => e.setMonth(o.target.value),
+                  children: [
+                    k.jsx("option", { value: "", children: "Tất cả tháng" }),
+                    e.monthsInQuarter.map((o) =>
+                      k.jsxs(
+                        "option",
+                        { value: o, children: ["Tháng ", o] },
+                        o,
+                      ),
+                    ),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      k.jsxs("label", {
+        className: ho,
+        title: "Trong kỳ = số riêng kỳ này. Luỹ kế = cộng dồn từ đầu năm.",
+        children: [
+          "Loại kỳ",
+          k.jsxs("select", {
+            className: Sa,
+            value: e.acc,
+            onChange: (o) => e.setAcc(o.target.value),
+            children: [
+              k.jsx("option", {
+                value: "PERIOD",
+                children: "Thực hiện trong kỳ",
+              }),
+              k.jsx("option", { value: "YTD", children: "Luỹ kế từ đầu năm" }),
+            ],
+          }),
+        ],
+      }),
+      k.jsxs("label", {
+        className: ho,
+        title:
+          "TỔNG SỐ gồm cả vay/chuyển giao. Thu NSNN là số thuần (không tính vay).",
+        children: [
+          "Chỉ tiêu",
+          k.jsx("select", {
+            className: Sa,
+            value: e.item,
+            onChange: (o) => e.setItem(o.target.value),
+            children: u2.map((o) =>
+              k.jsx("option", { value: o.value, children: o.label }, o.value),
+            ),
+          }),
+        ],
+      }),
+      !r &&
+        k.jsxs("label", {
+          className: ho,
+          title: e.historicalAreas
+            ? "Chọn quận/huyện để xem ranh giới lịch sử."
+            : "Chọn phường/xã để xem chi tiết.",
+          children: [
+            "Địa bàn",
+            k.jsxs("select", {
+              className: Sa,
+              disabled:
+                !e.historicalAreas && (!e.wardsReady || !!e.catalogError),
+              value: (e.historicalAreas ? e.district : e.ward) ?? "",
+              onChange: (o) =>
+                e.historicalAreas
+                  ? e.selectDistrict(o.target.value || null)
+                  : e.selectWard(o.target.value || null),
+              children: [
+                k.jsx("option", {
+                  value: "",
+                  children: "— Tổng quan toàn thành phố —",
+                }),
+                i.map((o) =>
+                  k.jsx(
+                    "option",
+                    {
+                      value: e.historicalAreas ? o.name_slug : o.location_code,
+                      children: o.location_name,
+                    },
+                    o.location_code,
+                  ),
+                ),
+              ],
+            }),
+          ],
+        }),
+      k.jsx("button", {
+        type: "button",
+        className: "self-end rounded border border-line px-3 py-1.5 text-sm",
+        onClick: t2,
+        children: "Tải lại dữ liệu",
+      }),
+      !n &&
+        k.jsxs("label", {
+          className: ho,
+          children: [
+            " ",
+            k.jsx("button", {
+              type: "button",
+              onClick: T6,
+              className:
+                "rounded-[.35rem] border border-line bg-card px-3 py-1.5 text-sm",
+              children: "Reset zoom",
+            }),
+          ],
+        }),
+    ],
+  });
+}
+const N6 = { PERIOD: "thực hiện trong kỳ", YTD: "luỹ kế từ đầu năm" };
+function M6() {
+  const e = et();
+  if (e.ignored.length === 0) return null;
+  const t = e.month
+    ? `tháng ${e.month}/${e.year}`
+    : e.quarter
+      ? `quý ${e.quarter}/${e.year}`
+      : `năm ${e.year}`;
+  return k.jsxs("div", {
+    role: "alert",
+    "data-testid": "url-param-notice",
+    className:
+      "flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900",
+    children: [
+      k.jsx("span", { "aria-hidden": "true", children: "⚠" }),
+      k.jsxs("div", {
+        className: "grid gap-1",
+        children: [
+          k.jsxs("p", {
+            className: "m-0",
+            children: [
+              "Đã bỏ qua ",
+              e.ignored.length,
+              " tham số trên đường dẫn:",
+              " ",
+              e.ignored.map((n, r) =>
+                k.jsxs(
+                  "span",
+                  {
+                    children: [
+                      r > 0 && "; ",
+                      k.jsxs("code", {
+                        className: "rounded bg-amber-100 px-1",
+                        children: [n.param, "=", n.value],
+                      }),
+                      " ",
+                      "— ",
+                      n.reason,
+                    ],
+                  },
+                  `${n.param}:${r}`,
+                ),
+              ),
+            ],
+          }),
+          k.jsxs("p", {
+            className: "m-0 font-semibold",
+            "data-testid": "url-param-notice-current",
+            children: [
+              "Đang hiển thị: ",
+              e.wardName ?? "toàn thành phố",
+              " · ",
+              t,
+              " · ",
+              N6[e.acc],
+              " · ",
+              e.item,
+            ],
+          }),
+        ],
+      }),
+      k.jsx("button", {
+        type: "button",
+        onClick: e.clearIgnored,
+        "aria-label": "Đóng cảnh báo",
+        className:
+          "ml-auto rounded border border-amber-300 px-2 py-0.5 leading-none",
+        children: "×",
+      }),
+    ],
+  });
+}
+function I6({ nWithData: e }) {
+  const t = et(),
+    { wardCatalog: n, catalogReady: r } = et(),
+    i = n.length;
+  if (t.tab === "compare" || t.historicalAreas || !r || i === 0 || e >= i)
+    return null;
+  const o = t.month
+    ? `Tháng ${t.month}/${t.year}`
+    : t.quarter
+      ? `Quý ${t.quarter}/${t.year}`
+      : `Năm ${t.year}`;
+  return k.jsxs("div", {
+    role: "note",
+    "data-testid": "ward-coverage-notice",
+    className:
+      "flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900",
+    children: [
+      k.jsx("span", { "aria-hidden": "true", children: "⚠" }),
+      k.jsx("p", {
+        className: "m-0",
+        children:
+          e === 0
+            ? k.jsxs(k.Fragment, {
+                children: [
+                  k.jsx("b", { children: o }),
+                  " chưa có số liệu của địa bàn nào. Danh mục địa bàn vẫn có thể chọn. Chọn một kỳ khác để xem.",
+                ],
+              })
+            : k.jsxs(k.Fragment, {
+                children: [
+                  k.jsx("b", { children: o }),
+                  " chỉ có",
+                  " ",
+                  k.jsxs("b", { children: [e, "/", i] }),
+                  " ",
+                  "phường/xã có số liệu. Danh mục vẫn giữ đủ địa bàn; đây là độ phủ số liệu, không phải địa giới thay đổi.",
+                ],
+              }),
+      }),
+    ],
+  });
+}
+function R6() {
+  const { isLoading: e } = Dw();
+  return e
+    ? k.jsx("div", {
+        role: "status",
+        "aria-label": "Đang tải tài nguyên",
+        className:
+          "pointer-events-none fixed right-4 top-4 z-[999] rounded-full bg-data-main p-2",
+        children: k.jsx("div", {
+          className:
+            "h-10 w-10 animate-spin rounded-full border-4 border-white/25 border-t-white",
+        }),
+      })
+    : null;
+}
+function At(e, t, n) {
+  const { catalogReady: r, catalogError: i } = et(),
+    [o, u] = M.useState(0),
+    l = e ? e2(e, t) : "",
+    c = `${o}:${l}`,
+    [f, h] = M.useState();
+  return (
+    M.useEffect(() => {
+      const p = () => u((v) => v + 1);
+      return (
+        window.addEventListener("nsnn:refresh", p),
+        () => window.removeEventListener("nsnn:refresh", p)
+      );
+    }, []),
+    M.useEffect(() => {
+      if (!e || !r) return;
+      const p = new AbortController();
+      return (
+        h({ identity: c, data: n, error: null, loading: !0 }),
+        $w(e, t, p.signal).then(
+          (v) => {
+            p.signal.aborted ||
+              h({ identity: c, data: v, error: null, loading: !1 });
+          },
+          (v) => {
+            p.signal.aborted ||
+              h({ identity: c, data: n, error: String(v), loading: !1 });
+          },
+        ),
+        () => p.abort()
+      );
+    }, [c, r]),
+    e
+      ? r
+        ? (f == null ? void 0 : f.identity) !== c
+          ? { data: n, error: null, loading: !0 }
+          : f
+        : { data: n, error: i, loading: !i }
+      : { data: n, error: null, loading: !1 }
+  );
+}
+function oR({ pct: e }) {
+  if (e == null) return null;
+  const t = e >= 0;
+  return k.jsxs("span", {
+    className: t ? "text-up" : "text-down",
+    children: [t ? "+" : "", e.toFixed(1), "%"],
+  });
+}
+const $6 = { current: [], previous: [] };
+function Oa(e, t, n, r) {
+  return e.find(
+    (i) =>
+      i.item === t && i.acc === n && i.location_level === r && i.amount !== 0,
+  );
+}
+function aR({ scope: e }) {
+  var b, g;
+  const { apiParams: t } = et(),
+    n = e === "detail" ? t : { ...t, ward: void 0 },
+    { data: r, loading: i, error: o } = At("/api/kpi-compare", n, $6),
+    u = r.current,
+    l = r.previous,
+    c = Oa(u, "TỔNG SỐ", "PERIOD", "ward"),
+    f = Oa(u, "THU NGÂN SÁCH NHÀ NƯỚC", "PERIOD", "ward"),
+    h = Oa(u, "TỔNG SỐ", "YTD", "ward") ?? Oa(u, "TỔNG SỐ", "YTD", "city"),
+    p = Ob(
+      c == null ? void 0 : c.amount,
+      (b = Oa(l, "TỔNG SỐ", "PERIOD", "ward")) == null ? void 0 : b.amount,
+    ),
+    v = Ob(
+      f == null ? void 0 : f.amount,
+      (g = Oa(l, "THU NGÂN SÁCH NHÀ NƯỚC", "PERIOD", "ward")) == null
+        ? void 0
+        : g.amount,
+    ),
+    y = c && f && c.amount ? (f.amount / c.amount) * 100 : null,
+    w = [
+      {
+        label: "Tổng số",
+        value: c ? He(c.amount) : "—",
+        sub: c ? Sb(c.amount) : "kỳ này chưa có số liệu",
+        delta: p,
+        tip: "Tổng thu, gồm cả vay và chuyển giao. % so với kỳ trước.",
+      },
+      {
+        label: "Thu NSNN (thu thuần)",
+        value: f ? He(f.amount) : "—",
+        sub: "không gồm vay và thu chuyển giao",
+        delta: v,
+        tip: "Thu thuần -- không tính vay và chuyển giao.",
+      },
+      {
+        label: "Tỷ trọng thu thuần",
+        value: y != null ? `${y.toFixed(1)}%` : "—",
+        sub: "trên tổng thu (còn lại là vay + chuyển giao)",
+        delta: null,
+        tip: "Tỷ lệ thu thuần trên tổng thu. Càng cao, càng ít phụ thuộc vay/chuyển giao.",
+      },
+      {
+        label: "Luỹ kế từ đầu năm (YTD)",
+        value: h ? He(h.amount) : "—",
+        sub: h ? Sb(h.amount) : "—",
+        delta: null,
+        tip: "Tổng thu cộng dồn từ đầu năm tới kỳ này.",
+      },
+    ];
+  return i || o
+    ? k.jsx(Yt, { loading: i, error: o })
+    : k.jsx("div", {
+        className: "mb-2.5 grid grid-cols-2 gap-3 md:grid-cols-4",
+        children: w.map((P) =>
+          k.jsxs(
+            "div",
+            {
+              title: P.tip,
+              className: "rounded-lg border border-line bg-card p-3.5",
+              children: [
+                k.jsx("div", {
+                  className: "text-[.75rem] uppercase tracking-wide text-muted",
+                  children: P.label,
+                }),
+                k.jsx("div", {
+                  className: "mt-0.5 text-2xl font-semibold text-ink",
+                  children: P.value,
+                }),
+                k.jsxs("div", {
+                  className: "mt-0.5 text-[.76rem] text-muted",
+                  children: [P.sub, " ", k.jsx(oR, { pct: P.delta })],
+                }),
+              ],
+            },
+            P.label,
+          ),
+        ),
+      });
+}
+function Go({ rows: e, title: t, onRowClick: n }) {
+  if (!e.length)
+    return k.jsx("p", {
+      className: "m-0 text-sm text-muted",
+      children: "Không có số liệu.",
+    });
+  const r = Math.max(...e.map((i) => i.amount)) || 1;
+  return k.jsx("div", {
+    className: "grid gap-2",
+    children: e.map((i) =>
+      k.jsxs(
+        "div",
+        {
+          title: t == null ? void 0 : t(i),
+          onClick: n ? () => n(i) : void 0,
+          className: Ro(
+            "min-w-0",
+            n && "cursor-pointer rounded-[.25rem] hover:bg-data-sub-bg",
+          ),
+          children: [
+            k.jsxs("div", {
+              className:
+                "flex items-baseline justify-between gap-2 text-[.83rem]",
+              children: [
+                k.jsx("span", {
+                  className: "min-w-0 flex-1 truncate font-medium text-ink",
+                  title: i.name,
+                  children: i.name,
+                }),
+                k.jsx("span", {
+                  className: "shrink-0 whitespace-nowrap text-muted",
+                  children: He(i.amount),
+                }),
+              ],
+            }),
+            k.jsx("div", {
+              className: "mt-1 h-1 overflow-hidden rounded-full bg-data-sub-bg",
+              children: k.jsx("div", {
+                className: "h-1 rounded-full bg-data-sub",
+                style: { width: `${((i.amount / r) * 100).toFixed(1)}%` },
+              }),
+            }),
+          ],
+        },
+        i.name,
+      ),
+    ),
+  });
+}
+function x1() {
+  const e = "(max-width: 1100px)",
+    [t, n] = M.useState(() => (window.matchMedia(e).matches ? 5 : 10));
+  return (
+    M.useEffect(() => {
+      const r = window.matchMedia(e),
+        i = () => n(r.matches ? 5 : 10);
+      return (
+        r.addEventListener("change", i),
+        () => r.removeEventListener("change", i)
+      );
+    }, []),
+    t
+  );
+}
+function D6({ rows: e }) {
+  const { ward: t, item: n, selectWard: r, historicalAreas: i } = et(),
+    o = x1(),
+    u = t ? e.find((l) => l.location_code === t) : void 0;
+  return k.jsx(Ut, {
+    title: "Xếp hạng",
+    children: u
+      ? k.jsxs("div", {
+          children: [
+            k.jsxs("div", {
+              className: "text-base text-muted",
+              children: ["Xếp hạng theo ", n],
+            }),
+            k.jsxs("div", {
+              className:
+                "mt-1 text-[3.4rem] font-semibold leading-tight text-ink",
+              children: [
+                e.findIndex((l) => l.location_code === u.location_code) + 1,
+                k.jsxs("span", {
+                  className: "ml-1 text-2xl font-normal text-muted",
+                  children: [" ", "/ ", e.length, " phường/xã"],
+                }),
+              ],
+            }),
+            k.jsx("div", {
+              className: "mt-1 text-2xl font-semibold text-data-main",
+              children: He(u.amount),
+            }),
+          ],
+        })
+      : k.jsx(Go, {
+          rows: e
+            .slice(0, o)
+            .map((l) => ({
+              name: l.location_name,
+              amount: l.amount,
+              id: l.location_code,
+            })),
+          onRowClick: i ? void 0 : (l) => l.id && r(l.id),
+        }),
+  });
+}
+function L6({ curWard: e, itemRows: t }) {
+  const { ward: n, item: r } = et();
+  return n
+    ? e
+      ? k.jsxs(Ut, {
+          title: "Chi tiết địa bàn",
+          className: "max-h-[22rem] overflow-y-auto",
+          children: [
+            k.jsxs("dl", {
+              className:
+                "m-0 grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-1 text-[.86rem]",
+              children: [
+                k.jsx("dt", { className: "text-muted", children: "Địa bàn" }),
+                k.jsx("dd", {
+                  className: "font-semibold text-ink",
+                  children: e.location_name,
+                }),
+                k.jsx("dt", { className: "text-muted", children: "Mã" }),
+                k.jsx("dd", { children: e.location_code }),
+                k.jsx("dt", { className: "text-muted", children: r }),
+                k.jsx("dd", {
+                  className: "font-semibold text-data-main",
+                  children: He(e.amount),
+                }),
+                k.jsx("dt", { className: "text-muted", children: "Chính xác" }),
+                k.jsx("dd", { children: Sb(e.amount) }),
+              ],
+            }),
+            k.jsx("h3", {
+              className:
+                "mb-2 mt-3 text-[.85rem] uppercase tracking-wide text-muted",
+              children: "Cơ cấu thu",
+            }),
+            k.jsx(Go, { rows: t.slice(0, 6) }),
+          ],
+        })
+      : k.jsx(Ut, {
+          title: "Chi tiết địa bàn",
+          children: k.jsx("p", {
+            className: "m-0 text-sm text-muted",
+            children: "Địa bàn này chưa có số liệu trong kỳ đã chọn.",
+          }),
+        })
+    : null;
+}
+function uR({ itemRows: e, curWard: t }) {
+  const n = x1(),
+    { tab: r, wardName: i, ward: o } = et(),
+    u =
+      r === "detail" && o
+        ? `Top chỉ tiêu (${i ?? o})`
+        : t
+          ? `Top chỉ tiêu (${t.location_name})`
+          : "Top chỉ tiêu (toàn TP)";
+  return k.jsx(Ut, { title: u, children: k.jsx(Go, { rows: e.slice(0, n) }) });
+}
+var dv, DA;
+function wn() {
+  if (DA) return dv;
+  DA = 1;
+  var e = Array.isArray;
+  return ((dv = e), dv);
+}
+var hv, LA;
+function sR() {
+  if (LA) return hv;
+  LA = 1;
+  var e = typeof lf == "object" && lf && lf.Object === Object && lf;
+  return ((hv = e), hv);
+}
+var pv, FA;
+function Rr() {
+  if (FA) return pv;
+  FA = 1;
+  var e = sR(),
+    t = typeof self == "object" && self && self.Object === Object && self,
+    n = e || t || Function("return this")();
+  return ((pv = n), pv);
+}
+var mv, zA;
+function Gl() {
+  if (zA) return mv;
+  zA = 1;
+  var e = Rr(),
+    t = e.Symbol;
+  return ((mv = t), mv);
+}
+var vv, BA;
+function F6() {
+
+===== original app-readable.js lines 47372-49480 =====
+function a_({ title: e, render: t }) {
+  const [n, r] = M.useState(!1);
+  return k.jsxs(eL, {
+    open: n,
+    onOpenChange: r,
+    children: [
+      k.jsx("div", {
+        onClick: () => r(!0),
+        className: "cursor-zoom-in",
+        children: t(240),
+      }),
+      k.jsxs(rL, {
+        children: [
+          k.jsx(iL, { className: "fixed inset-0 z-40 bg-black/40" }),
+          k.jsxs(oL, {
+            className:
+              "fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[min(92vw,64rem)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-lg border border-line bg-card p-5 shadow-xl",
+            children: [
+              k.jsxs("div", {
+                className: "mb-3 flex items-center justify-between",
+                children: [
+                  k.jsx(uL, {
+                    className: "text-base font-semibold text-ink",
+                    children: e,
+                  }),
+                  k.jsx(sL, {
+                    className:
+                      "rounded px-2 py-1 text-lg leading-none text-muted hover:bg-bg",
+                    "aria-label": "Đóng",
+                    children: "✕",
+                  }),
+                ],
+              }),
+              t(460),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+}
+const _ie = {
+    NSTW: "Phần giữ lại cho trung ương.",
+    NSDP: "Phần giữ lại cho địa phương (tỉnh + huyện + xã).",
+    PROVINCE: "Phần giữ lại ở cấp tỉnh.",
+    DISTRICT: "Phần giữ lại ở cấp huyện.",
+    COMMUNE: "Phần giữ lại ở cấp xã.",
+  },
+  Sie = ["var(--data-main)", "var(--data-sub)"];
+function Oie({ p: e, twAmt: t, dpAmt: n, height: r = 240 }) {
+  const i = [
+    { name: "NSTW", value: e, amount: t },
+    { name: "NSĐP", value: 100 - e, amount: n },
+  ];
+  return k.jsx(Cu, {
+    width: "100%",
+    height: r,
+    children: k.jsxs(pre, {
+      margin: { top: 24, right: 24, bottom: 24, left: 24 },
+      children: [
+        k.jsx(pi, {
+          data: i,
+          dataKey: "value",
+          nameKey: "name",
+          innerRadius: "48%",
+          outerRadius: "72%",
+          paddingAngle: 2,
+          label: ({ name: o, value: u }) => `${o} ${u.toFixed(1)}%`,
+          children: i.map((o, u) => k.jsx(Xl, { fill: Sie[u] }, o.name)),
+        }),
+        k.jsx(un, {
+          formatter: (o, u, l) => {
+            var c;
+            return [
+              `${o.toFixed(1)}% (${He((c = l.payload) == null ? void 0 : c.amount)})`,
+              u,
+            ];
+          },
+        }),
+        k.jsx(Wi, {}),
+      ],
+    }),
+  });
+}
+function lL({ scope: e }) {
+  const { apiParams: t } = et(),
+    n = e === "detail" ? t : { ...t, ward: void 0 },
+    { data: r, loading: i, error: o } = At("/api/by-scope", n, []),
+    u = r.filter((p) => ["NSTW", "NSDP"].includes(p.code)),
+    l = r.filter((p) => ["PROVINCE", "DISTRICT", "COMMUNE"].includes(p.code)),
+    c = u.find((p) => p.code === "NSTW"),
+    f = u.find((p) => p.code === "NSDP"),
+    h =
+      ((c == null ? void 0 : c.amount) ?? 0) +
+      ((f == null ? void 0 : f.amount) ?? 0);
+  return i || o
+    ? k.jsx(Yt, { loading: i, error: o })
+    : k.jsx(Ut, {
+        title: "Theo cấp ngân sách",
+        children:
+          !h || !c || !f
+            ? k.jsx("p", {
+                className: "m-0 text-sm text-muted",
+                children: "Không có số liệu.",
+              })
+            : k.jsxs(k.Fragment, {
+                children: [
+                  k.jsx(a_, {
+                    title: "Theo cấp ngân sách",
+                    render: (p) =>
+                      k.jsx(Oie, {
+                        p: (c.amount / h) * 100,
+                        twAmt: c.amount,
+                        dpAmt: f.amount,
+                        height: p,
+                      }),
+                  }),
+                  k.jsx("div", {
+                    className: "mt-2.5 text-sm text-muted",
+                    children: "Trong đó ngân sách địa phương",
+                  }),
+                  k.jsx(Go, {
+                    rows: l.map((p) => ({ name: p.name, amount: p.amount })),
+                    title: (p) => {
+                      var v;
+                      return (
+                        _ie[
+                          ((v = l.find((y) => y.name === p.name)) == null
+                            ? void 0
+                            : v.code) ?? ""
+                        ] ?? ""
+                      );
+                    },
+                  }),
+                ],
+              }),
+      });
+}
+function Pie(e, t) {
+  if (!t) {
+    const i = new Map();
+    for (const o of e) {
+      const u = `${o.year}-${o.month}`,
+        l = i.get(u) ?? {
+          label: `${String(o.month).padStart(2, "0")}/${o.year}`,
+        };
+      ((l[o.acc] = o.amount), i.set(u, l));
+    }
+    return [...i.values()];
+  }
+  const n = Number(t),
+    r = Array.from({ length: 12 }, (i, o) => ({
+      label: `${String(o + 1).padStart(2, "0")}/${n}`,
+    }));
+  for (const i of e) i.year === n && (r[i.month - 1][i.acc] = i.amount);
+  return r;
+}
+function Aie(e, t) {
+  const n = new Map();
+  for (const u of e)
+    u.year === t &&
+      (n.has(u.month) || n.set(u.month, new Set()),
+      n.get(u.month).add(u.location_code));
+  const r = [...n.values()].map((u) => u.size);
+  if (!r.length) return new Set();
+  const i = Math.max(...r) * 0.5,
+    o = new Set();
+  for (const [u, l] of n) l.size < i && o.add(u - 1);
+  return o;
+}
+function Eie({ points: e, height: t = 260 }) {
+  return k.jsxs("div", {
+    children: [
+      k.jsx(Cu, {
+        width: "100%",
+        height: t,
+        children: k.jsxs(J1, {
+          data: e,
+          margin: { top: 10, right: 15, left: 5, bottom: 5 },
+          children: [
+            k.jsx(Ru, { strokeDasharray: "3 3", stroke: "var(--line)" }),
+            k.jsx(mi, {
+              dataKey: "label",
+              fontSize: 10,
+              stroke: "var(--muted)",
+            }),
+            k.jsx(vi, {
+              fontSize: 10,
+              stroke: "var(--muted)",
+              tickFormatter: He,
+              width: 70,
+            }),
+            k.jsx(un, { formatter: (n) => He(n) }),
+            k.jsx(ci, {
+              type: "monotone",
+              dataKey: "PERIOD",
+              name: "Thực hiện trong kỳ",
+              stroke: "var(--data-main)",
+              strokeWidth: 2.5,
+              dot: { r: 3.5 },
+              connectNulls: !1,
+            }),
+            k.jsx(ci, {
+              type: "monotone",
+              dataKey: "YTD",
+              name: "Luỹ kế (YTD)",
+              stroke: "var(--data-cmp)",
+              strokeWidth: 2.5,
+              strokeDasharray: "5 4",
+              dot: { r: 3.5 },
+              connectNulls: !1,
+            }),
+          ],
+        }),
+      }),
+      k.jsxs("div", {
+        className: "mt-1.5 flex items-center gap-1.5 text-[.76rem] text-muted",
+        children: [
+          k.jsx("i", {
+            className: "inline-block h-2.5 w-2.5 rounded-full bg-data-main",
+          }),
+          "Thực hiện trong kỳ (đường liền)",
+          k.jsx("i", {
+            className: "ml-2 inline-block h-2.5 w-2.5 rounded-full bg-data-cmp",
+          }),
+          "Luỹ kế (YTD) (đường đứt)",
+        ],
+      }),
+    ],
+  });
+}
+function Sw({ scope: e }) {
+  const { apiParams: t, year: n } = et(),
+    r = e === "detail" ? t : { ...t, ward: void 0 },
+    i = !r.ward,
+    { data: o, loading: u, error: l } = At("/api/trend", r, []),
+    c = M.useMemo(() => Pie(o, n), [o, n]),
+    {
+      data: f,
+      loading: h,
+      error: p,
+    } = At(i ? "/api/heatmap" : null, { item: r.item }, []),
+    v = M.useMemo(() => (i && n ? Aie(f, Number(n)) : new Set()), [i, n, f]),
+    y = M.useMemo(
+      () =>
+        c.map((b, g) => (v.has(g) ? { ...b, PERIOD: void 0, YTD: void 0 } : b)),
+      [c, v],
+    ),
+    w = y.filter((b) => b.PERIOD !== void 0 || b.YTD !== void 0).length;
+  return u || h || l || p
+    ? k.jsx(Yt, { loading: u || h, error: l || p })
+    : k.jsx(Ut, {
+        title: "Xu hướng theo tháng",
+        children:
+          w < 2
+            ? k.jsxs("p", {
+                className: "m-0 text-sm text-muted",
+                children: ["Cần ≥ 2 kỳ để vẽ xu hướng -- kỳ hiện có: ", w, "."],
+              })
+            : k.jsx(a_, {
+                title: "Xu hướng theo tháng",
+                render: (b) => k.jsx(Eie, { points: y, height: b }),
+              }),
+      });
+}
+function Tie({ wardRows: e, wardLoading: t, wardError: n }) {
+  const { apiParams: r, ward: i, district: o, districtName: u } = et(),
+    { data: l, loading: c, error: f } = At(o ? null : "/api/by-item", r, []),
+    h = i ? e.find((p) => p.location_code === i) : void 0;
+  return o
+    ? k.jsxs("div", {
+        className: "grid items-start gap-4 lg:grid-cols-2",
+        children: [
+          k.jsx(Ut, {
+            title: u ?? "Địa bàn lịch sử",
+            children: k.jsx("p", {
+              className: "text-sm text-muted",
+              children:
+                "Đang xem ranh giới quận/huyện. Chưa có dữ liệu thu theo đơn vị lịch sử này.",
+            }),
+          }),
+          k.jsx($A, { wardRows: [] }),
+        ],
+      })
+    : k.jsxs(k.Fragment, {
+        children: [
+          k.jsx(aR, { scope: "detail" }),
+          k.jsxs("div", {
+            className:
+              "grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.25fr_1fr]",
+            children: [
+              k.jsxs("div", {
+                className: "grid grid-cols-1 gap-4 sm:grid-cols-2",
+                children: [
+                  k.jsx(Yt, {
+                    loading: t,
+                    error: n,
+                    children: k.jsx(D6, { rows: e }),
+                  }),
+                  i
+                    ? k.jsx(Yt, {
+                        loading: t || c,
+                        error: n || f,
+                        children: k.jsx(L6, { curWard: h, itemRows: l }),
+                      })
+                    : k.jsx(Sw, { scope: "detail" }),
+                  k.jsx(lL, { scope: "detail" }),
+                  i && k.jsx(Sw, { scope: "detail" }),
+                  k.jsx(Yt, {
+                    loading: c,
+                    error: f,
+                    children: k.jsx(uR, { itemRows: l, curWard: h }),
+                  }),
+                ],
+              }),
+              k.jsxs("div", {
+                className: "grid gap-2",
+                children: [
+                  k.jsx($A, { wardRows: e }),
+                  (t || n) && k.jsx(Yt, { loading: t, error: n }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+}
+function kie({ rows: e }) {
+  const t = x1(),
+    { selectWard: n, switchTab: r, historicalAreas: i } = et(),
+    o = (u) => {
+      u.id && (n(u.id), r("detail"));
+    };
+  return k.jsx(Ut, {
+    title: "Top địa bàn",
+    children: k.jsx(Go, {
+      rows: e
+        .slice(0, t)
+        .map((u) => ({
+          name: u.location_name,
+          amount: u.amount,
+          id: u.location_code,
+        })),
+      onRowClick: i ? void 0 : o,
+    }),
+  });
+}
+const Cie = { bars: [], total_delta: null };
+function jie({ bars: e, rowH: t = 50 }) {
+  return k.jsx(Cu, {
+    width: "100%",
+    height: Math.max(160, e.length * t),
+    children: k.jsxs(MD, {
+      data: e,
+      layout: "vertical",
+      margin: { top: 5, right: 50, left: 10, bottom: 5 },
+      children: [
+        k.jsx(Ru, { strokeDasharray: "3 3", stroke: "var(--line)" }),
+        k.jsx(mi, {
+          type: "number",
+          tickFormatter: He,
+          fontSize: 10,
+          stroke: "var(--muted)",
+        }),
+        k.jsx(vi, {
+          type: "category",
+          dataKey: "name",
+          width: 150,
+          fontSize: 11,
+          stroke: "var(--muted)",
+        }),
+        k.jsx(un, { formatter: (n) => He(n) }),
+        k.jsx(Mu, { x: 0, stroke: "var(--ink)" }),
+        k.jsx(li, {
+          dataKey: "delta",
+          radius: 3,
+          children: e.map((n, r) =>
+            k.jsx(Xl, { fill: n.delta >= 0 ? "var(--up)" : "var(--down)" }, r),
+          ),
+        }),
+      ],
+    }),
+  });
+}
+function Nie() {
+  const { apiParams: e } = et(),
+    t = { ...e, ward: void 0 },
+    { data: n, loading: r, error: i } = At("/api/waterfall", t, Cie);
+  return r || i
+    ? k.jsx(Yt, { loading: r, error: i })
+    : k.jsx(Ut, {
+        title: "Waterfall — biến động Thu NSNN so kỳ trước",
+        children: n.bars.length
+          ? k.jsxs(k.Fragment, {
+              children: [
+                k.jsx(a_, {
+                  title: "Waterfall — biến động Thu NSNN so kỳ trước",
+                  render: (o) =>
+                    k.jsx(jie, {
+                      bars: n.bars,
+                      rowH: Math.max(50, o / Math.max(1, n.bars.length)),
+                    }),
+                }),
+                n.total_delta != null &&
+                  k.jsxs("div", {
+                    className: "mt-2 text-sm text-muted",
+                    children: [
+                      "Tổng biến động:",
+                      " ",
+                      k.jsxs("b", {
+                        className: "text-ink",
+                        children: [
+                          n.total_delta >= 0 ? "+" : "",
+                          He(n.total_delta),
+                        ],
+                      }),
+                    ],
+                  }),
+              ],
+            })
+          : k.jsx("p", {
+              className: "m-0 text-sm text-muted",
+              children:
+                "Cần ≥ 2 kỳ liên tiếp để so sánh -- kỳ đang chọn chưa có kỳ liền trước.",
+            }),
+      });
+}
+const Mie = { parent: "", total: null, rows: [] };
+function Iie() {
+  const { apiParams: e } = et(),
+    t = { ...e, ward: void 0 },
+    { data: n, loading: r, error: i } = At("/api/treemap", t, Mie);
+  return r || i
+    ? k.jsx(Yt, { loading: r, error: i })
+    : k.jsx(Ut, {
+        title: "Cơ cấu Thu NSNN",
+        children: n.rows.length
+          ? k.jsxs(k.Fragment, {
+              children: [
+                k.jsxs("div", {
+                  className: "mb-2 text-sm text-muted",
+                  children: [
+                    "Cha: ",
+                    k.jsx("b", { className: "text-ink", children: n.parent }),
+                    " — tổng ",
+                    He(n.total),
+                  ],
+                }),
+                k.jsx(Go, {
+                  rows: n.rows.map((o) => ({
+                    name: `${o.name} (${((o.amount / (n.total || 1)) * 100).toFixed(1)}%)`,
+                    amount: o.amount,
+                  })),
+                }),
+              ],
+            })
+          : k.jsx("p", {
+              className: "m-0 text-sm text-muted",
+              children: "Chưa có số liệu.",
+            }),
+      });
+}
+function cL({ show: e, onClick: t }) {
+  return e
+    ? k.jsx("button", {
+        type: "button",
+        onClick: t,
+        className:
+          "shrink-0 rounded-full border border-line bg-card px-2.5 py-1 text-[.72rem] text-muted hover:bg-bg hover:text-ink",
+        children: "Thu gọn ▴",
+      })
+    : null;
+}
+function Rie(e) {
+  const t = e.reduce((n, r) => n + r, 0) / e.length;
+  return Math.sqrt(e.reduce((n, r) => n + (r - t) ** 2, 0) / e.length);
+}
+function $ie(e, t, n) {
+  if (e.length < 2) return null;
+  const r = Math.max(...e, 1),
+    i = Math.min(...e, 0),
+    o = (l) => (l / (e.length - 1)) * t,
+    u = (l) => n - ((l - i) / (r - i || 1)) * n;
+  return e
+    .map((l, c) => `${c ? "L" : "M"}${o(c).toFixed(1)},${u(l).toFixed(1)}`)
+    .join("");
+}
+function Die(e) {
+  const [t, n] = e.split("-");
+  return `${n}/${t}`;
+}
+const JN = {
+    amount: "Theo tổng số",
+    growth: "Theo tăng trưởng %",
+    stability: "Theo độ ổn định",
+  },
+  Lie = {
+    amount: (e, t) => t.last - e.last,
+    growth: (e, t) => (t.delta ?? -1 / 0) - (e.delta ?? -1 / 0),
+    stability: (e, t) => (e.cv ?? 1 / 0) - (t.cv ?? 1 / 0),
+  },
+  fb = 220,
+  db = 52,
+  hb = 5;
+function Fie({ ward: e, onClose: t }) {
+  const n = e.fullSeries.map((i) => ({
+      label: Die(i.month),
+      amount: i.amount ?? void 0,
+    })),
+    r = e.fullSeries.some((i) => i.amount == null);
+  return k.jsx(eL, {
+    open: !0,
+    onOpenChange: (i) => !i && t(),
+    children: k.jsxs(rL, {
+      children: [
+        k.jsx(iL, { className: "fixed inset-0 z-40 bg-black/40" }),
+        k.jsxs(oL, {
+          className:
+            "fixed left-1/2 top-1/2 z-50 max-h-[90vh] w-[min(92vw,50rem)] -translate-x-1/2 -translate-y-1/2 overflow-auto rounded-lg border border-line bg-card p-5 shadow-xl",
+          children: [
+            k.jsxs("div", {
+              className: "mb-3 flex items-center justify-between",
+              children: [
+                k.jsxs(uL, {
+                  className: "text-base font-semibold text-ink",
+                  children: [e.name, " — xu hướng theo tháng"],
+                }),
+                k.jsx(sL, {
+                  className:
+                    "rounded px-2 py-1 text-lg leading-none text-muted hover:bg-bg",
+                  "aria-label": "Đóng",
+                  children: "✕",
+                }),
+              ],
+            }),
+            e.series.length < 2
+              ? k.jsxs("p", {
+                  className: "m-0 text-sm text-muted",
+                  children: [
+                    "Cần ≥ 2 tháng để vẽ xu hướng -- phường này hiện có: ",
+                    e.series.length,
+                    ".",
+                  ],
+                })
+              : k.jsxs(k.Fragment, {
+                  children: [
+                    k.jsx(Cu, {
+                      width: "100%",
+                      height: 380,
+                      children: k.jsxs(J1, {
+                        data: n,
+                        margin: { top: 10, right: 15, left: 5, bottom: 5 },
+                        children: [
+                          k.jsx(Ru, {
+                            strokeDasharray: "3 3",
+                            stroke: "var(--line)",
+                          }),
+                          k.jsx(mi, {
+                            dataKey: "label",
+                            fontSize: 11,
+                            stroke: "var(--muted)",
+                          }),
+                          k.jsx(vi, {
+                            fontSize: 11,
+                            stroke: "var(--muted)",
+                            tickFormatter: He,
+                            width: 70,
+                          }),
+                          k.jsx(un, { formatter: (i) => He(i) }),
+                          k.jsx(ci, {
+                            type: "monotone",
+                            dataKey: "amount",
+                            name: "Tổng số",
+                            stroke: "var(--data-main)",
+                            strokeWidth: 2.5,
+                            dot: { r: 3.5 },
+                            connectNulls: !1,
+                          }),
+                        ],
+                      }),
+                    }),
+                    r &&
+                      k.jsx("p", {
+                        className: "mt-1.5 text-[.76rem] text-muted",
+                        children:
+                          "Đường bị ngắt ở tháng phường này chưa có số liệu.",
+                      }),
+                  ],
+                }),
+          ],
+        }),
+      ],
+    }),
+  });
+}
+function zie() {
+  const { apiParams: e } = et(),
+    t = { ...e, ward: void 0 },
+    { data: n, loading: r, error: i } = At("/api/heatmap", t, []),
+    [o, u] = M.useState("amount"),
+    [l, c] = M.useState(!1),
+    [f, h] = M.useState(null);
+  M.useEffect(() => c(!1), [n, o]);
+  const { list: p, months: v } = M.useMemo(() => {
+      const S = [
+          ...new Set(
+            n.map((_) => `${_.year}-${String(_.month).padStart(2, "0")}`),
+          ),
+        ].sort(),
+        E = new Map();
+      for (const _ of n) {
+        const A = `${_.year}-${String(_.month).padStart(2, "0")}`;
+        (E.has(_.location_code) ||
+          E.set(_.location_code, { name: _.location_name, byMonth: new Map() }),
+          E.get(_.location_code).byMonth.set(A, _.amount));
+      }
+      return {
+        list: [...E.values()].map((_) => {
+          const A = S.filter((W) => _.byMonth.has(W)).map((W) => ({
+              month: W,
+              amount: _.byMonth.get(W),
+            })),
+            C = S.map((W) => ({ month: W, amount: _.byMonth.get(W) ?? null })),
+            N = A.map((W) => W.amount),
+            $ = N.at(-1) ?? 0,
+            V = N.length > 1 ? (N.at(-2) ?? null) : null,
+            L = N.length ? N.reduce((W, I) => W + I, 0) / N.length : 0,
+            F = N.length > 1 && L ? (Rie(N) / L) * 100 : null;
+          return {
+            name: _.name,
+            series: A,
+            fullSeries: C,
+            last: $,
+            delta: Ob($, V),
+            cv: F,
+          };
+        }),
+        months: S,
+      };
+    }, [n]),
+    y = p.reduce((S, E) => S + E.last, 0) || 1,
+    w = [...p].sort(Lie[o]),
+    b = w.slice(0, hb),
+    g = w.slice(hb),
+    P = (S, E) => {
+      const T = $ie(
+        S.series.map((_) => _.amount),
+        fb,
+        db,
+      );
+      return k.jsxs(
+        "div",
+        {
+          onClick: () => h(S),
+          className:
+            "grid min-h-[3.2rem] cursor-pointer grid-cols-[1fr_auto_auto_auto] items-center gap-3 rounded-[.35rem] text-[.83rem] hover:bg-data-sub-bg",
+          children: [
+            k.jsxs("span", {
+              children: [
+                k.jsxs("span", {
+                  className: "mr-2 text-muted",
+                  children: ["#", E + 1],
+                }),
+                k.jsx("b", { className: "text-ink", children: S.name }),
+              ],
+            }),
+            k.jsx("span", {
+              className: "w-[220px]",
+              children: T
+                ? k.jsx("svg", {
+                    width: fb,
+                    height: db,
+                    viewBox: `0 0 ${fb} ${db}`,
+                    preserveAspectRatio: "none",
+                    className: "block h-[52px] w-full",
+                    children: k.jsx("path", {
+                      d: T,
+                      fill: "none",
+                      stroke: "var(--data-main)",
+                      strokeWidth: 2,
+                    }),
+                  })
+                : k.jsx("span", {
+                    className: "text-muted",
+                    children: "(cần ≥2 tháng)",
+                  }),
+            }),
+            k.jsx("span", {
+              children:
+                o === "stability"
+                  ? S.cv == null
+                    ? k.jsx("span", { className: "text-muted", children: "—" })
+                    : k.jsxs("span", {
+                        className: "text-muted",
+                        children: ["±", S.cv.toFixed(1), "%"],
+                      })
+                  : k.jsx(oR, { pct: S.delta }),
+            }),
+            k.jsxs("span", {
+              className: "whitespace-nowrap text-muted",
+              children: [
+                He(S.last),
+                " ",
+                k.jsxs("span", {
+                  className: "text-muted",
+                  children: ["(", ((S.last / y) * 100).toFixed(1), "%)"],
+                }),
+              ],
+            }),
+          ],
+        },
+        S.name,
+      );
+    };
+  return r || i
+    ? k.jsx(Yt, { loading: r, error: i })
+    : k.jsx(Ut, {
+        title: "Xếp hạng 126 phường/xã theo tháng",
+        headerAction: k.jsx(cL, {
+          show: l && g.length > 0,
+          onClick: () => c(!1),
+        }),
+        children: n.length
+          ? k.jsxs(k.Fragment, {
+              children: [
+                k.jsx("div", {
+                  className: "mb-2.5 flex gap-1.5",
+                  children: Object.keys(JN).map((S) =>
+                    k.jsx(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: () => u(S),
+                        className:
+                          o === S
+                            ? "rounded-[.35rem] bg-data-main px-2.5 py-1 text-xs text-white"
+                            : "rounded-[.35rem] border border-line px-2.5 py-1 text-xs text-muted",
+                        children: JN[S],
+                      },
+                      S,
+                    ),
+                  ),
+                }),
+                k.jsxs("div", {
+                  className: "mb-2.5 text-sm text-muted",
+                  children: [
+                    p.length,
+                    " phường/xã có số liệu, ",
+                    v.length,
+                    " tháng đã nạp (",
+                    v[0],
+                    "…",
+                    v.at(-1),
+                    ")",
+                  ],
+                }),
+                k.jsxs("div", {
+                  className: "grid gap-1.5",
+                  children: [
+                    b.map((S, E) => P(S, E)),
+                    l && g.map((S, E) => P(S, E + hb)),
+                  ],
+                }),
+                g.length > 0 &&
+                  k.jsx("button", {
+                    type: "button",
+                    onClick: () => c((S) => !S),
+                    className: "mt-2.5 text-sm font-medium text-data-main",
+                    children: l
+                      ? "Thu gọn ▴"
+                      : `Xem thêm ${g.length} phường/xã ▾`,
+                  }),
+                f && k.jsx(Fie, { ward: f, onClose: () => h(null) }),
+              ],
+            })
+          : k.jsx("p", {
+              className: "m-0 text-sm text-muted",
+              children: "Chưa có số liệu.",
+            }),
+      });
+}
+const Lf = 5;
+function eM({ w: e }) {
+  const t = (e.tw / e.total) * 100;
+  return k.jsxs("div", {
+    className:
+      "grid grid-cols-1 items-center gap-2 py-2 sm:grid-cols-[9rem_1fr_13rem] sm:gap-3",
+    children: [
+      k.jsx("div", {
+        className: "min-w-0 truncate font-semibold text-ink",
+        children: e.name,
+      }),
+      k.jsxs("div", {
+        title: `NSTW ${t.toFixed(1)}% (${He(e.tw)}) / NSĐP ${(100 - t).toFixed(1)}% (${He(e.dp)})`,
+        className: "flex h-4 overflow-hidden rounded-[.25rem]",
+        children: [
+          k.jsx("div", {
+            className: "bg-data-main",
+            style: { width: `${t.toFixed(1)}%` },
+          }),
+          k.jsx("div", {
+            className: "bg-data-cmp",
+            style: { width: `${(100 - t).toFixed(1)}%` },
+          }),
+        ],
+      }),
+      k.jsxs("div", {
+        className: "text-[.83rem] text-muted",
+        children: [
+          "NSTW ",
+          k.jsxs("b", {
+            className: "text-data-main",
+            children: [t.toFixed(1), "%"],
+          }),
+          " · NSĐP ",
+          k.jsxs("b", {
+            className: "text-data-cmp",
+            children: [(100 - t).toFixed(1), "%"],
+          }),
+        ],
+      }),
+    ],
+  });
+}
+function tM({ w: e }) {
+  return k.jsxs("div", {
+    className: "rounded-lg border border-line p-3",
+    children: [
+      k.jsx("h4", {
+        className: "m-0 mb-2.5 truncate text-sm font-semibold text-ink",
+        title: e.name,
+        children: e.name,
+      }),
+      k.jsx(Go, {
+        rows: e.items
+          .slice(0, 6)
+          .map((t) => ({ name: t.name, amount: t.amount })),
+      }),
+    ],
+  });
+}
+function Bie() {
+  const { apiParams: e } = et(),
+    t = { ...e, ward: void 0 },
+    [n, r] = M.useState("scope"),
+    [i, o] = M.useState(!1),
+    {
+      data: u,
+      loading: l,
+      error: c,
+    } = At(n === "scope" ? "/api/by-ward-scope" : null, t, []),
+    {
+      data: f,
+      loading: h,
+      error: p,
+    } = At(n === "item" ? "/api/by-ward-item" : null, t, []);
+  M.useEffect(() => o(!1), [n, u, f]);
+  const v = M.useMemo(() => {
+      const T = new Map();
+      for (const _ of u) {
+        T.has(_.location_code) ||
+          T.set(_.location_code, {
+            name: _.location_name,
+            tw: 0,
+            dp: 0,
+            total: 0,
+          });
+        const A = T.get(_.location_code);
+        _.code === "NSTW"
+          ? (A.tw = _.amount)
+          : _.code === "NSDP" && (A.dp = _.amount);
+      }
+      return [...T.values()]
+        .map((_) => ({ ..._, total: _.tw + _.dp }))
+        .filter((_) => _.total > 0)
+        .sort((_, A) => A.total - _.total);
+    }, [u]),
+    y = M.useMemo(() => {
+      const T = new Map();
+      for (const _ of f) {
+        T.has(_.location_code) ||
+          T.set(_.location_code, {
+            name: _.location_name,
+            items: [],
+            total: 0,
+          });
+        const A = T.get(_.location_code);
+        (A.items.push(_), (A.total += _.amount));
+      }
+      return [...T.values()].sort((_, A) => A.total - _.total);
+    }, [f]),
+    w = v.slice(0, Lf),
+    b = v.slice(Lf),
+    g = y.slice(0, Lf),
+    P = y.slice(Lf),
+    S = n === "scope" ? !v.length : !y.length,
+    E = n === "scope" ? b.length : P.length;
+  return l || h || c || p
+    ? k.jsx(Yt, { loading: l || h, error: c || p })
+    : k.jsxs(Ut, {
+        title: "So sánh cơ cấu giữa các địa bàn",
+        headerAction: k.jsx(cL, { show: i && E > 0, onClick: () => o(!1) }),
+        children: [
+          k.jsxs("div", {
+            className: "mb-3 flex gap-1.5",
+            children: [
+              k.jsx("button", {
+                type: "button",
+                onClick: () => r("scope"),
+                className:
+                  n === "scope"
+                    ? "rounded-[.35rem] bg-data-main px-2.5 py-1 text-xs text-white"
+                    : "rounded-[.35rem] border border-line px-2.5 py-1 text-xs text-muted",
+                children: "Cấp ngân sách",
+              }),
+              k.jsx("button", {
+                type: "button",
+                onClick: () => r("item"),
+                className:
+                  n === "item"
+                    ? "rounded-[.35rem] bg-data-main px-2.5 py-1 text-xs text-white"
+                    : "rounded-[.35rem] border border-line px-2.5 py-1 text-xs text-muted",
+                children: "Sắc thuế",
+              }),
+            ],
+          }),
+          S
+            ? k.jsx("p", {
+                className: "m-0 text-sm text-muted",
+                children: "Chưa có số liệu.",
+              })
+            : n === "scope"
+              ? k.jsxs("div", {
+                  className: "divide-y divide-line",
+                  children: [
+                    w.map((T) => k.jsx(eM, { w: T }, T.name)),
+                    i && b.map((T) => k.jsx(eM, { w: T }, T.name)),
+                  ],
+                })
+              : k.jsxs("div", {
+                  className:
+                    "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3",
+                  children: [
+                    g.map((T) => k.jsx(tM, { w: T }, T.name)),
+                    i && P.map((T) => k.jsx(tM, { w: T }, T.name)),
+                  ],
+                }),
+          E > 0 &&
+            k.jsx("button", {
+              type: "button",
+              onClick: () => o((T) => !T),
+              className: "mt-3 text-sm font-medium text-data-main",
+              children: i ? "Thu gọn ▴" : `Xem thêm ${E} phường/xã ▾`,
+            }),
+        ],
+      });
+}
+function qie() {
+  const { apiParams: e } = et(),
+    t = { ...e, ward: void 0 },
+    { data: n, loading: r, error: i } = At("/api/corrections", t, []);
+  return r || i
+    ? k.jsx(Yt, { loading: r, error: i })
+    : k.jsx(Ut, {
+        title: "Đính chính số liệu",
+        children: n.length
+          ? k.jsx("div", {
+              className: "grid gap-2",
+              children: n.map((o, u) =>
+                k.jsxs(
+                  "div",
+                  {
+                    className: "text-[.83rem]",
+                    children: [
+                      k.jsxs("div", {
+                        className: "font-semibold text-ink",
+                        children: [o.location_name, " — ", o.report_item_name],
+                      }),
+                      k.jsxs("div", {
+                        className: "text-muted",
+                        children: [
+                          He(o.old_amount),
+                          " → ",
+                          He(o.new_amount),
+                          " (v",
+                          o.version,
+                          ")",
+                        ],
+                      }),
+                    ],
+                  },
+                  u,
+                ),
+              ),
+            })
+          : k.jsx("p", {
+              className: "m-0 text-sm text-muted",
+              children: "Chưa có chỉ tiêu nào bị đính chính trong kỳ này.",
+            }),
+      });
+}
+function Uie({ wardRows: e, wardLoading: t, wardError: n }) {
+  const { apiParams: r } = et(),
+    i = { ...r, ward: void 0 },
+    { data: o, loading: u, error: l } = At("/api/by-item", i, []);
+  return k.jsxs(k.Fragment, {
+    children: [
+      k.jsx(aR, { scope: "overview" }),
+      k.jsx(Sw, { scope: "overview" }),
+      k.jsxs("div", {
+        className: "mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2",
+        children: [
+          k.jsx(Yt, {
+            loading: t,
+            error: n,
+            children: k.jsx(kie, { rows: e }),
+          }),
+          k.jsx(Yt, {
+            loading: u,
+            error: l,
+            children: k.jsx(uR, { itemRows: o }),
+          }),
+          k.jsx(lL, { scope: "overview" }),
+          k.jsx(Iie, {}),
+        ],
+      }),
+      k.jsxs("div", {
+        className: "mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2",
+        children: [k.jsx(Nie, {}), k.jsx(zie, {})],
+      }),
+      k.jsx("div", { className: "mt-4", children: k.jsx(Bie, {}) }),
+      k.jsx("div", { className: "mt-4", children: k.jsx(qie, {}) }),
+    ],
+  });
+}
+const nM = 40,
+  Wie = 210;
+function Hie(e) {
+  return e.length > nM ? `${e.slice(0, nM - 1)}…` : e;
+}
+function Vie(e) {
+  return `${e > 0 ? "+" : ""}${e.toFixed(1)}%`;
+}
+function rM({ title: e, rows: t, labelA: n, labelB: r, note: i }) {
+  return k.jsxs("div", {
+    className: "rounded-lg border border-line bg-card p-4",
+    "data-testid": "cmp-bars",
+    children: [
+      k.jsx("h3", {
+        className: "m-0 mb-2 text-[.85rem] uppercase tracking-wide text-muted",
+        "data-testid": "cmp-bars-title",
+        children: e,
+      }),
+      t.length
+        ? k.jsxs(k.Fragment, {
+            children: [
+              k.jsx(Cu, {
+                width: "100%",
+                height: Math.max(220, t.length * 44),
+                children: k.jsxs(MD, {
+                  data: t,
+                  layout: "vertical",
+                  margin: { top: 5, right: 20, left: 10, bottom: 5 },
+                  children: [
+                    k.jsx(Ru, {
+                      strokeDasharray: "3 3",
+                      stroke: "var(--line)",
+                    }),
+                    k.jsx(mi, {
+                      type: "number",
+                      tickFormatter: He,
+                      fontSize: 10,
+                      stroke: "var(--muted)",
+                    }),
+                    k.jsx(vi, {
+                      type: "category",
+                      dataKey: "name",
+                      width: Wie,
+                      tickFormatter: Hie,
+                      fontSize: 11,
+                      stroke: "var(--muted)",
+                    }),
+                    k.jsx(un, { formatter: (o) => He(o) }),
+                    k.jsx(Wi, {}),
+                    k.jsx(Mu, { x: 0, stroke: "var(--ink)" }),
+                    k.jsx(li, {
+                      dataKey: "a",
+                      name: n,
+                      fill: "var(--data-main)",
+                      radius: 2,
+                    }),
+                    k.jsx(li, {
+                      dataKey: "b",
+                      name: r,
+                      fill: "var(--data-cmp)",
+                      radius: 2,
+                    }),
+                  ],
+                }),
+              }),
+              i &&
+                k.jsx("p", {
+                  className: "m-0 mt-1 text-[.72rem] text-muted",
+                  "data-testid": "cmp-bars-note",
+                  children: i,
+                }),
+              k.jsx("div", {
+                className: "mt-2.5 grid gap-2",
+                "data-testid": "cmp-bars-list",
+                children: t.map((o) =>
+                  k.jsxs(
+                    "div",
+                    {
+                      className:
+                        "grid grid-cols-[1fr_auto] items-baseline gap-3 text-[.83rem]",
+                      "data-testid": "cmp-bars-row",
+                      "data-name": o.name,
+                      children: [
+                        k.jsx("div", {
+                          className: "min-w-0 truncate text-ink",
+                          title: o.name,
+                          "data-testid": "cmp-bars-name",
+                          children: o.name,
+                        }),
+                        k.jsxs("div", {
+                          className: "whitespace-nowrap text-right",
+                          title: `${n}: ${He(o.a)} → ${r}: ${He(o.b)}`,
+                          children: [
+                            k.jsxs("div", {
+                              children: [
+                                k.jsxs("span", {
+                                  className: Ro(
+                                    "font-medium",
+                                    o.delta > 0
+                                      ? "text-up"
+                                      : o.delta < 0
+                                        ? "text-down"
+                                        : "text-ink",
+                                  ),
+                                  "data-testid": "cmp-bars-delta",
+                                  children: [
+                                    o.delta > 0 ? "+" : "",
+                                    He(o.delta),
+                                  ],
+                                }),
+                                " ",
+                                k.jsx("span", {
+                                  className: Ro(
+                                    "text-[.76rem]",
+                                    o.pct === null || o.pct === 0
+                                      ? "text-muted"
+                                      : o.pct > 0
+                                        ? "text-up"
+                                        : "text-down",
+                                  ),
+                                  "data-testid": "cmp-bars-pct",
+                                  children: o.pct === null ? "—" : Vie(o.pct),
+                                }),
+                              ],
+                            }),
+                            o.shareA !== null &&
+                              o.shareB !== null &&
+                              k.jsxs("div", {
+                                className: "text-[.72rem] text-muted",
+                                "data-testid": "cmp-bars-share",
+                                children: [
+                                  o.shareA.toFixed(1),
+                                  "% → ",
+                                  o.shareB.toFixed(1),
+                                  "%",
+                                  o.points !== null &&
+                                    k.jsxs("b", {
+                                      className:
+                                        o.points >= 0 ? "text-up" : "text-down",
+                                      children: [
+                                        " ",
+                                        "(",
+                                        o.points >= 0 ? "+" : "",
+                                        o.points.toFixed(1),
+                                        " điểm)",
+                                      ],
+                                    }),
+                                ],
+                              }),
+                          ],
+                        }),
+                      ],
+                    },
+                    o.name,
+                  ),
+                ),
+              }),
+            ],
+          })
+        : k.jsx("p", {
+            className: "m-0 text-sm text-muted",
+            children: "Không có số liệu.",
+          }),
+    ],
+  });
+}
+function fL(e, t) {
+  return e === 0 ? null : ((t - e) / Math.abs(e)) * 100;
+}
+function iM(e, t) {
+  return t === 0 ? null : (e / t) * 100;
+}
+function Gs(e, t = 0.05) {
+  return e === null ? null : Math.abs(e) < t ? 0 : e;
+}
+function Gie(e, t) {
+  const n = e.findIndex((r) => r.location_code === t);
+  return n < 0 ? null : { rank: n + 1, total: e.length };
+}
+function oM(e, t, n, r) {
+  const i = new Map(e.map((l) => [l.name, l.amount])),
+    o = new Map(t.map((l) => [l.name, l.amount]));
+  return [...new Set([...i.keys(), ...o.keys()])]
+    .map((l) => {
+      const c = i.get(l) ?? 0,
+        f = o.get(l) ?? 0,
+        h = Gs(iM(c, n)),
+        p = Gs(iM(f, r));
+      return {
+        name: l,
+        a: c,
+        b: f,
+        delta: f - c,
+        pct: Gs(fL(c, f)),
+        shareA: h,
+        shareB: p,
+        points: h !== null && p !== null ? Gs(p - h) : null,
+      };
+    })
+    .sort((l, c) => Math.max(c.a, c.b) - Math.max(l.a, l.b));
+}
+function Kie(e, t) {
+  return !e || !t ? null : e.rank - t.rank;
+}
+function aM(e, t) {
+  const n = e.find((r) => r.location_code === t);
+  return {
+    amount: n && n.amount !== 0 ? n.amount : null,
+    rank: Gie(
+      e.filter((r) => r.amount !== 0),
+      t,
+    ),
+  };
+}
+function Yie(e) {
+  return `${e > 0 ? "+" : ""}${e.toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+}
+function uM({ label: e, side: t }) {
+  return k.jsxs("div", {
+    children: [
+      k.jsx("div", {
+        className: "text-[.75rem] uppercase tracking-wide text-muted",
+        children: e,
+      }),
+      k.jsx("div", {
+        className: "mt-0.5 whitespace-nowrap text-2xl font-semibold text-ink",
+        "data-testid": "cmp-amount",
+        children:
+          t.amount === null
+            ? k.jsx("span", {
+                className: "text-base font-normal text-muted",
+                children: "chưa có số liệu",
+              })
+            : He(t.amount),
+      }),
+      k.jsx("div", {
+        className: "mt-0.5 whitespace-nowrap text-[.76rem] text-muted",
+        "data-testid": "cmp-rank",
+        children: t.rank
+          ? `hạng ${t.rank.rank}/${t.rank.total}`
+          : "chưa có số liệu",
+      }),
+    ],
+  });
+}
+function Xie({ pA: e, pB: t, a: n, b: r }) {
+  var v, y;
+  const { ward: i } = et();
+  if (!i) return null;
+  if (n.error || r.error)
+    return k.jsxs("div", {
+      className: "rounded-lg border border-line bg-card p-4 text-sm text-muted",
+      children: [
+        "Không tải được số liệu để so sánh (",
+        n.error ?? r.error,
+        ").",
+      ],
+    });
+  if ((n.loading || r.loading) && !n.data.length && !r.data.length)
+    return k.jsx("div", {
+      className: "rounded-lg border border-line bg-card p-4 text-sm text-muted",
+      children: "Đang tải số liệu hai kỳ...",
+    });
+  const o = aM(n.data, i),
+    u = aM(r.data, i),
+    l = o.amount !== null && u.amount !== null,
+    c = l ? u.amount - o.amount : null,
+    f = l ? Gs(fL(o.amount, u.amount)) : null,
+    h = Kie(o.rank, u.rank),
+    p = o.rank !== null && u.rank !== null && o.rank.total !== u.rank.total;
+  return k.jsxs("div", {
+    className: "rounded-lg border border-line bg-card p-4",
+    "data-testid": "cmp-headline",
+    children: [
+      k.jsxs("div", {
+        className: "flex flex-wrap items-start gap-x-7 gap-y-4",
+        children: [
+          k.jsx(uM, { label: Co(e), side: o }),
+          k.jsx("div", {
+            className: "self-center text-xl text-muted",
+            "aria-hidden": "true",
+            children: "→",
+          }),
+          k.jsx(uM, { label: Co(t), side: u }),
+          k.jsxs("div", {
+            className: "border-line pl-0 sm:border-l sm:pl-7",
+            children: [
+              k.jsx("div", {
+                className: "text-[.75rem] uppercase tracking-wide text-muted",
+                children: "Chênh lệch",
+              }),
+              k.jsx("div", {
+                className: "mt-0.5 whitespace-nowrap text-2xl font-semibold",
+                "data-testid": "cmp-delta",
+                children:
+                  c === null
+                    ? k.jsx("span", {
+                        className: "text-base font-normal text-muted",
+                        children: "—",
+                      })
+                    : k.jsxs(k.Fragment, {
+                        children: [
+                          k.jsxs("span", {
+                            className: Ro(
+                              c > 0
+                                ? "text-up"
+                                : c < 0
+                                  ? "text-down"
+                                  : "text-ink",
+                            ),
+                            children: [c > 0 ? "+" : "", He(c)],
+                          }),
+                          " ",
+                          k.jsx("span", {
+                            className: Ro(
+                              "text-lg",
+                              f === null || f === 0
+                                ? "text-muted"
+                                : f > 0
+                                  ? "text-up"
+                                  : "text-down",
+                            ),
+                            "data-testid": "cmp-pct",
+                            children:
+                              f === null
+                                ? "—"
+                                : `${Yie(f)}${f > 0 ? " ▲" : f < 0 ? " ▼" : ""}`,
+                          }),
+                        ],
+                      }),
+              }),
+              k.jsx("div", {
+                className: "mt-0.5 whitespace-nowrap text-[.76rem]",
+                "data-testid": "cmp-rankdelta",
+                children:
+                  h === null
+                    ? k.jsx("span", {
+                        className: "text-muted",
+                        children: "chưa so được thứ hạng",
+                      })
+                    : h === 0
+                      ? k.jsx("span", {
+                          className: "text-muted",
+                          children: "giữ nguyên hạng",
+                        })
+                      : k.jsxs("span", {
+                          className: h > 0 ? "text-up" : "text-down",
+                          children: [
+                            h > 0 ? "▲" : "▼",
+                            " ",
+                            Math.abs(h),
+                            " bậc",
+                          ],
+                        }),
+              }),
+            ],
+          }),
+        ],
+      }),
+      p &&
+        k.jsxs("p", {
+          className: "m-0 mt-3 text-[.72rem] text-muted",
+          "data-testid": "cmp-basenote",
+          children: [
+            "Hai kỳ có số phường báo cáo khác nhau (",
+            (v = o.rank) == null ? void 0 : v.total,
+            " và ",
+            (y = u.rank) == null ? void 0 : y.total,
+            ") nên số bậc chỉ để tham khảo.",
+          ],
+        }),
+    ],
+  });
+}
+const Qie = [],
+  dL = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  Ow = "var(--data-main)",
+  Pw = "var(--data-cmp)";
+function sM(e) {
+  if (e.month) {
+    const t = Number(e.month);
+    return [t, t];
+  }
+  if (e.quarter) {
+    const t = Number(e.quarter);
+    return [t * 3 - 2, t * 3];
+  }
+  return [1, 12];
+}
+function pb(e, t) {
+  return e === t ? `T${e}` : `T${e}–T${t}`;
+}
+function lM(e, t) {
+  var r;
+  let n = -1;
+  for (let i = 0; i < e.length; i++) {
+    const o = (r = e[i]) == null ? void 0 : r[t];
+    o !== void 0 && o !== 0 && (n = i);
+  }
+  for (let i = n + 1; i < e.length; i++) {
+    const o = e[i];
+    o && delete o[t];
+  }
+}
+function Zie(e, t, n, r) {
+  const i = dL.map((o) => ({ month: o }));
+  for (const o of e) {
+    if (o.acc !== t) continue;
+    const u = i[o.month - 1];
+    u && (o.year === n && (u.a = o.amount), o.year === r && (u.b = o.amount));
+  }
+  return (lM(i, "a"), lM(i, "b"), i);
+}
+function Jie(e, t) {
+  const [n, r] = sM(e),
+    [i, o] = sM(t);
+  return n === i && r === o
+    ? [
+        {
+          key: "ab",
+          from: n,
+          to: r,
+          color: "var(--muted)",
+          text: `Cả hai kỳ: ${pb(n, r)} (trùng khoảng nên chỉ tô một vùng)`,
+        },
+      ]
+    : [
+        { key: "a", from: n, to: r, color: Ow, text: `${Co(e)}: ${pb(n, r)}` },
+        { key: "b", from: i, to: o, color: Pw, text: `${Co(t)}: ${pb(i, o)}` },
+      ];
+}
+function eoe({ pA: e, pB: t }) {
+  const { ward: n, acc: r, item: i } = et(),
+    {
+      data: o,
+      error: u,
+      loading: l,
+    } = At(n ? "/api/trend" : null, { item: i, ward: n }, Qie),
+    c = Number(e.year),
+    f = Number(t.year),
+    h = c === f,
+    p = M.useMemo(() => Zie(o, r, c, f), [o, r, c, f]),
+    v = M.useMemo(() => Jie(e, t), [e, t]),
+    y = p.some((S) => S.a !== void 0),
+    w = p.some((S) => S.b !== void 0),
+    b = p.some(
+      (S) => (S.a !== void 0 && S.a < 0) || (S.b !== void 0 && S.b < 0),
+    ),
+    g = r === "YTD" ? "luỹ kế từ đầu năm (YTD)" : "thực hiện trong kỳ",
+    P = `Diễn biến 12 tháng — ${h ? c : `${c} và ${f}`}`;
+  return u
+    ? k.jsx(Ut, {
+        title: P,
+        children: k.jsxs("p", {
+          className: "m-0 text-sm text-muted",
+          children: ["Không tải được số liệu 12 tháng (", u, ")."],
+        }),
+      })
+    : l && !o.length
+      ? k.jsx(Ut, {
+          title: P,
+          children: k.jsx("p", {
+            className: "m-0 text-sm text-muted",
+            children: "Đang tải số liệu 12 tháng...",
+          }),
+        })
+      : !y && !w
+        ? k.jsx(Ut, {
+            title: P,
+            children: k.jsxs("p", {
+              className: "m-0 text-sm text-muted",
+              "data-testid": "cmp-trend-empty",
+              children: [
+                "Phường/xã này không có tháng nào có số liệu trong",
+                " ",
+                h ? `năm ${c}` : `hai năm ${c} và ${f}`,
+                " (loại kỳ: ",
+                g,
+                ").",
+              ],
+            }),
+          })
+        : k.jsx(Ut, {
+            title: P,
+            children: k.jsxs("div", {
+              "data-testid": "cmp-trend",
+              children: [
+                k.jsx(Cu, {
+                  width: "100%",
+                  height: 280,
+                  children: k.jsxs(J1, {
+                    data: p,
+                    margin: { top: 10, right: 15, left: 5, bottom: 5 },
+                    children: [
+                      k.jsx(Ru, {
+                        strokeDasharray: "3 3",
+                        stroke: "var(--line)",
+                      }),
+                      k.jsx(mi, {
+                        type: "number",
+                        dataKey: "month",
+                        domain: [0.5, 12.5],
+                        ticks: dL,
+                        tickFormatter: (S) => `T${S}`,
+                        fontSize: 10,
+                        stroke: "var(--muted)",
+                      }),
+                      k.jsx(vi, {
+                        fontSize: 10,
+                        stroke: "var(--muted)",
+                        tickFormatter: He,
+                        width: 70,
+                      }),
+                      k.jsx(un, {
+                        formatter: (S) => He(S),
+                        labelFormatter: (S) => `Tháng ${S}`,
+                      }),
+                      v.map((S) =>
+                        k.jsx(
+                          Jl,
+                          {
+                            className: `cmp-band cmp-band-${S.key}`,
+                            x1: S.from - 0.5,
+                            x2: S.to + 0.5,
+                            ifOverflow: "hidden",
+                            fill: S.color,
+                            fillOpacity: 0.12,
+                            stroke: S.color,
+                            strokeOpacity: 0.35,
+                            strokeDasharray: "3 3",
+                          },
+                          S.key,
+                        ),
+                      ),
+                      b && k.jsx(Mu, { y: 0, stroke: "var(--ink)" }),
+                      y &&
+                        k.jsx(ci, {
+                          type: "monotone",
+                          dataKey: "a",
+                          name: String(c),
+                          stroke: Ow,
+                          strokeWidth: 2.5,
+                          dot: { r: 3.5 },
+                          connectNulls: !1,
+                        }),
+                      !h &&
+                        w &&
+                        k.jsx(ci, {
+                          type: "monotone",
+                          dataKey: "b",
+                          name: String(f),
+                          stroke: Pw,
+                          strokeWidth: 2.5,
+                          strokeDasharray: "5 4",
+                          dot: { r: 3.5 },
+                          connectNulls: !1,
+                        }),
+                    ],
+                  }),
+                }),
+                k.jsxs("div", {
+                  className:
+                    "mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[.76rem] text-muted",
+                  children: [
+                    k.jsxs("span", {
+                      className: "flex items-center gap-1.5",
+                      children: [
+                        k.jsx("i", {
+                          className: "inline-block h-2.5 w-2.5 rounded-full",
+                          style: { background: Ow },
+                        }),
+                        "Năm ",
+                        c,
+                        h ? " (cả hai kỳ)" : " (đường liền)",
+                      ],
+                    }),
+                    !h &&
+                      k.jsxs("span", {
+                        className: "flex items-center gap-1.5",
+                        children: [
+                          k.jsx("i", {
+                            className: "inline-block h-2.5 w-2.5 rounded-full",
+                            style: { background: Pw },
+                          }),
+                          "Năm ",
+                          f,
+                          " (đường đứt)",
+                        ],
+                      }),
+                    k.jsxs("span", { children: ["Số liệu: ", g] }),
+                  ],
+                }),
+                k.jsxs("div", {
+                  className:
+                    "mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[.72rem] text-muted",
+                  "data-testid": "cmp-trend-bands",
+                  children: [
+                    k.jsx("span", {
+                      children: "Vùng tô = khoảng tháng của kỳ:",
+                    }),
+                    v.map((S) =>
+                      k.jsx(
+                        "span",
+                        {
+                          "data-testid": "cmp-trend-band",
+                          "data-kind": S.key,
+                          "data-from": S.from,
+                          "data-to": S.to,
+                          children: S.text,
+                        },
+                        S.key,
+                      ),
+                    ),
+                  ],
+                }),
+                (!y || (!h && !w)) &&
+                  k.jsxs("p", {
+                    className: "m-0 mt-1 text-[.72rem] text-muted",
+                    "data-testid": "cmp-trend-missing-year",
+                    children: [
+                      "Năm ",
+                      y ? f : c,
+                      " không có tháng nào có số liệu cho phường/xã này.",
+                    ],
+                  }),
+              ],
+            }),
+          });
+}
+const toe = 0.9;
+function cM(e) {
+  return e.filter((t) => t.amount !== 0).length;
+}
+function noe({ pA: e, pB: t, a: n, b: r }) {
+  if (n.loading || r.loading || n.error || r.error) return null;
+  const i = cM(n.data),
+    o = cM(r.data);
+  if (i === o) return null;
+  const u = Math.min(i, o),
+    l = Math.max(i, o),
+    c = u < l * toe;
+  return k.jsxs("p", {
+    className: Ro(
+      "m-0 rounded-lg px-3 py-2 text-[.78rem]",
+      c ? "bg-amber-50 text-amber-900" : "text-muted",
+    ),
+    "data-testid": "cmp-coverage",
+    children: [
+      c && k.jsx("span", { "aria-hidden": "true", children: "⚠ " }),
+      Co(e),
+      " có ",
+      k.jsx("b", { children: i }),
+      " phường báo cáo, ",
+      Co(t),
+      " có ",
+      k.jsx("b", { children: o }),
+      ".",
+      c &&
+        " Chênh lệch dưới đây một phần là do thiếu dữ liệu, không phải sụt thu.",
+    ],
+  });
+}
+const fM =
+    "rounded-[.35rem] border border-line bg-card px-2 py-1.5 text-sm text-ink",
+  roe = "grid gap-1 text-[.78rem] text-muted";
+function dM(e, t) {
+  const n = t.filter((i) => String(i.year) === e),
+    r = (i, o) => o - i;
+  return {
+    hasYear: n.some((i) => i.period_type === "YEAR"),
+    quarters: n
+      .filter((i) => i.period_type === "QUARTER")
+      .map((i) => i.quarter)
+      .sort(r),
+    months: n
+      .filter((i) => i.period_type === "MONTH")
+      .map((i) => i.month)
+      .sort(r),
+  };
+}
+function ioe(e) {
+  return e ? (e.month ? `m${e.month}` : e.quarter ? `q${e.quarter}` : "y") : "";
+}
+function ooe(e, t) {
+  return t === "y"
+    ? { year: e }
+    : t.startsWith("q")
+      ? { year: e, quarter: t.slice(1) }
+      : t.startsWith("m")
+        ? { year: e, month: t.slice(1) }
+        : null;
+}
+function hM({ label: e, value: t, periods: n, onChange: r }) {
+  const i = Bi(t),
+    o = (i == null ? void 0 : i.year) ?? "",
+    u = ioe(i),
+    l = dM(o, n),
+    c = [...new Set(n.map((h) => h.year))].sort((h, p) => p - h);
+  function f(h) {
+    const p = dM(h, n),
+      v = ooe(h, u);
+    if (v && i2(n, v)) {
+      r(`${h}${u}`);
+      return;
+    }
+    const y = p.hasYear
+      ? "y"
+      : p.quarters.length
+        ? `q${p.quarters[0]}`
+        : p.months.length
+          ? `m${p.months[0]}`
+          : "";
+    y && r(`${h}${y}`);
+  }
+  return k.jsxs("div", {
+    className: "flex items-end gap-1.5",
+    children: [
+      k.jsxs("label", {
+        className: roe,
+        children: [
+          e,
+          k.jsx("select", {
+            className: fM,
+            value: o,
+            onChange: (h) => f(h.target.value),
+            children: c.map((h) =>
+              k.jsx("option", { value: h, children: h }, h),
+            ),
+          }),
+        ],
+      }),
+      k.jsxs("select", {
+        className: fM,
+        value: u,
+        onChange: (h) => r(`${o}${h.target.value}`),
+        "aria-label": `${e} — kỳ trong năm`,
+        children: [
+          l.hasYear && k.jsx("option", { value: "y", children: "Cả năm" }),
+          l.quarters.length > 0 &&
+            k.jsx("optgroup", {
+              label: "Theo quý",
+              children: l.quarters.map((h) =>
+                k.jsxs(
+                  "option",
+                  { value: `q${h}`, children: ["Quý ", h] },
+                  `q${h}`,
+                ),
+              ),
+            }),
+          l.months.length > 0 &&
+            k.jsx("optgroup", {
+              label: "Theo tháng",
+              children: l.months.map((h) =>
+                k.jsxs(
+                  "option",
+                  { value: `m${h}`, children: ["Tháng ", h] },
+                  `m${h}`,
+                ),
+              ),
+            }),
+        ],
+      }),
+    ],
+  });
+}
+const aoe =
+    "rounded-[.35rem] border border-line bg-card px-2 py-1.5 text-sm text-ink",
+  pM = [],
+  mM = [],
+  vM = [],
+  uoe = "loại trừ hoàn thuế";
+function yM(e) {
+  const t = e
+    .filter((n) => !n.name.includes(uoe))
+    .reduce((n, r) => n + r.amount, 0);
+  return t > 0 ? t : 0;
+}
+function gM(e) {
+  const t = e.find((n) => n.code === "NSNN");
+  return t && t.amount > 0 ? t.amount : 0;
+}
+function mb(e, t, n) {
+  const r = { year: e.year, acc: t, item: n };
+  return (
+    e.month ? (r.month = e.month) : e.quarter && (r.quarter = e.quarter),
+    r
+  );
+}
+function ja(e) {
+  const t = Bi(e);
+  return t ? Co(t) : "—";
+}
+function soe() {
+  const {
+      ward: e,
+      wardName: t,
+      selectWard: n,
+      periods: r,
+      acc: i,
+      item: o,
+      cmpa: u,
+      cmpb: l,
+      setCompare: c,
+    } = et(),
+    { wardCatalog: f } = et(),
+    [h, p] = M.useState(""),
+    [v, y] = M.useState("");
+  function w(L, F) {
+    !Bi(L) || !Bi(F) || c(L, F);
+  }
+  const b = M.useRef(!1);
+  M.useEffect(() => {
+    if (b.current || !r.length || !e) return;
+    b.current = !0;
+    const L = kz(r),
+      F = u || L.a,
+      W = l || L.b;
+    (p(F), y(W), F && W && w(F, W));
+  }, [r, e]);
+  const g = Bi(u),
+    P = Bi(l),
+    S = At(e && g ? "/api/by-ward" : null, g ? mb(g, i, o) : {}, pM),
+    E = At(e && P ? "/api/by-ward" : null, P ? mb(P, i, o) : {}, pM),
+    T = (L) => ({ ...mb(L, i, o), ward: e }),
+    _ = At(e && g ? "/api/by-item" : null, g ? T(g) : {}, mM),
+    A = At(e && P ? "/api/by-item" : null, P ? T(P) : {}, mM),
+    C = At(e && g ? "/api/by-scope" : null, g ? T(g) : {}, vM),
+    N = At(e && P ? "/api/by-scope" : null, P ? T(P) : {}, vM),
+    $ = oM(_.data, A.data, yM(_.data), yM(A.data)),
+    V = oM(C.data, N.data, gM(C.data), gM(N.data));
+  return e
+    ? k.jsxs("div", {
+        className: "grid gap-4",
+        children: [
+          k.jsxs("h2", {
+            className: "m-0 text-base font-semibold text-ink",
+            children: [(t ?? e).toUpperCase(), " — ", ja(u), " vs ", ja(l)],
+          }),
+          k.jsxs("div", {
+            className:
+              "flex flex-wrap items-end gap-3 rounded-lg border border-line bg-card p-3",
+            children: [
+              k.jsx(hM, { label: "Kỳ A", value: h, periods: r, onChange: p }),
+              k.jsx(hM, { label: "Kỳ B", value: v, periods: r, onChange: y }),
+              k.jsx("button", {
+                type: "button",
+                onClick: () => w(h, v),
+                disabled: !h || !v,
+                className:
+                  "rounded-[.35rem] bg-data-main px-3 py-1.5 text-sm text-white disabled:opacity-50",
+                children: "So sánh",
+              }),
+            ],
+          }),
+          g &&
+            P &&
+            k.jsxs(k.Fragment, {
+              children: [
+                k.jsx(noe, { pA: g, pB: P, a: S, b: E }),
+                k.jsx(Yt, {
+                  loading: S.loading || E.loading,
+                  error: S.error || E.error,
+                  children: k.jsx(Xie, { pA: g, pB: P, a: S, b: E }),
+                }),
+                k.jsxs("div", {
+                  className: "grid gap-4 xl:grid-cols-2",
+                  children: [
+                    k.jsx(Yt, {
+                      loading: _.loading || A.loading,
+                      error: _.error || A.error,
+                      children: k.jsx(rM, {
+                        title: "Theo chỉ tiêu",
+                        rows: $,
+                        labelA: ja(u),
+                        labelB: ja(l),
+                        note: 'Tỷ trọng trên tổng Thu NSNN — không phải trên con số ở đầu trang, vốn theo ô lọc Chỉ tiêu chung. Dòng "đã loại trừ hoàn thuế GTGT" là một tổng biến thể nên không nằm trong mẫu số, và tỷ trọng của nó gần 100%.',
+                      }),
+                    }),
+                    k.jsx(Yt, {
+                      loading: C.loading || N.loading,
+                      error: C.error || N.error,
+                      children: k.jsx(rM, {
+                        title: "Theo cấp ngân sách",
+                        rows: V,
+                        labelA: ja(u),
+                        labelB: ja(l),
+                        note: "Tỷ trọng tính trên NSNN. Sáu cấp không rời nhau (NSNN = NSTW + NSĐP; NSĐP = tỉnh + huyện + xã) nên các phần trăm dưới đây không cộng thành 100%.",
+                      }),
+                    }),
+                  ],
+                }),
+                k.jsx(eoe, { pA: g, pB: P }),
+              ],
+            }),
+        ],
+      })
+    : k.jsxs("div", {
+        className: "max-w-2xl rounded-lg border border-line bg-card p-5",
+        children: [
+          k.jsx("h2", {
+            className: "m-0 mb-1.5 text-base font-semibold text-ink",
+            children: "Chọn một phường/xã để bắt đầu so sánh",
+          }),
+          k.jsx("p", {
+            className: "m-0 mb-3 text-sm text-muted",
+            children:
+              "Trang này so sánh CÙNG MỘT địa bàn ở hai kỳ khác nhau — ví dụ Quý 3/2025 với Quý 3/2026.",
+          }),
+          k.jsxs("select", {
+            className: aoe,
+            value: "",
+            "aria-label": "Chọn phường/xã",
+            onChange: (L) => n(L.target.value || null),
+            children: [
+              k.jsx("option", { value: "", children: "— Chọn phường/xã —" }),
+              f.map((L) =>
+                k.jsx(
+                  "option",
+                  { value: L.location_code, children: L.location_name },
+                  L.location_code,
+                ),
+              ),
+            ],
+          }),
+        ],
+      });
+}
+function loe() {
+  const { apiParams: e, tab: t, district: n } = et(),
+    r = { ...e };
+  delete r.ward;
+  const {
+    data: i,
+    error: o,
+    loading: u,
+  } = At(t === "compare" || n ? null : "/api/by-ward", r, []);
+  return {
+    rows: M.useMemo(() => i.filter((c) => c.amount !== 0), [i]),
+    error: o,
+    loading: u,
+  };
+}
+const vb =
+  "rounded-t-[.5rem] border border-b-2 border-line border-b-transparent bg-card px-4 py-2 text-[.85rem] font-semibold text-muted cursor-pointer data-[state=active]:text-data-main data-[state=active]:border-b-data-main data-[state=active]:bg-bg";
+function coe() {
+  const e = et(),
+    { rows: t, loading: n, error: r } = loe();
+  return k.jsxs(k.Fragment, {
+    children: [
+      k.jsx(R6, {}),
+      k.jsx(_z, {}),
+      k.jsxs("div", {
+        className: "grid gap-4 p-4 md:p-5",
+        children: [
+          k.jsx(j6, {}),
+          e.catalogError &&
+            k.jsxs("div", {
+              role: "alert",
+              className:
+                "rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900",
+              children: [
+                "Không tải được dữ liệu dashboard. Vui lòng thử lại. ",
+                k.jsx("button", {
+                  className: "underline",
+                  onClick: () => window.location.reload(),
+                  children: "Tải lại danh mục",
+                }),
+              ],
+            }),
+          k.jsx(M6, {}),
+          !n && !r && k.jsx(I6, { nWithData: t.length }),
+          k.jsxs(xz, {
+            value: e.tab,
+            onValueChange: (i) => e.switchTab(i),
+            children: [
+              k.jsxs(wz, {
+                className: "mb-4 flex gap-1.5",
+                children: [
+                  k.jsx(Ym, {
+                    value: "overview",
+                    className: vb,
+                    children: "Overview",
+                  }),
+                  k.jsx(Ym, {
+                    value: "detail",
+                    className: vb,
+                    children: "Chi tiết địa bàn",
+                  }),
+                  k.jsx(Ym, {
+                    value: "compare",
+                    className: vb,
+                    children: "So sánh hai kỳ",
+                  }),
+                ],
+              }),
+              k.jsx(Xm, {
+                value: "overview",
+                children: k.jsx(Uie, {
+                  wardRows: t,
+                  wardLoading: n,
+                  wardError: r,
+                }),
+              }),
+              k.jsx(Xm, {
+                value: "detail",
+                children: k.jsx(Tie, {
+                  wardRows: t,
+                  wardLoading: n,
+                  wardError: r,
+                }),
+              }),
+              k.jsx(Xm, { value: "compare", children: k.jsx(soe, {}) }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+}
+y3.createRoot(document.getElementById("root")).render(
+  k.jsx(M.StrictMode, {
+    children: k.jsx(Oz, { children: k.jsx(Mz, { children: k.jsx(coe, {}) }) }),
+  }),
+);

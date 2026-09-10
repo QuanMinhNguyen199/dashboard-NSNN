@@ -1,0 +1,44 @@
+# Mục lục ảnh khảo sát
+
+Ảnh desktop 1440×1000 trừ các ảnh có tiền tố tablet (1024×900), mobile (390×844). Hai ảnh expanded chỉ chụp viewport; các ảnh còn lại chụp full page. JSON cùng tên ghi lại text và URL.
+
+- [01-overview](screenshots/01-overview.png) — [state](states/01-overview.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&tab=overview
+- [02-quarter2](screenshots/02-quarter2.png) — [state](states/02-quarter2.json) — https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&acc=PERIOD&item=tong-so&tab=overview
+- [03-quarter2-month5](screenshots/03-quarter2-month5.png) — [state](states/03-quarter2-month5.json) — https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=PERIOD&item=tong-so&tab=overview
+- [04-month5-ytd](screenshots/04-month5-ytd.png) — [state](states/04-month5-ytd.json) — https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=YTD&item=tong-so&tab=overview
+- [05-item-thu-nsnn](screenshots/05-item-thu-nsnn.png) — [state](states/05-item-thu-nsnn.json) — https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=YTD&item=thu-nsnn&tab=overview
+- [06-item-net-total](screenshots/06-item-net-total.png) — [state](states/06-item-net-total.json) — https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=YTD&item=tong-so-tru-hoan-thue&tab=overview
+- [07-aug-overview](screenshots/07-aug-overview.png) — [state](states/07-aug-overview.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [08-trend-modal](screenshots/08-trend-modal.png) — [state](states/08-trend-modal.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [09-ranking-growth](screenshots/09-ranking-growth.png) — [state](states/09-ranking-growth.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [10-ranking-stability](screenshots/10-ranking-stability.png) — [state](states/10-ranking-stability.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [11-ranking-modal](screenshots/11-ranking-modal.png) — [state](states/11-ranking-modal.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [12-tax-composition](screenshots/12-tax-composition.png) — [state](states/12-tax-composition.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [13-historical-2024](screenshots/13-historical-2024.png) — [state](states/13-historical-2024.json) — https://dev-nsnn.thehegeo.com/?year=2024&acc=PERIOD&item=tong-so&tab=detail
+- [14-historical-district](screenshots/14-historical-district.png) — [state](states/14-historical-district.json) — https://dev-nsnn.thehegeo.com/?year=2024&acc=PERIOD&item=tong-so&district=hoan-kiem&tab=detail
+- [15-mixed-2025](screenshots/15-mixed-2025.png) — [state](states/15-mixed-2025.json) — https://dev-nsnn.thehegeo.com/?year=2025&acc=PERIOD&item=tong-so&tab=detail
+- [16-june2025](screenshots/16-june2025.png) — [state](states/16-june2025.json) — https://dev-nsnn.thehegeo.com/?year=2025&month=6&acc=PERIOD&item=tong-so&tab=detail
+- [17-july2025](screenshots/17-july2025.png) — [state](states/17-july2025.json) — https://dev-nsnn.thehegeo.com/?year=2025&month=7&acc=PERIOD&item=tong-so&tab=detail
+- [18-detail-ward](screenshots/18-detail-ward.png) — [state](states/18-detail-ward.json) — https://dev-nsnn.thehegeo.com/?year=2025&month=7&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail
+- [19-no-data](screenshots/19-no-data.png) — [state](states/19-no-data.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=12&acc=PERIOD&item=tong-so&tab=overview
+- [20-invalid-url](screenshots/20-invalid-url.png) — [state](states/20-invalid-url.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=detail
+- [21-dismiss-notice](screenshots/21-dismiss-notice.png) — [state](states/21-dismiss-notice.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=detail
+- [22-compare-empty](screenshots/22-compare-empty.png) — [state](states/22-compare-empty.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&tab=compare
+- [23-compare-default](screenshots/23-compare-default.png) — [state](states/23-compare-default.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m9&cmpb=2026m9
+- [24-compare-draft](screenshots/24-compare-draft.png) — [state](states/24-compare-draft.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m9&cmpb=2026m9
+- [25-compare-aug](screenshots/25-compare-aug.png) — [state](states/25-compare-aug.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8
+- [26-compare-ytd](screenshots/26-compare-ytd.png) — [state](states/26-compare-ytd.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=YTD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8
+- [27-compare-q3](screenshots/27-compare-q3.png) — [state](states/27-compare-q3.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=YTD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025q3&cmpb=2026q3
+- [28-detail-hoankiem](screenshots/28-detail-hoankiem.png) — [state](states/28-detail-hoankiem.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail
+- [29-reset-zoom](screenshots/29-reset-zoom.png) — [state](states/29-reset-zoom.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail
+- [30-refresh](screenshots/30-refresh.png) — [state](states/30-refresh.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail
+- [31-ranking-expanded](screenshots/31-ranking-expanded.png) — [state](states/31-ranking-expanded.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [32-composition-expanded](screenshots/32-composition-expanded.png) — [state](states/32-composition-expanded.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview
+- [33-compare-same-year](screenshots/33-compare-same-year.png) — [state](states/33-compare-same-year.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2026m7&cmpb=2026m8
+- [34-compare-annual](screenshots/34-compare-annual.png) — [state](states/34-compare-annual.json) — https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2024y&cmpb=2025y
+- [tablet-overview](screenshots/tablet-overview.png) — [state](states/tablet-overview.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=overview&cmpa=2025m8&cmpb=2026m8
+- [tablet-detail](screenshots/tablet-detail.png) — [state](states/tablet-detail.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail&cmpa=2025m8&cmpb=2026m8
+- [tablet-compare](screenshots/tablet-compare.png) — [state](states/tablet-compare.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8
+- [mobile-overview](screenshots/mobile-overview.png) — [state](states/mobile-overview.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=overview&cmpa=2025m8&cmpb=2026m8
+- [mobile-detail](screenshots/mobile-detail.png) — [state](states/mobile-detail.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail&cmpa=2025m8&cmpb=2026m8
+- [mobile-compare](screenshots/mobile-compare.png) — [state](states/mobile-compare.json) — https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8

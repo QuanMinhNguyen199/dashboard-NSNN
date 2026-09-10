@@ -1,0 +1,257 @@
+/* =============================================================================
+   Hệ thống thiết kế dùng chung — Corporate (chính) · Geometric · Flat
+   -----------------------------------------------------------------------------
+   Nạp SAU index-C1Ij_FY5.css (CSS gốc của website) và TRƯỚC overview.css.
+   Nhiệm vụ:
+     1. Định nghĩa một bộ token duy nhất cho cả ba tab.
+     2. Ánh xạ các biến của CSS legacy về đúng bộ token đó, để hai tab dựng theo
+        Tailwind của bản gốc tự động dùng chung bảng màu, không phải sửa markup.
+     3. Đưa tiêu đề thẻ, dải KPI và danh sách thanh của tab legacy về đúng công
+        thức của Overview.
+
+   Nguyên tắc màu — "một tông xanh mang dữ liệu":
+     · Xanh thể chế mang MỌI dữ liệu định lượng, phân biệt bằng độ đậm nhạt.
+     · Xanh lá / đỏ CHỈ mang chiều biến động, luôn đi kèm mũi tên hoặc dấu.
+     · Trung tính mang cấu trúc. Không có màu trang trí nào khác.
+   ============================================================================= */
+
+:root {
+  /* ——— Nền và bề mặt ——————————————————————————————————————————————— */
+  --canvas: #f2f5f9;
+  --surface: #ffffff;
+  --surface-sunken: #f7f9fc;
+  --hairline: #dbe3ed;
+  --divider: #eaeff6;
+
+  /* ——— Mực ——————————————————————————————————————————————————————— */
+  --ink: #16263c;
+  --ink-2: #5a6b80;
+  --ink-3: #8496aa;
+
+  /* ——— Thể chế ————————————————————————————————————————————————————— */
+  --navy: #0e2a47;
+  --navy-ink: #d3e1f0;
+
+  /* ——— Thang xanh dữ liệu (đã kiểm định: đơn sắc, độ sáng đơn điệu,
+         khoảng cách ΔL ≥ 0.06, đầu nhạt đạt 2,11:1 trên nền trắng) ————— */
+  --blue-050: #eef4fc;
+  --blue-100: #dbe8f8;
+  --blue-250: #86b6ef;
+  --blue-350: #5598e7;
+  --blue-450: #2a78d6;
+  --blue-550: #1c5cab;
+  --blue-700: #0d366b;
+
+  /* ——— Vai trò dữ liệu ————————————————————————————————————————————— */
+  --brand: #1657a8;              /* hành động, tab đang chọn, chuỗi chính   */
+  --data-primary: var(--brand);
+  --data-secondary: #3987e5;     /* thanh dữ liệu, lát thứ hai của donut    */
+  --data-family: var(--blue-250);/* cùng họ số liệu: YTD, NSĐP, Kỳ A        */
+  --data-reference: #8c9bae;     /* mốc tham chiếu trung tính: cùng kỳ N−1  */
+  --data-track: #e7edf5;         /* rãnh nền của thanh                      */
+
+  /* ——— Ngữ nghĩa: chỉ dùng cho chiều biến động ————————————————————— */
+  --pos: #187044;
+  --neg: #b3352f;
+
+  /* ——— Ghi chú xuất xứ dữ liệu (không phải trạng thái lỗi) ————————— */
+  --note-ink: #7a5a12;
+  --note-surface: #fdf5dd;
+  --note-line: #eeddad;
+
+  /* ——— Hình học: bán kính giảm dần theo cấp ————————————————————————— */
+  --r-surface: 10px;
+  --r-control: 6px;
+  --r-chip: 4px;
+  --r-bar: 2px;
+
+  /* ——— Nhịp 4px ————————————————————————————————————————————————————— */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+
+  /* ——— Ánh xạ biến của CSS legacy về cùng bộ token ————————————————— */
+  --bg: var(--canvas);
+  --card: var(--surface);
+  --muted: var(--ink-2);
+  --line: var(--hairline);
+  --accent: var(--brand);
+  --data-main: var(--data-primary);
+  --data-sub: var(--data-secondary);
+  --data-sub-bg: var(--data-track);
+  --data-cmp: var(--data-family);
+  --up: var(--pos);
+  --down: var(--neg);
+
+  /* Thang 5 bậc của bản đồ. Bản gốc dùng đỏ→cam→vàng→lá→xanh lá: một thang
+     cầu vồng cho đại lượng liên tục, khiến ~120 phường rơi vào bậc đỏ và cả
+     bản đồ đọc như cảnh báo. Thay bằng đơn sắc nhạt→đậm = thấp→cao. */
+  /* Ghi thẳng giá trị hex: bản đồ đọc các bậc này bằng getPropertyValue rồi đưa
+     vào d3, và d3 chỉ nội suy được màu khi nhận giá trị màu thật. */
+  --m1: #86b6ef;
+  --m2: #5598e7;
+  --m3: #2a78d6;
+  --m4: #1c5cab;
+  --m5: #0d366b;
+  --nodata: #e5eaf1;
+}
+
+/* ——— Bề mặt trình duyệt: những phần không tự vẽ vẫn phải mang hệ màu ——— */
+::selection { background: var(--blue-100); color: var(--navy); }
+:where(button, select, input, a, [tabindex]):focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--r-chip);
+}
+* { scrollbar-color: #c3cedd var(--canvas); scrollbar-width: thin; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--canvas); }
+::-webkit-scrollbar-thumb { background: #c3cedd; border: 3px solid var(--canvas); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #a9b8cb; }
+
+body { font-variant-numeric: tabular-nums; }
+
+/* =============================================================================
+   Hợp nhất hai tab dựng theo Tailwind của bản gốc
+   -----------------------------------------------------------------------------
+   Các quy tắc dưới đây nằm sau CSS gốc nên thắng ở cùng độ đặc hiệu. Chúng chỉ
+   chỉnh công thức trình bày (bán kính, tiêu đề, dải KPI, thanh dữ liệu) và
+   không đụng tới cấu trúc lưới hay hành vi.
+   ============================================================================= */
+
+.legacy-workspace .rounded-lg { border-radius: var(--r-surface); }
+.legacy-workspace .rounded { border-radius: var(--r-control); }
+
+/* Tiêu đề thẻ: bản gốc dùng chữ hoa, giãn chữ, màu mờ ở 13,6px. Overview dùng
+   chữ thường 15px/700 màu mực chính. Bỏ text-transform là chuỗi nguồn trở về
+   đúng dạng câu vì bản gốc vốn viết thường trong JSX. */
+.legacy-workspace h2.uppercase,
+.legacy-workspace h3.uppercase {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+/* Nhãn nhỏ trong thẻ cũng thôi viết hoa toàn bộ — trừ định danh đã hoa sẵn
+   trong chuỗi nguồn (NSNN, NSTW, NSĐP) vốn không đi qua text-transform. */
+.legacy-workspace .uppercase { text-transform: none; }
+
+/* ——— Dải KPI: bốn ô rời của bản gốc gộp thành một khối liền ——————————— */
+.nsnn-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: var(--s3);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-surface);
+  overflow: hidden;
+}
+.nsnn-kpi {
+  min-width: 0;
+  padding: var(--s3) var(--s4);
+  border: 0;
+  border-left: 1px solid var(--hairline);
+  border-radius: 0;
+  background: none;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+}
+.nsnn-kpi:first-child { border-left: 0; }
+.nsnn-kpi .nsnn-kpi-label { color: var(--ink-2); font-size: 11px; font-weight: 650; letter-spacing: 0; }
+.nsnn-kpi .nsnn-kpi-value { color: var(--ink); font-size: 23px; font-weight: 700; line-height: 1.25; letter-spacing: -0.025em; }
+.nsnn-kpi .nsnn-kpi-sub { color: var(--ink-2); font-size: 11px; }
+
+/* ——— Danh sách thanh: cùng rãnh, cùng bán kính, cùng chiều cao ————————— */
+.nsnn-barlist > div { padding-block: 2px; }
+.nsnn-barlist .nsnn-bar-track {
+  height: 4px;
+  margin-top: 5px;
+  background: var(--data-track);
+  border-radius: var(--r-bar);
+  overflow: hidden;
+}
+.nsnn-barlist .nsnn-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--data-secondary);
+  border-radius: var(--r-bar);
+}
+
+/* ——— Thẻ legacy: bỏ đường viền kép và đồng bộ padding tiêu đề ————————— */
+.nsnn-card { border-radius: var(--r-surface); }
+.nsnn-card > .mb-2\.5 { margin-bottom: var(--s2); }
+
+/* ——— Bảng xếp hạng theo tháng: sparkline dùng đúng tông chuỗi chính ——— */
+.legacy-workspace svg path[stroke="var(--data-main)"] { stroke: var(--data-primary); }
+
+/* =============================================================================
+   Thanh phạm vi dùng chung cho cả ba tab
+   ============================================================================= */
+.scope-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  flex-wrap: wrap;
+  padding: var(--s2) var(--s3);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-surface);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.scope-bar b { color: var(--ink); font-weight: 650; }
+.scope-bar .scope-sep { width: 1px; align-self: stretch; background: var(--hairline); }
+.scope-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 var(--s2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 650;
+}
+.scope-back:hover { background: var(--blue-050); border-color: var(--blue-250); }
+.scope-note { margin-left: auto; color: var(--ink-3); }
+
+/* Dấu hiệu phạm vi: hình vuông bo nhẹ, không phải chấm tròn — geometric. */
+.scope-mark {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--brand);
+}
+.scope-mark[data-scope="ward"] { background: var(--blue-450); }
+
+@media (max-width: 767px) {
+  .nsnn-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nsnn-kpi { border-top: 1px solid var(--hairline); }
+  .nsnn-kpi:nth-child(-n + 2) { border-top: 0; }
+  .nsnn-kpi:nth-child(odd) { border-left: 0; }
+  .nsnn-kpi .nsnn-kpi-value { font-size: 19px; }
+  .scope-note { margin-left: 0; width: 100%; }
+}
+
+/* Khe của thanh phạm vi — nằm giữa tab và bộ lọc trên cả ba tab. */
+.scope-slot { padding-top: var(--s4); }
+
+/* Thẻ trong lưới tự cao theo nội dung. Trước đây một thẻ rỗng ("Theo cấp ngân
+   sách" khi thiếu dòng NSDP) bị kéo cao bằng biểu đồ bên cạnh, để lại một mảng
+   trắng cao hơn 300px giữa trang. */
+.legacy-workspace .grid { align-items: start; }
+
+/* Trạng thái rỗng nằm gọn thay vì chiếm cả ô lưới. */
+.legacy-workspace .nsnn-card > p.text-sm { padding-bottom: var(--s1); }
+
+/* Khe cảnh báo: chỉ chiếm chỗ khi thật sự có nội dung. */
+.notice-slot:not(:empty) { display: grid; gap: var(--s3); padding-top: var(--s4); }

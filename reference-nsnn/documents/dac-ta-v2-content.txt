@@ -1,0 +1,1112 @@
+Đặc tả v2
+1. TÓM TẮT 4 TAB
+
+Tab
+
+	
+
+Tên
+
+	
+
+Phạm vi dữ liệu
+
+	
+
+Nội dung
+
+
+
+
+1
+
+	
+
+Tổng quan
+
+	
+
+Chỉ toàn TP
+
+	
+
+4 KPI · Xu hướng · Cơ cấu nguồn thu · Cơ cấu cấp NS · Top 5 khoản thu · Top 5 địa bàn ×2
+
+
+
+
+2
+
+	
+
+Phân tích thu
+
+	
+
+Chỉ toàn TP
+
+	
+
+① Thu nội địa · ② Thu XNK · ③ Thu khác
+
+
+
+
+3
+
+	
+
+Chi tiết địa bàn
+
+	
+
+1 phường/xã
+
+	
+
+Card xếp hạng + Tab 1 & 2 thu gọn (bỏ XNK và dầu thô)
+
+
+
+
+4
+
+	
+
+So sánh nâng cao
+
+	
+
+Linh hoạt
+
+	
+
+So nhiều kỳ / nhiều địa bàn · Waterfall · Bất thường
+
+1.1. Quy tắc phạm vi dữ liệu
+
+Lý do: Tab 1 và 2 chứa chỉ tiêu không tồn tại ở cấp phường/xã (thu XNK, dầu thô, xếp hạng địa bàn). Tách phạm vi để tránh hiển thị hàng loạt số 0 gây hiểu nhầm.
+
+flowchart TD
+    F["Bộ lọc F4 — Phạm vi địa bàn"] --> Q{"Người dùng chọn gì?"}
+    Q -->|"Toàn thành phố"| TP["Tab 1 + Tab 2 hoạt động<br/>Tab 3 hiện: 'Chọn một phường/xã để xem chi tiết'"]
+    Q -->|"1 phường/xã"| PX["TỰ ĐỘNG chuyển sang Tab 3<br/>Tab 1 + Tab 2 bị disable"]
+    PX -->|"Đổi lại về Toàn thành phố"| TP
+    PX -.->|"Ngoại lệ: Tab 4 không bị ép chuyển"| T4["Tab 4 luôn truy cập được"]
+1.2. Sơ đồ điều hướng
+flowchart LR
+    subgraph T1["TAB 1 — Tổng quan"]
+        CC["Cơ cấu nguồn thu"]
+        TOP["Top 5 khoản thu nội địa"]
+        DB1["Top 5 địa bàn cao/thấp"]
+        DB2["Top 5 địa bàn tăng/giảm"]
+    end
+    subgraph T2["TAB 2 — Phân tích thu"]
+        P1["① Thu nội địa"]
+        P2["② Thu XNK"]
+        P3["③ Thu khác"]
+    end
+    T3["TAB 3<br/>Chi tiết 1 phường/xã"]
+    T4["TAB 4<br/>So sánh nâng cao"]
+
+    CC -->|"click Thu nội địa"| P1
+    CC -->|"click Thu XNK"| P2
+    CC -->|"click Thu khác"| P3
+    TOP -->|"Xem tất cả → BXH 21 khoản"| P1
+    DB1 -->|"click 1 địa bàn"| T3
+    DB2 -->|"click 1 địa bàn"| T3
+    T3 -->|"So sánh với địa bàn khác"| T4
+    P1 -->|"click 1 cột waterfall"| T4
+2. BỘ LỌC TOÀN TRANG
+
+Thanh sticky trên đỉnh, hiện ở cả 4 tab.
+
+Mã
+
+	
+
+Bộ lọc
+
+	
+
+Kiểu
+
+	
+
+Giá trị
+
+	
+
+Mặc định
+
+
+
+
+F1
+
+	
+
+Năm báo cáo
+
+	
+
+Dropdown
+
+	
+
+Niên độ có dữ liệu
+
+	
+
+Năm hiện tại
+
+
+
+
+F2
+
+	
+
+Kỳ báo cáo
+
+	
+
+Segment Tháng | Quý + dropdown
+
+	
+
+Tháng 1–12 / Quý 1–4
+
+	
+
+Kỳ mới nhất có dữ liệu
+
+
+
+
+F3
+
+	
+
+Chế độ số liệu
+
+	
+
+Segment
+
+	
+
+Trong kỳ / Lũy kế
+
+	
+
+Trong kỳ
+
+
+
+
+F4
+
+	
+
+Phạm vi địa bàn
+
+	
+
+Dropdown có search
+
+	
+
+Toàn TP + 126 phường/xã
+
+	
+
+Toàn thành phố
+
+
+
+
+F5
+
+	
+
+Cấp ngân sách
+
+	
+
+Dropdown
+
+	
+
+Tổng NSNN / NSTW / NSĐP
+
+	
+
+Tổng NSNN
+
+Quy tắc
+
+Cascade — đổi bộ lọc nào cũng tính lại toàn bộ widget của tab hiện tại.
+
+F4 điều khiển chuyển tab theo sơ đồ 1.1. Danh sách F4 không còn cấp Quận/Huyện (đã bãi bỏ sau sắp xếp 2025).
+
+Kỳ Quý (F2): ưu tiên dùng file dữ liệu quý riêng (kết xuất từ tháng 01→03, 04→06…). Nếu kỳ quý chưa có file → tự động cộng 3 tháng thành phần và gắn nhãn ⓘ "Số cộng dồn từ 3 tháng — chưa đối chiếu báo cáo quý chính thức".
+
+Định nghĩa "cùng kỳ" — dùng CHUNG một hàm, cấm mỗi widget tự tính:
+
+Chế độ
+
+	
+
+Kỳ hiện tại
+
+	
+
+So với
+
+
+
+
+Trong kỳ · Tháng
+
+	
+
+T12/2025
+
+	
+
+T12/2024
+
+
+
+
+Lũy kế · Tháng
+
+	
+
+T1–T12/2025
+
+	
+
+T1–T12/2024
+
+
+
+
+Trong kỳ · Quý
+
+	
+
+Q2/2025
+
+	
+
+Q2/2024
+
+
+
+
+Lũy kế · Quý
+
+	
+
+Q1–Q2/2025
+
+	
+
+Q1–Q2/2024
+
+Mốc so sánh mặc định là YoY (cùng kỳ năm trước), không phải MoM. MoM chỉ là tùy chọn phụ ở Tab 4.
+
+Deep-link: ?tab=1&year=2025&period=M12&mode=TRONG_KY&area=TOAN_TP&level=NSNN
+
+3. TAB 1 — TỔNG QUAN (chỉ toàn TP)
+block-beta
+columns 4
+  K1["KPI 1<br/>Tổng thu trong kỳ"] K2["KPI 2<br/>Lũy kế YTD"] K3["KPI 3"] K4["KPI 4"]
+  XH["3.2 — XU HƯỚNG THU (line kép N vs N−1)"]:4
+  CC["3.3 — CƠ CẤU NGUỒN THU TỔNG THỂ"]:2 CNS["3.4 — CƠ CẤU THEO CẤP NGÂN SÁCH"]:2
+  TOP["3.5 — TOP 5 KHOẢN THU NỘI ĐỊA (Xem tất cả →)"]:4
+  DB1["3.6 — TOP 5 ĐỊA BÀN<br/>Cao nhất / Thấp nhất"]:2 DB2["3.7 — TOP 5 ĐỊA BÀN<br/>Tăng mạnh / Giảm mạnh"]:2
+3.1. Bốn thẻ KPI
+
+Card 1: Tổng thu trong kỳ
+
+Giá trị chính: Số tiền thu phát sinh trong kỳ được chọn
+
+Nguồn ánh xạ: Dòng 17, Cột C (Sheet Biểu báo cáo)
+
+Micro-metric bên dưới (YoY): Tỷ lệ tăng/giảm so với cùng kỳ tháng năm trước.
+
+Quy tắc hiển thị: Tăng hiển thị mũi tên xanh lá ↑ +X.X%, giảm hiển thị mũi tên đỏ ↓ -X.X%. Nếu không có số liệu cùng kỳ để tính toán thì hiển thị dấu -
+
+Card 2: Lũy kế Tổng thu (YTD)
+
+Giá trị chính: Số tiền lũy kế từ đầu năm đến hết kỳ báo cáo
+
+Nguồn ánh xạ: Dòng 17, Cột I (Sheet Biểu báo cáo)
+
+Micro-metric bên dưới (YoY): Tỷ lệ tăng/giảm lũy kế so với cùng kỳ năm trước
+
+Quy tắc hiển thị: Hiển thị nhãn ↑ +X.X% hoặc ↓ -X.X% so với cùng kỳ năm trước
+
+
+
+
+Card 3+ 4 gộp lại làm cảnh báo
+
+
+
+
+3.2. Xu hướng thu
+
+Line kép: đường liền = năm N, đường đứt = N−1; 12 điểm theo tháng, 
+
+Tháng chưa có dữ liệu → ngắt đường, không nối thẳng, không vẽ điểm 0.
+
+3.3. Cơ cấu nguồn thu tổng thể ⭐
+
+Bar ngang 4 dòng, sắp giảm dần: Tên | Số tiền | Tỷ trọng | %YoY | ↑↓
+
+Dòng
+
+	
+
+Mã
+
+	
+
+Click →
+
+
+
+
+Thu nội địa
+
+	
+
+I
+
+	
+
+Tab 2 ①
+
+
+
+
+Thu xuất nhập khẩu
+
+	
+
+III
+
+	
+
+Tab 2 ②
+
+
+
+
+Thu dầu thô
+
+	
+
+II
+
+	
+
+panel chi tiết tại chỗ
+
+
+
+
+Thu khác
+
+	
+
+IV+V+VI+VII+VIII
+
+	
+
+Tab 2 ③ (đủ 5 nguồn)
+
+
+
+
+Cộng
+
+	
+
+
+
+
+	
+
+
+
+
+Quy tắc gộp/ròng [MUST] — điểm dễ sai nhất:
+
+Widget dùng số RÒNG cho Thu XNK →  "% trên Thu NSNN đã loại trừ hoàn thuế GTGT".
+
+Thẻ KPI 2 vẫn hiện mục A kèm sub-label "Đã loại trừ hoàn thuế GTGT".
+
+Panel Thu dầu thô (không có phần riêng ở Tab 2): giá trị · %YoY · 2 dòng con (1 theo hiệp định/hợp đồng, 2 Condensate).
+
+3.4. Cơ cấu theo cấp ngân sách
+
+
+
+
+3.5. Top 5 khoản thu nội địa
+
+Tập dữ liệu : 21 khoản 1.1, 1.2, 2, 3, 4, 5 … 20. 
+
+Cột: Tên khoản | Số tiền | % thu nội địa | %YoY | ↑↓
+
+Nút [Xem tất cả →] → Tab 2 ①, cuộn tới BXH đầy đủ 21 khoản. Click 1 dòng → Tab 2 ①, highlight khoản đó.
+
+3.6. Top 5 địa bàn thu cao / thấp nhất
+
+2 tab tách riêng, tab [Cao nhất] [Thấp nhất] 
+
+Click 1 địa bàn → đặt F4 = địa bàn đó → tự động sang Tab 3.
+
+[Xem tất cả →] → xếp hạng đầy đủ 126 phường/xã:.
+
+Chưa nạp đủ → banner ⓘ "Đã có dữ liệu 119/126 phường xã — xếp hạng có thể thay đổi".
+
+3.7. Top 5 địa bàn tăng / giảm mạnh nhất
+
+2 tab tách riêng [Tăng mạnh] [Giảm mạnh]. 
+
+Click [Xem tất cả →] → tăng giảm của tất cả
+
+Click 1 địa bàn → đặt F4 = địa bàn đó → tự động sang Tab 3.
+
+4. TAB 2 — PHÂN TÍCH THU (chỉ toàn TP)
+PHẦN ① — THU NỘI ĐỊA
+
+
+
+
+3 card KPI
+
+Tổng số thu nội địa
+
+Tỷ trong % trong thu ngân sách
+
+Tăng/giảm so với cùng kỳ bao nhiêu %
+
+4.1. Cơ cấu 3 nhóm thu nội địa
+
+Grouped bar: cột nhạt = cùng kỳ N−1, cột đậm = kỳ N, nhãn ±x,x% trên đỉnh cột N.
+
+Click 1 nhóm → hiện bar chart chi tiết nhóm đó ngay bên dưới + cuộn tới widget khối tương ứng.
+
+flowchart TD
+    ND["THU NỘI ĐỊA<br/>648.339,6 — 100%"]
+    ND --> A["a. SXKD<br/>250.759,1 — 38,68%"]
+    ND --> B["b. Nhà, đất<br/>126.115,3 — 19,45%"]
+    ND --> C["c. Phí, lệ phí & khác<br/>271.465,2 — 41,87%"]
+
+    A --> A1["3 · Ngoài quốc doanh — 134.539,1"]
+    A --> A2["1.1 · DN trung ương — 72.188,1"]
+    A --> A3["2 · FDI — 41.651,6"]
+    A --> A4["1.2 · DN địa phương — 2.380,3"]
+
+    B --> B1["11 · Tiền sử dụng đất — 108.275,8"]
+    B --> B2["10 · Tiền thuê đất — 15.860,3"]
+    B --> B3["12 · Thuê/bán nhà SHNN — 1.251,3"]
+    B --> B4["9 · Thuế SDĐ phi NN — 727,8"]
+    B --> B5["8 · Thuế SDĐ nông nghiệp — 0,1"]
+
+    C --> C1["19 · Cổ tức/LNST NSTW — 72.833,2"]
+    C --> C2["20 · Chênh lệch NHNN — 65.543,2"]
+    C --> C3["4 · Thuế TNCN — 64.267,6"]
+    C --> C4["7 · Phí, lệ phí — 27.024,4"]
+    C --> C5["16 · Thu khác NS — 18.449,2"]
+    C --> C6["+ 7 khoản còn lại<br/>6, 14, 18, 5, 17, 13, 15"]
+
+    A1 -.->|"click"| ST["6 sắc thuế con:<br/>GTGT · TTĐB · TNDN<br/>Tài nguyên · Khí · Thu khác"]
+    A2 -.->|"click"| ST
+    A3 -.->|"click"| ST
+    A4 -.->|"click"| ST
+4.2. Chi tiết khối doanh nghiệp (SXKD)
+
+Click 1 khối → 6 sắc thuế con: x.1 GTGT · x.2 TTĐB · x.3 TNDN · x.4 Tài nguyên · x.5 Khí thiên nhiên/khí than · Thu khác = tổng khối − 5 dòng trên (số dẫn xuất, gắn badge "Số tính toán").
+
+4.3. Chi tiết khối nhà, đất
+4.4. Chi tiết khối phí, lệ phí và khác
+
+Mã
+
+	
+
+Khoản thu
+
+
+
+
+19
+
+	
+
+Cổ tức, LN được chia, LNST — NSTW hưởng 100%
+
+
+
+
+20
+
+	
+
+Chênh lệch thu chi Ngân hàng Nhà nước
+
+
+
+
+4
+
+	
+
+Thuế thu nhập cá nhân
+
+
+
+
+7
+
+	
+
+Phí – lệ phí
+
+
+
+
+16
+
+	
+
+Thu khác ngân sách
+
+
+
+
+6
+
+	
+
+Lệ phí trước bạ
+
+
+
+
+14
+
+	
+
+Cấp quyền khai thác khoáng sản, tài nguyên nước
+
+
+
+
+18
+
+	
+
+Thu hồi vốn, cổ tức, LNST — NSĐP hưởng 100%
+
+
+
+
+5
+
+	
+
+Thuế bảo vệ môi trường
+
+
+
+
+17
+
+	
+
+Quỹ đất công ích và hoa lợi, công sản khác
+
+
+
+
+13
+
+	
+
+Thu từ hoạt động xổ số
+
+
+
+
+15
+
+	
+
+Thu tiền sử dụng khu vực biển
+
+4.5. Bảng xếp hạng đầy đủ 21 khoản
+PHẦN ② — THU XUẤT NHẬP KHẨU
+
+Mục III trên Biểu báo cáo.  Hiển thị rõ phép trừ hoàn thuế:
+
+Mã
+
+	
+
+Khoản
+
+
+
+
+1.4
+
+	
+
+Thuế GTGT hàng nhập khẩu
+
+
+
+
+1.2
+
+	
+
+Thuế nhập khẩu
+
+
+
+
+1.3
+
+	
+
+Thuế TTĐB hàng nhập khẩu
+
+
+
+
+1.7
+
+	
+
+Thu khác
+
+
+
+
+1.5
+
+	
+
+Thuế bổ sung đối với hàng NK
+
+
+
+
+1.1
+
+	
+
+Thuế xuất khẩu
+
+
+
+
+1.6
+
+	
+
+Thuế BVMT hàng nhập khẩu
+
+
+
+
+1
+
+	
+
+Tổng thu XNK (gộp)
+
+
+
+
+2
+
+	
+
+(−) Hoàn thuế GTGT
+
+
+
+
+3
+
+	
+
+(−) Hoàn thuế XNK (ưu đãi ô tô/CNHT)
+
+
+
+
+4
+
+	
+
+(−) Hoàn thuế TTĐB xăng khoáng
+
+
+
+
+III
+
+	
+
+Thu cân đối XNK (ròng)
+
+PHẦN ③ — THU KHÁC
+
+Mục IV → VIII. [MUST] Hiển thị đủ 5 nguồn, kể cả nguồn = 0.
+
+Mã
+
+	
+
+Nguồn thu
+
+
+
+
+IV
+
+	
+
+Thu viện trợ
+
+
+
+
+V
+
+	
+
+Các khoản huy động, đóng góp
+
+
+
+
+VI
+
+	
+
+Thu hồi cho vay của Nhà nước và quỹ dự trữ tài chính
+
+
+
+
+VII
+
+	
+
+Tạm thu ngân sách
+
+
+
+
+VIII
+
+	
+
+Các khoản thu NSNN không có trong công thức
+
+
+
+
+
+
+
+	
+
+
+
+
+Bar ngang 5 dòng + 1 thẻ KPI tổng.
+
+Mục V và VIII có thể âm ở một số kỳ → bar vẽ về trái trục 0, màu đỏ.
+
+5. TAB 3 — CHI TIẾT ĐỊA BÀN (1 phường/xã)
+
+Nội dung = Tab 1 + Tab 2 thu gọn theo địa bàn, với các điều chỉnh:
+
+Thay đổi
+
+	
+
+Lý do
+
+
+
+
+➕ Thêm card xếp hạng địa bàn
+
+	
+
+Cho biết phường này đứng đâu trong 126 phường/xã
+
+
+
+
+➖ Bỏ Top 5 địa bàn cao/thấp (3.6)
+
+	
+
+Không còn ý nghĩa khi đã ở trong 1 địa bàn
+
+
+
+
+➖ Bỏ Top 5 địa bàn tăng/giảm (3.7)
+
+	
+
+Như trên
+
+
+
+
+➖ Bỏ Phần ② Thu XNK
+
+	
+
+Thu trung ương, hạch toán tập trung — không phân bổ theo phường/xã
+
+
+
+
+➖ Bỏ dòng Thu dầu thô trong widget Cơ cấu nguồn thu
+
+	
+
+Như trên
+
+block-beta
+columns 4
+  R["5.1 — CARD XẾP HẠNG ĐỊA BÀN · Hạng 12/126 · Đóng góp 2,45% · +138% so BQ"]:4
+  K1["KPI 1"] K2["KPI 2"] K3["KPI 3"] K4["KPI 4"]
+  XH["XU HƯỚNG THU của địa bàn"]:4
+  CC["CƠ CẤU NGUỒN THU (chỉ còn Thu nội địa + Thu khác)"]:2 CNS["CƠ CẤU CẤP NGÂN SÁCH"]:2
+  TOP["TOP 5 KHOẢN THU NỘI ĐỊA của địa bàn"]:4
+  P1["PHẦN ① THU NỘI ĐỊA — 3 KPI · cơ cấu 3 nhóm · chi tiết 3 khối · BXH 21 khoản"]:4
+  P3["PHẦN ③ THU KHÁC — 5 nguồn"]:4
+5.1. Card xếp hạng địa bàn (widget mới).
+5.2. Ghi chú triển khai
+
+Các widget kế thừa dùng lại nguyên vẹn component của Tab 1 & 2, chỉ đổi tham số địa bàn.
+
+Widget Cơ cấu nguồn thu ở Tab 3 chỉ còn 2 dòng (Thu nội địa · Thu khác). Nếu Thu khác = 0 → ẩn widget, thay bằng nhãn "100% thu nội địa".
+
+Khoản thu nội địa không phát sinh → hiện 0 (khác với — = chưa nạp dữ liệu).
+
+Điều hướng: nút ◀ Toàn thành phố (về Tab 1) · [Đổi địa bàn] (dropdown chọn nhanh) · [So sánh với địa bàn khác →] (Tab 4).
+
+6. TAB 4 — SO SÁNH NÂNG CAO
+block-beta
+columns 2
+  BD["6.1 — BỘ DỰNG SO SÁNH (Theo thời gian / Theo địa bàn)"]:2
+  BC["6.2 — BIỂU ĐỒ SO SÁNH"] BG["6.3 — BẢNG SO SÁNH 21 KHOẢN THU"]
+  WF["6.4 — WATERFALL · khoản nào kéo tổng thu lên/xuống"]:2
+  BT["6.5 — PHÁT HIỆN BẤT THƯỜNG"] SC["6.6 — PHÂN BỐ 126 ĐỊA BÀN (scatter)"]
+6.1. Bộ dựng so sánh — ưu tiên cao nhất
+
+Chế độ
+
+	
+
+Cách dùng
+
+	
+
+Trả lời
+
+
+
+
+Theo thời gian
+
+	
+
+2–5 kỳ bất kỳ (khác năm hoặc cùng năm)
+
+	
+
+"3 năm gần đây biến động thế nào?" · "Tháng nào thu mạnh nhất?"
+
+
+
+
+Theo địa bàn
+
+	
+
+2–5 phường/xã, cùng một kỳ
+
+	
+
+"Phường A với B, ai thu tốt hơn và mạnh ở khoản nào?"
+
+Bật chế độ thời gian → F2 bị disable; bật chế độ địa bàn → F4 bị disable, 
+
+6.2. Biểu đồ so sánh
+
+Nhiều năm → line nhiều đường (12 điểm/tháng). Kỳ rời rạc hoặc so địa bàn → grouped bar. Legend click bật/tắt từng mốc; tooltip hiện mọi mốc đang bật + chênh lệch so mốc đầu.
+
+6.3. Bảng so sánh chi tiết
+
+Khoản thu (21 mục) | Mốc 1 | Mốc 2 | … | Chênh lệch | % thay đổi — heat table theo mức biến động, sort mọi cột, Xuất Excel. [COULD] thêm cột CAGR khi so ≥ 3 năm.
+
+6.4. Waterfall — khoản nào kéo tổng thu lên/xuống
+
+ "thu tăng nhờ đâu, giảm do đâu?"
+
+Cột đầu = tổng thu mốc gốc → các cột ± đóng góp từng khoản → cột cuối = tổng thu mốc so sánh.
+
+Đóng góp_i = GT_i(mốc sau) − GT_i(mốc trước)
+
+[MUST] Cột đầu + Σ(cột giữa) = Cột cuối (lệch > 1.000 đồng → ghi log lỗi).
+
+[MUST] Chỉ dùng 21 khoản. Trộn chỉ tiêu cha vào sẽ làm tổng gấp đôi.
+
+Hiện 10 cột lớn nhất theo |giá trị|, phần dư gộp toàn bộ vào cột Khác để tổng vẫn khớp. Click 1 cột → Tab 2 ①.
+
+6.5. Phát hiện bất thường
+
+Mã
+
+	
+
+Luật
+
+	
+
+Ngưỡng mặc định
+
+	
+
+Mức
+
+
+
+
+AL-1
+
+	
+
+Khoản thu giảm mạnh
+
+	
+
+%YoY ≤ −30% và |chênh lệch| ≥ 1% tổng thu phạm vi
+
+	
+
+🔴
+
+
+
+
+AL-2
+
+	
+
+Biến động đáng chú ý
+
+	
+
+15% ≤ |%YoY| < 30% + cùng điều kiện quy mô
+
+	
+
+🟠
+
+
+
+
+AL-3
+
+	
+
+Địa bàn lệch xu hướng chung
+
+	
+
+%YoY(địa bàn) − %YoY(toàn TP) ≤ −20 điểm %
+
+	
+
+🔴
+
+
+
+
+AL-4
+
+	
+
+Thấp hơn xu hướng nhiều kỳ
+
+	
+
+Dưới TB 3 kỳ gần nhất, ≥ 2 kỳ liên tiếp
+
+	
+
+🟠
+
+
+
+
+AL-5
+
+	
+
+Giá trị âm bất thường
+
+	
+
+< 0 ở khoản không thuộc nhóm hoàn thuế/điều chỉnh
+
+	
+
+🟠
+
+
+
+
+AL-6
+
+	
+
+Thiếu dữ liệu
+
+	
+
+Địa bàn chưa nạp dữ liệu kỳ hiện tại
+
+	
+
+ⓘ
+
+[MUST] Điều kiện quy mô ở AL-1/AL-2 là bắt buộc — không có nó, mục 8 (0,1 tỷ) hay mục 15 (0,1 tỷ) sẽ báo động ±100% liên tục dù vô nghĩa.
+
+
+
+
+

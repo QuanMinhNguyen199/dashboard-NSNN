@@ -1,0 +1,1266 @@
+<title>Thu ngân sách Hà Nội</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#edf1f7; --surface:#ffffff; --surface-2:#f5f8fc; --surface-3:#eaeff6;
+  --line:#dde4ee; --line-2:#c3cddc;
+  --ink:#0f1b2e; --ink-2:#4c5b73; --ink-3:#7b8aa2;
+  --brand:#17427f; --brand-ink:#f2f6fc;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
+  --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --good-ink:#0a7a0a; --crit-ink:#b32d2d; --warn-ink:#8a6300;
+  --grid:#e6ebf3; --axis:#c8d2e0;
+  --focus:#2a78d6;
+  --shadow:0 1px 2px rgba(15,27,46,.05), 0 8px 24px -14px rgba(15,27,46,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0b1017; --surface:#161b24; --surface-2:#1c2330; --surface-3:#232b3a;
+    --line:#2a3341; --line-2:#3c4759;
+    --ink:#e8eef7; --ink-2:#a4b1c5; --ink-3:#76839a;
+    --brand:#9cc2f5; --brand-ink:#0b1017;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+    --good-ink:#4fc44f; --crit-ink:#f07f7f; --warn-ink:#e0a92e;
+    --grid:#242c3a; --axis:#394354;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0b1017; --surface:#161b24; --surface-2:#1c2330; --surface-3:#232b3a;
+  --line:#2a3341; --line-2:#3c4759;
+  --ink:#e8eef7; --ink-2:#a4b1c5; --ink-3:#76839a;
+  --brand:#9cc2f5; --brand-ink:#0b1017;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
+  --good-ink:#4fc44f; --crit-ink:#f07f7f; --warn-ink:#e0a92e;
+  --grid:#242c3a; --axis:#394354;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Be Vietnam Pro","Segoe UI",system-ui,sans-serif; margin:0; text-wrap:balance;}
+button,select,input{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px; border-radius:3px}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums;}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1460px; margin:0 auto; padding:0 20px 56px}
+
+.masthead{
+  background:var(--brand); color:var(--brand-ink);
+  border-bottom:1px solid var(--line);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .masthead{background:#111826; color:var(--ink)}}
+:root[data-theme="dark"] .masthead{background:#111826; color:var(--ink)}
+.masthead-in{max-width:1460px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap}
+.crest{
+  width:38px; height:38px; flex:none; border-radius:7px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+  display:grid; place-items:center; font-size:19px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .crest{background:rgba(156,194,245,.12); border-color:rgba(156,194,245,.28)}}
+:root[data-theme="dark"] .crest{background:rgba(156,194,245,.12); border-color:rgba(156,194,245,.28)}
+.masthead h1{font-size:19px; font-weight:700; letter-spacing:-.01em; line-height:1.2}
+.masthead .sub{font-size:12.5px; opacity:.78; margin-top:2px}
+.masthead .spacer{flex:1}
+.mockflag{
+  font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:600;
+  padding:5px 10px; border-radius:999px;
+  background:rgba(250,178,25,.16); color:#ffd77a; border:1px solid rgba(250,178,25,.42);
+}
+.asof{font-size:12.5px; opacity:.82; text-align:right; line-height:1.35}
+.asof b{font-weight:600}
+
+/* ---------- filter bar ---------- */
+.filterbar{
+  position:sticky; top:0; z-index:40;
+  background:var(--surface);
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+  margin:0 -20px 18px; padding:10px 20px;
+}
+.filterbar-in{max-width:1420px; margin:0 auto; display:flex; gap:14px 18px; align-items:flex-end; flex-wrap:wrap}
+.fld{display:flex; flex-direction:column; gap:4px; min-width:0}
+.fld > label{
+  font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600;
+}
+.fld select{
+  appearance:none; background:var(--surface-2); border:1px solid var(--line-2);
+  border-radius:6px; padding:7px 30px 7px 10px; font-size:13px; font-weight:500;
+  max-width:250px; text-overflow:ellipsis; cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 15px, calc(100% - 10px) 15px;
+  background-size:5px 5px, 5px 5px; background-repeat:no-repeat;
+}
+.fld select:disabled{opacity:.45; cursor:not-allowed}
+.fld select:hover:not(:disabled){border-color:var(--s1)}
+.chain{position:relative; padding-left:16px}
+.chain::before{
+  content:"↳"; position:absolute; left:0; bottom:8px; color:var(--ink-3); font-size:13px;
+}
+.btn{
+  background:var(--surface-2); border:1px solid var(--line-2); border-radius:6px;
+  padding:7px 13px; font-size:13px; font-weight:500; cursor:pointer;
+}
+.btn:hover{border-color:var(--s1); color:var(--s1)}
+.btn-quiet{background:none; border:none; color:var(--ink-3); padding:4px 6px; font-size:12px; cursor:pointer}
+.btn-quiet:hover{color:var(--s1)}
+
+/* ---------- panels ---------- */
+.panel{
+  background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  padding:16px 18px 18px; min-width:0;
+}
+.panel-hd{display:flex; align-items:baseline; gap:10px; margin-bottom:2px; flex-wrap:wrap}
+.panel-hd h2{
+  font-size:11.5px; letter-spacing:.1em; text-transform:uppercase;
+  font-weight:600; color:var(--s1);
+}
+.panel-hd .hint{font-size:12px; color:var(--ink-3); margin-left:auto}
+.panel-note{font-size:12.5px; color:var(--ink-2); margin:2px 0 14px}
+.panel-note b{font-weight:600; color:var(--ink)}
+
+/* ---------- KPI strip (one object, hairline-divided) ---------- */
+.kpis{
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+  background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  overflow:hidden; margin-bottom:18px;
+}
+.kpi{padding:16px 20px 18px; border-left:1px solid var(--line); min-width:0}
+.kpi:first-child{border-left:none}
+.kpi .k-lab{
+  font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600; display:flex; align-items:center; gap:6px;
+}
+.kpi .k-val{
+  font-family:"Be Vietnam Pro",sans-serif; font-weight:700;
+  font-size:29px; line-height:1.12; letter-spacing:-.02em; margin-top:7px;
+  font-variant-numeric:tabular-nums;
+}
+.kpi .k-val .u{font-size:15px; font-weight:500; color:var(--ink-2); letter-spacing:0}
+.kpi .k-sub{font-size:12.5px; color:var(--ink-2); margin-top:5px}
+.kpi.hero .k-val{color:var(--s1)}
+.meter{height:7px; border-radius:4px; background:var(--surface-3); overflow:hidden; margin-top:10px; display:flex}
+.meter i{display:block; height:100%; background:var(--s1)}
+.meter i.over{background:var(--good)}
+
+.delta{
+  display:inline-flex; align-items:center; gap:4px; font-weight:600;
+  font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+}
+.delta.up{color:var(--good-ink)} .delta.down{color:var(--crit-ink)} .delta.flat{color:var(--ink-3)}
+.delta .arw{font-size:10px}
+
+/* ---------- main grid ---------- */
+.grid{display:grid; grid-template-columns:minmax(0,2.1fr) minmax(0,1fr); gap:18px; align-items:start}
+.col{display:flex; flex-direction:column; gap:18px; min-width:0}
+.duo{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px; align-items:start}
+@media (max-width:1120px){.grid{grid-template-columns:minmax(0,1fr)} .duo{grid-template-columns:minmax(0,1fr)} .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} .kpi:nth-child(3){border-left:none} .kpi:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:620px){.kpis{grid-template-columns:minmax(0,1fr)} .kpi{border-left:none} .kpi+.kpi{border-top:1px solid var(--line)}}
+
+/* ---------- bar rows ---------- */
+.rows{display:flex; flex-direction:column}
+.row{
+  display:grid; grid-template-columns:minmax(120px,1.45fr) minmax(0,2.4fr) auto;
+  gap:12px; align-items:center; padding:8px 8px; margin:0 -8px;
+  border-radius:6px; border:none; background:none; width:calc(100% + 16px);
+  text-align:left; cursor:default; border-top:1px solid var(--line);
+}
+.rows .row:first-child{border-top:none}
+button.row{cursor:pointer}
+button.row:hover{background:var(--surface-2)}
+button.row:hover .r-name{color:var(--s1)}
+.r-name{font-size:13px; font-weight:500; line-height:1.35; min-width:0}
+.r-name .r-share{color:var(--ink-3); font-weight:400; font-size:12px}
+.r-name .chev{color:var(--ink-3); font-size:11px; margin-left:5px}
+.r-bar{height:15px; border-radius:3px; background:var(--surface-3); overflow:hidden; display:flex; gap:2px; min-width:0}
+.r-bar i{display:block; height:100%; border-radius:2px 3px 3px 2px}
+.r-bar i:first-child{border-radius:3px 2px 2px 3px}
+.r-bar i:only-child{border-radius:3px}
+.r-val{
+  font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;
+  font-size:12.5px; text-align:right; white-space:nowrap; color:var(--ink-2);
+}
+.r-val b{color:var(--ink); font-weight:600}
+.r-meta{font-size:11.5px; color:var(--ink-3); white-space:nowrap; text-align:right}
+
+/* breadcrumb */
+.crumb{display:flex; align-items:center; gap:5px; flex-wrap:wrap; font-size:12.5px; margin-bottom:12px}
+.crumb button{
+  background:none; border:none; padding:2px 5px; border-radius:4px;
+  color:var(--s1); cursor:pointer; font-size:12.5px; font-weight:500;
+}
+.crumb button:hover{background:var(--surface-2); text-decoration:underline}
+.crumb .sep{color:var(--ink-3)}
+.crumb .cur{color:var(--ink); font-weight:600; padding:2px 0}
+
+/* ---------- chart ---------- */
+.chartwrap{position:relative; margin-top:6px}
+.chartwrap svg{display:block; width:100%; height:auto}
+.chart-grid{stroke:var(--grid); stroke-width:1}
+.chart-axis{stroke:var(--axis); stroke-width:1}
+.chart-lab{fill:var(--ink-3); font-size:10.5px; font-family:"IBM Plex Mono",monospace}
+.chart-lab.mid{text-anchor:middle}
+.chart-lab.end{text-anchor:end}
+.hitcol{fill:transparent; cursor:crosshair}
+.hitcol:hover{fill:var(--s1); fill-opacity:.07}
+.tip{
+  position:absolute; pointer-events:none; z-index:20; min-width:190px;
+  background:var(--surface); border:1px solid var(--line-2); border-radius:8px;
+  padding:9px 11px; box-shadow:var(--shadow); font-size:12.5px;
+  opacity:0; transition:opacity .1s;
+}
+.tip.on{opacity:1}
+.tip h5{font-family:"Be Vietnam Pro",sans-serif; font-size:12px; margin:0 0 6px; font-weight:600}
+.tip .tr{display:flex; align-items:center; gap:7px; padding:2px 0}
+.tip .tr .sw{display:block; width:9px; height:9px; border-radius:2px; flex:none}
+.tip .tr .tn{color:var(--ink-2)}
+.tip .tr .tv{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-weight:600}
+
+.legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; font-size:12.5px; color:var(--ink-2)}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend .ln{width:17px; height:0; border-top-width:2.5px; border-top-style:solid; display:inline-block}
+
+/* ---------- insights ---------- */
+.notes{display:flex; flex-direction:column; gap:0}
+.note{display:grid; grid-template-columns:auto minmax(0,1fr); gap:10px; padding:11px 0; border-top:1px solid var(--line)}
+.notes .note:first-child{border-top:none}
+.note .dot{width:9px; height:9px; border-radius:50%; margin-top:5px}
+.note .nh{font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:5px}
+.note .nb{font-size:12.5px; color:var(--ink-2); margin-top:2px}
+.note .nb b{color:var(--ink); font-weight:600; font-family:"IBM Plex Mono",monospace}
+
+/* ---------- rank card ---------- */
+.rank{display:flex; align-items:flex-end; gap:12px}
+.rank .big{
+  font-family:"Be Vietnam Pro",sans-serif; font-weight:700; font-size:42px;
+  line-height:.95; letter-spacing:-.03em; font-variant-numeric:tabular-nums;
+}
+.rank .of{font-size:14px; color:var(--ink-2); padding-bottom:5px}
+.rankbar{position:relative; height:9px; border-radius:5px; background:linear-gradient(90deg,var(--surface-3),color-mix(in srgb,var(--s1) 30%, var(--surface-3))); margin-top:14px}
+.rankbar i{position:absolute; top:-3px; width:3px; height:15px; border-radius:2px; background:var(--s1)}
+.rankscale{display:flex; justify-content:space-between; font-size:11px; color:var(--ink-3); margin-top:5px}
+
+/* ---------- table view ---------- */
+details.tbl{margin-top:14px; border-top:1px solid var(--line); padding-top:10px}
+details.tbl summary{
+  font-size:12px; color:var(--ink-3); cursor:pointer; list-style:none;
+  display:inline-flex; align-items:center; gap:6px; font-weight:500;
+}
+details.tbl summary::-webkit-details-marker{display:none}
+details.tbl summary::before{content:"▸"; font-size:9px; transition:transform .15s}
+details.tbl[open] summary::before{transform:rotate(90deg)}
+details.tbl summary:hover{color:var(--s1)}
+.tblscroll{overflow-x:auto; margin-top:10px}
+table{border-collapse:collapse; width:100%; font-size:12.5px}
+th,td{padding:6px 10px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
+th:first-child,td:first-child{text-align:left; white-space:normal}
+th{
+  font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:600; border-bottom:1px solid var(--line-2);
+}
+td.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+
+/* ---------- entity list ---------- */
+.ent{
+  display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:11px; align-items:center;
+  padding:9px 8px; margin:0 -8px; width:calc(100% + 16px);
+  background:none; border:none; border-top:1px solid var(--line); border-radius:6px;
+  text-align:left; cursor:pointer;
+}
+.entlist .ent:first-child{border-top:none}
+.ent:hover{background:var(--surface-2)}
+.ent:hover .e-name{color:var(--s1)}
+.ent .e-rk{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3);
+  width:20px; text-align:right; font-variant-numeric:tabular-nums;
+}
+.e-name{display:block; font-size:13px; font-weight:500; line-height:1.3}
+.e-sec{display:block; font-size:11.5px; color:var(--ink-3); margin-top:1px}
+.e-mini{display:block; height:4px; border-radius:2px; background:var(--s1); margin-top:5px; min-width:2px}
+.e-right{text-align:right}
+.e-amt{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; font-variant-numeric:tabular-nums}
+
+/* ---------- focus card ---------- */
+.focuscard{border-color:var(--s1); box-shadow:var(--shadow)}
+.focus-hd{display:flex; align-items:flex-start; gap:12px; margin-bottom:12px}
+.focus-hd h3{font-size:17px; font-weight:600; letter-spacing:-.01em; line-height:1.25}
+.focus-hd .sub{font-size:12.5px; color:var(--ink-3); margin-top:3px}
+.statline{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-bottom:16px}
+.statline > div{background:var(--surface); padding:10px 12px}
+.statline .s-lab{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+.statline .s-val{font-family:"Be Vietnam Pro",sans-serif; font-weight:600; font-size:19px; margin-top:4px; font-variant-numeric:tabular-nums}
+
+.chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500;
+  background:var(--surface-2); border:1px solid var(--line-2); border-radius:999px; padding:4px 6px 4px 11px;
+}
+.chip b{font-weight:600}
+.chip button{background:none; border:none; color:var(--ink-3); cursor:pointer; font-size:14px; line-height:1; padding:0 3px; border-radius:50%}
+.chip button:hover{color:var(--crit-ink)}
+.chip.plain{padding:4px 11px}
+
+.empty{font-size:12.5px; color:var(--ink-3); padding:18px 0; text-align:center}
+footer{margin-top:26px; font-size:12px; color:var(--ink-3); line-height:1.65; border-top:1px solid var(--line); padding-top:14px}
+footer b{color:var(--ink-2); font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="crest">🏛️</div>
+    <div>
+      <h1>Tổng quan thu ngân sách nhà nước — Thành phố Hà Nội</h1>
+      <div class="sub">Sở Tài chính · Chi cục Thuế khu vực I — báo cáo điều hành</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="mockflag">Dữ liệu mô phỏng</div>
+    <div class="asof">Số liệu đến <b id="asof">31/08/2026</b><br>Đơn vị: tỷ đồng</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="filterbar">
+    <div class="filterbar-in">
+      <div class="fld"><label for="f-year">Năm</label><select id="f-year"><option value="2026">2026</option></select></div>
+      <div class="fld"><label for="f-period">Kỳ báo cáo</label><select id="f-period"></select></div>
+      <div class="fld"><label for="f-ward">Địa bàn</label><select id="f-ward"></select></div>
+      <div class="fld"><label for="f-nguon">Nguồn thu (cấp 2)</label><select id="f-nguon"></select></div>
+      <div class="fld chain"><label for="f-khoan">Khoản thu (cấp 3)</label><select id="f-khoan"></select></div>
+      <div class="fld chain"><label for="f-sac">Sắc thuế (cấp 4)</label><select id="f-sac"></select></div>
+      <div class="fld"><label>&nbsp;</label><button class="btn" id="f-reset">Đặt lại bộ lọc</button></div>
+    </div>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div class="col">
+      <section class="panel">
+        <div class="panel-hd">
+          <h2>Xu hướng theo tháng</h2>
+          <span class="hint" id="trend-scope"></span>
+        </div>
+        <div class="panel-note" id="trend-note"></div>
+        <div class="chartwrap" id="trendwrap">
+          <svg id="trend" viewBox="0 0 780 300" role="img" aria-label="Biểu đồ đường: thực hiện trong kỳ, cùng kỳ năm trước và lũy kế từ đầu năm"></svg>
+          <div class="tip" id="trend-tip"></div>
+        </div>
+        <div class="legend">
+          <span><i class="ln" style="border-color:var(--s1)"></i> Thực hiện trong kỳ 2026</span>
+          <span><i class="ln" style="border-color:var(--s3)"></i> Cùng kỳ 2025</span>
+          <span><i class="ln" style="border-color:var(--s2); border-top-style:dashed"></i> Lũy kế từ đầu năm 2026</span>
+        </div>
+        <details class="tbl"><summary>Xem bảng số liệu theo tháng</summary>
+          <div class="tblscroll" id="trend-table"></div>
+        </details>
+      </section>
+
+      <section class="panel">
+        <div class="panel-hd">
+          <h2>Cơ cấu thu — đi sâu từng cấp</h2>
+          <span class="hint">Bấm vào một dòng để xuống cấp tiếp theo</span>
+        </div>
+        <div class="crumb" id="drill-crumb"></div>
+        <div class="rows" id="drill-rows"></div>
+        <details class="tbl"><summary>Xem bảng số liệu cấp hiện tại</summary>
+          <div class="tblscroll" id="drill-table"></div>
+        </details>
+      </section>
+
+      <section class="panel" id="geo-panel">
+        <div class="panel-hd">
+          <h2 id="geo-title">Top phường, xã theo số thu</h2>
+          <span class="hint" id="geo-hint"></span>
+        </div>
+        <div class="panel-note" id="geo-note"></div>
+        <div class="rows" id="geo-rows"></div>
+        <details class="tbl"><summary>Xem bảng xếp hạng đầy đủ</summary>
+          <div class="tblscroll" id="geo-table"></div>
+        </details>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel">
+        <div class="panel-hd"><h2>Điểm cần chú ý</h2></div>
+        <div class="notes" id="notes"></div>
+      </section>
+
+      <section class="panel" id="rank-panel" hidden>
+        <div class="panel-hd"><h2>Xếp hạng địa bàn</h2></div>
+        <div id="rank-body"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-hd">
+          <h2>Doanh nghiệp nộp lớn</h2>
+          <span class="hint" id="dn-hint"></span>
+        </div>
+        <div class="panel-note">Tên doanh nghiệp được ẩn danh trong bản mô phỏng.</div>
+        <div class="entlist" id="dn-rows"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-hd"><h2>Khu vực kinh tế</h2></div>
+        <div class="panel-note">Ba khu vực trong nhóm thu từ hoạt động sản xuất kinh doanh.</div>
+        <div class="rows" id="sector-rows"></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="panel focuscard" id="dn-focus" hidden style="margin-top:18px"></section>
+
+  <footer>
+    <b>Nguồn dữ liệu:</b> bản mô phỏng phục vụ trình bày giao diện — không phải số liệu quyết toán.
+    Cấu trúc phân cấp theo đặc tả: Thu NSNN → Nguồn thu → Khoản thu → Sắc thuế → Doanh nghiệp.<br>
+    <b>Ghi chú kỹ thuật:</b> thu cân đối từ hoạt động xuất nhập khẩu và thu về dầu thô do cơ quan Trung ương quản lý, hạch toán ở mức thành phố nên
+    <b>không phân bổ theo phường, xã</b>; khi chọn một địa bàn cụ thể hai nguồn này được loại khỏi tổng.
+    Tỷ trọng sắc thuế trong một khoản thu áp dụng chung cho toàn thành phố. Dự toán theo nghị quyết HĐND thành phố giao đầu năm.
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   1. DỮ LIỆU MÔ PHỎNG — cấu trúc theo đặc tả phân cấp
+   ============================================================ */
+const LAST_MONTH = 8, YEAR = 2026, PREV = 2025;
+
+const SAC = {
+  gtgt:"Thuế giá trị gia tăng", tndn:"Thuế thu nhập doanh nghiệp", tncn:"Thuế thu nhập cá nhân",
+  ttdb:"Thuế tiêu thụ đặc biệt", tainguyen:"Thuế tài nguyên", bvmt:"Thuế bảo vệ môi trường",
+  xnk:"Thuế xuất khẩu, nhập khẩu", monbai:"Lệ phí môn bài", truocba:"Lệ phí trước bạ",
+  sddat:"Tiền sử dụng đất", thuedat:"Tiền thuê đất, mặt nước", sdpnn:"Thuế sử dụng đất phi nông nghiệp",
+  phi:"Phí và lệ phí", khac:"Các khoản thu khác"
+};
+
+const NGUON = [
+  {id:"nd",   ma:"I",    ten:"Thu nội địa không kể dầu thô"},
+  {id:"dt",   ma:"II",   ten:"Thu về dầu thô",                    noWard:true},
+  {id:"xnk",  ma:"III",  ten:"Thu cân đối từ hoạt động xuất nhập khẩu", noWard:true},
+  {id:"vt",   ma:"IV",   ten:"Thu viện trợ"},
+  {id:"hd",   ma:"V",    ten:"Các khoản huy động, đóng góp"},
+  {id:"thcv", ma:"VI",   ten:"Thu hồi cho vay, quỹ dự trữ tài chính"},
+  {id:"tt",   ma:"VII",  ten:"Tạm thu"},
+  {id:"tk",   ma:"VIII", ten:"Thu khác ngân sách"}
+];
+
+// val = lũy kế 8 tháng 2026 (tỷ đồng) · dt = dự toán năm · grp = nhóm phân bổ địa bàn
+const KHOAN = [
+  {id:"dnnn", nguon:"nd", ten:"Thu từ khu vực doanh nghiệp nhà nước", val:62300, dt:82500, grp:"dn",
+   sac:{gtgt:.46,tndn:.34,ttdb:.11,tainguyen:.04,khac:.05}, g:{gtgt:6.4,tndn:11.2,ttdb:7.8,tainguyen:2.1,khac:5.0}},
+  {id:"dtnn", nguon:"nd", ten:"Thu từ doanh nghiệp có vốn đầu tư nước ngoài", val:41850, dt:53400, grp:"fdi",
+   sac:{gtgt:.41,tndn:.40,ttdb:.13,khac:.06}, g:{gtgt:9.8,tndn:13.6,ttdb:10.4,khac:8.0}},
+  {id:"nqd",  nguon:"nd", ten:"Thu từ khu vực kinh tế ngoài quốc doanh", val:96400, dt:120500, grp:"nqd",
+   sac:{gtgt:.49,tndn:.33,ttdb:.09,monbai:.02,tainguyen:.02,khac:.05}, g:{gtgt:18.4,tndn:22.6,ttdb:14.2,monbai:3.4,tainguyen:6.1,khac:15.0}},
+  {id:"tncn", nguon:"nd", ten:"Thuế thu nhập cá nhân", val:74900, dt:88000, grp:"tncn",
+   sac:{tncn:1}, g:{tncn:23.0}},
+  {id:"bvmt", nguon:"nd", ten:"Thuế bảo vệ môi trường", val:6120, dt:8600, grp:"tieudung",
+   sac:{bvmt:1}, g:{bvmt:3.1}},
+  {id:"lptb", nguon:"nd", ten:"Lệ phí trước bạ", val:9480, dt:12400, grp:"tieudung",
+   sac:{truocba:1}, g:{truocba:6.9}},
+  {id:"phi",  nguon:"nd", ten:"Phí, lệ phí", val:19740, dt:24800, grp:"phi",
+   sac:{phi:1}, g:{phi:9.4}},
+  {id:"dat",  nguon:"nd", ten:"Các khoản thu về nhà, đất", val:88300, dt:132000, grp:"dat",
+   sac:{sddat:.62,thuedat:.24,sdpnn:.05,tncn:.09}, g:{sddat:-14.2,thuedat:9.6,sdpnn:4.1,tncn:22.8}},
+  {id:"xoso", nguon:"nd", ten:"Thu từ hoạt động xổ số kiến thiết", val:1240, dt:1750, grp:"tieudung",
+   sac:{khac:1}, g:{khac:5.2}},
+  {id:"cqkt", nguon:"nd", ten:"Thu cấp quyền khai thác khoáng sản, tài nguyên nước", val:860, dt:1180, grp:"ngoaithanh",
+   sac:{tainguyen:1}, g:{tainguyen:2.4}},
+  {id:"cotuc",nguon:"nd", ten:"Thu cổ tức, lợi nhuận được chia, thu hồi vốn", val:12600, dt:15300, grp:"dn",
+   sac:{khac:1}, g:{khac:14.0}},
+  {id:"ndk",  nguon:"nd", ten:"Các khoản thu nội địa khác", val:64780, dt:78600, grp:"phi",
+   sac:{gtgt:.12,tndn:.10,tncn:.08,phi:.15,khac:.55}, g:{gtgt:14.0,tndn:16.5,tncn:19.0,phi:11.2,khac:20.4}},
+
+  {id:"dt1",  nguon:"dt", ten:"Dầu thô", val:1905, dt:2600, grp:"tw",
+   sac:{tainguyen:.58,tndn:.42}, g:{tainguyen:-9.1,tndn:-7.4}},
+  {id:"dt2",  nguon:"dt", ten:"Condensate", val:215, dt:290, grp:"tw",
+   sac:{tainguyen:.6,tndn:.4}, g:{tainguyen:-4.0,tndn:-3.2}},
+
+  {id:"xk",   nguon:"xnk", ten:"Thuế xuất khẩu", val:1240, dt:1600, grp:"tw", sac:{xnk:1}, g:{xnk:4.2}},
+  {id:"nk",   nguon:"xnk", ten:"Thuế nhập khẩu", val:4860, dt:6300, grp:"tw", sac:{xnk:1}, g:{xnk:7.1}},
+  {id:"gtgtnk",nguon:"xnk",ten:"Thuế GTGT hàng nhập khẩu", val:18900, dt:24200, grp:"tw", sac:{gtgt:1}, g:{gtgt:11.4}},
+  {id:"ttdbnk",nguon:"xnk",ten:"Thuế TTĐB hàng nhập khẩu", val:2180, dt:2900, grp:"tw", sac:{ttdb:1}, g:{ttdb:6.8}},
+  {id:"bvmtnk",nguon:"xnk",ten:"Thuế BVMT hàng nhập khẩu", val:640, dt:880, grp:"tw", sac:{bvmt:1}, g:{bvmt:2.6}},
+  {id:"xnkk", nguon:"xnk", ten:"Thu khác từ hoạt động xuất nhập khẩu", val:580, dt:760, grp:"tw", sac:{khac:1}, g:{khac:9.0}},
+
+  {id:"vt1",  nguon:"vt", ten:"Viện trợ không hoàn lại", val:640, dt:900, grp:"phi", sac:{khac:1}, g:{khac:40.0}},
+  {id:"hd1",  nguon:"hd", ten:"Huy động, đóng góp của tổ chức, cá nhân", val:1220, dt:1500, grp:"ngoaithanh", sac:{khac:1}, g:{khac:22.0}},
+  {id:"tv1",  nguon:"thcv",ten:"Thu hồi các khoản cho vay, thu từ quỹ dự trữ tài chính", val:79.3, dt:120, grp:"dn", sac:{khac:1}, g:{khac:-12.0}},
+  {id:"tt1",  nguon:"tt", ten:"Tạm thu chờ xử lý", val:412, dt:520, grp:"phi", sac:{khac:1}, g:{khac:5.0}},
+  {id:"tk1",  nguon:"tk", ten:"Các khoản thu ngân sách khác", val:1980, dt:2400, grp:"phi", sac:{khac:1}, g:{khac:30.0}}
+];
+
+// Trọng số tháng theo nguồn thu (T1 lớn do quyết toán năm trước dồn về)
+const MW = {
+  nd:  [.327,.060,.103,.136,.086,.072,.162,.054],
+  dt:  [.118,.122,.128,.126,.124,.126,.130,.126],
+  xnk: [.112,.104,.132,.138,.126,.118,.144,.126],
+  vt:  [.040,.060,.180,.090,.070,.240,.200,.120],
+  hd:  [.180,.090,.110,.130,.120,.110,.150,.110],
+  thcv:[.220,.080,.120,.100,.140,.090,.160,.090],
+  tt:  [.150,.110,.120,.130,.120,.120,.140,.110],
+  tk:  [.190,.090,.120,.130,.110,.110,.150,.100]
+};
+
+const WARD_NAMES = ["Hoàn Kiếm","Cửa Nam","Ba Đình","Ngọc Hà","Giảng Võ","Hai Bà Trưng","Vĩnh Tuy","Bạch Mai","Đống Đa","Kim Liên","Văn Miếu - Quốc Tử Giám","Láng","Ô Chợ Dừa","Hoàng Mai","Vĩnh Hưng","Tương Mai","Định Công","Hoàng Liệt","Yên Sở","Thanh Xuân","Khương Đình","Phương Liệt","Cầu Giấy","Nghĩa Đô","Yên Hòa","Tây Hồ","Phú Thượng","Xuân La","Long Biên","Bồ Đề","Việt Hưng","Phúc Lợi","Hà Đông","Dương Nội","Yên Nghĩa","Kiến Hưng","Phú Lương","Từ Liêm","Xuân Đỉnh","Đông Ngạc","Thượng Cát","Tây Mỗ","Đại Mỗ","Xuân Phương","Tây Tựu","Sơn Tây","Tùng Thiện","Đoài Phương","Thanh Liệt","Thanh Trì","Chương Dương","Ba Vì","Vật Lại","Suối Hai","Bất Bạt","Minh Châu","Yên Bài","Cổ Đô","Quảng Oai","Phúc Thọ","Phúc Lộc","Hát Môn","Liên Minh","Đan Phượng","Ô Diên","Thọ Lão","Hoài Đức","Dương Hòa","Sơn Đồng","An Khánh","Quốc Oai","Hưng Đạo","Kiều Phú","Phú Cát","Hạ Bằng","Thạch Thất","Tây Phương","Hòa Lạc","Yên Xuân","Chương Mỹ","Phú Nghĩa","Xuân Mai","Trần Phú","Hòa Phú","Quảng Bị","Bình Minh","Tam Hưng","Dân Hòa","Thanh Oai","Vân Đình","Ứng Thiên","Hòa Xá","Ứng Hòa","Mỹ Đức","Hồng Sơn","Phúc Sơn","Hương Sơn","Thường Tín","Thượng Phúc","Hồng Vân","Phú Xuyên","Phượng Dực","Chuyên Mỹ","Đại Xuyên","Đại Thanh","Ngọc Hồi","Nam Phù","Gia Lâm","Thuận An","Bát Tràng","Phù Đổng","Đông Anh","Thư Lâm","Phúc Thịnh","Thiên Lộc","Vĩnh Thanh","Sóc Sơn","Đa Phúc","Nội Bài","Trung Giã","Kim Anh","Mê Linh","Yên Lãng","Tiến Thắng","Quang Minh","Tráng Việt"];
+
+const KCN = new Set(["Quang Minh","Nội Bài","Đa Phúc","Thư Lâm","Phúc Thịnh","Hòa Lạc","Phú Nghĩa","An Khánh","Thuận An","Bát Tràng","Yên Lãng","Trung Giã","Tiến Thắng","Kim Anh","Hạ Bằng"]);
+
+// Hồ sơ phân bổ theo loại địa bàn: hệ số nhân trên từng nhóm khoản thu
+const PROFILE = {
+  loi:       {base:3.4, dn:2.9, fdi:1.5, nqd:2.6, tncn:3.6, dat:1.1, phi:2.4, tieudung:2.1, ngoaithanh:.2},
+  dothi:     {base:1.9, dn:1.3, fdi:1.4, nqd:1.6, tncn:1.7, dat:2.6, phi:1.4, tieudung:1.6, ngoaithanh:.5},
+  congnghiep:{base:1.3, dn:1.1, fdi:5.2, nqd:1.1, tncn:1.2, dat:1.3, phi:.9,  tieudung:1.0, ngoaithanh:1.4},
+  ngoaithanh:{base:.55, dn:.35, fdi:.45, nqd:.7,  tncn:.4,  dat:1.5, phi:.8,  tieudung:.8,  ngoaithanh:2.6}
+};
+
+const DN_LIST = [
+  {id:"DN.001", nganh:"Viễn thông và công nghệ thông tin", ward:"Ba Đình",   val:9840, g:11.6, sac:{gtgt:.38,tndn:.34,tncn:.16,ttdb:.04,khac:.08}},
+  {id:"DN.002", nganh:"Ngân hàng thương mại",              ward:"Hoàn Kiếm", val:8120, g:14.9, sac:{tndn:.52,tncn:.31,gtgt:.11,khac:.06}},
+  {id:"DN.003", nganh:"Bất động sản và hạ tầng đô thị",     ward:"Long Biên", val:6470, g:-9.4, sac:{sddat:.44,tndn:.24,gtgt:.20,tncn:.08,khac:.04}},
+  {id:"DN.004", nganh:"Sản xuất bia, rượu, nước giải khát", ward:"Hoàng Mai", val:5230, g:4.2,  sac:{ttdb:.55,gtgt:.24,tndn:.15,khac:.06}},
+  {id:"DN.005", nganh:"Điện tử và thiết bị chính xác (FDI)",ward:"Quang Minh",val:4980, g:16.3, sac:{gtgt:.44,tndn:.36,tncn:.14,khac:.06}},
+  {id:"DN.006", nganh:"Ngân hàng thương mại",              ward:"Cửa Nam",   val:4610, g:9.7,  sac:{tndn:.50,tncn:.33,gtgt:.11,khac:.06}},
+  {id:"DN.007", nganh:"Phân phối và bán lẻ xăng dầu",       ward:"Cầu Giấy",  val:4150, g:2.8,  sac:{bvmt:.41,gtgt:.33,tndn:.18,khac:.08}},
+  {id:"DN.008", nganh:"Sản xuất và phân phối điện",         ward:"Đống Đa",   val:3890, g:7.5,  sac:{gtgt:.52,tndn:.30,tncn:.12,khac:.06}},
+  {id:"DN.009", nganh:"Xe máy, ô tô và phụ tùng (FDI)",     ward:"Nội Bài",   val:3540, g:12.1, sac:{ttdb:.34,gtgt:.30,tndn:.28,khac:.08}},
+  {id:"DN.010", nganh:"Vận tải hàng không",                ward:"Phúc Thịnh",val:3120, g:19.8, sac:{gtgt:.46,tndn:.29,tncn:.19,khac:.06}},
+  {id:"DN.011", nganh:"Xây lắp và vật liệu xây dựng",       ward:"Hà Đông",   val:2760, g:-4.1, sac:{gtgt:.47,tndn:.28,tncn:.15,tainguyen:.04,khac:.06}},
+  {id:"DN.012", nganh:"Bảo hiểm và dịch vụ tài chính",      ward:"Hai Bà Trưng",val:2410,g:8.9, sac:{tndn:.44,tncn:.36,gtgt:.14,khac:.06}},
+  {id:"DN.013", nganh:"Dược phẩm và thiết bị y tế",         ward:"Thanh Xuân",val:2050, g:13.4, sac:{gtgt:.45,tndn:.33,tncn:.16,khac:.06}},
+  {id:"DN.014", nganh:"Thương mại điện tử và logistics",    ward:"Yên Hòa",   val:1880, g:26.5, sac:{gtgt:.49,tndn:.26,tncn:.19,khac:.06}},
+  {id:"DN.015", nganh:"Khai thác và chế biến khoáng sản",   ward:"Ba Vì",     val:1240, g:-12.8,sac:{tainguyen:.38,gtgt:.31,tndn:.23,khac:.08}}
+];
+
+/* ============================================================
+   2. DẪN XUẤT — mọi con số cộng đúng theo mọi chiều
+   ============================================================ */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry32(20260831);
+
+const KH_BY_ID = Object.fromEntries(KHOAN.map(k=>[k.id,k]));
+const NG_BY_ID = Object.fromEntries(NGUON.map(n=>[n.id,n]));
+
+// Giá trị theo tháng của từng khoản thu (2026 và cùng kỳ 2025)
+const prevMW = {};
+for (const [k,w] of Object.entries(MW)){
+  const j = w.map(x=>x*(0.9+rnd()*0.2));
+  const s = j.reduce((a,b)=>a+b,0);
+  prevMW[k] = j.map(x=>x/s);
+}
+for (const k of KHOAN){
+  // sắc thuế: giá trị và giá trị cùng kỳ
+  k.sacVal = {}; k.sacPrev = {};
+  let prevTot = 0;
+  for (const [sid, sh] of Object.entries(k.sac)){
+    const v = k.val*sh, g = (k.g[sid] ?? 0)/100;
+    k.sacVal[sid] = v; k.sacPrev[sid] = v/(1+g); prevTot += v/(1+g);
+  }
+  k.prev = prevTot;
+  k.growth = (k.val/k.prev - 1)*100;
+  k.m  = MW[k.nguon].map(w => k.val*w);
+  k.mp = prevMW[k.nguon].map(w => k.prev*w);
+}
+
+// Địa bàn
+const WARDS = WARD_NAMES.map((ten,i)=>{
+  let type = "ngoaithanh";
+  if (i<=27) type = "loi";
+  else if (i<=50) type = "dothi";
+  if (KCN.has(ten)) type = "congnghiep";
+  const p = PROFILE[type];
+  return {id:"w"+i, ten, type, base:p.base*(0.55+rnd()*0.95), pj:0.86+rnd()*0.28,
+          ntw:0.62+rnd()*0.32, prof:p};
+});
+const WARD_BY_ID = Object.fromEntries(WARDS.map(w=>[w.id,w]));
+
+// share[khoanId][wardId] — chuẩn hoá về 1 trên mỗi khoản thu
+const SHARE = {}, PSHARE = {};
+for (const k of KHOAN){
+  if (k.grp === "tw"){ SHARE[k.id]=null; PSHARE[k.id]=null; continue; }
+  const raw = WARDS.map(w => w.base * (w.prof[k.grp] ?? 1));
+  const tot = raw.reduce((a,b)=>a+b,0);
+  const rawP = WARDS.map((w,i)=> raw[i]*w.pj);
+  const totP = rawP.reduce((a,b)=>a+b,0);
+  SHARE[k.id]  = Object.fromEntries(WARDS.map((w,i)=>[w.id, raw[i]/tot]));
+  PSHARE[k.id] = Object.fromEntries(WARDS.map((w,i)=>[w.id, rawP[i]/totP]));
+}
+
+/* ---- Truy vấn lõi ---------------------------------------------------- */
+const S = {period:"ytd", month:LAST_MONTH, quarter:3, ward:"ALL", nguon:"ALL", khoan:"ALL", sac:"ALL", drill:[], dn:null};
+
+function monthRange(){
+  if (S.period === "ytd")   return [0, LAST_MONTH-1];
+  if (S.period === "month") return [S.month-1, S.month-1];
+  const q = S.quarter, a = (q-1)*3, b = Math.min(q*3-1, LAST_MONTH-1);
+  return [a, b];
+}
+function periodLabel(){
+  if (S.period === "ytd")   return `Lũy kế T1–T${LAST_MONTH}/${YEAR}`;
+  if (S.period === "month") return `Tháng ${pad(S.month)}/${YEAR}`;
+  const [a,b] = monthRange();
+  return `Quý ${["I","II","III","IV"][S.quarter-1]}/${YEAR} (T${a+1}–T${b+1})`;
+}
+// Danh sách khoản thu thoả bộ lọc nguồn/khoản, và có mặt trên địa bàn đang chọn
+function activeKhoan(wardOverride){
+  const ward = wardOverride !== undefined ? wardOverride : S.ward;
+  return KHOAN.filter(k =>
+    (S.nguon === "ALL" || k.nguon === S.nguon) &&
+    (S.khoan === "ALL" || k.id === S.khoan) &&
+    (ward === "ALL" || SHARE[k.id] !== null)
+  );
+}
+function sacFactor(k, which){
+  if (S.sac === "ALL") return 1;
+  const src = which === "prev" ? k.sacPrev : k.sacVal;
+  const tot = which === "prev" ? k.prev : k.val;
+  return tot ? (src[S.sac] || 0)/tot : 0;
+}
+function wardFactor(k, ward, which){
+  if (ward === "ALL") return 1;
+  const t = which === "prev" ? PSHARE[k.id] : SHARE[k.id];
+  return t ? (t[ward] || 0) : 0;
+}
+// Tổng của một tập khoản thu trong kỳ hiện hành
+function sum(list, opt={}){
+  const [a,b] = opt.range || monthRange();
+  const ward = opt.ward !== undefined ? opt.ward : S.ward;
+  const which = opt.prev ? "prev" : "cur";
+  let t = 0;
+  for (const k of list){
+    const arr = opt.prev ? k.mp : k.m;
+    let s = 0; for (let m=a; m<=b; m++) s += arr[m] || 0;
+    t += s * sacFactor(k, which) * wardFactor(k, ward, which);
+  }
+  return t;
+}
+function monthly(list, opt={}){
+  const ward = opt.ward !== undefined ? opt.ward : S.ward;
+  const which = opt.prev ? "prev" : "cur";
+  const out = new Array(LAST_MONTH).fill(0);
+  for (const k of list){
+    const arr = opt.prev ? k.mp : k.m;
+    const f = sacFactor(k, which) * wardFactor(k, ward, which);
+    for (let m=0; m<LAST_MONTH; m++) out[m] += (arr[m]||0)*f;
+  }
+  return out;
+}
+function duToan(list, ward){
+  // dự toán năm phân bổ theo tỷ trọng địa bàn và tỷ trọng sắc thuế
+  let t = 0;
+  for (const k of list) t += k.dt * sacFactor(k,"cur") * wardFactor(k, ward===undefined?S.ward:ward, "cur");
+  return t;
+}
+
+/* ============================================================
+   3. ĐỊNH DẠNG
+   ============================================================ */
+const pad = n => String(n).padStart(2,"0");
+const nf = (x,d) => x.toLocaleString("vi-VN",{minimumFractionDigits:d,maximumFractionDigits:d});
+function money(v){                       // v: tỷ đồng
+  const a = Math.abs(v);
+  if (a >= 1000) return nf(v/1000, 2) + " nghìn tỷ";
+  if (a >= 100)  return nf(v, 0) + " tỷ";
+  if (a >= 1)    return nf(v, 1) + " tỷ";
+  return nf(v*1000, 0) + " triệu";
+}
+function moneyParts(v){
+  const a = Math.abs(v);
+  if (a >= 1000) return [nf(v/1000,2), "nghìn tỷ đồng"];
+  if (a >= 1)    return [nf(v, a>=100?0:1), "tỷ đồng"];
+  return [nf(v*1000,0), "triệu đồng"];
+}
+const pct = (x,d=1) => nf(x,d) + "%";
+function deltaHTML(g, cls="delta"){
+  if (!isFinite(g)) return `<span class="${cls} flat">—</span>`;
+  const dir = g > 0.05 ? "up" : g < -0.05 ? "down" : "flat";
+  const arw = dir === "up" ? "▲" : dir === "down" ? "▼" : "▬";
+  const sgn = g > 0 ? "+" : "";
+  return `<span class="${cls} ${dir}"><span class="arw">${arw}</span>${sgn}${nf(g,1)}%</span>`;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SERIES = ["--s1","--s2","--s3","--s4","--s5","--s6","--s7","--s8"];
+const cvar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ============================================================
+   4. BỘ LỌC
+   ============================================================ */
+function opt(v,t,sel){return `<option value="${esc(v)}"${sel===v?" selected":""}>${esc(t)}</option>`}
+
+function buildFilters(){
+  const per = document.getElementById("f-period");
+  let h = `<option value="ytd">Lũy kế từ đầu năm (T1–T${LAST_MONTH})</option>`;
+  for (let q=1; q<=3; q++){
+    const b = Math.min(q*3, LAST_MONTH);
+    h += `<option value="q${q}">Quý ${["I","II","III"][q-1]}${b<q*3?` (đến T${b})`:""}</option>`;
+  }
+  for (let m=1; m<=LAST_MONTH; m++) h += `<option value="m${m}">Tháng ${pad(m)}/${YEAR}</option>`;
+  per.innerHTML = h;
+  per.value = S.period === "ytd" ? "ytd" : S.period === "month" ? "m"+S.month : "q"+S.quarter;
+
+  const wd = document.getElementById("f-ward");
+  wd.innerHTML = opt("ALL",`Toàn thành phố (${WARDS.length} phường, xã)`,S.ward)
+    + WARDS.map(w=>opt(w.id, w.ten, S.ward)).join("");
+
+  const ng = document.getElementById("f-nguon");
+  ng.innerHTML = opt("ALL","Tất cả nguồn thu",S.nguon)
+    + NGUON.map(n=>opt(n.id, `${n.ma}. ${n.ten}`, S.nguon)).join("");
+
+  const kh = document.getElementById("f-khoan");
+  const khOpts = KHOAN.filter(k => S.nguon === "ALL" || k.nguon === S.nguon);
+  if (S.khoan !== "ALL" && !khOpts.some(k=>k.id===S.khoan)) S.khoan = "ALL";
+  kh.innerHTML = opt("ALL", S.nguon==="ALL" ? "Tất cả khoản thu" : `Tất cả khoản thu thuộc nhóm ${NG_BY_ID[S.nguon].ma}`, S.khoan)
+    + khOpts.map(k=>opt(k.id,k.ten,S.khoan)).join("");
+
+  const sc = document.getElementById("f-sac");
+  const pool = new Set();
+  for (const k of khOpts.filter(k => S.khoan==="ALL" || k.id===S.khoan)) Object.keys(k.sac).forEach(s=>pool.add(s));
+  const list = Object.keys(SAC).filter(s=>pool.has(s));
+  if (S.sac !== "ALL" && !pool.has(S.sac)) S.sac = "ALL";
+  sc.innerHTML = opt("ALL","Tất cả sắc thuế",S.sac) + list.map(s=>opt(s,SAC[s],S.sac)).join("");
+  sc.disabled = list.length === 0;
+}
+
+function renderChips(){
+  const c = [];
+  c.push(`<span class="chip plain"><b>${esc(periodLabel())}</b></span>`);
+  if (S.ward !== "ALL") c.push(chip(`Địa bàn: <b>${esc(WARD_BY_ID[S.ward].ten)}</b>`, "ward"));
+  if (S.nguon !== "ALL") c.push(chip(`Nguồn thu: <b>${esc(NG_BY_ID[S.nguon].ten)}</b>`, "nguon"));
+  if (S.khoan !== "ALL") c.push(chip(`Khoản thu: <b>${esc(KH_BY_ID[S.khoan].ten)}</b>`, "khoan"));
+  if (S.sac !== "ALL") c.push(chip(`Sắc thuế: <b>${esc(SAC[S.sac])}</b>`, "sac"));
+  document.getElementById("chips").innerHTML = c.join("");
+}
+const chip = (label,key) => `<span class="chip">${label}<button data-clear="${key}" title="Bỏ lọc" aria-label="Bỏ lọc">×</button></span>`;
+
+/* ============================================================
+   5. KPI
+   ============================================================ */
+function renderKPI(){
+  const list = activeKhoan();
+  const cur = sum(list), prv = sum(list, {prev:true});
+  const g = prv ? (cur/prv-1)*100 : NaN;
+  const ytd = sum(list, {range:[0,LAST_MONTH-1]});
+  const ytdPrev = sum(list, {range:[0,LAST_MONTH-1], prev:true});
+  const dt = duToan(list);
+  const prog = dt ? ytd/dt*100 : 0;
+  const [v1,u1] = moneyParts(cur), [v2,u2] = moneyParts(prv), [v3] = moneyParts(ytd), [v4] = moneyParts(dt);
+  const diff = cur - prv;
+
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi hero">
+      <div class="k-lab">Tổng thu NSNN · ${esc(periodLabel())}</div>
+      <div class="k-val">${v1} <span class="u">${u1}</span></div>
+      <div class="k-sub">${S.ward==="ALL" ? "Toàn thành phố Hà Nội" : esc(WARD_BY_ID[S.ward].ten)}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-lab">Cùng kỳ ${PREV}</div>
+      <div class="k-val">${v2} <span class="u">${u2}</span></div>
+      <div class="k-sub">Chênh lệch ${diff>=0?"+":"−"}${money(Math.abs(diff))}</div>
+    </div>
+    <div class="kpi">
+      <div class="k-lab">Tăng, giảm so cùng kỳ</div>
+      <div class="k-val" style="color:${g>=0?'var(--good-ink)':'var(--crit-ink)'}">${g>=0?"+":""}${nf(g,1)}<span class="u">%</span></div>
+      <div class="k-sub">(Thực hiện kỳ này − cùng kỳ) ÷ cùng kỳ</div>
+    </div>
+    <div class="kpi">
+      <div class="k-lab">Tiến độ dự toán năm</div>
+      <div class="k-val">${nf(prog,1)}<span class="u">%</span></div>
+      <div class="k-sub">Lũy kế ${v3} / dự toán ${v4} nghìn tỷ</div>
+      <div class="meter"><i class="${prog>=100?'over':''}" style="width:${Math.min(100,prog).toFixed(1)}%"></i></div>
+    </div>`;
+}
+
+/* ============================================================
+   6. BIỂU ĐỒ XU HƯỚNG
+   ============================================================ */
+function renderTrend(){
+  const list = activeKhoan();
+  const cur = monthly(list), prv = monthly(list, {prev:true});
+  const cum = []; cur.reduce((a,v,i)=>cum[i]=a+v, 0);
+  const svg = document.getElementById("trend");
+  const W=780, H=300, ML=74, MR=14, MT=14, MB=38;
+  const iw = W-ML-MR, ih = H-MT-MB;
+  const max = Math.max(...cum, ...cur, ...prv, 1);
+  const step = niceStep(max/4);
+  const top = Math.ceil(max/step)*step;
+  const x = i => ML + (LAST_MONTH===1?iw/2:(iw*i/(LAST_MONTH-1)));
+  const y = v => MT + ih - (v/top)*ih;
+
+  let g = "";
+  for (let v=0; v<=top+1e-6; v+=step){
+    g += `<line class="chart-grid" x1="${ML}" y1="${y(v).toFixed(1)}" x2="${W-MR}" y2="${y(v).toFixed(1)}"/>`;
+    g += `<text class="chart-lab end" x="${ML-9}" y="${(y(v)+3.5).toFixed(1)}">${axisLab(v)}</text>`;
+  }
+  g += `<line class="chart-axis" x1="${ML}" y1="${MT+ih}" x2="${W-MR}" y2="${MT+ih}"/>`;
+  for (let i=0; i<LAST_MONTH; i++)
+    g += `<text class="chart-lab mid" x="${x(i).toFixed(1)}" y="${MT+ih+18}">${pad(i+1)}/${YEAR}</text>`;
+
+  const path = a => a.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  g += `<path d="${path(cum)}" fill="none" stroke="var(--s2)" stroke-width="2.5" stroke-dasharray="7 5" stroke-linecap="round" stroke-linejoin="round"/>`;
+  g += `<path d="${path(prv)}" fill="none" stroke="var(--s3)" stroke-width="2" stroke-linejoin="round"/>`;
+  g += `<path d="${path(cur)}" fill="none" stroke="var(--s1)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  for (let i=0; i<LAST_MONTH; i++){
+    g += `<circle cx="${x(i).toFixed(1)}" cy="${y(prv[i]).toFixed(1)}" r="3.2" fill="var(--surface)" stroke="var(--s3)" stroke-width="2"/>`;
+    g += `<circle cx="${x(i).toFixed(1)}" cy="${y(cur[i]).toFixed(1)}" r="4.2" fill="var(--surface)" stroke="var(--s1)" stroke-width="2.5"/>`;
+  }
+  // nhãn trực tiếp ở điểm cuối
+  g += `<circle cx="${x(LAST_MONTH-1).toFixed(1)}" cy="${y(cum[LAST_MONTH-1]).toFixed(1)}" r="4.5" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"/>`;
+  g += `<line class="chart-crosshair" id="xh" x1="0" y1="${MT}" x2="0" y2="${MT+ih}" stroke="var(--s1)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>`;
+  for (let i=0; i<LAST_MONTH; i++){
+    const w = iw/LAST_MONTH;
+    g += `<rect class="hitcol" data-i="${i}" x="${(ML+i*w).toFixed(1)}" y="${MT}" width="${w.toFixed(1)}" height="${ih}"/>`;
+  }
+  svg.innerHTML = g;
+
+  const tip = document.getElementById("trend-tip"), wrap = document.getElementById("trendwrap"), xh = svg.querySelector("#xh");
+  svg.querySelectorAll(".hitcol").forEach(r=>{
+    r.addEventListener("mouseenter", () => {
+      const i = +r.dataset.i;
+      const gm = prv[i] ? (cur[i]/prv[i]-1)*100 : NaN;
+      tip.innerHTML = `<h5>Tháng ${pad(i+1)}/${YEAR}</h5>
+        <div class="tr"><i class="sw" style="background:var(--s1)"></i><span class="tn">Thực hiện</span><span class="tv">${money(cur[i])}</span></div>
+        <div class="tr"><i class="sw" style="background:var(--s3)"></i><span class="tn">Cùng kỳ ${PREV}</span><span class="tv">${money(prv[i])}</span></div>
+        <div class="tr"><i class="sw" style="background:var(--s2)"></i><span class="tn">Lũy kế</span><span class="tv">${money(cum[i])}</span></div>
+        <div class="tr"><i class="sw" style="background:transparent"></i><span class="tn">So cùng kỳ</span><span class="tv">${deltaHTML(gm)}</span></div>`;
+      tip.classList.add("on");
+      const px = x(i)/W*wrap.clientWidth;
+      tip.style.left = Math.max(4, Math.min(wrap.clientWidth - tip.offsetWidth - 4, px - tip.offsetWidth/2)) + "px";
+      tip.style.top = "6px";
+      xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("opacity","1");
+    });
+  });
+  wrap.addEventListener("mouseleave", ()=>{ tip.classList.remove("on"); xh.setAttribute("opacity","0"); });
+
+  document.getElementById("trend-scope").textContent = scopeLabel();
+  const gTot = prv.reduce((a,b)=>a+b,0) ? (cur.reduce((a,b)=>a+b,0)/prv.reduce((a,b)=>a+b,0)-1)*100 : NaN;
+  const best = cur.indexOf(Math.max(...cur));
+  document.getElementById("trend-note").innerHTML =
+    `Lũy kế ${LAST_MONTH} tháng đạt <b>${money(cum[LAST_MONTH-1])}</b>, ${gTot>=0?"tăng":"giảm"} <b>${nf(Math.abs(gTot),1)}%</b> so cùng kỳ.
+     Tháng thu cao nhất là <b>tháng ${pad(best+1)}</b> với ${money(cur[best])}.`;
+
+  document.getElementById("trend-table").innerHTML = `<table><thead><tr>
+      <th>Tháng</th><th>Thực hiện</th><th>Cùng kỳ ${PREV}</th><th>Lũy kế</th><th>± cùng kỳ</th></tr></thead><tbody>` +
+    cur.map((v,i)=>`<tr><td>${pad(i+1)}/${YEAR}</td><td class="n">${money(v)}</td><td class="n">${money(prv[i])}</td><td class="n">${money(cum[i])}</td><td class="n">${deltaHTML(prv[i]?(v/prv[i]-1)*100:NaN)}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+function niceStep(x){const e=Math.pow(10,Math.floor(Math.log10(x)));const m=x/e;return (m<1.5?1:m<3?2:m<7?5:10)*e}
+function axisLab(v){
+  if (v === 0) return "0";
+  if (v >= 1000) return nf(v/1000,0)+"k tỷ";
+  return nf(v,0);
+}
+function scopeLabel(){
+  const p = [];
+  p.push(S.ward==="ALL" ? "Toàn thành phố" : WARD_BY_ID[S.ward].ten);
+  if (S.nguon!=="ALL") p.push(NG_BY_ID[S.nguon].ten);
+  if (S.khoan!=="ALL") p.push(KH_BY_ID[S.khoan].ten);
+  if (S.sac!=="ALL") p.push(SAC[S.sac]);
+  return p.join(" › ");
+}
+
+/* ============================================================
+   7. CƠ CẤU THU — drill-down 3 cấp
+   ============================================================ */
+function drillLevel(){
+  // cấp hiển thị được suy ra từ đường dẫn drill + bộ lọc
+  const d = S.drill;
+  if (d.length === 0 && S.nguon === "ALL") return {level:"nguon"};
+  const ng = d[0] || (S.nguon !== "ALL" ? S.nguon : null);
+  if (!ng) return {level:"nguon"};
+  const kh = d[1] || (S.khoan !== "ALL" ? S.khoan : null);
+  if (!kh) return {level:"khoan", nguon:ng};
+  return {level:"sac", nguon:ng, khoan:kh};
+}
+function renderDrill(){
+  const L = drillLevel();
+  const cb = [];
+  cb.push(`<button data-drill="root">Thu NSNN</button>`);
+  if (L.level === "nguon"){
+    cb.push(`<span class="sep">›</span><span class="cur">Nguồn thu (cấp 2) · ${NGUON.length} nhóm</span>`);
+  } else {
+    cb.push(`<span class="sep">›</span>` + (L.level==="khoan"
+      ? `<span class="cur">${esc(NG_BY_ID[L.nguon].ten)}</span>`
+      : `<button data-drill="nguon:${L.nguon}">${esc(NG_BY_ID[L.nguon].ten)}</button>`));
+    if (L.level === "sac") cb.push(`<span class="sep">›</span><span class="cur">${esc(KH_BY_ID[L.khoan].ten)}</span>`);
+  }
+  document.getElementById("drill-crumb").innerHTML = cb.join("");
+
+  let items = [];
+  if (L.level === "nguon"){
+    items = NGUON.map(n=>{
+      const ks = activeKhoan().filter(k=>k.nguon===n.id);
+      return {key:n.id, ten:`${n.ma}. ${n.ten}`, cur:sum(ks), prev:sum(ks,{prev:true}), dt:duToan(ks), drill:ks.length>0, note:n.noWard&&S.ward!=="ALL"?"không phân bổ theo địa bàn":""};
+    });
+  } else if (L.level === "khoan"){
+    items = activeKhoan().filter(k=>k.nguon===L.nguon).map(k=>
+      ({key:k.id, ten:k.ten, cur:sum([k]), prev:sum([k],{prev:true}), dt:duToan([k]), drill:Object.keys(k.sac).length>1}));
+  } else {
+    const k = KH_BY_ID[L.khoan];
+    const [a,b] = monthRange();
+    let mc=0, mp=0; for(let m=a;m<=b;m++){mc+=k.m[m];mp+=k.mp[m]}
+    const wf = wardFactor(k, S.ward, "cur"), wfp = wardFactor(k, S.ward, "prev");
+    items = Object.keys(k.sac).filter(s=>S.sac==="ALL"||s===S.sac).map(s=>({
+      key:s, ten:SAC[s],
+      cur: mc*(k.sacVal[s]/k.val)*wf,
+      prev: mp*(k.sacPrev[s]/k.prev)*wfp,
+      dt: k.dt*(k.sacVal[s]/k.val)*wf, drill:false
+    }));
+  }
+  items = items.filter(i=>i.cur > 0 || i.prev > 0).sort((x,y)=>y.cur-x.cur);
+  const tot = items.reduce((a,i)=>a+i.cur,0) || 1;
+  const mx = Math.max(...items.map(i=>i.cur), 1);
+
+  document.getElementById("drill-rows").innerHTML = items.length ? items.map((it,idx)=>{
+    const c = SERIES[idx % 8], g = it.prev ? (it.cur/it.prev-1)*100 : NaN;
+    const tag = it.drill ? "button" : "div";
+    const attr = it.drill ? ` data-into="${esc(it.key)}" data-level="${L.level}"` : "";
+    return `<${tag} class="row"${attr}>
+      <span class="r-name">${esc(it.ten)} <span class="r-share">${pct(it.cur/tot*100)}</span>${it.drill?'<span class="chev">▸</span>':""}
+        ${it.note?`<br><span class="r-share">${esc(it.note)}</span>`:""}</span>
+      <span class="r-bar"><i style="width:${(it.cur/mx*100).toFixed(2)}%; background:var(${c})"></i></span>
+      <span class="r-val"><b>${money(it.cur)}</b><br><span class="r-meta">${deltaHTML(g)}</span></span>
+    </${tag}>`;
+  }).join("") : `<div class="empty">Không có số thu phát sinh với bộ lọc hiện tại.</div>`;
+
+  document.getElementById("drill-table").innerHTML = `<table><thead><tr>
+    <th>${L.level==="nguon"?"Nguồn thu":L.level==="khoan"?"Khoản thu":"Sắc thuế"}</th>
+    <th>Thực hiện</th><th>Tỷ trọng</th><th>Cùng kỳ</th><th>± cùng kỳ</th><th>Dự toán năm</th><th>Tiến độ</th>
+    </tr></thead><tbody>` + items.map(it=>`<tr>
+      <td>${esc(it.ten)}</td><td class="n">${money(it.cur)}</td><td class="n">${pct(it.cur/tot*100)}</td>
+      <td class="n">${money(it.prev)}</td><td class="n">${deltaHTML(it.prev?(it.cur/it.prev-1)*100:NaN)}</td>
+      <td class="n">${money(it.dt)}</td><td class="n">${it.dt?pct(it.cur/it.dt*100):"—"}</td></tr>`).join("")
+    + `</tbody></table>`;
+}
+
+/* ============================================================
+   8. ĐỊA BÀN
+   ============================================================ */
+function wardTable(){
+  const list = activeKhoan("w0"); // loại các nguồn không phân bổ
+  const [a,b] = monthRange();
+  return WARDS.map(w=>{
+    let cur=0, prv=0;
+    for (const k of list){
+      let mc=0, mp=0; for(let m=a;m<=b;m++){mc+=k.m[m]||0; mp+=k.mp[m]||0}
+      cur += mc*sacFactor(k,"cur")*(SHARE[k.id][w.id]||0);
+      prv += mp*sacFactor(k,"prev")*(PSHARE[k.id][w.id]||0);
+    }
+    return {w, cur, prv, g: prv?(cur/prv-1)*100:NaN, ntw:w.ntw};
+  }).sort((x,y)=>y.cur-x.cur);
+}
+function renderGeo(){
+  const rows = wardTable();
+  const sel = S.ward;
+  const idx = rows.findIndex(r=>r.w.id===sel);
+  const title = document.getElementById("geo-title"), hint = document.getElementById("geo-hint"), note = document.getElementById("geo-note");
+
+  let show, lead;
+  if (sel === "ALL"){
+    show = rows.slice(0,10);
+    title.textContent = "Top phường, xã theo số thu";
+    hint.textContent = `10 / ${WARDS.length} địa bàn`;
+    const top10 = show.reduce((a,r)=>a+r.cur,0), all = rows.reduce((a,r)=>a+r.cur,0);
+    lead = `10 địa bàn dẫn đầu chiếm <b>${pct(top10/all*100)}</b> số thu phân bổ được theo địa bàn. Thanh màu thể hiện phân chia <b>ngân sách trung ương</b> và <b>ngân sách địa phương</b>.`;
+  } else {
+    const from = Math.max(0, Math.min(idx-3, rows.length-7));
+    show = rows.slice(from, from+7);
+    title.textContent = "So sánh trong bảng xếp hạng";
+    hint.textContent = `Vị trí ${idx+1} / ${rows.length}`;
+    lead = `Các địa bàn liền kề <b>${esc(rows[idx].w.ten)}</b> về quy mô thu.`;
+  }
+  note.innerHTML = lead;
+  const mx = Math.max(...show.map(r=>r.cur), 1);
+
+  document.getElementById("geo-rows").innerHTML = show.map(r=>{
+    const on = r.w.id===sel;
+    const tw = r.ntw*100;
+    return `<button class="row" data-ward="${r.w.id}" ${on?'style="background:var(--surface-2)"':""}>
+      <span class="r-name">${on?"● ":""}${esc(r.w.ten)} <span class="r-share">#${rows.indexOf(r)+1}</span></span>
+      <span class="r-bar" title="NSTW ${pct(tw)} · NSĐP ${pct(100-tw)}">
+        <i style="width:${(r.cur/mx*tw).toFixed(2)}%; background:var(--s1)"></i>
+        <i style="width:${(r.cur/mx*(100-tw)).toFixed(2)}%; background:var(--s2)"></i></span>
+      <span class="r-val"><b>${money(r.cur)}</b><br><span class="r-meta">NSTW ${nf(tw,1)}% · NSĐP ${nf(100-tw,1)}% · ${deltaHTML(r.g)}</span></span>
+    </button>`;
+  }).join("");
+
+  document.getElementById("geo-table").innerHTML = `<table><thead><tr>
+    <th>#</th><th>Phường, xã</th><th>Thực hiện</th><th>Cùng kỳ</th><th>± cùng kỳ</th><th>NSTW</th><th>NSĐP</th>
+    </tr></thead><tbody>` + rows.map((r,i)=>`<tr>
+      <td class="n">${i+1}</td><td>${esc(r.w.ten)}</td><td class="n">${money(r.cur)}</td>
+      <td class="n">${money(r.prv)}</td><td class="n">${deltaHTML(r.g)}</td>
+      <td class="n">${pct(r.ntw*100)}</td><td class="n">${pct(100-r.ntw*100)}</td></tr>`).join("")
+    + `</tbody></table>`;
+
+  // thẻ xếp hạng
+  const panel = document.getElementById("rank-panel");
+  if (sel === "ALL"){ panel.hidden = true; }
+  else {
+    panel.hidden = false;
+    const r = rows[idx], pos = (1 - idx/(rows.length-1))*100;
+    document.getElementById("rank-body").innerHTML = `
+      <div class="panel-note">Xếp hạng theo tổng số thu phân bổ theo địa bàn, ${esc(periodLabel())}.</div>
+      <div class="rank"><span class="big">${idx+1}</span><span class="of">/ ${rows.length} phường, xã</span></div>
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:600; color:var(--s1); margin-top:6px">${money(r.cur)}</div>
+      <div class="rankbar"><i style="left:calc(${pos.toFixed(1)}% - 1.5px)"></i></div>
+      <div class="rankscale"><span>Thấp nhất</span><span>Cao nhất</span></div>
+      <div style="margin-top:14px; font-size:12.5px; color:var(--ink-2)">
+        Cùng kỳ ${PREV}: <b class="num">${money(r.prv)}</b> · ${deltaHTML(r.g)}<br>
+        Phân chia: NSTW <b class="num">${pct(r.ntw*100)}</b> · NSĐP <b class="num">${pct(100-r.ntw*100)}</b>
+      </div>`;
+  }
+}
+
+/* ============================================================
+   9. DOANH NGHIỆP + KHU VỰC KINH TẾ
+   ============================================================ */
+function dnValue(d){
+  // quy mô theo kỳ: tỷ lệ theo trọng số tháng của thu nội địa
+  const [a,b] = monthRange();
+  let f = 0; for (let m=a;m<=b;m++) f += MW.nd[m];
+  let s = 1;
+  if (S.sac !== "ALL") s = d.sac[S.sac] || 0;
+  return d.val * f / MW.nd.slice(0,LAST_MONTH).reduce((x,y)=>x+y,0) * s;
+}
+function dnList(){
+  let l = DN_LIST.filter(d => S.ward === "ALL" || d.ward === WARD_BY_ID[S.ward].ten);
+  if (S.khoan !== "ALL"){
+    const k = KH_BY_ID[S.khoan];
+    l = l.filter(d => Object.keys(d.sac).some(s => k.sac[s]));
+  }
+  return l.map(d=>({...d, v:dnValue(d)})).filter(d=>d.v>0).sort((a,b)=>b.v-a.v);
+}
+function renderDN(){
+  const l = dnList();
+  const tot = sum(activeKhoan()) || 1;
+  const mx = Math.max(...l.map(d=>d.v), 1);
+  document.getElementById("dn-hint").textContent = l.length ? `${l.length} đơn vị` : "";
+  document.getElementById("dn-rows").innerHTML = l.length ? l.slice(0,10).map((d,i)=>`
+    <button class="ent" data-dn="${d.id}">
+      <span class="e-rk">${i+1}</span>
+      <span>
+        <span class="e-name">${d.id}</span>
+        <span class="e-sec">${esc(d.nganh)} · ${esc(d.ward)}</span>
+        <span class="e-mini" style="width:${(d.v/mx*100).toFixed(1)}%"></span>
+      </span>
+      <span class="e-right">
+        <span class="e-amt">${money(d.v)}</span><br>
+        <span class="r-meta">${pct(d.v/tot*100,2)} tổng thu · ${deltaHTML(d.g)}</span>
+      </span>
+    </button>`).join("")
+    : `<div class="empty">Không có doanh nghiệp nộp lớn trên địa bàn, bộ lọc này.</div>`;
+}
+const SECTORS = [
+  {id:"dnnn", ten:"Doanh nghiệp nhà nước", c:"--s1"},
+  {id:"dtnn", ten:"Doanh nghiệp có vốn đầu tư nước ngoài", c:"--s2"},
+  {id:"nqd",  ten:"Khu vực kinh tế ngoài quốc doanh", c:"--s3"}
+];
+function renderSectors(){
+  const rows = SECTORS.map(s=>{
+    const k = KH_BY_ID[s.id];
+    const inScope = (S.nguon==="ALL"||S.nguon==="nd") && (S.khoan==="ALL"||S.khoan===s.id);
+    const cur = inScope ? sum([k]) : 0, prv = inScope ? sum([k],{prev:true}) : 0;
+    return {...s, cur, prv, g: prv?(cur/prv-1)*100:NaN};
+  });
+  const tot = rows.reduce((a,r)=>a+r.cur,0);
+  const mx = Math.max(...rows.map(r=>r.cur),1);
+  document.getElementById("sector-rows").innerHTML = tot > 0 ? rows.map(r=>`
+    <div class="row">
+      <span class="r-name">${esc(r.ten)} <span class="r-share">${r.cur?pct(r.cur/tot*100):"—"}</span></span>
+      <span class="r-bar"><i style="width:${(r.cur/mx*100).toFixed(2)}%; background:var(${r.c})"></i></span>
+      <span class="r-val"><b>${money(r.cur)}</b><br><span class="r-meta">${deltaHTML(r.g)}</span></span>
+    </div>`).join("")
+    : `<div class="empty">Ngoài phạm vi bộ lọc hiện tại.</div>`;
+}
+
+/* ---- Hồ sơ doanh nghiệp ---- */
+function renderDNFocus(){
+  const panel = document.getElementById("dn-focus");
+  if (!S.dn){ panel.hidden = true; return; }
+  const d = DN_LIST.find(x=>x.id===S.dn);
+  if (!d){ panel.hidden = true; return; }
+  panel.hidden = false;
+  const v = dnValue(d), prv = v/(1+d.g/100);
+  const totCity = sum(KHOAN, {ward:"ALL"}) || 1;
+  const wid = WARDS.find(w=>w.ten===d.ward)?.id;
+  const totWard = wid ? sum(activeKhoan("x"), {ward:wid}) : 0;
+  const sacs = Object.entries(d.sac).map(([s,sh])=>({s, ten:SAC[s], v:v*sh, sh})).sort((a,b)=>b.v-a.v);
+  const mx = Math.max(...sacs.map(s=>s.v),1);
+
+  // xu hướng doanh nghiệp theo tháng
+  const f = MW.nd.slice(0,LAST_MONTH), fs = f.reduce((a,b)=>a+b,0);
+  const jit = mulberry32(d.id.charCodeAt(4)*977 + 31);
+  const series = f.map(w => d.val*w/fs*(0.82+jit()*0.36));
+  const W=760,H=140,ML=8,MR=8,MT=10,MB=22, iw=W-ML-MR, ih=H-MT-MB;
+  const top = Math.max(...series)*1.15 || 1;
+  const px = i => ML + iw*i/(LAST_MONTH-1), py = val => MT+ih-(val/top)*ih;
+  const line = series.map((val,i)=>`${i?"L":"M"}${px(i).toFixed(1)},${py(val).toFixed(1)}`).join(" ");
+  const area = `${line} L${px(LAST_MONTH-1).toFixed(1)},${MT+ih} L${px(0).toFixed(1)},${MT+ih} Z`;
+
+  panel.innerHTML = `
+    <div class="focus-hd">
+      <div style="flex:1">
+        <div class="panel-hd"><h2>Hồ sơ doanh nghiệp</h2></div>
+        <h3>${d.id}</h3>
+        <div class="sub">${esc(d.nganh)} · địa bàn ${esc(d.ward)} · ${esc(periodLabel())}</div>
+      </div>
+      <button class="btn" data-close-dn>× Đóng hồ sơ</button>
+    </div>
+    <div class="statline">
+      <div><div class="s-lab">Tổng số đã nộp</div><div class="s-val" style="color:var(--s1)">${money(v)}</div></div>
+      <div><div class="s-lab">Tỷ trọng trong tổng thu thành phố</div><div class="s-val">${pct(v/totCity*100,2)}</div></div>
+      <div><div class="s-lab">Tăng, giảm so cùng kỳ</div><div class="s-val" style="color:${d.g>=0?'var(--good-ink)':'var(--crit-ink)'}">${d.g>=0?"+":""}${nf(d.g,1)}%</div></div>
+    </div>
+    <div class="duo">
+      <div>
+        <div class="panel-hd"><h2>Cơ cấu theo sắc thuế</h2></div>
+        <div class="panel-note">Cùng kỳ ${PREV} nộp <b>${money(prv)}</b>${totWard?` · chiếm <b>${pct(v/totWard*100,1)}</b> số thu của ${esc(d.ward)}`:""}.</div>
+        <div class="rows">${sacs.map((s,i)=>`
+          <div class="row">
+            <span class="r-name">${esc(s.ten)} <span class="r-share">${pct(s.sh*100)}</span></span>
+            <span class="r-bar"><i style="width:${(s.v/mx*100).toFixed(2)}%; background:var(${SERIES[i%8]})"></i></span>
+            <span class="r-val"><b>${money(s.v)}</b></span>
+          </div>`).join("")}</div>
+      </div>
+      <div>
+        <div class="panel-hd"><h2>Số nộp theo tháng</h2></div>
+        <div class="panel-note">Diễn biến ${LAST_MONTH} tháng đầu năm ${YEAR}.</div>
+        <div class="chartwrap">
+          <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Số nộp theo tháng của ${d.id}">
+            <path d="${area}" fill="var(--s1)" opacity=".12"/>
+            <path d="${line}" fill="none" stroke="var(--s1)" stroke-width="2.5" stroke-linejoin="round"/>
+            ${series.map((val,i)=>`<circle cx="${px(i).toFixed(1)}" cy="${py(val).toFixed(1)}" r="3.4" fill="var(--surface)" stroke="var(--s1)" stroke-width="2"><title>Tháng ${pad(i+1)}: ${money(val)}</title></circle>`).join("")}
+            ${series.map((val,i)=>`<text class="chart-lab mid" x="${px(i).toFixed(1)}" y="${MT+ih+16}">T${i+1}</text>`).join("")}
+          </svg>
+        </div>
+        <div class="legend"><span><i class="ln" style="border-color:var(--s1)"></i> Số nộp trong tháng — cao nhất ${money(Math.max(...series))}</span></div>
+      </div>
+    </div>`;
+  panel.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+/* ============================================================
+   10. ĐIỂM CẦN CHÚ Ý — tính từ dữ liệu
+   ============================================================ */
+function renderNotes(){
+  const out = [];
+  const list = activeKhoan();
+  const cur = sum(list), prv = sum(list,{prev:true});
+  const g = prv ? (cur/prv-1)*100 : NaN;
+
+  // 1. khoản thu giảm sâu nhất
+  const per = list.map(k=>({k, c:sum([k]), p:sum([k],{prev:true})}))
+                  .filter(x=>x.p>0).map(x=>({...x, g:(x.c/x.p-1)*100}));
+  const worst = [...per].sort((a,b)=>a.g-b.g)[0];
+  if (worst && worst.g < 0)
+    out.push({c:"var(--crit)", t:"Cần chú ý", b:`<b>${esc(worst.k.ten)}</b> giảm <b>${nf(Math.abs(worst.g),1)}%</b> so cùng kỳ, hụt <b>${money(worst.p-worst.c)}</b>.`});
+  else if (worst)
+    out.push({c:"var(--good)", t:"Không có khoản thu giảm", b:`Tất cả khoản thu trong phạm vi lọc đều tăng so cùng kỳ. Thấp nhất là <b>${esc(worst.k.ten)}</b> ${deltaHTML(worst.g)}.`});
+
+  // 2. đóng góp lớn nhất vào mức tăng
+  const best = [...per].sort((a,b)=>(b.c-b.p)-(a.c-a.p))[0];
+  if (best)
+    out.push({c:"var(--good)", t:"Đóng góp tăng trưởng", b:`<b>${esc(best.k.ten)}</b> ${deltaHTML(best.g)}, đóng góp <b>${money(best.c-best.p)}</b> — lớn nhất vào mức tăng chung ${deltaHTML(g)}.`});
+
+  // 3. địa bàn
+  if (S.ward === "ALL"){
+    const rows = wardTable();
+    const down = rows.filter(r=>r.g < -10).length;
+    const topW = rows[0];
+    out.push({c:"var(--warn)", t:"Địa bàn", b:`<b>${down}/${rows.length}</b> phường, xã giảm trên 10% so cùng kỳ. Dẫn đầu là <b>${esc(topW.w.ten)}</b> với ${money(topW.cur)}.`});
+  } else {
+    const rows = wardTable(), i = rows.findIndex(r=>r.w.id===S.ward), r = rows[i];
+    out.push({c: r.g>=0?"var(--good)":"var(--crit)", t:"Địa bàn đang xem",
+      b:`<b>${esc(r.w.ten)}</b> xếp thứ <b>${i+1}/${rows.length}</b>, ${deltaHTML(r.g)} so cùng kỳ.`});
+  }
+
+  // 4. tiến độ dự toán
+  const dt = duToan(list), ytd = sum(list,{range:[0,LAST_MONTH-1]});
+  const prog = dt ? ytd/dt*100 : 0, expect = LAST_MONTH/12*100;
+  out.push({c: prog>=expect?"var(--good)":"var(--warn)", t:"Tiến độ dự toán",
+    b:`Đạt <b>${nf(prog,1)}%</b> dự toán năm sau ${LAST_MONTH} tháng, ${prog>=expect?"vượt":"chậm hơn"} tiến độ đều <b>${nf(Math.abs(prog-expect),1)} điểm %</b>.`});
+
+  document.getElementById("notes").innerHTML = out.map(n=>`
+    <div class="note"><span class="dot" style="background:${n.c}"></span>
+      <span><span class="nh">${esc(n.t)}</span><span class="nb">${n.b}</span></span></div>`).join("");
+}
+
+/* ============================================================
+   11. VÒNG ĐỜI
+   ============================================================ */
+function renderAll(){
+  buildFilters(); renderChips(); renderKPI(); renderTrend();
+  renderDrill(); renderGeo(); renderNotes(); renderDN(); renderSectors(); renderDNFocus();
+}
+
+document.getElementById("f-period").addEventListener("change", e=>{
+  const v = e.target.value;
+  if (v === "ytd") S.period = "ytd";
+  else if (v[0] === "m"){ S.period="month"; S.month=+v.slice(1) }
+  else { S.period="quarter"; S.quarter=+v.slice(1) }
+  renderAll();
+});
+document.getElementById("f-ward").addEventListener("change", e=>{ S.ward = e.target.value; S.dn=null; renderAll() });
+document.getElementById("f-nguon").addEventListener("change", e=>{ S.nguon = e.target.value; S.khoan="ALL"; S.drill=[]; renderAll() });
+document.getElementById("f-khoan").addEventListener("change", e=>{ S.khoan = e.target.value; S.drill=[]; renderAll() });
+document.getElementById("f-sac").addEventListener("change", e=>{ S.sac = e.target.value; renderAll() });
+document.getElementById("f-reset").addEventListener("click", ()=>{
+  Object.assign(S,{period:"ytd",month:LAST_MONTH,quarter:3,ward:"ALL",nguon:"ALL",khoan:"ALL",sac:"ALL",drill:[],dn:null});
+  renderAll();
+});
+document.getElementById("chips").addEventListener("click", e=>{
+  const b = e.target.closest("[data-clear]"); if(!b) return;
+  const k = b.dataset.clear;
+  if (k==="ward") S.ward="ALL";
+  if (k==="nguon"){ S.nguon="ALL"; S.khoan="ALL"; S.drill=[] }
+  if (k==="khoan"){ S.khoan="ALL"; S.drill=[] }
+  if (k==="sac") S.sac="ALL";
+  renderAll();
+});
+document.getElementById("drill-crumb").addEventListener("click", e=>{
+  const b = e.target.closest("[data-drill]"); if(!b) return;
+  const v = b.dataset.drill;
+  if (v === "root"){ S.drill=[]; S.nguon="ALL"; S.khoan="ALL" }
+  else { S.drill=[v.split(":")[1]]; S.khoan="ALL" }
+  renderAll();
+});
+document.getElementById("drill-rows").addEventListener("click", e=>{
+  const b = e.target.closest("[data-into]"); if(!b) return;
+  if (b.dataset.level === "nguon") S.drill = [b.dataset.into];
+  else S.drill = [drillLevel().nguon, b.dataset.into];
+  renderAll();
+});
+document.getElementById("geo-rows").addEventListener("click", e=>{
+  const b = e.target.closest("[data-ward]"); if(!b) return;
+  S.ward = S.ward === b.dataset.ward ? "ALL" : b.dataset.ward; S.dn=null; renderAll();
+});
+document.getElementById("dn-rows").addEventListener("click", e=>{
+  const b = e.target.closest("[data-dn]"); if(!b) return;
+  S.dn = S.dn === b.dataset.dn ? null : b.dataset.dn; renderDNFocus();
+});
+document.getElementById("dn-focus").addEventListener("click", e=>{
+  if (e.target.closest("[data-close-dn]")){ S.dn=null; renderDNFocus() }
+});
+document.getElementById("asof").textContent = `${new Date(YEAR, LAST_MONTH, 0).getDate()}/${pad(LAST_MONTH)}/${YEAR}`;
+
+renderAll();
+window.addEventListener("resize", ()=>{ clearTimeout(window._rz); window._rz = setTimeout(renderTrend, 180) });
+</script>

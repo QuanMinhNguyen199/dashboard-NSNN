@@ -1,0 +1,202 @@
+{
+  "/api/wards": {
+    "exampleURL": "/api/wards",
+    "fixture": "cecbc84034f43695.json",
+    "shape": {
+      "type": "array",
+      "length": 126,
+      "first": {
+        "location_code": "09877",
+        "location_name": "An Khánh",
+        "name_slug": "an_khanh"
+      }
+    }
+  },
+  "/api/periods": {
+    "exampleURL": "/api/periods",
+    "fixture": "fffec018c0b710f1.json",
+    "shape": {
+      "type": "array",
+      "length": 50,
+      "first": {
+        "year": 2026,
+        "quarter": 4,
+        "month": 12,
+        "period_type": "MONTH",
+        "n_ward_with_data": 126,
+        "has_ward_data": true
+      }
+    }
+  },
+  "/api/waterfall": {
+    "exampleURL": "/api/waterfall?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "aeefcd0ca8fc9e93.json",
+    "shape": {
+      "type": "object",
+      "keys": [
+        "bars",
+        "total_delta"
+      ],
+      "sample": {
+        "bars": {
+          "length": 0
+        },
+        "total_delta": null
+      }
+    }
+  },
+  "/api/by-item": {
+    "exampleURL": "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "f5f0bc2923d73543.json",
+    "shape": {
+      "type": "array",
+      "length": 6,
+      "first": {
+        "name": "Thu NSNN (Đã loại trừ hoàn thuế GTGT)",
+        "amount": 481809707075045
+      }
+    }
+  },
+  "/api/corrections": {
+    "exampleURL": "/api/corrections?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "4525e68a10b7ee01.json",
+    "shape": {
+      "type": "array",
+      "length": 0
+    }
+  },
+  "/api/trend": {
+    "exampleURL": "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "e04e50ef2fb2e4c5.json",
+    "shape": {
+      "type": "array",
+      "length": 48,
+      "first": {
+        "year": 2025,
+        "month": 1,
+        "acc": "PERIOD",
+        "amount": 103820816620342
+      }
+    }
+  },
+  "/api/heatmap": {
+    "exampleURL": "/api/heatmap?item=T%E1%BB%94NG+S%E1%BB%90",
+    "fixture": "baf0dcda06a04257.json",
+    "shape": {
+      "type": "array",
+      "length": 4542,
+      "first": {
+        "location_code": "00613",
+        "location_name": "Tây Tựu",
+        "year": 2024,
+        "month": 1,
+        "amount": 0
+      }
+    }
+  },
+  "/api/kpi-compare": {
+    "exampleURL": "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "e903133c2f28c9e5.json",
+    "shape": {
+      "type": "object",
+      "keys": [
+        "current",
+        "previous"
+      ],
+      "sample": {
+        "current": {
+          "length": 20,
+          "first": {
+            "item": "THU NGÂN SÁCH NHÀ NƯỚC",
+            "acc": "PERIOD",
+            "location_level": "city",
+            "amount": 516773056462028,
+            "n_locations": 1
+          }
+        },
+        "previous": {
+          "length": 0
+        }
+      }
+    }
+  },
+  "/api/by-ward-scope": {
+    "exampleURL": "/api/by-ward-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "2152ef2a7f537972.json",
+    "shape": {
+      "type": "array",
+      "length": 756,
+      "first": {
+        "location_code": "00004",
+        "location_name": "Ba Đình",
+        "code": "NSNN",
+        "name": "NSNN",
+        "amount": 7838963127029
+      }
+    }
+  },
+  "/api/by-scope": {
+    "exampleURL": "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "c68ef36a8521e988.json",
+    "shape": {
+      "type": "array",
+      "length": 3,
+      "first": {
+        "code": "NSTW",
+        "name": "NSTW",
+        "amount": 308123421720076
+      }
+    }
+  },
+  "/api/by-ward": {
+    "exampleURL": "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "801580d69d76a904.json",
+    "shape": {
+      "type": "array",
+      "length": 126,
+      "first": {
+        "location_code": "00070",
+        "location_name": "Hoàn Kiếm",
+        "name_slug": "hoan_kiem",
+        "amount": 77345034159259
+      }
+    }
+  },
+  "/api/treemap": {
+    "exampleURL": "/api/treemap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026",
+    "fixture": "d34ace32a974f704.json",
+    "shape": {
+      "type": "object",
+      "keys": [
+        "parent",
+        "total",
+        "rows"
+      ],
+      "sample": {
+        "parent": "THU NGÂN SÁCH NHÀ NƯỚC",
+        "total": 481990311953237,
+        "rows": {
+          "length": 6,
+          "first": {
+            "name": "Thu nội địa không kể dầu thô",
+            "amount": 478566258777568
+          }
+        }
+      }
+    }
+  },
+  "/api/by-ward-item": {
+    "exampleURL": "/api/by-ward-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026",
+    "fixture": "d107f008d8b26d3d.json",
+    "shape": {
+      "type": "array",
+      "length": 267,
+      "first": {
+        "location_code": "00004",
+        "location_name": "Ba Đình",
+        "name": "Thu nội địa không kể dầu thô",
+        "amount": 534953513938.9999
+      }
+    }
+  }
+}

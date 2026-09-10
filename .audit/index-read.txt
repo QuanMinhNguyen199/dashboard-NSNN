@@ -1,0 +1,32 @@
+🏛️
+Tổng quan thu ngân sách nhà nước — Thành phố Hà Nội
+Sở Tài chính · Chi cục Thuế khu vực I — báo cáo điều hành
+DỮ LIỆU MÔ PHỎNG
+Số liệu đến 31/08/2026
+Đơn vị: tỷ đồng
+NĂM
+2026
+KỲ BÁO CÁO
+ĐỊA BÀN
+NGUỒN THU (CẤP 2)
+KHOẢN THU (CẤP 3)
+SẮC THUẾ (CẤP 4)
+ 
+Đặt lại bộ lọc
+XU HƯỚNG THEO THÁNG
+Thực hiện trong kỳ 2026
+Cùng kỳ 2025
+Lũy kế từ đầu năm 2026
+Xem bảng số liệu theo tháng
+CƠ CẤU THU — ĐI SÂU TỪNG CẤP
+Bấm vào một dòng để xuống cấp tiếp theo
+Xem bảng số liệu cấp hiện tại
+TOP PHƯỜNG, XÃ THEO SỐ THU
+Xem bảng xếp hạng đầy đủ
+ĐIỂM CẦN CHÚ Ý
+DOANH NGHIỆP NỘP LỚN
+Tên doanh nghiệp được ẩn danh trong bản mô phỏng.
+KHU VỰC KINH TẾ
+Ba khu vực trong nhóm thu từ hoạt động sản xuất kinh doanh.
+Nguồn dữ liệu: bản mô phỏng phục vụ trình bày giao diện — không phải số liệu quyết toán. Cấu trúc phân cấp theo đặc tả: Thu NSNN → Nguồn thu → Khoản thu → Sắc thuế → Doanh nghiệp.
+Ghi chú kỹ thuật: thu cân đối từ hoạt động xuất nhập khẩu và thu về dầu thô do cơ quan Trung ương quản lý, hạch toán ở mức thành phố nên không phân bổ theo phường, xã; khi chọn một địa bàn cụ thể hai nguồn này được loại khỏi tổng. Tỷ trọng sắc thuế trong một khoản thu áp dụng chung cho toàn thành phố. Dự toán theo nghị quyết HĐND thành phố giao đầu năm.
