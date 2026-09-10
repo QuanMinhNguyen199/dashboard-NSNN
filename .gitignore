@@ -1,0 +1,15 @@
+# Phụ thuộc và kết quả build — dựng lại được bằng `npm install` và `npm run build`
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Cache của dev server khi bật NSNN_PROXY
+.api-cache/
+
+# Hồ sơ tạm của trình duyệt do script kiểm chứng tạo ra
+.pptr-*/
+
+# Cấu hình cục bộ
+*.local
+.DS_Store
+Thumbs.db

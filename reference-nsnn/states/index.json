@@ -1,0 +1,484 @@
+[
+  {
+    "name": "01-overview",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "02-quarter2",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "03-quarter2-month5",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "04-month5-ytd",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=YTD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "05-item-thu-nsnn",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=YTD&item=thu-nsnn&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "06-item-net-total",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&quarter=2&month=5&acc=YTD&item=tong-so-tru-hoan-thue&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "07-aug-overview",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "08-trend-modal",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU",
+      "Xu hướng theo tháng"
+    ]
+  },
+  {
+    "name": "09-ranking-growth",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "10-ranking-stability",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "11-ranking-modal",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU",
+      "MÃ TỔNG HỢP BÁO CÁO KHO BẠC NHÀ NƯỚC KHU VỰC I - HÀ NỘI — xu hướng theo tháng"
+    ]
+  },
+  {
+    "name": "12-tax-composition",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "13-historical-2024",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2024&acc=PERIOD&item=tong-so&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "XU HƯỚNG THEO THÁNG",
+      "THEO CẤP NGÂN SÁCH",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "BẢN ĐỒ 30 QUẬN/HUYỆN TRƯỚC 01/07/2025"
+    ]
+  },
+  {
+    "name": "14-historical-district",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2024&acc=PERIOD&item=tong-so&district=hoan-kiem&tab=detail",
+    "headings": [
+      "QUẬN HOÀN KIẾM",
+      "BẢN ĐỒ 30 QUẬN/HUYỆN TRƯỚC 01/07/2025"
+    ]
+  },
+  {
+    "name": "15-mixed-2025",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2025&acc=PERIOD&item=tong-so&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "XU HƯỚNG THEO THÁNG",
+      "THEO CẤP NGÂN SÁCH",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "16-june2025",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2025&month=6&acc=PERIOD&item=tong-so&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "XU HƯỚNG THEO THÁNG",
+      "THEO CẤP NGÂN SÁCH",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "BẢN ĐỒ 30 QUẬN/HUYỆN TRƯỚC 01/07/2025"
+    ]
+  },
+  {
+    "name": "17-july2025",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2025&month=7&acc=PERIOD&item=tong-so&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "XU HƯỚNG THEO THÁNG",
+      "THEO CẤP NGÂN SÁCH",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "18-detail-ward",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2025&month=7&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "CHI TIẾT ĐỊA BÀN",
+      "THEO CẤP NGÂN SÁCH",
+      "XU HƯỚNG THEO THÁNG",
+      "TOP CHỈ TIÊU (HOÀN KIẾM)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "19-no-data",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=12&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "20-invalid-url",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "XU HƯỚNG THEO THÁNG",
+      "THEO CẤP NGÂN SÁCH",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "21-dismiss-notice",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "XU HƯỚNG THEO THÁNG",
+      "THEO CẤP NGÂN SÁCH",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "22-compare-empty",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&tab=compare",
+    "headings": [
+      "Chọn một phường/xã để bắt đầu so sánh"
+    ]
+  },
+  {
+    "name": "23-compare-default",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m9&cmpb=2026m9",
+    "headings": [
+      "HOÀN KIẾM — Tháng 9/2025 vs Tháng 9/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  },
+  {
+    "name": "24-compare-draft",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m9&cmpb=2026m9",
+    "headings": [
+      "HOÀN KIẾM — Tháng 9/2025 vs Tháng 9/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  },
+  {
+    "name": "25-compare-aug",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  },
+  {
+    "name": "26-compare-ytd",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=YTD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  },
+  {
+    "name": "27-compare-q3",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=YTD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025q3&cmpb=2026q3",
+    "headings": [
+      "HOÀN KIẾM — Quý 3/2025 vs Quý 3/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  },
+  {
+    "name": "28-detail-hoankiem",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "CHI TIẾT ĐỊA BÀN",
+      "THEO CẤP NGÂN SÁCH",
+      "XU HƯỚNG THEO THÁNG",
+      "TOP CHỈ TIÊU (HOÀN KIẾM)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "29-reset-zoom",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "CHI TIẾT ĐỊA BÀN",
+      "THEO CẤP NGÂN SÁCH",
+      "XU HƯỚNG THEO THÁNG",
+      "TOP CHỈ TIÊU (HOÀN KIẾM)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "30-refresh",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "headings": [
+      "XẾP HẠNG",
+      "CHI TIẾT ĐỊA BÀN",
+      "THEO CẤP NGÂN SÁCH",
+      "XU HƯỚNG THEO THÁNG",
+      "TOP CHỈ TIÊU (HOÀN KIẾM)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "31-ranking-expanded",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "32-composition-expanded",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "33-compare-same-year",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2026m7&cmpb=2026m8",
+    "headings": [
+      "HOÀN KIẾM — Tháng 7/2026 vs Tháng 8/2026",
+      "DIỄN BIẾN 12 THÁNG — 2026"
+    ]
+  },
+  {
+    "name": "34-compare-annual",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2024y&cmpb=2025y",
+    "headings": [
+      "HOÀN KIẾM — Cả năm 2024 vs Cả năm 2025",
+      "DIỄN BIẾN 12 THÁNG — 2024 VÀ 2025"
+    ]
+  },
+  {
+    "name": "tablet-overview",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=overview&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "tablet-detail",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "XẾP HẠNG",
+      "CHI TIẾT ĐỊA BÀN",
+      "THEO CẤP NGÂN SÁCH",
+      "XU HƯỚNG THEO THÁNG",
+      "TOP CHỈ TIÊU (HOÀN KIẾM)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "tablet-compare",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  },
+  {
+    "name": "mobile-overview",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=overview&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "XU HƯỚNG THEO THÁNG",
+      "TOP ĐỊA BÀN",
+      "TOP CHỈ TIÊU (TOÀN TP)",
+      "THEO CẤP NGÂN SÁCH",
+      "CƠ CẤU THU NSNN",
+      "WATERFALL — BIẾN ĐỘNG THU NSNN SO KỲ TRƯỚC",
+      "XẾP HẠNG 126 PHƯỜNG/XÃ THEO THÁNG",
+      "SO SÁNH CƠ CẤU GIỮA CÁC ĐỊA BÀN",
+      "ĐÍNH CHÍNH SỐ LIỆU"
+    ]
+  },
+  {
+    "name": "mobile-detail",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "XẾP HẠNG",
+      "CHI TIẾT ĐỊA BÀN",
+      "THEO CẤP NGÂN SÁCH",
+      "XU HƯỚNG THEO THÁNG",
+      "TOP CHỈ TIÊU (HOÀN KIẾM)",
+      "BẢN ĐỒ 126 PHƯỜNG/XÃ TỪ 01/07/2025"
+    ]
+  },
+  {
+    "name": "mobile-compare",
+    "url": "https://dev-nsnn.thehegeo.com/?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "DIỄN BIẾN 12 THÁNG — 2025 VÀ 2026"
+    ]
+  }
+]

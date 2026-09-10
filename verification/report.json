@@ -1,0 +1,668 @@
+[
+  {
+    "id": "01-overview",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "02-quarter2",
+    "url": "?year=2026&quarter=2&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "03-quarter2-month5",
+    "url": "?year=2026&quarter=2&month=5&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "04-month5-ytd",
+    "url": "?year=2026&quarter=2&month=5&acc=YTD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "05-item-thu-nsnn",
+    "url": "?year=2026&quarter=2&month=5&acc=YTD&item=thu-nsnn&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "06-item-net-total",
+    "url": "?year=2026&quarter=2&month=5&acc=YTD&item=tong-so-tru-hoan-thue&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "07-aug-overview",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "08-trend-modal",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu",
+      "Xu hướng theo tháng"
+    ],
+    "problems": []
+  },
+  {
+    "id": "09-ranking-growth",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "10-ranking-stability",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "11-ranking-modal",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu",
+      "MÃ TỔNG HỢP BÁO CÁO KHO BẠC NHÀ NƯỚC KHU VỰC I - HÀ NỘI — xu hướng theo tháng"
+    ],
+    "problems": []
+  },
+  {
+    "id": "12-tax-composition",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "13-historical-2024",
+    "url": "?year=2024&acc=PERIOD&item=tong-so&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Xu hướng theo tháng",
+      "Theo cấp ngân sách",
+      "Top chỉ tiêu (toàn TP)",
+      "Bản đồ 30 quận/huyện trước 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "14-historical-district",
+    "url": "?year=2024&acc=PERIOD&item=tong-so&district=hoan-kiem&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Quận Hoàn Kiếm",
+      "Bản đồ 30 quận/huyện trước 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "15-mixed-2025",
+    "url": "?year=2025&acc=PERIOD&item=tong-so&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Xu hướng theo tháng",
+      "Theo cấp ngân sách",
+      "Top chỉ tiêu (toàn TP)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "16-june2025",
+    "url": "?year=2025&month=6&acc=PERIOD&item=tong-so&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Xu hướng theo tháng",
+      "Theo cấp ngân sách",
+      "Top chỉ tiêu (toàn TP)",
+      "Bản đồ 30 quận/huyện trước 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "17-july2025",
+    "url": "?year=2025&month=7&acc=PERIOD&item=tong-so&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Xu hướng theo tháng",
+      "Theo cấp ngân sách",
+      "Top chỉ tiêu (toàn TP)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "18-detail-ward",
+    "url": "?year=2025&month=7&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Chi tiết địa bàn",
+      "Cơ cấu thu",
+      "Theo cấp ngân sách",
+      "Xu hướng theo tháng",
+      "Top chỉ tiêu (Hoàn Kiếm)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "19-no-data",
+    "url": "?year=2026&month=12&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "20-invalid-url",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Xu hướng theo tháng",
+      "Theo cấp ngân sách",
+      "Top chỉ tiêu (toàn TP)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "21-dismiss-notice",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Xu hướng theo tháng",
+      "Theo cấp ngân sách",
+      "Top chỉ tiêu (toàn TP)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "22-compare-empty",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&tab=compare",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Chọn một phường/xã để bắt đầu so sánh"
+    ],
+    "problems": []
+  },
+  {
+    "id": "23-compare-default",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m9&cmpb=2026m9",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 9/2025 vs Tháng 9/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "25-compare-aug",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "26-compare-ytd",
+    "url": "?year=2026&acc=YTD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "27-compare-q3",
+    "url": "?year=2026&acc=YTD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025q3&cmpb=2026q3",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Quý 3/2025 vs Quý 3/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "28-detail-hoankiem",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Chi tiết địa bàn",
+      "Cơ cấu thu",
+      "Theo cấp ngân sách",
+      "Xu hướng theo tháng",
+      "Top chỉ tiêu (Hoàn Kiếm)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "29-reset-zoom",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Chi tiết địa bàn",
+      "Cơ cấu thu",
+      "Theo cấp ngân sách",
+      "Xu hướng theo tháng",
+      "Top chỉ tiêu (Hoàn Kiếm)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "30-refresh",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Chi tiết địa bàn",
+      "Cơ cấu thu",
+      "Theo cấp ngân sách",
+      "Xu hướng theo tháng",
+      "Top chỉ tiêu (Hoàn Kiếm)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "31-ranking-expanded",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "32-composition-expanded",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&tab=overview",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "33-compare-same-year",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2026m7&cmpb=2026m8",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 7/2026 vs Tháng 8/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "34-compare-annual",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2024y&cmpb=2025y",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Cả năm 2024 vs Cả năm 2025",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2024 và 2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "24-compare-draft",
+    "url": "?year=2026&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m9&cmpb=2026m9",
+    "docWidth": 1440,
+    "viewportWidth": 1440,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 9/2025 vs Tháng 9/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "tablet-overview",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=overview",
+    "docWidth": 1024,
+    "viewportWidth": 1024,
+    "overflow": false,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "tablet-detail",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "docWidth": 1024,
+    "viewportWidth": 1024,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Chi tiết địa bàn",
+      "Cơ cấu thu",
+      "Theo cấp ngân sách",
+      "Xu hướng theo tháng",
+      "Top chỉ tiêu (Hoàn Kiếm)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "tablet-compare",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "docWidth": 1024,
+    "viewportWidth": 1024,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  },
+  {
+    "id": "mobile-overview",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=overview",
+    "docWidth": 512,
+    "viewportWidth": 390,
+    "overflow": true,
+    "headings": [
+      "Xu hướng theo tháng",
+      "Top địa bàn",
+      "Top chỉ tiêu (toàn TP)",
+      "Theo cấp ngân sách",
+      "Cơ cấu Thu NSNN",
+      "Waterfall — biến động Thu NSNN so kỳ trước",
+      "Xếp hạng 126 phường/xã theo tháng",
+      "So sánh cơ cấu giữa các địa bàn",
+      "Đính chính số liệu"
+    ],
+    "problems": []
+  },
+  {
+    "id": "mobile-detail",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=detail",
+    "docWidth": 390,
+    "viewportWidth": 390,
+    "overflow": false,
+    "headings": [
+      "Xếp hạng",
+      "Chi tiết địa bàn",
+      "Cơ cấu thu",
+      "Theo cấp ngân sách",
+      "Xu hướng theo tháng",
+      "Top chỉ tiêu (Hoàn Kiếm)",
+      "Bản đồ 126 phường/xã từ 01/07/2025"
+    ],
+    "problems": []
+  },
+  {
+    "id": "mobile-compare",
+    "url": "?year=2026&month=8&acc=PERIOD&item=tong-so&ward=hoan-kiem&tab=compare&cmpa=2025m8&cmpb=2026m8",
+    "docWidth": 390,
+    "viewportWidth": 390,
+    "overflow": false,
+    "headings": [
+      "HOÀN KIẾM — Tháng 8/2025 vs Tháng 8/2026",
+      "Theo chỉ tiêu",
+      "Theo cấp ngân sách",
+      "Diễn biến 12 tháng — 2025 và 2026"
+    ],
+    "problems": []
+  }
+]

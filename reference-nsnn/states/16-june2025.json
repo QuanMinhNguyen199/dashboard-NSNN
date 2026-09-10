@@ -1,0 +1,335 @@
+{
+  "url": "https://dev-nsnn.thehegeo.com/?year=2025&month=6&acc=PERIOD&item=tong-so&tab=detail",
+  "text": "Thu NSNN Hà Nội theo phường/xã\nNăm\n2026\n2025\n2024\nQuý\nTất cả quý\nQuý 1\nQuý 2\nQuý 3\nQuý 4\nTháng\nTất cả tháng\nTháng 1\nTháng 2\nTháng 3\nTháng 4\nTháng 5\nTháng 6\nTháng 7\nTháng 8\nTháng 9\nTháng 10\nTháng 11\nTháng 12\nLoại kỳ\nThực hiện trong kỳ\nLuỹ kế từ đầu năm\nChỉ tiêu\nTỔNG SỐ\nTHU NGÂN SÁCH NHÀ NƯỚC\nTỔNG SỐ (trừ hoàn thuế GTGT)\nĐịa bàn\n— Tổng quan toàn thành phố —\nHuyện Ba Vì\nHuyện Chương Mỹ\nHuyện Đan Phượng\nHuyện Đông Anh\nHuyện Gia Lâm\nHuyện Hoài Đức\nHuyện Mê Linh\nHuyện Mỹ Đức\nHuyện Phú Xuyên\nHuyện Phúc Thọ\nHuyện Quốc Oai\nHuyện Sóc Sơn\nHuyện Thạch Thất\nHuyện Thanh Oai\nHuyện Thanh Trì\nHuyện Thường Tín\nHuyện Ứng Hòa\nQuận Ba Đình\nQuận Bắc Từ Liêm\nQuận Cầu Giấy\nQuận Đống Đa\nQuận Hà Đông\nQuận Hai Bà Trưng\nQuận Hoàn Kiếm\nQuận Hoàng Mai\nQuận Long Biên\nQuận Nam Từ Liêm\nQuận Tây Hồ\nQuận Thanh Xuân\nThị xã Sơn Tây\nTải lại dữ liệu\n \nReset zoom\nOverview\nChi tiết địa bàn\nSo sánh hai kỳ\nTỔNG SỐ\n885,4 tỷ\n885.383.671.307 đ +75.5%\nTHU NSNN (THU THUẦN)\n65,3 tỷ\nkhông gồm vay và thu chuyển giao +11.5%\nTỶ TRỌNG THU THUẦN\n7.4%\ntrên tổng thu (còn lại là vay + chuyển giao)\nLUỸ KẾ TỪ ĐẦU NĂM (YTD)\n3,15 nghìn tỷ\n3.146.046.492.359 đ\nXẾP HẠNG\nPhúc Thịnh\n233,1 tỷ\nVĩnh Thanh\n195,5 tỷ\nĐông Anh\n57,3 tỷ\nThư Lâm\n46,5 tỷ\nThiên Lộc\n38,4 tỷ\nVân Đình\n29,8 tỷ\nNội Bài\n19 tỷ\nThanh Oai\n15,4 tỷ\nỨng Hòa\n14,8 tỷ\nGia Lâm\n13,7 tỷ\nXU HƯỚNG THEO THÁNG\n02/2025\n04/2025\n06/2025\n08/2025\n10/2025\n12/2025\n0\n350 nghìntỷ\n700 nghìntỷ\n1.050 nghìntỷ\n1.400 nghìntỷ\nThực hiện trong kỳ (đường liền)\nLuỹ kế (YTD) (đường đứt)\nTHEO CẤP NGÂN SÁCH\n\nKhông có số liệu.\n\nTOP CHỈ TIÊU (TOÀN TP)\nThu NSNN (Đã loại trừ hoàn thuế GTGT)\n65,3 tỷ\nThu nội địa không kể dầu thô\n64,6 tỷ\nCác khoản huy động, đóng góp\n678,9 triệu\nBẢN ĐỒ 30 QUẬN/HUYỆN TRƯỚC 01/07/2025\n350 nghìn tỷ",
+  "selects": [
+    {
+      "label": "Năm",
+      "value": "2025",
+      "disabled": false,
+      "options": [
+        {
+          "label": "2026",
+          "value": "2026"
+        },
+        {
+          "label": "2025",
+          "value": "2025"
+        },
+        {
+          "label": "2024",
+          "value": "2024"
+        }
+      ]
+    },
+    {
+      "label": "Quý",
+      "value": "",
+      "disabled": false,
+      "options": [
+        {
+          "label": "Tất cả quý",
+          "value": ""
+        },
+        {
+          "label": "Quý 1",
+          "value": "1"
+        },
+        {
+          "label": "Quý 2",
+          "value": "2"
+        },
+        {
+          "label": "Quý 3",
+          "value": "3"
+        },
+        {
+          "label": "Quý 4",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "label": "Tháng",
+      "value": "6",
+      "disabled": false,
+      "options": [
+        {
+          "label": "Tất cả tháng",
+          "value": ""
+        },
+        {
+          "label": "Tháng 1",
+          "value": "1"
+        },
+        {
+          "label": "Tháng 2",
+          "value": "2"
+        },
+        {
+          "label": "Tháng 3",
+          "value": "3"
+        },
+        {
+          "label": "Tháng 4",
+          "value": "4"
+        },
+        {
+          "label": "Tháng 5",
+          "value": "5"
+        },
+        {
+          "label": "Tháng 6",
+          "value": "6"
+        },
+        {
+          "label": "Tháng 7",
+          "value": "7"
+        },
+        {
+          "label": "Tháng 8",
+          "value": "8"
+        },
+        {
+          "label": "Tháng 9",
+          "value": "9"
+        },
+        {
+          "label": "Tháng 10",
+          "value": "10"
+        },
+        {
+          "label": "Tháng 11",
+          "value": "11"
+        },
+        {
+          "label": "Tháng 12",
+          "value": "12"
+        }
+      ]
+    },
+    {
+      "label": "Loại kỳ",
+      "value": "PERIOD",
+      "disabled": false,
+      "options": [
+        {
+          "label": "Thực hiện trong kỳ",
+          "value": "PERIOD"
+        },
+        {
+          "label": "Luỹ kế từ đầu năm",
+          "value": "YTD"
+        }
+      ]
+    },
+    {
+      "label": "Chỉ tiêu",
+      "value": "TỔNG SỐ",
+      "disabled": false,
+      "options": [
+        {
+          "label": "TỔNG SỐ",
+          "value": "TỔNG SỐ"
+        },
+        {
+          "label": "THU NGÂN SÁCH NHÀ NƯỚC",
+          "value": "THU NGÂN SÁCH NHÀ NƯỚC"
+        },
+        {
+          "label": "TỔNG SỐ (trừ hoàn thuế GTGT)",
+          "value": "TỔNG SỐ (Đã loại trừ hoàn thuế GTGT)"
+        }
+      ]
+    },
+    {
+      "label": "Địa bàn",
+      "value": "",
+      "disabled": false,
+      "options": [
+        {
+          "label": "— Tổng quan toàn thành phố —",
+          "value": ""
+        },
+        {
+          "label": "Huyện Ba Vì",
+          "value": "ba_vi"
+        },
+        {
+          "label": "Huyện Chương Mỹ",
+          "value": "chuong_my"
+        },
+        {
+          "label": "Huyện Đan Phượng",
+          "value": "dan_phuong"
+        },
+        {
+          "label": "Huyện Đông Anh",
+          "value": "dong_anh"
+        },
+        {
+          "label": "Huyện Gia Lâm",
+          "value": "gia_lam"
+        },
+        {
+          "label": "Huyện Hoài Đức",
+          "value": "hoai_duc"
+        },
+        {
+          "label": "Huyện Mê Linh",
+          "value": "me_linh"
+        },
+        {
+          "label": "Huyện Mỹ Đức",
+          "value": "my_duc"
+        },
+        {
+          "label": "Huyện Phú Xuyên",
+          "value": "phu_xuyen"
+        },
+        {
+          "label": "Huyện Phúc Thọ",
+          "value": "phuc_tho"
+        },
+        {
+          "label": "Huyện Quốc Oai",
+          "value": "quoc_oai"
+        },
+        {
+          "label": "Huyện Sóc Sơn",
+          "value": "soc_son"
+        },
+        {
+          "label": "Huyện Thạch Thất",
+          "value": "thach_that"
+        },
+        {
+          "label": "Huyện Thanh Oai",
+          "value": "thanh_oai"
+        },
+        {
+          "label": "Huyện Thanh Trì",
+          "value": "thanh_tri"
+        },
+        {
+          "label": "Huyện Thường Tín",
+          "value": "thuong_tin"
+        },
+        {
+          "label": "Huyện Ứng Hòa",
+          "value": "ung_hoa"
+        },
+        {
+          "label": "Quận Ba Đình",
+          "value": "ba_dinh"
+        },
+        {
+          "label": "Quận Bắc Từ Liêm",
+          "value": "bac_tu_liem"
+        },
+        {
+          "label": "Quận Cầu Giấy",
+          "value": "cau_giay"
+        },
+        {
+          "label": "Quận Đống Đa",
+          "value": "dong_da"
+        },
+        {
+          "label": "Quận Hà Đông",
+          "value": "ha_dong"
+        },
+        {
+          "label": "Quận Hai Bà Trưng",
+          "value": "hai_ba_trung"
+        },
+        {
+          "label": "Quận Hoàn Kiếm",
+          "value": "hoan_kiem"
+        },
+        {
+          "label": "Quận Hoàng Mai",
+          "value": "hoang_mai"
+        },
+        {
+          "label": "Quận Long Biên",
+          "value": "long_bien"
+        },
+        {
+          "label": "Quận Nam Từ Liêm",
+          "value": "nam_tu_liem"
+        },
+        {
+          "label": "Quận Tây Hồ",
+          "value": "tay_ho"
+        },
+        {
+          "label": "Quận Thanh Xuân",
+          "value": "thanh_xuan"
+        },
+        {
+          "label": "Thị xã Sơn Tây",
+          "value": "son_tay"
+        }
+      ]
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Tải lại dữ liệu",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "Reset zoom",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "Overview",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "Chi tiết địa bàn",
+      "aria": null,
+      "disabled": false
+    },
+    {
+      "text": "So sánh hai kỳ",
+      "aria": null,
+      "disabled": false
+    }
+  ],
+  "headings": [
+    "XẾP HẠNG",
+    "XU HƯỚNG THEO THÁNG",
+    "THEO CẤP NGÂN SÁCH",
+    "TOP CHỈ TIÊU (TOÀN TP)",
+    "BẢN ĐỒ 30 QUẬN/HUYỆN TRƯỚC 01/07/2025"
+  ],
+  "viewport": {
+    "width": 1440,
+    "scroll": 1440
+  },
+  "styles": {
+    "bodyFont": "system-ui, -apple-system, \"Segoe UI\", sans-serif",
+    "rootTokens": {
+      "--bg": "#F2F4F7",
+      "--card": "#fff",
+      "--line": "#dfe3ee",
+      "--ink": "#1a2233",
+      "--muted": "#6b7488",
+      "--data-main": "#1d4fa3",
+      "--data-sub": "#7fb0e6",
+      "--data-sub-bg": "#e8f0fb",
+      "--up": "#187a3c",
+      "--down": "#c0392b",
+      "--m1": "#dc2626",
+      "--m2": "#f97316",
+      "--m3": "#eab308",
+      "--m4": "#84cc16",
+      "--m5": "#16a34a",
+      "--nodata": "#e7e9ef"
+    }
+  }
+}

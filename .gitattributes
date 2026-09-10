@@ -1,0 +1,9 @@
+# Chuẩn hoá line ending: repo lưu LF, checkout theo nền tảng.
+* text=auto eol=lf
+
+# Nhị phân: không đụng vào
+*.png binary
+*.jpg binary
+*.svg binary
+*.zip binary
+*.ico binary

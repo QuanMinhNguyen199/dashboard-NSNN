@@ -1,0 +1,717 @@
+{
+  "/api/wards": {
+    "file": "cecbc84034f43695.json",
+    "status": 200,
+    "bytes": 10762
+  },
+  "/api/periods": {
+    "file": "fffec018c0b710f1.json",
+    "status": 200,
+    "bytes": 5779
+  },
+  "/api/waterfall?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "aeefcd0ca8fc9e93.json",
+    "status": 200,
+    "bytes": 33
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "f5f0bc2923d73543.json",
+    "status": 200,
+    "bytes": 527
+  },
+  "/api/corrections?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "4525e68a10b7ee01.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "e04e50ef2fb2e4c5.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/heatmap?item=T%E1%BB%94NG+S%E1%BB%90": {
+    "file": "baf0dcda06a04257.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/heatmap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "3cced936f2669388.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "e903133c2f28c9e5.json",
+    "status": 200,
+    "bytes": 2582
+  },
+  "/api/by-ward-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "2152ef2a7f537972.json",
+    "status": 200,
+    "bytes": 93374
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "c68ef36a8521e988.json",
+    "status": 200,
+    "bytes": 214
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "801580d69d76a904.json",
+    "status": 200,
+    "bytes": 14124
+  },
+  "/api/treemap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2026": {
+    "file": "d34ace32a974f704.json",
+    "status": 200,
+    "bytes": 603
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "ccb83a825a25b80d.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/heatmap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "6f204661a28efef4.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "4aad5c021bb675f2.json",
+    "status": 200,
+    "bytes": 212
+  },
+  "/api/by-ward-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "2c3358c18d3a1973.json",
+    "status": 200,
+    "bytes": 93137
+  },
+  "/api/corrections?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "3fbdb9e8b2f07aaa.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "cf413c8d35f3c41d.json",
+    "status": 200,
+    "bytes": 14076
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "b9edae39ed3af40c.json",
+    "status": 200,
+    "bytes": 305
+  },
+  "/api/treemap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "605ab01a5ee145c4.json",
+    "status": 200,
+    "bytes": 381
+  },
+  "/api/waterfall?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "5e952f86f4e6f0a2.json",
+    "status": 200,
+    "bytes": 411
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=2&year=2026": {
+    "file": "4b6c263c9c1fd582.json",
+    "status": 200,
+    "bytes": 5130
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "62d96510db82cdd3.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/heatmap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "b488df25f11026fe.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/corrections?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "033f45c5c6c366e5.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "4116edb6fff9ee37.json",
+    "status": 200,
+    "bytes": 13989
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "73c0cb950f166663.json",
+    "status": 200,
+    "bytes": 211
+  },
+  "/api/by-ward-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "0e42d8f8175226bb.json",
+    "status": 200,
+    "bytes": 92697
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "6eda21e2f6411b48.json",
+    "status": 200,
+    "bytes": 243
+  },
+  "/api/waterfall?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "aa8f5a4fc3eaa7dd.json",
+    "status": 200,
+    "bytes": 354
+  },
+  "/api/treemap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "d8514aed3e83f4d4.json",
+    "status": 200,
+    "bytes": 320
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "48464ca020317783.json",
+    "status": 200,
+    "bytes": 5064
+  },
+  "/api/trend?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "a8e77825ada02987.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/kpi-compare?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "f50f7cf2e9762f15.json",
+    "status": 200,
+    "bytes": 5064
+  },
+  "/api/corrections?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "998c08669f3fd7dd.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/heatmap?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "d0ab63a206b09856.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/by-ward?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "2ddf6d92ab74e362.json",
+    "status": 200,
+    "bytes": 14110
+  },
+  "/api/by-item?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "6050963987d6c8d2.json",
+    "status": 200,
+    "bytes": 394
+  },
+  "/api/by-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "c23b5d857c3ca151.json",
+    "status": 200,
+    "bytes": 213
+  },
+  "/api/treemap?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "1275fa768f40375b.json",
+    "status": 200,
+    "bytes": 475
+  },
+  "/api/by-ward-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "6b07b1a2c1f0b282.json",
+    "status": 200,
+    "bytes": 93284
+  },
+  "/api/waterfall?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=5&quarter=2&year=2026": {
+    "file": "876fb0e2fd57cd80.json",
+    "status": 200,
+    "bytes": 418
+  },
+  "/api/treemap?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "188f184c0132da18.json",
+    "status": 200,
+    "bytes": 475
+  },
+  "/api/kpi-compare?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "b5a66cc3c482f56f.json",
+    "status": 200,
+    "bytes": 5064
+  },
+  "/api/by-item?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "0d3843dada4c856e.json",
+    "status": 200,
+    "bytes": 394
+  },
+  "/api/heatmap?item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC": {
+    "file": "d78d64e7df6bbedc.json",
+    "status": 200,
+    "bytes": 492951
+  },
+  "/api/heatmap?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "8731a8f62e2a01a6.json",
+    "status": 200,
+    "bytes": 492951
+  },
+  "/api/corrections?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "09ff4c564076f8c6.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/trend?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "d9500982d5d87fe7.json",
+    "status": 200,
+    "bytes": 3423
+  },
+  "/api/by-ward?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "a72f42375ac6a4eb.json",
+    "status": 200,
+    "bytes": 14084
+  },
+  "/api/by-scope?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "6538cd6dbbbf16dd.json",
+    "status": 200,
+    "bytes": 213
+  },
+  "/api/waterfall?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "01f7be8d3c57115e.json",
+    "status": 200,
+    "bytes": 418
+  },
+  "/api/by-ward-scope?acc=YTD&item=THU+NG%C3%82N+S%C3%81CH+NH%C3%80+N%C6%AF%E1%BB%9AC&month=5&quarter=2&year=2026": {
+    "file": "daf1c6f57022488e.json",
+    "status": 200,
+    "bytes": 93157
+  },
+  "/api/corrections?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "04fdb53ecd40e0e5.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/kpi-compare?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "698edcb0cf4879f8.json",
+    "status": 200,
+    "bytes": 5064
+  },
+  "/api/by-item?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "9e239fac17fca153.json",
+    "status": 200,
+    "bytes": 394
+  },
+  "/api/treemap?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "c8dc77484b5fafeb.json",
+    "status": 200,
+    "bytes": 475
+  },
+  "/api/waterfall?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "864909cb48008b2a.json",
+    "status": 200,
+    "bytes": 418
+  },
+  "/api/by-ward?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "8f7ae3c949a0bfd1.json",
+    "status": 200,
+    "bytes": 14107
+  },
+  "/api/heatmap?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "de0948759acbdced.json",
+    "status": 200,
+    "bytes": 494811
+  },
+  "/api/by-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "0c24270590ee4f37.json",
+    "status": 200,
+    "bytes": 213
+  },
+  "/api/by-ward-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "d361b0fc46c4e891.json",
+    "status": 200,
+    "bytes": 93281
+  },
+  "/api/trend?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29&month=5&quarter=2&year=2026": {
+    "file": "c505dd4ac3ab9b9e.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/heatmap?item=T%E1%BB%94NG+S%E1%BB%90+%28%C4%90%C3%A3+lo%E1%BA%A1i+tr%E1%BB%AB+ho%C3%A0n+thu%E1%BA%BF+GTGT%29": {
+    "file": "585bed2970184162.json",
+    "status": 200,
+    "bytes": 494811
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "af5b6d68b5619879.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "4e959ea1fbc89b75.json",
+    "status": 200,
+    "bytes": 5070
+  },
+  "/api/heatmap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "ce1de231287d38af.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/by-ward-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "49360b725b37de41.json",
+    "status": 200,
+    "bytes": 92542
+  },
+  "/api/corrections?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "6470232b27a98ac4.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/treemap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "6ae5eb97fc1da83e.json",
+    "status": 200,
+    "bytes": 245
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "b5e3ac9ddf6fd3c9.json",
+    "status": 200,
+    "bytes": 210
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "5650e809538b4f62.json",
+    "status": 200,
+    "bytes": 13969
+  },
+  "/api/waterfall?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "4a0d1f3caedde521.json",
+    "status": 200,
+    "bytes": 483
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "46d275ae4b7af61c.json",
+    "status": 200,
+    "bytes": 169
+  },
+  "/api/by-ward-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "d107f008d8b26d3d.json",
+    "status": 200,
+    "bytes": 37410
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2024": {
+    "file": "0ebbac1b3a7c35cc.json",
+    "status": 200,
+    "bytes": 1736
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2024": {
+    "file": "4bfb631f61d501d5.json",
+    "status": 200,
+    "bytes": 240
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2024": {
+    "file": "8d5cbf8f2d297c61.json",
+    "status": 200,
+    "bytes": 185
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2024": {
+    "file": "3e6cc3924a218def.json",
+    "status": 200,
+    "bytes": 13437
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2024": {
+    "file": "ee6d0cf94eeaba2c.json",
+    "status": 200,
+    "bytes": 2533
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2025": {
+    "file": "958e4e7be9ee290c.json",
+    "status": 200,
+    "bytes": 3482
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2025": {
+    "file": "72cfbcb044b70937.json",
+    "status": 200,
+    "bytes": 307
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2025": {
+    "file": "f5216deb78b05805.json",
+    "status": 200,
+    "bytes": 213
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2025": {
+    "file": "413bbcd0e13d7068.json",
+    "status": 200,
+    "bytes": 14106
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&year=2025": {
+    "file": "85aa8c58a73eccbd.json",
+    "status": 200,
+    "bytes": 2579
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=6&year=2025": {
+    "file": "3d0509f40a0e62bc.json",
+    "status": 200,
+    "bytes": 3482
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=6&year=2025": {
+    "file": "e8ca3dc351942aea.json",
+    "status": 200,
+    "bytes": 237
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=6&year=2025": {
+    "file": "8d464119ca3e16c6.json",
+    "status": 200,
+    "bytes": 13236
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=6&year=2025": {
+    "file": "66c38dd843ed6c6b.json",
+    "status": 200,
+    "bytes": 184
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=6&year=2025": {
+    "file": "8040e09d9d67bbd3.json",
+    "status": 200,
+    "bytes": 5007
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&year=2025": {
+    "file": "9e2e80beef04db32.json",
+    "status": 200,
+    "bytes": 303
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&year=2025": {
+    "file": "0ea606693a61d878.json",
+    "status": 200,
+    "bytes": 3482
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&year=2025": {
+    "file": "4f5843201dc8a94c.json",
+    "status": 200,
+    "bytes": 212
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&year=2025": {
+    "file": "ae87fe2a5de5f868.json",
+    "status": 200,
+    "bytes": 13881
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&year=2025": {
+    "file": "bea9a079d193fa48.json",
+    "status": 200,
+    "bytes": 5046
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&ward=00070&year=2025": {
+    "file": "a65121633b2e6e46.json",
+    "status": 200,
+    "bytes": 3000
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&ward=00070&year=2025": {
+    "file": "8ed4ed36099338f0.json",
+    "status": 200,
+    "bytes": 198
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&ward=00070&year=2025": {
+    "file": "144131baf54b1503.json",
+    "status": 200,
+    "bytes": 3744
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&ward=00070&year=2025": {
+    "file": "a94a23af48fddbaf.json",
+    "status": 200,
+    "bytes": 169
+  },
+  "/api/corrections?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "9f0520fdc8da5c37.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "21a13d2d52e7c871.json",
+    "status": 200,
+    "bytes": 3438
+  },
+  "/api/heatmap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "95f8d817808c7692.json",
+    "status": 200,
+    "bytes": 494813
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "d516af1193acf53e.json",
+    "status": 200,
+    "bytes": 12652
+  },
+  "/api/waterfall?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "cdcc6ded2016d6e0.json",
+    "status": 200,
+    "bytes": 32
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "2b7dcb0856caacca.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/treemap?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "372f66feabed156b.json",
+    "status": 200,
+    "bytes": 68
+  },
+  "/api/by-ward-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "f0c9307224ac488b.json",
+    "status": 200,
+    "bytes": 86364
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "84b2b70525da0abe.json",
+    "status": 200,
+    "bytes": 173
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=12&year=2026": {
+    "file": "7057cb7d4e98fd3a.json",
+    "status": 200,
+    "bytes": 2461
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=9&year=2025": {
+    "file": "6ed1f1e179919d73.json",
+    "status": 200,
+    "bytes": 13746
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=9&ward=00070&year=2025": {
+    "file": "fb72fc831a6d2de6.json",
+    "status": 200,
+    "bytes": 169
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=9&year=2026": {
+    "file": "fbf5246819672998.json",
+    "status": 200,
+    "bytes": 12652
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=9&ward=00070&year=2025": {
+    "file": "206efd3feaabea50.json",
+    "status": 200,
+    "bytes": 197
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=9&ward=00070&year=2026": {
+    "file": "8a4fdd231d6727e5.json",
+    "status": 200,
+    "bytes": 173
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=9&ward=00070&year=2026": {
+    "file": "a14a8d5fad40a7b3.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/trend?item=T%E1%BB%94NG+S%E1%BB%90&ward=00070": {
+    "file": "adb33831f753bd9f.json",
+    "status": 200,
+    "bytes": 4663
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2025": {
+    "file": "85bc008244903966.json",
+    "status": 200,
+    "bytes": 13695
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2025": {
+    "file": "c1b609f13cc95318.json",
+    "status": 200,
+    "bytes": 206
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2025": {
+    "file": "cfca6d48cc78222c.json",
+    "status": 200,
+    "bytes": 167
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2026": {
+    "file": "952625f65fe7d07d.json",
+    "status": 200,
+    "bytes": 167
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2026": {
+    "file": "2fb5d7ef31f63403.json",
+    "status": 200,
+    "bytes": 205
+  },
+  "/api/by-ward?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2025": {
+    "file": "dff0410ef77d7684.json",
+    "status": 200,
+    "bytes": 13744
+  },
+  "/api/by-ward?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&year=2026": {
+    "file": "c59324c621153ed6.json",
+    "status": 200,
+    "bytes": 14142
+  },
+  "/api/by-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2025": {
+    "file": "688401cfe49ae2b2.json",
+    "status": 200,
+    "bytes": 209
+  },
+  "/api/by-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2026": {
+    "file": "802b81930af56cb4.json",
+    "status": 200,
+    "bytes": 209
+  },
+  "/api/by-item?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2025": {
+    "file": "ab144ef52d687706.json",
+    "status": 200,
+    "bytes": 169
+  },
+  "/api/by-item?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2026": {
+    "file": "0d74482af4a3d377.json",
+    "status": 200,
+    "bytes": 261
+  },
+  "/api/by-ward?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=3&year=2026": {
+    "file": "a06eb7c9f2aeaaa1.json",
+    "status": 200,
+    "bytes": 14142
+  },
+  "/api/by-ward?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=3&year=2025": {
+    "file": "5601c6bc17923780.json",
+    "status": 200,
+    "bytes": 14086
+  },
+  "/api/by-item?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=3&ward=00070&year=2025": {
+    "file": "8298e0f3bd84e815.json",
+    "status": 200,
+    "bytes": 169
+  },
+  "/api/by-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=3&ward=00070&year=2026": {
+    "file": "bda1a9ce56ed7932.json",
+    "status": 200,
+    "bytes": 209
+  },
+  "/api/by-scope?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=3&ward=00070&year=2025": {
+    "file": "d1650443ce476b57.json",
+    "status": 200,
+    "bytes": 209
+  },
+  "/api/by-item?acc=YTD&item=T%E1%BB%94NG+S%E1%BB%90&quarter=3&ward=00070&year=2026": {
+    "file": "54ab585cca2119e9.json",
+    "status": 200,
+    "bytes": 261
+  },
+  "/api/trend?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2026": {
+    "file": "a0be0b08eba0e8c7.json",
+    "status": 200,
+    "bytes": 3253
+  },
+  "/api/kpi-compare?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=8&ward=00070&year=2026": {
+    "file": "82e5823bf8c4cb6a.json",
+    "status": 200,
+    "bytes": 3778
+  },
+  "/api/by-ward?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&year=2026": {
+    "file": "27138c01bb5e3999.json",
+    "status": 200,
+    "bytes": 14026
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&ward=00070&year=2026": {
+    "file": "56aed3b5d304a36b.json",
+    "status": 200,
+    "bytes": 209
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&month=7&ward=00070&year=2026": {
+    "file": "1ac309fd5054a4d5.json",
+    "status": 200,
+    "bytes": 265
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&ward=00070&year=2024": {
+    "file": "eff65f445a8bba25.json",
+    "status": 200,
+    "bytes": 173
+  },
+  "/api/by-scope?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&ward=00070&year=2025": {
+    "file": "538144c96ac523c6.json",
+    "status": 200,
+    "bytes": 209
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&ward=00070&year=2024": {
+    "file": "6bc957786834f065.json",
+    "status": 200,
+    "bytes": 2
+  },
+  "/api/by-item?acc=PERIOD&item=T%E1%BB%94NG+S%E1%BB%90&ward=00070&year=2025": {
+    "file": "bb7737e48f0e71b7.json",
+    "status": 200,
+    "bytes": 169
+  }
+}

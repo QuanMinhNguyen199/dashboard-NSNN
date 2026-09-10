@@ -1,0 +1,1 @@
+const fs=require('fs');const s=fs.readFileSync('.audit/site.js','utf8').split('\n');for(const [a,b] of [[10600,10980],[21384,21557],[47450,47720],[48213,48410],[49037,49480]]){console.log('\nLINES',a,b);console.log(s.slice(a-1,b).join('\n'))}

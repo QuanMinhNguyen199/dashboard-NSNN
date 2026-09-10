@@ -1,0 +1,1 @@
+const fs=require('fs');const s=fs.readFileSync('.audit/site.js','utf8').split('\n');for(const [a,b] of [[10971,11006],[11332,11517],[21134,21384],[47372,47425],[47637,47720]]){console.log('\nLINES',a,b);console.log(s.slice(a-1,b).join('\n'))}let css=fs.readFileSync('reference-nsnn/assets/index-C1Ij_FY5.css','utf8');console.log('CSS_START',css.slice(0,3500));

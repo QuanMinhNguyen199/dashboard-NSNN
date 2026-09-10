@@ -1,0 +1,1 @@
+const fs=require('fs');const s=fs.readFileSync('.audit/site.js','utf8').split('\n');console.log(s.slice(48785,49037).join('\n'));const css=fs.readFileSync('reference-nsnn/assets/index-C1Ij_FY5.css','utf8');console.log('TOKENS',css.match(/:root\{[^}]+\}/g));

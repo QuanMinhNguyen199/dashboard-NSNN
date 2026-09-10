@@ -1,0 +1,233 @@
+Update_đặc tả 8/9_tham khaor
+1 số vấn đề cần làm rõ để tối ưu overview
+
+1. Về mốc so sánh: 
+
+Khi xem số thu của kỳ hiện tại, các anh/chị thường ưu tiên so sánh với mốc nào để đánh giá tình hình thu? 
+
+So với cùng kỳ năm trước (YoY)? 
+
+Hay so với kỳ/tháng liền trước (MoM)? 
+
+2. Về các nguồn thu cần theo dõi: 
+
+Ngoài Tổng thu toàn tỉnh, trên màn hình Overview các anh/chị ưu tiên theo dõi nhóm thu nào nhất? 
+
+Thu từ SXKD/Doanh nghiệp 
+
+Thu Nhà đất Thu Phí/Lệ phí 
+
+Có cần tách riêng Thu Dầu thô trên Overview không ạ? 
+
+3. Về thông tin theo địa bàn: 
+
+Để màn hình không quá nhiều thông tin, bên em dự kiến chỉ hiển thị: 
+
+Top 5 địa bàn có số thu lớn nhất 
+
+Top 5 địa bàn có mức sụt giảm nhiều nhất so với cùng kỳ
+
+Phản hồi bên thuế
+
+Ưu tiên so sánh cùng kỳ
+
+Ngoài tổng thu thì 3 nhóm thú chị kể đều được so sánh song song, nếu phải chọn 1 thì ưu tien SXKD.
+
+Trang tổng quan (overview)
+1. Bộ lọc toàn trang (Global Header)
+
+Năm báo cáo: Hộp chọn năm (Mặc định: Năm hiện tại).
+
+Kỳ báo cáo: Chọn Tháng (1–12) hoặc Quý (Quý 1–4).
+
+Chế độ số liệu: Chuyển đổi giữa [Trong kỳ] và [Lũy kế]. (Mặc định trong kỳ)
+
+Phạm vi Địa bàn: Danh sách chọn cấp Thành phố / Quận / Huyện / Xã (Mặc định: Toàn thành phố).
+
+Theo cấp ngân sách : NSNN/ NSTW/ NSĐP (mặc định là tổng nsnn)
+
+3. Thẻ KPI  
+
+Bố trí thành 1 hàng ngang gồm 4 thẻ có độ rộng bằng nhau (Grid 4 cột):
+
+Card 1: Tổng thu trong kỳ
+
+Giá trị chính: Số tiền thu phát sinh trong kỳ được chọn
+
+Nguồn ánh xạ: Dòng 17, Cột C (Sheet Biểu báo cáo)
+
+Micro-metric bên dưới (YoY): Tỷ lệ tăng/giảm so với cùng kỳ tháng năm trước.
+
+Quy tắc hiển thị: Tăng hiển thị mũi tên xanh lá ↑ +X.X%, giảm hiển thị mũi tên đỏ ↓ -X.X%. Nếu không có số liệu cùng kỳ để tính toán thì hiển thị dấu -
+
+Card 2: Lũy kế Tổng thu (YTD)
+
+Giá trị chính: Số tiền lũy kế từ đầu năm đến hết kỳ báo cáo
+
+Nguồn ánh xạ: Dòng 17, Cột I (Sheet Biểu báo cáo)
+
+Micro-metric bên dưới (YoY): Tỷ lệ tăng/giảm lũy kế so với cùng kỳ năm trước
+
+Quy tắc hiển thị: Hiển thị nhãn ↑ +X.X% hoặc ↓ -X.X% so với cùng kỳ năm trước
+
+Card 3: Lũy kế Thu nội địa
+
+Giá trị chính: Số thu nội địa không kể dầu thô lũy kế
+
+Nguồn ánh xạ: Dòng 19, Cột I (Sheet Biểu báo cáo)
+
+Micro-metric bên dưới:
+
+Tăng trưởng so với cùng kỳ (YoY): ±X.X%
+
+Tỷ trọng: Chiếm ...% trên Tổng thu NSNN toàn tỉnh.
+
+Card 4: Lũy kế Thu từ SXKD (Khối Doanh nghiệp)
+
+Giá trị chính: Tổng số thu lũy kế từ 3 khối: DNNN Trung ương (1.1) + DNNN Địa phương (1.2) + FDI (2) + Ngoài quốc doanh (3)
+
+Micro-metric bên dưới:
+
+Tăng trưởng so với cùng kỳ (YoY): ±X.X%
+
+Tỷ trọng: Chiếm ...% trên Tổng thu nội địa.
+
+3. Khu vực Xu hướng & Cơ cấu cốt lõi
+3.1 Biểu đồ Xu hướng thu NSNN (Line Chart kép):
+
+Ví dụ
+
+
+
+
+Thể hiện 2 đường lũy kế qua các tháng: Đường Năm báo cáo (N) và Đường Năm trước (N−1) để người xem thấy rõ độ dốc tăng trưởng.
+
+Và tooltip:
+
+Tháng 8  2026 Lũy kế: 892,4T  
+
+2025 Lũy kế: 827,8T  
+
+Chênh lệch: +64,6T +7,8%
+
+3.2. Biểu đồ Cơ cấu nguồn thu NSNN tổng thể
+
+ (Tương ứng các mục I, II, → VIII trong sheet Map chi tieu BC): bar ngang
+
+Thu nội địa không kể dầu thô
+
+Thu về dầu thô
+
+Thu cân đối từ hoạt động xuất nhập khẩu
+
+Thu khác (sum 4 mục lại làm 1 khi click vào sẽ hiện chi tiết 4 mục)
+
+Thu viện trợ
+
+Các khoản huy động, đóng góp
+
+Thu hồi các khoản cho vay và quỹ dự trữ tài chính
+
+Tạm thu
+
+Các khoản thu NSNN không có trong công thức
+
+Ví dụ chỉ mang tính chất minh họa
+
+
+
+
+Click:
+
+Thu nội địa → sang:  Phân tích thu → Thu nội địa
+
+3.3. Cơ cấu thu theo cấp NSNN: biểu đồ tròn
+
+Xem xét lại các cấp trong ngân sách địa phương
+
+
+
+
+
+
+
+
+
+
+
+
+
+4. Khu vực Giám sát Địa bàn & Sắc thuế
+4.1. Top 5 khoản thu nội địa
+
+Dạng biểu đồ: Cột ngang (Horizontal Bar Chart).
+
+Dữ liệu: Lấy từ danh sách các sắc thuế con (Mã 1.1, 1.2, 2, 3, 4 -> 20), sắp xếp lấy 5 mục có giá trị lũy kế cao nhất.
+
+Nội dung: Tên sắc thuế, số tiền thu và tỷ trọng đóng góp.
+
+Tương tác: Nút "Xem tất cả" để mở bảng đầy đủ toàn bộ 20+ sắc thuế
+
+4.2. Top 5 Địa bàn trọng điểm
+
+Dạng hiển thị: Bảng tóm tắt hoặc Cột ngang kèm Tab chuyển đổi:
+
+Tab A - Top 5 Đóng góp lớn nhất: 5 Quận/Huyện/Xã có số thu cao nhất toàn thành phố kèm tỷ trọng đóng góp.  
+
+
+
+
+Tương tác: Click vào 1 địa bàn cụ thể sẽ áp bộ lọc toàn trang theo địa bàn đó hoặc điều hướng sang tab "Chi tiết địa bàn"
+
+Ví dụ biểu đồ minh họa
+
+
+
+
+5. Điểm đáng chú ý
+
+ví dụ
+
+
+
+
+Phân tích nguồn thu 
+1. . Biểu đồ Cơ cấu 3 Trụ cột thu nội địa (Grouped Bar Chart)
+
+Nội dung hiển thị:
+
+Trục hoành (X): 3 khối thu chính
+
+Khối SXKD: Mã 1.1, 1.2, 2, 3
+
+Khối Nhà, Đất: Mã 8, 9, 10, 11, 12
+
+Khối Phí, Lệ phí & Khác: Các mã 4, 5, 6, 7 và 13 đến 20
+
+Cụm cột tại mỗi nhóm:
+
+Cột 1 (Màu phụ): Cùng kỳ năm trước (N−1)
+
+Cột 2 (Màu chính): Kỳ báo cáo năm nay (N)
+
+Đỉnh cột năm nay gắn nhãn: +X.X% hoặc -X.X%[cite: 2].
+
+Tương tác : Click vào từng cột để mở modal/chuyển tab xem danh mục các sắc thuế con.
+
+Xếp hạng 126 phường/xã theo tháng
+
+Lưu ý chia bao nhiêu NSTW, NSDP 
+
+
+
+
+Xếp hạng đầy đủ các khoản thu ở mục 4.1
+Phân rã chi tiết khối Doanh nghiệp SXKD: DNNN Trung ương (1.1), DNNN Địa phương (1.2), FDI (2), Ngoài quốc doanh (3).
+Phân rã chi tiết khối Nhà đất: Thuế đất phi nông nghiệp, Tiền sử dụng đất, Tiền thuê đất... (Mục 8 đến 12).
+
+
+
+
+Tab Chi tiết địa 
+
+
