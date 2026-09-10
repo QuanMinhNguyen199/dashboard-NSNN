@@ -1,0 +1,57 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Không hủy lần deploy đang chạy giữa chừng: để nó hoàn tất rồi mới chạy lần sau.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build bản tĩnh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prototype-nsnn/package-lock.json
+
+      - name: Cài phụ thuộc
+        working-directory: prototype-nsnn
+        run: npm ci
+
+      # Base lấy từ chính tên repo nên đổi tên repo không làm hỏng đường dẫn asset.
+      - name: Build
+        working-directory: prototype-nsnn
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: prototype-nsnn/dist
+
+  deploy:
+    name: Phát hành
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

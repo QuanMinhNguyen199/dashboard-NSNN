@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Đẩy nhiều commit liên tiếp thì chỉ chạy commit mới nhất.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: prototype-nsnn
+
+jobs:
+  build:
+    name: Typecheck và build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prototype-nsnn/package-lock.json
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+  acceptance:
+    name: 14 tiêu chí nghiệm thu
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prototype-nsnn/package-lock.json
+
+      - run: npm ci
+
+      # Runner ubuntu-latest có sẵn Google Chrome; script dùng puppeteer-core nên
+      # cần trỏ đúng đường dẫn thay vì tự tải Chromium.
+      - name: Xác định đường dẫn Chrome
+        id: chrome
+        run: |
+          for candidate in /usr/bin/google-chrome /usr/bin/google-chrome-stable /usr/bin/chromium-browser /usr/bin/chromium; do
+            if [ -x "$candidate" ]; then
+              echo "path=$candidate" >> "$GITHUB_OUTPUT"
+              echo "Dùng $candidate"
+              exit 0
+            fi
+          done
+          echo "Không tìm thấy Chrome trên runner." >&2
+          exit 1
+
+      # Địa chỉ ghi tường minh bằng IPv4: `localhost` có thể phân giải sang ::1
+      # trong khi dev server chỉ bind 127.0.0.1.
+      - name: Chạy dev server nền
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5173 --strictPort > /tmp/dev.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
+              echo "Dev server sẵn sàng sau ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Dev server không lên sau 60s:" >&2
+          cat /tmp/dev.log >&2
+          exit 1
+
+      - name: Nghiệm thu
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.path }}
+        run: node scripts/acceptance.mjs http://127.0.0.1:5173
+
+      - name: Log dev server khi thất bại
+        if: failure()
+        run: cat /tmp/dev.log || true

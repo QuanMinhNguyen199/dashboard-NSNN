@@ -13,3 +13,6 @@ dist/
 *.local
 .DS_Store
 Thumbs.db
+
+# Cache tối ưu phụ thuộc của Vite
+.vite/
