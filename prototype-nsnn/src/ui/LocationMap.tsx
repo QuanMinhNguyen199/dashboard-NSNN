@@ -56,7 +56,10 @@ export function LocationMap({
     const controller = new AbortController();
     (async () => {
       try {
-        const geo = await fetch("/data/hanoi_126_wards.geojson", { signal: controller.signal }).then(
+        // Theo BASE_URL để chạy đúng cả ở gốc lẫn khi site nằm dưới một subpath
+        // (GitHub Pages phục vụ ở /dashboard-NSNN/).
+        const geoUrl = `${import.meta.env.BASE_URL}data/hanoi_126_wards.geojson`;
+        const geo = await fetch(geoUrl, { signal: controller.signal }).then(
           (response) => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();
