@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * Xem thử dashboard trong iframe.
@@ -10,6 +10,10 @@ import { useEffect, useMemo, useState } from "react";
  *
  * Chế độ này nằm ngoài `DashboardProvider`: nếu nằm trong, `writeUrl` dựng lại
  * query từ state sau mỗi lần đổi bộ lọc và sẽ xoá mất tham số `frame`.
+ *
+ * Tab đồng bộ hai chiều: mở khung thì vào đúng tab đang xem, thoát ra thì trang
+ * chính về đúng tab vừa dừng trong khung. Cùng origin nên đọc thẳng được
+ * `contentWindow.location` mà không cần `postMessage`.
  */
 
 const PRESETS = [
@@ -30,43 +34,27 @@ export const frameWidthFromUrl = (search: string): number | null => {
   return Number.isFinite(value) ? Math.min(Math.max(Math.round(value), MIN), MAX) : 500;
 };
 
-/** URL để thoát: đúng chỗ người dùng đang đứng trước khi mở khung nhúng. */
-const exitUrl = () => {
+/**
+ * URL nội dung cho iframe: đúng trạng thái của trang chính, chỉ bỏ `frame`.
+ *
+ * Bỏ `frame` là bắt buộc — giữ lại thì trang trong iframe cũng vào chế độ xem
+ * thử và lồng iframe vô hạn.
+ */
+const previewSrc = () => {
   const query = new URLSearchParams(window.location.search);
   query.delete("frame");
   const tail = query.toString();
   return `${window.location.pathname}${tail ? `?${tail}` : ""}`;
 };
 
-/** Bộ lọc chung — giữ lại để khung nhúng xem đúng phạm vi đang quan tâm. */
-const SCOPE_KEYS = ["year", "periodType", "period", "acc", "level", "indicator"];
-
-/**
- * Nội dung cho iframe: luôn mở ở Tổng quan.
- *
- * Bê nguyên tab đang đứng sang khung nhúng thì mở từ "So sánh nâng cao" sẽ rơi
- * vào trạng thái chưa chọn đủ hai vế, còn mở từ "Chi tiết phường/xã" thì bắt đầu
- * bằng một địa bàn cụ thể — cả hai đều không phải thứ cần thấy đầu tiên khi đang
- * kiểm bố cục. Bộ lọc chung vẫn giữ.
- */
-const previewSrc = () => {
-  const current = new URLSearchParams(window.location.search);
-  const query = new URLSearchParams({ tab: "overview" });
-  for (const key of SCOPE_KEYS) {
-    const value = current.get(key);
-    if (value !== null) query.set(key, value);
-  }
-  return `${window.location.pathname}?${query}`;
-};
-
 export function FramePreview({ initialWidth }: { initialWidth: number }) {
   const [width, setWidth] = useState(initialWidth);
   const [height, setHeight] = useState(0);
+  const frameRef = useRef<HTMLIFrameElement | null>(null);
 
   // Tính một lần khi mở: đổi chiều rộng không được làm iframe tải lại, nếu
   // không thì mọi thao tác bên trong (tab, bộ lọc, địa bàn đang chọn) mất sạch.
   const src = useMemo(previewSrc, []);
-  const back = useMemo(exitUrl, []);
 
   useEffect(() => {
     document.title = "Xem thử iframe · Thu NSNN Hà Nội";
@@ -86,8 +74,21 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
     return () => window.removeEventListener("resize", measure);
   }, []);
 
+  /** Thoát về đúng trạng thái đang dừng TRONG khung, không phải trạng thái lúc mở. */
   const exit = () => {
-    window.location.href = back;
+    let target = src;
+    try {
+      const inner = frameRef.current?.contentWindow?.location;
+      if (inner) {
+        const query = new URLSearchParams(inner.search);
+        query.delete("frame");
+        const tail = query.toString();
+        target = `${inner.pathname}${tail ? `?${tail}` : ""}`;
+      }
+    } catch {
+      // Không đọc được thì quay về đúng chỗ đã mở khung — vẫn hơn là đứng yên.
+    }
+    window.location.href = target;
   };
 
   return (
@@ -133,6 +134,7 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
 
       <div className="dframe-stage">
         <iframe
+          ref={frameRef}
           className="dframe-window"
           title="Dashboard Thu NSNN trong iframe"
           src={src}
