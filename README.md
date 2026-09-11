@@ -6,15 +6,44 @@ URL state đầy đủ, lớp provider API/MCP/Mock có runtime validation, và 
 
 > **Dữ liệu trong ứng dụng là mô phỏng phục vụ prototype, không phải số liệu quyết toán.**
 
+Bản chạy thử: <https://quanminhnguyen199.github.io/dashboard-NSNN/>
+
 ## Chạy
 
 ```bash
-cd web
-npm install
+npm install          # uỷ quyền xuống web/
 npm run dev          # http://localhost:5173
+npm run build
+npm run acceptance   # 16 tiêu chí trên Chrome thật (cần dev server đang chạy)
 ```
 
-Hướng dẫn đầy đủ, giả định của mock và giới hạn còn lại: [`web/README.md`](web/README.md).
+Lệnh ở gốc repo chỉ uỷ quyền xuống [`web/`](web/); chạy trực tiếp trong `web/` cũng như
+nhau. Hướng dẫn đầy đủ, cách **thay API**, giả định của mock và giới hạn còn lại:
+[`web/README.md`](web/README.md).
+
+## Cấu trúc mã nguồn
+
+```text
+web/src/
+  app/          Điểm vào, khung ứng dụng, danh mục tab
+  features/     Mỗi workspace một thư mục, không import chéo nhau
+  components/   Dùng chung, không biết nghiệp vụ
+  data/         ĐIỂM THAY NGUỒN DỮ LIỆU — provider, validate, hook
+  domain/       Đúng dù dữ liệu đến từ đâu: danh mục, kiểu, toán về kỳ và tỷ lệ
+  state/        Chủ sở hữu duy nhất của URL state
+  devtools/     Khung xem thử iframe
+```
+
+Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổi một file:**
+[`web/src/data/index.ts`](web/src/data/index.ts) — chi tiết ba mức ở
+[`web/README.md`](web/README.md#thay-api).
+
+## CI/CD
+
+| Workflow | Chạy khi | Làm gì |
+|---|---|---|
+| [`ci.yml`](.github/workflows/ci.yml) | push **mọi nhánh** và pull request | typecheck → build → 16 tiêu chí nghiệm thu trên Chrome |
+| [`deploy-pages.yml`](.github/workflows/deploy-pages.yml) | push `main` | build → phát hành GitHub Pages |
 
 ## Nội dung repo
 
@@ -30,7 +59,8 @@ Hướng dẫn đầy đủ, giả định của mock và giới hạn còn lạ
 
 | File | Vai trò |
 |---|---|
-| [`THIET-KE-DASHBOARD-NSNN.md`](THIET-KE-DASHBOARD-NSNN.md) | **Đặc tả thiết kế đang triển khai** — UI/UX, URL state, API/MCP, mock data, 15 tiêu chí nghiệm thu. |
+| [`BA-NSNN.md`](BA-NSNN.md) | **Tài liệu nghiệp vụ** — vì sao cần từng quy tắc dữ liệu, từng tiêu chí nghiệm thu và từng feature. Đọc trước khi sửa công thức. |
+| [`THIET-KE-DASHBOARD-NSNN.md`](THIET-KE-DASHBOARD-NSNN.md) | **Đặc tả thiết kế đang triển khai** — UI/UX, URL state, API/MCP, mock data, tiêu chí nghiệm thu. |
 | [`dac-ta-v2.html`](dac-ta-v2.html) | Đặc tả nghiệp vụ v2. |
 | [`update_dac-ta-89_tham-khaor.html`](update_dac-ta-89_tham-khaor.html) | Phản hồi bên thuế và đặc tả trước v2. |
 | [`phan-tich.md`](phan-tich.md) | Mục tiêu phân tích và mô hình phân cấp nguồn thu. |
@@ -48,4 +78,7 @@ Hướng dẫn đầy đủ, giả định của mock và giới hạn còn lạ
 - **Ranh giới tin cậy.** API và MCP chỉ được trả dữ liệu cùng navigation intent trong danh
   sách đóng; mọi payload đi qua runtime validation trước khi tới giao diện.
 - **Quy tắc số liệu.** `0`, số âm và `null` là ba thứ khác nhau và không bị đánh đồng;
-  `%YoY` trả “chưa đủ cơ sở” thay vì bịa `−100%`; waterfall luôn khớp tổng chênh lệch.
+  `%YoY` trả “chưa có kỳ trước” thay vì bịa `−100%`; waterfall luôn khớp tổng chênh lệch.
+- **Dựng cho khung hẹp.** Bố cục dưới 1280px không phải bản rút gọn tạm bợ: cặp widget nới
+  tỷ lệ thay vì xếp chồng, thanh lọc thu về một dòng phạm vi, thẻ cùng hàng cao bằng nhau.
+  Nút `Xem thử iframe` mở chính nó trong một `<iframe>` thật để kiểm ở nhiều khổ.

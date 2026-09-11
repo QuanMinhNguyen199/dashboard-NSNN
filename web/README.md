@@ -82,6 +82,12 @@ khi chuyển tab và được sở hữu bởi **một** nơi duy nhất:
 [`src/state/DashboardState.tsx`](src/state/DashboardState.tsx). Không component nào khác
 đọc hay ghi `location.search`.
 
+`period=0` nghĩa là **toàn bộ kỳ đã có số liệu của năm**. Nhãn gọi theo thực tế: năm đã đủ
+mười hai tháng thì là `Cả năm`, năm đang chạy thì là `Từ đầu năm (N tháng)` — không gọi
+tám tháng là cả năm. Khoảng này không phụ thuộc `periodType`: chu kỳ Tháng hay Quý đều cho
+cùng một con số, chu kỳ chỉ quyết định độ mịn của danh sách kỳ cụ thể. Khi đó `acc` mất
+tác dụng nên điều khiển `Cách tính` bị tắt kèm lý do.
+
 ## Chế độ dữ liệu
 
 Mặc định là `MockDashboardProvider`. Đổi bằng biến môi trường:
@@ -137,7 +143,7 @@ nguồn cấp cao, NSTW và NSĐP.
 - `0` là dữ liệu hợp lệ; số âm hợp lệ; `null` là chưa có — **không** cái nào bị đổi thành
   cái kia.
 - `%YoY` trả `null` khi mẫu số là `null`, `≤ 0`, hoặc nhỏ hơn 500 triệu đồng. Giao diện ghi
-  “Chưa đủ cơ sở”, **không** sinh `−100%` từ dữ liệu thiếu.
+  “Chưa có kỳ trước”, **không** sinh `−100%` từ dữ liệu thiếu.
 - Không cộng đồng thời chỉ tiêu cha và con: danh mục chỉ chứa 21 mã lá của nội địa, không
   có mã cha `1`.
 - Waterfall lấy 10 bước lớn nhất, gộp phần dư thành “Khác”, và **tổng các bước luôn bằng
@@ -156,12 +162,89 @@ khi sibling bị ẩn: 8+4 → 12, 7+5 → 12, 6+6 → 12. Không dùng `grid-au
 Ví dụ đang chạy: chọn `Cấp ngân sách = NSTW` làm widget “Cơ cấu NSTW và NSĐP” mất nghĩa và
 bị loại khỏi lưới, “Tăng trưởng địa bàn” bên cạnh nở ra đủ 12 cột.
 
+## Khổ hẹp và khung nhúng
+
+Dashboard được thiết kế để nhúng vào khung hẹp cạnh một agent, nên bố cục dưới 1280px
+không phải bản rút gọn tạm bợ.
+
+| Ngưỡng | Việc nó giải |
+|---|---|
+| 1279px | Cặp 8+4 nới thành 7+5 và **vẫn đứng cạnh nhau**. Ép mỗi thẻ chiếm trọn hàng làm trang dài gấp đôi mà vẫn thừa chiều ngang |
+| 1179px | Dải KPI xuống 2×2, trước khi mỗi ô hẹp hơn chính con số nó phải in |
+| 1023px | Nội dung trong thẻ chuyển bố cục hẹp; bảng nhiều cột chiếm trọn hàng thay vì cuộn ngang trong thẻ |
+| 767px | Chrome mobile; thanh lọc thu gọn thành một dòng phạm vi |
+| 699px | Hết chỗ cho hai cột, xếp chồng toàn bộ |
+
+Dưới 768px, sáu ô lọc chiếm 326px — gần một phần ba khung iframe cao 1100px — nên thanh
+lọc thu gọn còn một dòng nêu phạm vi bằng chữ, bấm `Chọn lại` mới mở. Nhờ đó KPI và biểu
+đồ đầu tiên nằm trên nếp gấp.
+
+Thẻ cùng một hàng luôn cao bằng nhau: biểu đồ nở hết phần dư, danh sách thanh nở **có
+trần** để dòng không bị kéo méo, bảng dài cuộn trong thẻ thay vì nong thẻ cao gấp đôi thẻ
+bên cạnh.
+
+### Xem thử iframe
+
+Nút `Xem thử iframe` trên header mở dashboard trong một `<iframe>` **thật**, kèm khổ dựng
+sẵn 390/500/720/960/1280 và thanh trượt 320–1440px
+([`src/devtools/FramePreview.tsx`](src/devtools/FramePreview.tsx)).
+
+Phải là iframe chứ không phải một khung `div` hẹp: media query đọc kích thước **viewport**
+chứ không đọc container, nên thu nhỏ một div chỉ bóp nội dung lại mà bố cục vẫn giữ nguyên
+biến thể rộng — xem thử như vậy còn tệ hơn không xem.
+
+Tab và bộ lọc đồng bộ hai chiều: mở khung thì vào đúng trạng thái trang chính, `Thoát` thì
+trang chính về đúng trạng thái vừa dừng trong khung. Đổi khổ không tải lại iframe nên thao
+tác bên trong giữ nguyên. Khổ ghi vào URL (`?frame=500`) nên gửi link được.
+
+### Bản đồ
+
+Bản đồ mặc định hiện **toàn thành phố**. Chọn một địa bàn thì phóng có trần 3× — đủ để mắt
+bắt được vị trí nhưng vẫn thấy các phường, xã xung quanh, vì đây là bản đồ nhiệt và mất
+bối cảnh so sánh là mất lý do tồn tại của nó. Nút `Toàn thành phố` hiện khi đang phóng.
+
+Lăn chuột trần phóng to, không cần tổ hợp phím. Khi đã ở mức toàn thành phố mà vẫn lăn
+xuống thì không còn gì để thu nhỏ, sự kiện được nhường lại cho trang cuộn — nếu không, trỏ
+chuột đặt lên bản đồ sẽ khoá luôn việc cuộn trang trong khung hẹp.
+
 ## Ngôn ngữ thị giác
 
 Corporate là chính, Geometric ở cấu trúc, Flat ở bề mặt. Một tông xanh mang **mọi** đại
 lượng định lượng, phân biệt bằng độ đậm nhạt; xanh lá và đỏ chỉ nói chiều tăng/giảm và
 luôn kèm tam giác chỉ hướng. Thang lam đã qua kiểm định: độ sáng đơn điệu, ΔL ≥ 0,06 giữa
 các bậc liền kề, đầu nhạt đạt 2,11:1 trên nền trắng. Chi tiết trong [DESIGN.md](DESIGN.md).
+
+## Kiểm chứng và CI
+
+```bash
+npm run typecheck
+npm run build
+npm run dev &          # nghiệm thu cần một dev server đang chạy
+npm run acceptance     # mặc định http://127.0.0.1:5173
+```
+
+`scripts/acceptance.mjs` chạy 16 tiêu chí trên Chrome thật qua `puppeteer-core`; đặt
+`CHROME_PATH` nếu Chrome ở đường dẫn khác. Mỗi tiêu chí canh một cách hỏng cụ thể, không
+phải một danh sách “nên có” — lý do từng cái ở
+[`../BA-NSNN.md`](../BA-NSNN.md) §14.
+
+Ba tiêu chí về bố cục đáng chú ý vì chúng bắt những lỗi mà mắt dễ bỏ qua:
+
+| # | Canh cái gì |
+|---|---|
+| 10 | Trang không tràn ngang ở 390, 1024, 1440px |
+| 11 | Không thẻ nào bị `overflow: hidden` nuốt mất nội dung — trang không tràn vẫn có thể mất chữ trong thẻ |
+| 12 | Thẻ cùng hàng cao bằng nhau ở 768, 960, 1280, 1600px |
+
+Hai workflow trong [`../.github/workflows/`](../.github/workflows/):
+
+| Workflow | Chạy khi | Làm gì |
+|---|---|---|
+| `ci.yml` | push **mọi nhánh** và pull request | typecheck → build → 16 tiêu chí trên Chrome |
+| `deploy-pages.yml` | push `main` | build với `VITE_BASE` theo tên repo → phát hành GitHub Pages |
+
+Base của bản build lấy từ tên repo nên đổi tên repo không làm hỏng đường dẫn asset. Deploy
+lên domain riêng ở gốc thì đặt `VITE_BASE=/`.
 
 ## Giới hạn còn lại
 
@@ -175,6 +258,11 @@ các bậc liền kề, đầu nhạt đạt 2,11:1 trên nền trắng. Chi ti�
 - **CAGR khi so từ ba năm** là `[COULD]` trong đặc tả, chưa triển khai.
 - Ở màn hình dưới 768px, bảng chi tiết ẩn hai cột phụ (Cùng kỳ, Tỷ trọng) để bốn cột còn
   lại đọc được nguyên số thay vì cắt chữ ở cả sáu cột.
+- **Hai chỗ còn gọi thẳng vào tầng mock.**
+  `features/location-detail/LocationDetailTab.tsx` và
+  `features/revenue-preview/RevenuePreviewDrawer.tsx` dùng `sumOf`/`trendOf` của
+  `data/mock/` để tính nhanh thay vì lấy qua provider. Khi nối API thật thì hai file này
+  cần nhận dữ liệu qua props hoặc hook; phần còn lại của `features/` đã sạch.
 
 ## `archive/legacy-clone/`
 
