@@ -100,6 +100,7 @@ export function validateOverview(value: unknown): OverviewData {
     (value.domesticItems as unknown[]).length === 21,
     "Overview: khoản thu nội địa phải đủ đúng 21 dòng.",
   );
+  validateEstimate(value.estimate, "Overview");
   validateWaterfall(value.waterfall, "Overview");
   return value as unknown as OverviewData;
 }
@@ -114,8 +115,52 @@ export function validateRevenueAnalysis(value: unknown): RevenueAnalysisData {
   assert(Array.isArray(value.breakdown), "Phân tích thu: thiếu bảng chi tiết.");
   for (const row of value.breakdown as unknown[]) validateAmountRow(row, "Phân tích thu.breakdown");
   validateTrend(value.trend, "Phân tích thu");
+  validateGroups(value.groups, value.scope as string, "Phân tích thu");
   validateWaterfall(value.waterfall, "Phân tích thu");
   return value as unknown as RevenueAnalysisData;
+}
+
+/** Dự toán: cho phép vắng mặt, nhưng có thì phải dùng được. */
+function validateEstimate(value: unknown, where: string): void {
+  if (value === null || value === undefined) return;
+  assert(isRecord(value), `${where}.estimate: phải là object hoặc null.`);
+  assert(
+    typeof value.annual === "number" && Number.isFinite(value.annual) && value.annual > 0,
+    `${where}.estimate.annual: dự toán phải là số dương.`,
+  );
+  assert(
+    value.progress === null || (typeof value.progress === "number" && Number.isFinite(value.progress)),
+    `${where}.estimate.progress: phải là số hữu hạn hoặc null.`,
+  );
+  assert(
+    value.origin === "mock" || value.origin === "api",
+    `${where}.estimate.origin: phải nêu rõ số đến từ mock hay API.`,
+  );
+}
+
+/**
+ * Ba nhóm thu nội địa. Ràng buộc đáng giá nhất là **đủ 21 khoản con**: nhóm
+ * thiếu khoản vẫn vẽ ra một biểu đồ trông bình thường, chỉ sai tổng — đúng loại
+ * lỗi không ai phát hiện bằng mắt.
+ */
+function validateGroups(value: unknown, scope: string, where: string): void {
+  if (scope !== "domestic") {
+    assert(value === null || value === undefined, `${where}.groups: chỉ nguồn nội địa mới có ba nhóm.`);
+    return;
+  }
+  assert(Array.isArray(value), `${where}.groups: nguồn nội địa phải có ba nhóm.`);
+  const groups = value as unknown[];
+  assert(groups.length === 3, `${where}.groups: phải đủ đúng ba nhóm.`);
+  let members = 0;
+  for (const group of groups) {
+    validateAmountRow(group, `${where}.groups`);
+    assert(isRecord(group) && Array.isArray(group.items), `${where}.groups[].items: phải là mảng.`);
+    const items = group.items as unknown[];
+    assert(items.length > 0, `${where}.groups[].items: nhóm rỗng không vẽ được.`);
+    for (const item of items) validateAmountRow(item, `${where}.groups[].items`);
+    members += items.length;
+  }
+  assert(members === 21, `${where}.groups: ba nhóm phải phủ đủ 21 khoản nội địa, đang có ${members}.`);
 }
 
 export function validateLocationDetail(value: unknown): LocationDetailData {

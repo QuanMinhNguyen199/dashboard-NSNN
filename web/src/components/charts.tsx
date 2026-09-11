@@ -1,108 +1,93 @@
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import type { CSSProperties } from "react";
-import type { TrendPoint, Waterfall } from "@/domain/types";
-import { money, pct } from "@/components/primitives";
+import { TrendChart } from "@/components/TrendChart";
 
-const AXIS = { stroke: "var(--divider)", tick: { fill: "var(--ink-2)", fontSize: 11 } } as const;
+export { TrendChart };
 
-/**
- * Xu hướng 12 tháng, năm N và N−1.
- * `connectNulls={false}`: tháng chưa có dữ liệu để lại khoảng trống thật, không
- * nối đường và không vẽ điểm 0.
- */
-export function TrendChart({
-  points,
-  year,
-  height = 260,
-  labelA,
-  labelB,
+import type { AmountRow, TrendPoint, Waterfall } from "@/domain/types";
+import { inScale, money, moneyScale, pct } from "@/components/primitives";
+
+const DONUT_COLORS = ["#1657a8", "#5598e7", "#9abfe9", "#637a94"];
+
+/** Biểu đồ cơ cấu nhỏ gọn, có bảng chú giải đọc được bằng bàn phím. */
+export function DonutChart({
+  rows,
+  centerLabel = "Tổng",
+  selectedId,
+  onSelect,
 }: {
-  points: TrendPoint[];
-  year: number;
-  height?: number;
-  labelA?: string;
-  labelB?: string;
+  rows: AmountRow[];
+  centerLabel?: string;
+  selectedId?: string;
+  onSelect?: (id: string) => void;
 }) {
-  const nameCurrent = labelB ?? `Năm ${year}`;
-  const namePrevious = labelA ?? `Năm ${year - 1}`;
-  const hasGap = points.some((p) => p.current === null || p.previous === null);
+  const positiveRows = rows.filter((row) => row.amount > 0);
+  const total = positiveRows.reduce((sum, row) => sum + row.amount, 0);
+  if (!positiveRows.length || total <= 0) return null;
 
-  // Đơn vị trục chọn theo độ lớn thực của chuỗi: số của một phường/xã tính bằng
-  // tỷ, còn số toàn thành phố tính bằng nghìn tỷ. Cố định một đơn vị sẽ làm mọi
-  // vạch của biểu đồ cấp phường làm tròn về 0.
-  const peak = Math.max(
-    0,
-    ...points.flatMap((p) => [Math.abs(p.current ?? 0), Math.abs(p.previous ?? 0)]),
-  );
-  const axis = peak >= 2e12 ? { divisor: 1e12, unit: "nghìn tỷ đồng" } : { divisor: 1e9, unit: "tỷ đồng" };
+  const radius = 45;
+  const circumference = 2 * Math.PI * radius;
+  let offset = 0;
 
   return (
-    <div className="dchart-wrap">
-      <div className="dchart" style={{ "--chart-h": `${height}px` } as CSSProperties}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={points} margin={{ top: 12, right: 12, bottom: 0, left: 4 }}>
-            <CartesianGrid vertical={false} stroke="var(--divider)" />
-            <XAxis dataKey="label" tickLine={false} axisLine={false} tick={AXIS.tick} />
-            <YAxis
-              width={56}
-              tickLine={false}
-              axisLine={false}
-              tick={AXIS.tick}
-              tickFormatter={(value: number) =>
-                (value / axis.divisor).toLocaleString("vi-VN", { maximumFractionDigits: 0 })
-              }
-            />
-            <Tooltip
-              formatter={(value: number) => [money(value)]}
-              labelFormatter={(label: string) => `Tháng ${String(label).replace("T", "")}`}
-              contentStyle={{
-                border: "1px solid var(--hairline)",
-                borderRadius: "var(--r-control)",
-                fontSize: 12,
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="previous"
-              name={namePrevious}
-              stroke="var(--data-reference)"
-              strokeWidth={2}
-              strokeDasharray="5 4"
-              dot={false}
-              connectNulls={false}
-            />
-            <Line
-              type="monotone"
-              dataKey="current"
-              name={nameCurrent}
-              stroke="var(--data-primary)"
-              strokeWidth={2.5}
-              dot={{ r: 3, fill: "#fff" }}
-              connectNulls={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+    <div className="ddonut-layout">
+      <div className="ddonut">
+        <svg viewBox="0 0 120 120" role={onSelect ? "group" : "img"} aria-label={`Cơ cấu ${positiveRows.map((row) => `${row.name} ${pct((row.amount / total) * 100)}`).join(", ")}`}>
+          <circle className="ddonut-track" cx="60" cy="60" r={radius} />
+          {positiveRows.map((row, index) => {
+            const length = (row.amount / total) * circumference;
+            const segment = (
+              <circle
+                key={row.id}
+                className={`ddonut-segment${onSelect ? " is-interactive" : ""}${selectedId === row.id ? " is-selected" : ""}`}
+                cx="60"
+                cy="60"
+                r={radius}
+                stroke={DONUT_COLORS[index % DONUT_COLORS.length]}
+                strokeDasharray={`${length} ${circumference - length}`}
+                strokeDashoffset={-offset}
+                role={onSelect ? "button" : undefined}
+                tabIndex={onSelect ? 0 : undefined}
+                aria-pressed={onSelect ? selectedId === row.id : undefined}
+                data-segment-id={row.id}
+                aria-label={onSelect ? `${row.name}, ${pct((row.amount / total) * 100)}. Chọn để xem chi tiết` : undefined}
+                onClick={onSelect ? () => onSelect(row.id) : undefined}
+                onKeyDown={onSelect ? (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onSelect(row.id);
+                  }
+                } : undefined}
+              >
+                <title>{row.name}: {pct((row.amount / total) * 100)}</title>
+              </circle>
+            );
+            offset += length;
+            return segment;
+          })}
+        </svg>
+        <span><b>100%</b><small>{centerLabel}</small></span>
       </div>
-      <div className="dlegend">
-        <span>
-          <i className="solid" />
-          {nameCurrent}
-        </span>
-        <span>
-          <i />
-          {namePrevious}
-        </span>
-        <span>Đơn vị trục: {axis.unit}</span>
-        {hasGap && <span>Khoảng trống = chưa có số liệu</span>}
-      </div>
+      <ul className="ddonut-legend">
+        {positiveRows.map((row, index) => {
+          const content = (
+            <>
+              <i style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }} />
+              <span>{row.name}</span>
+              <strong>{pct((row.amount / total) * 100)}</strong>
+            </>
+          );
+          return (
+            <li key={row.id}>
+              {onSelect ? (
+                <button type="button" className={selectedId === row.id ? "is-selected" : undefined} aria-pressed={selectedId === row.id} onClick={() => onSelect(row.id)}>
+                  {content}
+                </button>
+              ) : (
+                <div>{content}</div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -123,24 +108,27 @@ export function WaterfallChart({
 }) {
   const difference = data.end - data.start;
   const scale = Math.max(...data.steps.map((step) => Math.abs(step.delta)), 1);
+  // Cầu nối và các bước phải cùng một đơn vị: đây là phép cộng, đọc theo cột
+  // dọc. Trước đây "48,62 nghìn tỷ" đứng cạnh "+367,6 tỷ" trong cùng một phép.
+  const unit = moneyScale([data.start, data.end, difference, ...data.steps.map((s) => s.delta)]);
 
   return (
-    <div className="dwaterfall">
+    <div className="dwaterfall" data-unit={unit.divisor}>
       <div className="dbridge">
         <div>
           <span>{data.startLabel}</span>
-          <strong>{money(data.start)}</strong>
+          <strong>{inScale(data.start, unit)}</strong>
         </div>
         <div className="dbridge-arrow" aria-hidden="true" />
         <div>
           <span>{data.endLabel}</span>
-          <strong>{money(data.end)}</strong>
+          <strong>{inScale(data.end, unit)}</strong>
         </div>
         <div className="dbridge-diff">
-          <span>Chênh lệch</span>
+          <span>Chênh lệch · {unit.unit}</span>
           <strong className={difference >= 0 ? "pos" : "neg"}>
             {difference >= 0 ? "+" : "−"}
-            {money(Math.abs(difference))}
+            {inScale(Math.abs(difference), unit)}
           </strong>
         </div>
       </div>
@@ -162,7 +150,7 @@ export function WaterfallChart({
               </span>
               <strong className={step.delta >= 0 ? "pos" : "neg"}>
                 {step.delta >= 0 ? "+" : "−"}
-                {money(Math.abs(step.delta))}
+                {inScale(Math.abs(step.delta), unit)}
               </strong>
             </>
           );

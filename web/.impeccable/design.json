@@ -1,0 +1,599 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T05:46:22.460Z",
+  "title": "Design System: Tổng quan Thu ngân sách Nhà nước Hà Nội",
+  "extensions": {
+    "colorMeta": {
+      "institutional-navy": {
+        "role": "primary",
+        "displayName": "Navy thể chế",
+        "canonical": "#0e2a47",
+        "tonalRamp": [
+          "#091b2e",
+          "#0f2d4c",
+          "#153f6b",
+          "#1b518a",
+          "#2164a8",
+          "#2776c7",
+          "#2c85e0",
+          "#308ff2"
+        ]
+      },
+      "brand-blue": {
+        "role": "primary",
+        "displayName": "Xanh thương hiệu",
+        "canonical": "#1657a8",
+        "tonalRamp": [
+          "#06182e",
+          "#0a284d",
+          "#0e376b",
+          "#12478a",
+          "#1657a8",
+          "#1a67c7",
+          "#1d74e0",
+          "#207df2"
+        ]
+      },
+      "data-secondary": {
+        "role": "secondary",
+        "displayName": "Xanh phụ dữ liệu",
+        "canonical": "#3987e5",
+        "tonalRamp": [
+          "#0b1b2e",
+          "#132d4d",
+          "#1b3f6b",
+          "#22518a",
+          "#2a63a8",
+          "#3275c7",
+          "#3884e0",
+          "#3c8ff2"
+        ]
+      },
+      "data-family": {
+        "role": "secondary",
+        "displayName": "Xanh cùng họ",
+        "canonical": "#86b6ef",
+        "tonalRamp": [
+          "#1a232e",
+          "#2b3a4d",
+          "#3c526b",
+          "#4d698a",
+          "#5e80a8",
+          "#7097c7",
+          "#7eabe0",
+          "#88b8f2"
+        ]
+      },
+      "data-reference": {
+        "role": "tertiary",
+        "displayName": "Xám mốc tham chiếu",
+        "canonical": "#8c9bae",
+        "tonalRamp": [
+          "#25292e",
+          "#3e444d",
+          "#565f6b",
+          "#6f7b8a",
+          "#8796a8",
+          "#a0b1c7",
+          "#b5c8e0",
+          "#c3d8f2"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Mực chính",
+        "canonical": "#16263c",
+        "tonalRamp": [
+          "#111d2e",
+          "#1c304d",
+          "#27446b",
+          "#32578a",
+          "#3e6ba8",
+          "#497ec7",
+          "#528ee0",
+          "#5999f2"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Mực phụ · 7,50:1 AAA",
+        "canonical": "#485666",
+        "tonalRamp": [
+          "#20272e",
+          "#36414d",
+          "#4c5a6b",
+          "#61748a",
+          "#778ea8",
+          "#8ca8c7",
+          "#9ebde0",
+          "#abccf2"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Mực bậc ba · 5,05:1 AA",
+        "canonical": "#63707f",
+        "tonalRamp": [
+          "#24282e",
+          "#3c434d",
+          "#535e6b",
+          "#6b798a",
+          "#8394a8",
+          "#9bafc7",
+          "#afc6e0",
+          "#bdd6f2"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Nền làm việc",
+        "canonical": "#f2f5f9",
+        "tonalRamp": [
+          "#2d2d2e",
+          "#4a4b4d",
+          "#68696b",
+          "#86878a",
+          "#a4a6a8",
+          "#c1c4c7",
+          "#dadde0",
+          "#ebeef2"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Bề mặt thẻ",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#2e2e2e",
+          "#4d4d4d",
+          "#6b6b6b",
+          "#8a8a8a",
+          "#a8a8a8",
+          "#c7c7c7",
+          "#e0e0e0",
+          "#f2f2f2"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Viền cấu trúc",
+        "canonical": "#dbe3ed",
+        "tonalRamp": [
+          "#2a2c2e",
+          "#47494d",
+          "#63676b",
+          "#7f848a",
+          "#9ca1a8",
+          "#b8bfc7",
+          "#cfd7e0",
+          "#e0e8f2"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Viền điều khiển",
+        "canonical": "#c6d2e0",
+        "tonalRamp": [
+          "#292b2e",
+          "#44484d",
+          "#5f646b",
+          "#7a818a",
+          "#959ea8",
+          "#b0bac7",
+          "#c6d2e0",
+          "#d6e3f2"
+        ]
+      },
+      "positive": {
+        "role": "tertiary",
+        "displayName": "Chiều tăng",
+        "canonical": "#187044",
+        "tonalRamp": [
+          "#0a2e1c",
+          "#104d2e",
+          "#176b41",
+          "#1e8a54",
+          "#24a866",
+          "#2bc779",
+          "#30e088",
+          "#34f293"
+        ]
+      },
+      "negative": {
+        "role": "tertiary",
+        "displayName": "Chiều giảm",
+        "canonical": "#b3352f",
+        "tonalRamp": [
+          "#2e0e0c",
+          "#4d1714",
+          "#6b201c",
+          "#8a2924",
+          "#a8322c",
+          "#c73b34",
+          "#e0423b",
+          "#f24840"
+        ]
+      },
+      "ink-on-dark": {
+        "role": "neutral",
+        "displayName": "Mực trên nền tối",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#2e2e2e",
+          "#4c4c4c",
+          "#6b6b6b",
+          "#8a8a8a",
+          "#a8a8a8",
+          "#c7c7c7",
+          "#e0e0e0",
+          "#f2f2f2"
+        ]
+      },
+      "scrim": {
+        "role": "neutral",
+        "displayName": "Lớp phủ sau drawer",
+        "canonical": "#0e2a4780",
+        "tonalRamp": [
+          "#091b2e",
+          "#0f2d4c",
+          "#153f6b",
+          "#1b518a",
+          "#2164a8",
+          "#2776c7",
+          "#2c85e0",
+          "#308ff2"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Giá trị chính trong drawer xem nhanh. Vai trò duy nhất dùng 32px."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Số KPI. Luôn tabular numerals."
+      },
+      "metric-compact": {
+        "displayName": "Metric compact",
+        "purpose": "Số KPI ở mobile và hai đầu cầu nối waterfall."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Tên sản phẩm trong đầu trang."
+      },
+      "insight": {
+        "displayName": "Insight",
+        "purpose": "Câu cảnh báo trong ô KPI cuối. Ngắn, một dòng."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Tiêu đề widget."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Văn bản giao diện."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Câu trạng thái rỗng, ghi chú độ phủ, chú thích bảng."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nhãn bộ lọc, KPI, metadata. Bậc nhỏ nhất — không có gì dưới 12px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "control-raised",
+        "value": "0 1px 2px #19334e18",
+        "purpose": "Nút segmented đang chọn và nút phóng bản đồ. Đủ tách khỏi rãnh chứa nó, không hơn."
+      },
+      {
+        "name": "overlay",
+        "value": "-18px 0 42px #0e2a4722",
+        "purpose": "Drawer chi tiết. Bóng ngang rộng vì nó đến từ cạnh phải."
+      },
+      {
+        "name": "frame-preview",
+        "value": "0 0 0 1px #00000040, 0 10px 34px #0000004d",
+        "purpose": "Khung iframe trên nền tối. Vòng 1px thay viền."
+      },
+      {
+        "name": "sticky-thead",
+        "value": "inset 0 -1px 0 var(--hairline)",
+        "purpose": "Đường kẻ dưới thead cuộn. Phải là inset shadow — border của ô sticky không dính theo ô, dòng phía sau sẽ lộ ra một vệt."
+      },
+      {
+        "name": "tip",
+        "value": "0 4px 14px #19334e18",
+        "purpose": "Tooltip biểu đồ. Cùng alpha với shadow-control để hai bề mặt nổi đọc như một hệ."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-arrive",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Giảm tốc mạnh ở cuối: tới nơi dứt khoát chứ không trôi."
+      },
+      {
+        "name": "feedback",
+        "value": "120ms",
+        "purpose": "Chuyển nền/chữ/viền trên bề mặt bấm được. Trong dải phản hồi tức thì."
+      },
+      {
+        "name": "overlay-in",
+        "value": "260ms",
+        "purpose": "Drawer trượt 16px từ đúng cạnh nó neo vào."
+      },
+      {
+        "name": "scrim-in",
+        "value": "200ms",
+        "purpose": "Lớp phủ mờ dần."
+      },
+      {
+        "name": "map-transition",
+        "value": "250-450ms",
+        "purpose": "d3: đổi màu bậc và phóng tới địa bàn đang chọn. Về 0 dưới reduced-motion."
+      },
+      {
+        "name": "chart-draw",
+        "value": "420ms",
+        "purpose": "Recharts vẽ đường khi vào. Tắt hẳn dưới reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "stack",
+        "value": "699px"
+      },
+      {
+        "name": "mobile",
+        "value": "767px"
+      },
+      {
+        "name": "card-narrow",
+        "value": "1023px"
+      },
+      {
+        "name": "kpi-2x2",
+        "value": "1179px"
+      },
+      {
+        "name": "pair-ratio",
+        "value": "1279px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Nút hành động chính",
+      "kind": "button",
+      "refersTo": "action-primary",
+      "description": "Hành động chính trong thẻ và drawer.",
+      "html": "<button class=\"ds-btn-primary\">Xem phân tích đầy đủ</button>",
+      "css": ".ds-btn-primary{min-height:36px;padding:7px 14px;background:#1657a8;border:1px solid #1657a8;border-radius:6px;color:#fff;font:650 13px system-ui,-apple-system,sans-serif;cursor:pointer;transition:background-color 120ms ease}.ds-btn-primary:hover{background:#1c5cab}.ds-btn-primary:focus-visible{outline:2px solid #1657a8;outline-offset:2px}"
+    },
+    {
+      "name": "Nhóm chọn",
+      "kind": "chip",
+      "refersTo": "segmented-selected",
+      "description": "Chọn một trong hai đến ba giá trị loại trừ nhau. Nhãn hiện trạng thái, không hiện hành động.",
+      "html": "<div class=\"ds-seg\"><button class=\"is-active\">Cao nhất</button><button>Thấp nhất</button></div>",
+      "css": ".ds-seg{display:inline-flex;gap:2px;padding:3px;min-height:38px;background:#eaeff6;border-radius:6px}.ds-seg button{min-height:30px;padding:3px 11px;border:0;background:none;border-radius:4px;color:#485666;font:650 12px system-ui,sans-serif;cursor:pointer;transition:background-color 120ms ease,color 120ms ease}.ds-seg button.is-active{background:#fff;color:#1657a8;box-shadow:0 1px 2px #19334e18}"
+    },
+    {
+      "name": "Ô chọn bộ lọc",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Viền dùng control-border đậm hơn hairline: viền của thứ bấm được phải nói lên là bấm được.",
+      "html": "<label class=\"ds-field\"><span>Cấp ngân sách</span><select><option>Tổng NSNN</option></select></label>",
+      "css": ".ds-field{display:grid;gap:5px}.ds-field span{color:#485666;font:650 12px system-ui,sans-serif}.ds-field select{min-height:38px;padding:6px 28px 6px 10px;background:#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M0 0h9L4.5 6z' fill='%23485666'/%3E%3C/svg%3E\") no-repeat right 10px center;border:1px solid #c6d2e0;border-radius:6px;font-size:13px;appearance:none;transition:border-color 120ms ease}.ds-field select:hover{border-color:#86b6ef}.ds-field select:focus-visible{outline:2px solid #1657a8;outline-offset:2px}"
+    },
+    {
+      "name": "Thẻ widget",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Bề mặt chứa một widget. Phẳng, không bóng; viền và tông nền mang cấu trúc. Phụ đề ghi đơn vị đúng một lần.",
+      "html": "<section class=\"ds-card\"><header><h2>Cơ cấu nguồn thu</h2><p>Tỷ trọng trên tổng thu · <b>Đơn vị: tỷ đồng</b></p></header><div class=\"ds-card-body\">…</div></section>",
+      "css": ".ds-card{display:flex;flex-direction:column;background:#fff;border:1px solid #dbe3ed;border-radius:10px;overflow:hidden}.ds-card header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 12px;padding:15px 16px 8px}.ds-card h2{margin:0;font:700 15px system-ui,sans-serif;color:#16263c;letter-spacing:-.01em}.ds-card p{margin:2px 0 0;color:#485666;font-size:12px}.ds-card p b{font-weight:650}.ds-card-body{flex:1;min-height:0;padding:0 16px 14px}"
+    },
+    {
+      "name": "Dòng thanh xếp hạng",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Thanh mã hoá đúng đại lượng đang sắp xếp. Đơn vị không lặp ở dòng — nó nằm ở phụ đề thẻ.",
+      "html": "<button class=\"ds-bar-row\"><span class=\"ds-rank\">1</span><span class=\"ds-main\"><span class=\"ds-label\"><b>Thu nội địa</b><span class=\"ds-value\">50.718<em>90,4%</em></span></span><span class=\"ds-track\"><i></i></span></span><span class=\"ds-change\">▲ +15,9%</span></button>",
+      "css": ".ds-bar-row{width:100%;display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 0;border:0;border-top:1px solid #eaeff6;background:none;text-align:left;cursor:pointer;transition:background-color 120ms ease}.ds-bar-row:hover{background:#eef4fc}.ds-bar-row:focus-visible{outline:2px solid #1657a8;outline-offset:2px}.ds-rank{color:#63707f;font:700 12px system-ui,sans-serif;text-align:right}.ds-main{min-width:0}.ds-label{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 12px;font-size:12px}.ds-label b{flex:1 1 7em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#16263c}.ds-value{flex:0 0 auto;margin-left:auto;color:#16263c;font-weight:600;font-variant-numeric:tabular-nums}.ds-value em{margin-left:6px;color:#63707f;font-size:12px;font-style:normal;font-weight:500}.ds-track{position:relative;display:block;height:4px;margin-top:5px;background:#e7edf5;border-radius:2px}.ds-track i{position:absolute;inset:0 0 0 0;background:#3987e5;border-radius:2px}.ds-change{color:#187044;font:650 12px system-ui,sans-serif;white-space:nowrap;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Ô chỉ số",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Một ô trong dải KPI. Ba tầng chữ tách bằng màu: nhãn ink-2, giá trị ink, lời chú ink-3. Khe nhãn→giá trị hẹp vì hai thứ đó là một đơn vị; khe giá trị→lời chú rộng hơn.",
+      "html": "<div class=\"ds-kpi\"><span>Đóng góp vào biến động</span><strong class=\"tone-pos\">+6.964 tỷ</strong><small>Phần chênh lệch do nhóm này tạo ra</small></div>",
+      "css": ".ds-kpi{min-width:0;padding:12px 16px;display:grid;align-content:center;gap:1px;background:#fff;border:1px solid #dbe3ed;border-radius:10px}.ds-kpi>span{color:#485666;font:650 12px system-ui,sans-serif}.ds-kpi strong{font:700 23px system-ui,sans-serif;letter-spacing:-.025em;color:#16263c;font-variant-numeric:tabular-nums}.ds-kpi strong.tone-pos{color:#187044}.ds-kpi strong.tone-neg{color:#b3352f}.ds-kpi small{margin-top:5px;color:#63707f;font-size:12px;line-height:1.45}"
+    },
+    {
+      "name": "Dải KPI",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Bốn ô trên một bề mặt duy nhất, chia bằng viền dọc. Số tách khỏi đơn vị: đơn vị 0,7em và mực phụ.",
+      "html": "<section class=\"ds-kpis\"><div><span>Thu trong kỳ</span><strong><span class=\"ds-money\"><b>56.117</b><i>tỷ</i></span></strong><small>▲ +15,4% so cùng kỳ</small></div><div><span>Lũy kế từ đầu năm</span><strong><span class=\"ds-money\"><b>434.710</b><i>tỷ</i></span></strong><small>▲ +13,2% so cùng kỳ</small></div></section>",
+      "css": ".ds-kpis{display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid #dbe3ed;border-radius:10px;overflow:hidden}.ds-kpis>div{min-width:0;padding:12px 16px;display:grid;align-content:center;gap:1px;border-left:1px solid #dbe3ed}.ds-kpis>div:first-child{border-left:0}.ds-kpis>div>span{color:#485666;font:650 12px system-ui,sans-serif}.ds-kpis strong{font:700 23px system-ui,sans-serif;letter-spacing:-.025em;color:#16263c;font-variant-numeric:tabular-nums}.ds-kpis small{margin-top:5px;color:#63707f;font-size:12px;line-height:1.45}.ds-money{display:inline-flex;align-items:baseline;gap:.28em}.ds-money i{font-size:.7em;font-weight:600;font-style:normal;color:#485666}"
+    },
+    {
+      "name": "Thanh phạm vi thu gọn",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Dưới 768px sáu ô lọc chiếm 326px, nên thu về một dòng nêu phạm vi bằng chữ và mở ra khi cần.",
+      "html": "<section class=\"ds-scope\"><p><span class=\"ds-eyebrow\">Đang xem</span><b>2026</b><b>Tháng 8</b><b>Trong kỳ</b><b>Tổng NSNN</b></p><button class=\"ds-scope-btn\">Chọn lại</button></section>",
+      "css": ".ds-scope{display:flex;flex-wrap:nowrap;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px;background:#fff;border:1px solid #dbe3ed;border-radius:10px}.ds-scope p{flex:1 1 auto;min-width:0;margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.ds-eyebrow{color:#485666;font:650 12px system-ui,sans-serif}.ds-scope b{font:650 13px system-ui,sans-serif;color:#16263c}.ds-scope b+b::before{content:'·';color:#63707f;margin-right:8px;font-weight:400}.ds-scope-btn{flex:none;min-height:36px;padding:7px 14px;background:#fff;border:1px solid #dbe3ed;border-radius:6px;font:650 13px system-ui,sans-serif;cursor:pointer;transition:border-color 120ms ease,color 120ms ease}.ds-scope-btn:hover{border-color:#86b6ef;color:#1657a8}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Bàn điều hành ngân sách",
+    "overview": "Giao diện Operate dành cho người đọc và đối chiếu số liệu ngân sách công. Cảm giác chủ đạo là thể chế, chắc chắn và yên tĩnh: đầu trang xanh navy xác lập thẩm quyền; phần làm việc dùng nền trung tính sáng, bề mặt trắng có viền mảnh và một giọng xanh dữ liệu nhất quán. Mật độ thông tin cao nhưng mỗi lớp có trật tự rõ ràng, ưu tiên quét nhanh hơn biểu đạt trang trí.\n\nMột đơn vị tiền duy nhất cho cả ứng dụng — tỷ đồng — nên mọi con số trên mọi tab so được với nhau mà không phải đổi bậc lần nào. Chữ số dạng tabular để cột không nhảy khi giá trị đổi. Giao diện diễn đạt trung thực nguồn, kỳ, phạm vi, độ phủ và khoảng trống dữ liệu.",
+    "keyCharacteristics": [
+      "Đầu trang navy mang tính thể chế, nội dung phân tích nằm trên nền xám xanh rất nhạt.",
+      "Tab chính bám dính phía trên; bộ lọc ngữ cảnh nằm ngay dưới tab trong luồng nội dung.",
+      "KPI là một dải bốn ô gọn, còn widget dùng lưới 12 cột với bề mặt trắng và viền mảnh.",
+      "Màu xanh dành cho điều hướng, thao tác và dữ liệu; xanh lá/đỏ chỉ biểu đạt chiều biến động.",
+      "Khoảng trống, trạng thái thiếu dữ liệu và nguồn mô phỏng luôn được nói rõ, không ngụy trang thành số 0.",
+      "Một đơn vị tiền cho cả ứng dụng; đơn vị ghi ở đầu cột chứ không bám từng giá trị.",
+      "Chuyển động chỉ phục vụ phản hồi và tính liên tục; giảm chuyển động vẫn giữ phản hồi."
+    ],
+    "rules": [
+      {
+        "name": "The One Data Hue Rule",
+        "section": "colors",
+        "body": "Đại lượng liên tục không bao giờ được mã hoá bằng nhiều sắc. Thang cầu vồng cho một đại lượng magnitude là lỗi: nó biến “thấp” thành cảnh báo và phá thứ tự đọc."
+      },
+      {
+        "name": "The Semantic Color Rule",
+        "section": "colors",
+        "body": "Đỏ và xanh lá chỉ nói lên chiều tăng/giảm, không bao giờ dùng làm màu chuỗi."
+      },
+      {
+        "name": "The Encoding Match Rule",
+        "section": "colors",
+        "body": "Thanh phải mã hoá đúng đại lượng đang dùng để sắp xếp."
+      },
+      {
+        "name": "The Shared Scale Rule",
+        "section": "colors",
+        "body": "Không đặt hai đại lượng lệch bậc lên cùng một thang."
+      },
+      {
+        "name": "The Measured Ink Rule",
+        "section": "colors",
+        "body": "Bậc mực phụ chỉ được đổi khi đã tính lại tỷ lệ tương phản trên nền nó sẽ nằm lên. “Nhạt hơn một chút” không phải một quyết định."
+      },
+      {
+        "name": "The Two-Step Secondary Rule",
+        "section": "typography",
+        "body": "Tầng chữ phụ chỉ có hai bậc: 12px cho nhãn và metadata, 13px cho câu trạng thái. Năm bậc cách nhau nửa pixel là trôi dạt, không phải thang."
+      },
+      {
+        "name": "The Column Unit Rule",
+        "section": "typography",
+        "body": "Một cột, một đơn vị, một số lẻ, ghi đơn vị đúng một lần ở đầu. Không hậu tố nào lặp lại ở từng dòng, và không bậc nào trên “tỷ”."
+      },
+      {
+        "name": "The Numeric Alignment Rule",
+        "section": "typography",
+        "body": "Mọi số liệu dùng tabular numerals nên dấu phẩy thẳng hàng và cột không nhảy khi giá trị đổi."
+      },
+      {
+        "name": "The Compact Label Rule",
+        "section": "typography",
+        "body": "Nhãn nhỏ dùng mực phụ và trọng lượng 650; không bù kích thước nhỏ bằng chữ hoa toàn bộ."
+      },
+      {
+        "name": "The Pairs Before Stacking Rule",
+        "section": "layout",
+        "body": "Dưới 1280px, cặp widget nới tỷ lệ trước, xếp chồng sau. Xếp chồng sớm cho thẻ rộng 912px chứa danh sách năm dòng — thừa chiều ngang mà trang dài gấp đôi."
+      },
+      {
+        "name": "The Scope Costs Height Rule",
+        "section": "layout",
+        "body": "Dưới 768px, sáu ô lọc chiếm gần một phần ba khung iframe cao 1100px. Thanh lọc thu về một dòng; bộ lọc là phương tiện, không phải nội dung."
+      },
+      {
+        "name": "The Equal Row Height Rule",
+        "section": "layout",
+        "body": "Thẻ cùng một hàng luôn cao bằng nhau. Biểu đồ nở hết phần dư; danh sách thanh nở có trần; bảng dài cuộn trong thẻ."
+      },
+      {
+        "name": "The Twelve-Column Rule",
+        "section": "layout",
+        "body": "Widget chỉ dùng nhịp 4, 6, 8 hoặc 12 cột; chọn độ rộng theo lượng thông tin."
+      },
+      {
+        "name": "The Context Before Metrics Rule",
+        "section": "layout",
+        "body": "Tab, bộ lọc, phạm vi/đơn vị và nguồn dữ liệu xuất hiện trước KPI và biểu đồ trong thứ tự đọc."
+      },
+      {
+        "name": "The Flat Workspace Rule",
+        "section": "elevation",
+        "body": "Không thêm bóng cho widget thường; viền và tông nền đã mang đủ cấu trúc."
+      },
+      {
+        "name": "The Overlay Earns Depth Rule",
+        "section": "elevation",
+        "body": "Bóng lớn chỉ dành cho bề mặt phủ lên luồng chính như drawer chi tiết."
+      },
+      {
+        "name": "The Nested Radius Rule",
+        "section": "shapes",
+        "body": "Bán kính giảm theo cấp độ, không bao giờ tăng: một phần tử con không được cong hơn khung chứa nó."
+      },
+      {
+        "name": "The Pointer Not Width Rule",
+        "section": "components",
+        "body": "Kích thước đích chạm chốt theo loại con trỏ. Mọi quy tắc chạm gắn vào max-width đều sai ở cả hai chiều."
+      },
+      {
+        "name": "The Role Not Class Rule",
+        "section": "components",
+        "body": "Quy tắc hệ thống chọn theo vai trò ngữ nghĩa. Danh sách tên class là thứ sẽ lọt phần tử tiếp theo ai đó thêm vào."
+      },
+      {
+        "name": "The Reduced Motion Keeps Feedback Rule",
+        "section": "components",
+        "body": "Giảm chuyển động nghĩa là bớt chuyển động, không phải tắt phản hồi. Chặn theo thuộc tính di chuyển, giữ chuyển màu 120ms."
+      },
+      {
+        "name": "The JS Motion Reads The Flag Rule",
+        "section": "components",
+        "body": "Media query CSS không với tới hoạt ảnh JavaScript. d3 và Recharts nhận cờ qua useReducedMotion()."
+      },
+      {
+        "name": "The Scope Bar Rule",
+        "section": "components",
+        "body": "Thanh phạm vi có mặt trên cả ba tab, ở đúng một vị trí, và luôn có lối quay lại. Một bộ lọc không được phép im lặng vô hiệu."
+      },
+      {
+        "name": "The Named Overlay Rule",
+        "section": "colors",
+        "body": "Độ mờ trên một nền cụ thể vẫn là một quyết định thiết kế và vẫn phải có tên. Alpha viết thẳng trong quy tắc là chỗ mà ba giá trị gần giống nhau sinh ra cho cùng một việc."
+      },
+      {
+        "name": "The Three Tier Rule",
+        "section": "typography",
+        "body": "Ô chỉ số có đúng ba vai trò và phải đọc ra đủ ba khi làm mờ: nhãn, giá trị, lời chú. Hai vai trò dùng chung cả cỡ lẫn màu là hai vai trò đã nhập làm một."
+      },
+      "The Head Floor Rule",
+      "The Restate Specificity Rule",
+      {
+        "name": "The Even Cell Rule",
+        "section": "layout",
+        "body": "Bốn ô KPI rộng bằng nhau. Một tỷ lệ cố định áp lên bốn tập nội dung khác nhau thì đúng được một tập."
+      }
+    ],
+    "dos": [
+      "Do giữ thứ tự header → tab sticky → filter ngữ cảnh → nguồn → KPI → lưới widget.",
+      "Do dùng surface trắng có viền trên canvas trung tính và nhịp 14–16px để duy trì mật độ hiện tại.",
+      "Do dùng đúng lưới 12 cột và kiểm tra ở 390px, 1024px và 1440px.",
+      "Do định dạng số theo vi-VN, dùng tabular numerals và chọn một đơn vị cho cả cột, ghi ở đầu cột.",
+      "Do chốt kích thước đích chạm theo pointer: coarse và chọn theo vai trò ngữ nghĩa, không theo tên class.",
+      "Do cho mọi hoạt ảnh JavaScript đọc useReducedMotion(); media query CSS không với tới chúng.",
+      "Do tính lại tỷ lệ tương phản khi đổi bất kỳ bậc mực nào.",
+      "Do hiển thị nguồn, phạm vi, kỳ, cấp ngân sách và độ phủ gần số liệu mà chúng mô tả.",
+      "Do đưa nguồn API/MCP/mock qua hợp đồng typed và validation runtime trước khi render."
+    ],
+    "donts": [
+      "Don't thêm gradient, glassmorphism, bóng thẻ đậm hoặc màu nhấn trang trí vào workspace phân tích.",
+      "Don't dùng đỏ hoặc xanh lá cho điều hướng, selection hay trang trí; chúng chỉ mang nghĩa tăng/giảm.",
+      "Don't biến dữ liệu thiếu thành 0, nối đường biểu đồ qua khoảng trống hoặc tính phần trăm khi mẫu so sánh không hợp lệ.",
+      "Don't làm widget thành các tile nổi rời rạc; cấu trúc đến từ grid, viền và nhịp đều.",
+      "Don't giấu nguồn mô phỏng, kỳ tổng hợp hoặc độ phủ chưa đầy đủ.",
+      "Don't thêm tương tác vào hàng không có drill-down.",
+      "Don't dùng bậc “nghìn tỷ” hay mã ISO VND; thang tiền dừng ở “tỷ đồng”.",
+      "Don't để hai đơn vị tiền khác nhau trong cùng một cột số.",
+      "Don't đặt transition-duration: 0.01ms cho toàn bộ dưới reduced-motion.",
+      "Don't gắn quy tắc vùng chạm vào max-width."
+    ]
+  }
+}

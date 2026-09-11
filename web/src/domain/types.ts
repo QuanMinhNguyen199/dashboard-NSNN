@@ -104,7 +104,38 @@ export interface OverviewData {
   domesticItems: AmountRow[];
   locations: AmountRow[];
   budgetLevels: AmountRow[];
+  /** `null` khi không có dự toán cho phạm vi đang lọc. */
+  estimate: BudgetEstimate | null;
   waterfall: Waterfall;
+}
+
+/**
+ * Một nhóm lớn của thu nội địa, kèm các khoản con của chính nó.
+ *
+ * Khoản con đi cùng nhóm chứ không nằm ở danh sách phẳng riêng: màn hình phân rã
+ * cần đúng các khoản thuộc nhóm đang mở, và để hai bên tự ghép bằng mã là mời
+ * thêm một chỗ có thể ghép sai.
+ */
+export interface RevenueGroupRow extends AmountRow {
+  /** Các khoản thu thuộc nhóm, đã xếp giảm dần. */
+  items: AmountRow[];
+}
+
+/**
+ * Dự toán giao đầu năm và tiến độ thực hiện.
+ *
+ * ⚠ API hiện **không** trả trường này — 143 response tham chiếu chỉ có `amount`.
+ * Đặc tả v2 từng chủ động để dự toán ngoài phạm vi. Lớp mock vì thế tự suy ra
+ * một con số để dựng giao diện, và `origin` nói rõ số đến từ đâu: giao diện phải
+ * gắn nhãn mô phỏng chừng nào `origin` còn là `"mock"`. Khi API có trường thật,
+ * chỉ cần adapter trả `origin: "api"` là nhãn tự biến mất.
+ */
+export interface BudgetEstimate {
+  /** Dự toán cả năm, đơn vị đồng. */
+  annual: number;
+  /** Lũy kế thực hiện trên dự toán, 0..1; `null` khi dự toán không hợp lệ. */
+  progress: number | null;
+  origin: "mock" | "api";
 }
 
 export interface RevenueAnalysisData {
@@ -113,6 +144,8 @@ export interface RevenueAnalysisData {
   kpis: { total: AmountRow; share: number | null; contribution: number };
   trend: TrendPoint[];
   breakdown: AmountRow[];
+  /** Chỉ nguồn nội địa: ba nhóm lớn, mỗi nhóm mang khoản con của nó. */
+  groups: RevenueGroupRow[] | null;
   /** Chỉ nguồn XNK: tổng gộp, hoàn/khấu trừ và thu ròng. */
   netReconciliation: { gross: number; deductions: AmountRow[]; net: number } | null;
   byLocation: AmountRow[];

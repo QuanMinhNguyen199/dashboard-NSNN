@@ -1,11 +1,21 @@
-import { LOCATIONS, SOURCES, SOURCE_BY_CODE, YEARS, type SourceCode } from "@/domain/catalog";
+import { LOCATIONS, SOURCES, YEARS, sameAllocationScope, type SourceCode } from "@/domain/catalog";
 import { periodCount, periodTokenLabel } from "@/domain/metrics";
 import { useAdvancedComparison } from "@/data/hooks";
 import type { AdvancedComparisonData, AdvancedComparisonMode } from "@/domain/types";
 import { useDashboardState } from "@/state/DashboardState";
 import { GridRows } from "@/components/Grid";
+import { Kpi, KpiStrip } from "@/components/Kpi";
 import { TrendChart, WaterfallChart } from "@/components/charts";
-import { Card, CoverageNote, ResourceView, Segmented, money, pct } from "@/components/primitives";
+import {
+  Card,
+  CoverageNote,
+  Money,
+  ResourceView,
+  Segmented,
+  inScale,
+  moneyScale,
+  pct,
+} from "@/components/primitives";
 
 const MODES: { value: AdvancedComparisonMode; label: string }[] = [
   { value: "period", label: "Theo kỳ" },
@@ -32,10 +42,22 @@ export function AdvancedCompareTab() {
     mode === "period"
       ? !!periodA && !!periodB
       : mode === "revenue"
-        ? compareSource !== compareSourceB
+        ? compareSource !== compareSourceB && sameAllocationScope(compareSource, compareSourceB)
         : !!locationA && !!locationB && locationA !== locationB;
 
-  const { resource, retry } = useAdvancedComparison(comparisonFilters, ready);
+  // Chưa đủ vế là trạng thái chờ, không phải lỗi tải. Câu này nằm ngay trong
+  // khung chờ chứ không đứng thành một dòng ghi chú riêng phía trên: hai chỗ
+  // cùng nói một việc thì người đọc phải đọc hai lần để biết chúng trùng nhau.
+  const waiting =
+    mode === "revenue"
+      ? compareSource !== compareSourceB
+        ? "Hai nguồn này khác phạm vi phân bổ nên không đặt cạnh nhau được. Chọn lại vế B."
+        : "Chọn hai nguồn thu khác nhau để so sánh."
+      : mode === "location"
+        ? "Chọn hai phường, xã khác nhau để so sánh."
+        : "Chọn đủ hai kỳ để so sánh.";
+
+  const { resource, retry } = useAdvancedComparison(comparisonFilters, ready, waiting);
 
   return (
     <>
@@ -44,16 +66,6 @@ export function AdvancedCompareTab() {
       </div>
 
       <CompareBuilder />
-
-      {!ready && (
-        <p className="dnote" role="status">
-          {mode === "revenue"
-            ? "Chọn hai nguồn thu khác nhau để so sánh."
-            : mode === "location"
-              ? "Chọn hai phường, xã khác nhau để so sánh."
-              : "Chọn đủ hai kỳ để so sánh."}
-        </p>
-      )}
 
       <ResourceView resource={resource} retry={retry} minHeight={380}>
         {(data, partial) => <CompareBody data={data} partial={partial} />}
@@ -77,8 +89,7 @@ function CompareBuilder() {
     );
 
   if (mode === "revenue") {
-    const compatible = (code: SourceCode) =>
-      SOURCE_BY_CODE[code].cityOnly === SOURCE_BY_CODE[state.compareSource].cityOnly;
+    const compatible = (code: SourceCode) => sameAllocationScope(state.compareSource, code);
     return (
       <section className="dbuilder" aria-label="Chọn hai nguồn thu">
         <label>
@@ -222,37 +233,44 @@ function PeriodPicker({
 function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?: string }) {
   const { filters } = useDashboardState();
   const bothKnown = data.a.total !== null && data.b.total !== null;
+  // Bảng chênh lệch: ba cột tiền phải cùng một đơn vị mới đọc được theo hàng ngang.
+  const deltaUnit = moneyScale(data.rows.flatMap((row) => [row.a, row.b, row.delta]));
+  // Vế A, vế B và chênh lệch nằm trên cùng một dải: cùng thang mới so được.
+  const kpiUnit = moneyScale([data.a.total, data.b.total, data.delta]);
 
   return (
     <>
       <CoverageNote message={partial} />
 
-      <section className="dkpis is-compare" aria-label="Chỉ số so sánh">
-        <div>
-          <span>{data.a.label}</span>
-          <strong>{data.a.total === null ? "chưa có số liệu" : money(data.a.total)}</strong>
-          <small>Vế A</small>
-        </div>
-        <div>
-          <span>{data.b.label}</span>
-          <strong>{data.b.total === null ? "chưa có số liệu" : money(data.b.total)}</strong>
-          <small>Vế B</small>
-        </div>
-        <div>
-          <span>Chênh lệch tuyệt đối</span>
-          <strong className={data.delta === null ? undefined : data.delta >= 0 ? "tone-pos" : "tone-neg"}>
-            {data.delta === null ? "—" : `${data.delta >= 0 ? "+" : "−"}${money(Math.abs(data.delta))}`}
-          </strong>
-          <small>{bothKnown ? "B trừ A" : "Thiếu một vế nên không tính chênh lệch"}</small>
-        </div>
-        <div>
-          <span>Chênh lệch tương đối</span>
-          <strong className={data.deltaPct === null ? undefined : data.deltaPct >= 0 ? "tone-pos" : "tone-neg"}>
-            {pct(data.deltaPct, true)}
-          </strong>
-          <small>{data.deltaPct === null ? "Mẫu số không hợp lệ" : "Trên giá trị vế A"}</small>
-        </div>
-      </section>
+      <KpiStrip label="Chỉ số so sánh">
+        <Kpi label={data.a.label} note="Vế A">
+          {data.a.total === null ? "chưa có số liệu" : <Money value={data.a.total} scale={kpiUnit} />}
+        </Kpi>
+        <Kpi label={data.b.label} note="Vế B">
+          {data.b.total === null ? "chưa có số liệu" : <Money value={data.b.total} scale={kpiUnit} />}
+        </Kpi>
+        <Kpi
+          label="Chênh lệch tuyệt đối"
+          tone={data.delta === null ? undefined : data.delta >= 0 ? "pos" : "neg"}
+          note={bothKnown ? "B trừ A" : "Thiếu một vế nên không tính chênh lệch"}
+        >
+          {data.delta === null ? (
+            "—"
+          ) : (
+            <>
+              {data.delta >= 0 ? "+" : "−"}
+              <Money value={Math.abs(data.delta)} scale={kpiUnit} />
+            </>
+          )}
+        </Kpi>
+        <Kpi
+          label="Chênh lệch tương đối"
+          tone={data.deltaPct === null ? undefined : data.deltaPct >= 0 ? "pos" : "neg"}
+          note={data.deltaPct === null ? "Mẫu số không hợp lệ" : "Trên giá trị vế A"}
+        >
+          {pct(data.deltaPct, true)}
+        </Kpi>
+      </KpiStrip>
 
       <GridRows
         rows={[
@@ -273,7 +291,11 @@ function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?
               // Bảng năm cột đi kèm: cả hàng cùng xuống một cột khi hẹp.
               wide: true,
               render: () => (
-                <Card title="Bảng chênh lệch" subtitle="Sắp theo độ lớn tuyệt đối">
+                <Card
+                  title="Bảng chênh lệch"
+                  subtitle="Sắp theo độ lớn tuyệt đối"
+                  unit={deltaUnit}
+                >
                   <div className="dtable-wrap">
                     <table className="dtable is-compact">
                       <thead>
@@ -289,10 +311,10 @@ function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?
                         {data.rows.slice(0, 12).map((row) => (
                           <tr key={row.id}>
                             <th scope="row">{row.name}</th>
-                            <td className="is-num">{money(row.a)}</td>
-                            <td className="is-num">{money(row.b)}</td>
+                            <td className="is-num">{inScale(row.a, deltaUnit)}</td>
+                            <td className="is-num">{inScale(row.b, deltaUnit)}</td>
                             <td className={`is-num ${row.delta >= 0 ? "tone-pos" : "tone-neg"}`}>
-                              {row.delta >= 0 ? "▲" : "▼"} {money(Math.abs(row.delta))}
+                              {row.delta >= 0 ? "▲" : "▼"} {inScale(Math.abs(row.delta), deltaUnit)}
                             </td>
                             <td className="is-num">{pct(row.contribution)}</td>
                           </tr>

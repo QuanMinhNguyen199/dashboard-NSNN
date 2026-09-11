@@ -12,12 +12,15 @@ import {
   ALL_PERIODS,
   INDICATORS,
   LOCATION_BY_ID,
-  SOURCE_BY_CODE,
+  firstComparableTo,
+  sameAllocationScope,
   YEARS,
   type IndicatorSlug,
+  type DomesticGroupId,
   type SourceCode,
 } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
+import { groupFromUrl, groupUrlId, sourceFromUrl, sourceUrlId } from "@/domain/urlIds";
 import type {
   AdvancedComparisonMode,
   DashboardFilters,
@@ -44,6 +47,7 @@ export interface DashboardUrlState {
   /** Tab Phân tích thu */
   section: SourceCode;
   view: AnalysisView;
+  group: DomesticGroupId;
   /** Tab Chi tiết địa bàn */
   location: string | null;
   /** Drawer xem nhanh nguồn thu */
@@ -105,7 +109,6 @@ function readUrl(search: string): DashboardUrlState {
     budgetLevel: one("level", ["NSNN", "NSTW", "NSDP"] as const, DEFAULT_FILTERS.budgetLevel),
   });
 
-  const sources = Object.keys(SOURCE_BY_CODE) as SourceCode[];
   const locationOf = (key: string) => {
     const raw = q.get(key);
     return raw && raw in LOCATION_BY_ID ? raw : null;
@@ -114,15 +117,16 @@ function readUrl(search: string): DashboardUrlState {
   return {
     tab: one("tab", TABS, "overview"),
     filters,
-    section: one("section", sources, "domestic"),
+    section: sourceFromUrl(q.get("section"), "domestic"),
     view: one("view", VIEWS, "overview"),
+    group: groupFromUrl(q.get("group"), "sxkd"),
     location: locationOf("location"),
-    panelSource: q.get("panel") === "revenue-preview" ? one("source", sources, "domestic") : null,
+    panelSource: q.get("panel") === "revenue-preview" ? sourceFromUrl(q.get("source"), "domestic") : null,
     mode: one("mode", MODES, "period"),
     periodA: q.get("periodA") ?? "2025m8",
     periodB: q.get("periodB") ?? "2026m8",
-    compareSource: one("source", sources, "domestic"),
-    compareSourceB: one("sourceB", sources, "import-export"),
+    compareSource: sourceFromUrl(q.get("source"), "domestic"),
+    compareSourceB: sourceFromUrl(q.get("sourceB"), "other"),
     locationA: locationOf("locationA"),
     locationB: locationOf("locationB"),
   };
@@ -139,8 +143,9 @@ function writeUrl(state: DashboardUrlState): string {
   q.set("indicator", state.filters.indicator);
 
   if (state.tab === "revenue-analysis") {
-    q.set("section", state.section);
+    q.set("section", sourceUrlId(state.section));
     q.set("view", state.view);
+    if (state.section === "domestic") q.set("group", groupUrlId(state.group));
   }
   if (state.tab === "location-detail" && state.location) q.set("location", state.location);
   if (state.tab === "advanced-compare") {
@@ -149,8 +154,8 @@ function writeUrl(state: DashboardUrlState): string {
       q.set("periodA", state.periodA);
       q.set("periodB", state.periodB);
     } else if (state.mode === "revenue") {
-      q.set("source", state.compareSource);
-      q.set("sourceB", state.compareSourceB);
+      q.set("source", sourceUrlId(state.compareSource));
+      q.set("sourceB", sourceUrlId(state.compareSourceB));
     } else {
       if (state.locationA) q.set("locationA", state.locationA);
       if (state.locationB) q.set("locationB", state.locationB);
@@ -158,7 +163,7 @@ function writeUrl(state: DashboardUrlState): string {
   }
   if (state.panelSource) {
     q.set("panel", "revenue-preview");
-    q.set("source", state.panelSource);
+    q.set("source", sourceUrlId(state.panelSource));
   }
   return `?${q.toString()}`;
 }
@@ -168,6 +173,7 @@ interface DashboardContextValue extends DashboardUrlState {
   setTab: (tab: TabId) => void;
   setSection: (section: SourceCode) => void;
   setView: (view: AnalysisView) => void;
+  setGroup: (group: DomesticGroupId) => void;
   selectLocation: (id: string | null) => void;
   openPreview: (source: SourceCode) => void;
   closePreview: () => void;
@@ -217,6 +223,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       setTab: (tab) => setState((current) => ({ ...current, tab, panelSource: null })),
       setSection: (section) => patch({ section }),
       setView: (view) => patch({ view }),
+      setGroup: (group) => patch({ group }),
       selectLocation: (location) =>
         setState((current) => ({ ...current, location, tab: location ? "location-detail" : current.tab })),
       openPreview: (panelSource) => {
@@ -231,7 +238,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         else patch({ panelSource: null });
       },
       setMode: (mode) => patch({ mode }),
-      setCompare: (next) => patch(next),
+      // Đổi vế A có thể làm vế B thành cặp không ghép được. Kéo B về một nguồn
+      // hợp lệ ngay tại đây thay vì để màn hình lỗi báo hộ: người dùng vừa đổi
+      // đúng thứ họ định đổi, không có lý do gì phải xử lý hậu quả.
+      setCompare: (next) =>
+        setState((current) => {
+          const merged = { ...current, ...next };
+          if (next.compareSource && !sameAllocationScope(merged.compareSource, merged.compareSourceB))
+            merged.compareSourceB = firstComparableTo(merged.compareSource);
+          return merged;
+        }),
       dispatchIntent: (action) => {
         switch (action.type) {
           case "OPEN_REVENUE_PREVIEW":

@@ -4,9 +4,21 @@ import { sumOf } from "@/data/mock/observations";
 import { useLocationDetail } from "@/data/hooks";
 import type { LocationDetailData } from "@/domain/types";
 import { useDashboardState } from "@/state/DashboardState";
+import { Kpi, KpiStrip } from "@/components/Kpi";
 import { LocationMap } from "@/features/location-detail/LocationMap";
-import { TrendChart } from "@/components/charts";
-import { Bars, Card, Change, CoverageNote, ResourceView, Segmented, money, pct } from "@/components/primitives";
+import { DonutChart, TrendChart } from "@/components/charts";
+import {
+  Bars,
+  Card,
+  Change,
+  CoverageNote,
+  Money,
+  ResourceView,
+  Segmented,
+  inScale,
+  moneyScale,
+  pct,
+} from "@/components/primitives";
 
 const collator = new Intl.Collator("vi");
 const fold = (text: string) =>
@@ -35,6 +47,10 @@ export function LocationDetailTab() {
     const missing = rows.filter((row) => row.amount === null).sort((a, b) => collator.compare(a.name, b.name));
     return [...withData, ...missing];
   }, [filters, order]);
+
+  // 126 dòng phải cùng một đơn vị, nếu không thì không so sánh được bằng mắt —
+  // đó là việc duy nhất của một danh sách xếp hạng.
+  const listUnit = useMemo(() => moneyScale(ranked.map((row) => row.amount)), [ranked]);
 
   const visible = useMemo(() => {
     const needle = fold(query.trim());
@@ -70,6 +86,7 @@ export function LocationDetailTab() {
       <Card
         title="Danh sách phường, xã"
         subtitle={`${visible.length}/${LOCATIONS.length} địa bàn`}
+        unit={listUnit}
         className="dsplit-list"
         actions={
           <div className="dlist-tools">
@@ -108,7 +125,7 @@ export function LocationDetailTab() {
                 <span className="dlist-rank">{row.amount === null ? "—" : index + 1}</span>
                 <span className="dlist-name">{row.name}</span>
                 <span className="dlist-amount">
-                  {row.amount === null ? "chưa có số liệu" : money(row.amount)}
+                  {row.amount === null ? "chưa có" : inScale(row.amount, listUnit)}
                 </span>
               </button>
             </li>
@@ -135,52 +152,45 @@ function LocationBody({ data, partial }: { data: LocationDetailData; partial?: s
     <>
       <CoverageNote message={partial} />
 
-      <section className="dkpis" aria-label={`Chỉ số ${data.location.name}`}>
-        <div>
-          <span>Thu trong kỳ</span>
-          <strong>{money(data.kpiPeriod.amount)}</strong>
-          <small>
-            <Change current={data.kpiPeriod.amount} previous={data.kpiPeriod.previous} /> so cùng kỳ
-          </small>
-        </div>
-        <div>
-          <span>Xếp hạng</span>
-          <strong>
-            {data.rank ? data.rank.position : "—"}
-            {data.rank && <em>/{data.rank.total}</em>}
-          </strong>
-          <small>Trong các phường, xã có số liệu</small>
-        </div>
-        <div>
-          <span>Đóng góp vào thành phố</span>
-          <strong>{pct(data.shareOfCity)}</strong>
-          <small>Trên tổng thu toàn thành phố cùng kỳ</small>
-        </div>
-        <div>
-          <span>Mã địa bàn</span>
-          <strong className="is-code">{data.location.id}</strong>
-          <small>{data.meta.periodLabel}</small>
-        </div>
-      </section>
+      <KpiStrip label={`Chỉ số ${data.location.name}`}>
+        <Kpi
+          label="Thu trong kỳ"
+          note={<><Change current={data.kpiPeriod.amount} previous={data.kpiPeriod.previous} label="" /> so cùng kỳ</>}
+        >
+          <Money value={data.kpiPeriod.amount} />
+        </Kpi>
+        <Kpi label="Xếp hạng" note="Trong các phường, xã có số liệu">
+          {data.rank ? data.rank.position : "—"}
+          {data.rank && <em>/{data.rank.total}</em>}
+        </Kpi>
+        <Kpi label="Đóng góp vào thành phố" note="Trên tổng thu toàn thành phố cùng kỳ">
+          {pct(data.shareOfCity)}
+        </Kpi>
+        <Kpi label="Mã địa bàn" code note={data.meta.periodLabel}>
+          {data.location.id}
+        </Kpi>
+      </KpiStrip>
 
       <div className="dstack">
-        {/* Cơ cấu của một địa bàn chỉ còn hai nguồn (XNK và dầu thô do trung ương
-            quản lý, không phân bổ), nên ghép nó với biểu đồ chứ không ghép với
-            danh sách tám khoản — ghép sai làm thẻ ngắn trống gần một phần ba. */}
+        {/* Cơ cấu của một địa bàn chỉ còn các nguồn phân bổ được xuống địa bàn.
+            Donut diễn đạt tỷ trọng rõ hơn hai thanh bị kéo cao theo biểu đồ bên cạnh. */}
         <div className="dstack-row is-chart-pair">
           <Card title="Xu hướng theo tháng" subtitle="So với cùng kỳ năm trước">
             <TrendChart points={data.trend} year={filters.year} height={220} />
           </Card>
-          <Card title="Cơ cấu nguồn thu" subtitle="Chỉ các nguồn phân bổ được theo địa bàn">
-            <Bars
-              rows={data.sources}
-              total={data.sources.reduce((sum, row) => sum + row.amount, 0)}
-              scale="share"
-            />
+          <Card
+            title="Cơ cấu nguồn thu"
+            subtitle="Chỉ các nguồn phân bổ được theo địa bàn"
+          >
+            <DonutChart rows={data.sources} centerLabel="Nguồn thu" />
           </Card>
         </div>
 
-        <Card title="Khoản thu chính" subtitle="8 khoản lớn nhất trên địa bàn">
+        <Card
+          title="Khoản thu chính"
+          subtitle="8 khoản lớn nhất trên địa bàn"
+          unit={moneyScale(data.topItems.map((row) => row.amount))}
+        >
           <Bars rows={data.topItems} />
         </Card>
 

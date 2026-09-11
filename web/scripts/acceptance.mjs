@@ -166,7 +166,7 @@ const run = async () => {
       detail: { tab: await activeTab(page), hasLocation: !!(await query(page, "location")) },
     },
     {
-      analysis: { tab: "Phân tích thu", section: "domestic" },
+      analysis: { tab: "Phân tích thu", section: "src_k7m2qx" },
       detail: { tab: "Chi tiết phường/xã", hasLocation: true },
     },
   );
@@ -399,6 +399,42 @@ const run = async () => {
     }
   }
   check(17, "Thẻ cùng hàng cao bằng nhau", unevenRows, []);
+
+  // 18 — Một cột số chỉ được dùng MỘT đơn vị tiền
+  //
+  // DESIGN.md đã có "The Single Money Scale Rule" từ đầu, code vẫn vi phạm suốt
+  // vì không ai canh: sáu trong mười ba thẻ trộn đơn vị, bảng chi tiết trộn bốn
+  // đơn vị trong sáu cột. Quy tắc bằng lời không tự thực thi được, nên đưa vào
+  // đây. Cũng chặn luôn bậc "nghìn tỷ" đã bị loại khỏi thang.
+  const mixedUnits = [];
+  for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
+    await page.setViewport({ width: 1440, height: 900 });
+    await page.goto(
+      BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`,
+      { waitUntil: "networkidle0" },
+    );
+    await wait(1500);
+    const bad = await page.evaluate(() => {
+      const unitOf = (text) => {
+        const m = /(nghìn tỷ|tỷ|triệu|nghìn|đồng)\s*$/.exec(text.trim());
+        return m ? m[1] : null;
+      };
+      const out = [];
+      for (const card of document.querySelectorAll(".dcard")) {
+        const title = card.querySelector("h2")?.textContent ?? "?";
+        const cells = [
+          ...card.querySelectorAll(".dbar-value, .dlist-amount, .dtable td.is-num, .dledger strong, .dcontrib strong, .dbridge strong"),
+        ].map((el) => el.textContent);
+        const units = new Set(cells.map(unitOf).filter(Boolean));
+        if (units.size > 1) out.push(`${title}:${[...units].join("+")}`);
+      }
+      // Bậc nghìn tỷ đã bị loại khỏi thang, không được xuất hiện ở bất kỳ đâu.
+      if (/nghìn tỷ/.test(document.body.innerText)) out.push("còn chuỗi 'nghìn tỷ'");
+      return out;
+    });
+    if (bad.length) mixedUnits.push(`${tab}: ${bad.join(", ")}`);
+  }
+  check(18, "Một cột số chỉ dùng một đơn vị tiền", mixedUnits, []);
 
   await page.setViewport({ width: 1440, height: 1000 });
 

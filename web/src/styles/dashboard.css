@@ -12,10 +12,39 @@
   --surface-sunken: #f7f9fc;
   --hairline: #dbe3ed;
   --divider: #eaeff6;
+  /* Viền của thứ BẤM ĐƯỢC: đậm hơn hairline có chủ ý, vì viền của một điều khiển
+     phải nói lên rằng nó bấm được. Dùng 7 chỗ trước khi có tên. */
+  --control-border: #c6d2e0;
+  --scrollbar-thumb: #c3cedd;
+
+  /* Mực trên nền tối — không phải `surface`. Hai thứ cùng là trắng nhưng khác
+     vai trò: một cái là bề mặt, một cái là chữ nằm trên bề mặt khác. */
+  --ink-on-dark: #ffffff;
+
+  /* Bốn bậc phủ trên nền navy. Trước đây có TÁM giá trị alpha khác nhau cho
+     bốn vai trò này — ba alpha khác nhau cho riêng vai trò "viền lúc nghỉ". */
+  --on-dark-fill: #ffffff14;
+  --on-dark-fill-hover: #ffffff26;
+  --on-dark-line: #ffffff3d;
+  --on-dark-line-hover: #ffffff66;
+  --on-dark-hairline: #ffffff12;
+
+  /* Bóng là TỪ VỰNG, không phải giá trị tự do: bốn vai trò, bốn giá trị, không
+     có bậc thứ năm. `shadow-control` dùng 3 chỗ trước khi có tên, và từng có
+     hai alpha khác nhau (#19334e18 với #19334e1a) cho đúng một vai trò. */
+  --shadow-control: 0 1px 2px #19334e18;
+  --shadow-overlay: -18px 0 42px #0e2a4722;
+  --shadow-frame: 0 0 0 1px #00000040, 0 10px 34px #0000004d;
+  --shadow-tip: 0 4px 14px #19334e18;
+
+  --scrim: #0e2a4780;
 
   --ink: #16263c;
-  --ink-2: #5a6b80;
-  --ink-3: #8496aa;
+  /* Hai bậc chữ phụ đều chốt theo độ tương phản trên nền trắng, không chốt theo
+     cảm giác "nhạt vừa đủ": ink-3 cũ là #8496aa chỉ đạt 3,03:1 nên trượt chuẩn
+     AA cho chữ thường, mà nó lại đang mang số thứ hạng và tỷ trọng. */
+  --ink-2: #485666; /* 7,50:1 — AAA */
+  --ink-3: #63707f; /* 5,05:1 — AA  */
 
   --navy: #0e2a47;
   --navy-ink: #d3e1f0;
@@ -70,10 +99,10 @@ table { border-collapse: collapse; width: 100%; }
   outline-offset: 2px;
   border-radius: var(--r-chip);
 }
-* { scrollbar-color: #c3cedd var(--canvas); scrollbar-width: thin; }
+* { scrollbar-color: var(--scrollbar-thumb) var(--canvas); scrollbar-width: thin; }
 ::-webkit-scrollbar { width: 11px; height: 11px; }
 ::-webkit-scrollbar-track { background: var(--canvas); }
-::-webkit-scrollbar-thumb { background: #c3cedd; border: 3px solid var(--canvas); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border: 3px solid var(--canvas); border-radius: 99px; }
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -81,7 +110,7 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dskip {
   position: absolute; left: -9999px; top: 0; z-index: 100;
-  background: var(--brand); color: #fff; padding: 10px 16px; border-radius: 0 0 var(--r-control) 0;
+  background: var(--brand); color: var(--ink-on-dark); padding: 10px 16px; border-radius: 0 0 var(--r-control) 0;
 }
 .dskip:focus { left: 0; }
 
@@ -89,13 +118,13 @@ table { border-collapse: collapse; width: 100%; }
 .dheader {
   display: flex; align-items: center; justify-content: space-between; gap: var(--s5);
   padding: 14px clamp(16px, 3vw, 38px);
-  background: var(--navy); color: #fff;
+  background: var(--navy); color: var(--ink-on-dark);
 }
 .dheader-mark { display: flex; align-items: center; gap: var(--s3); }
 .dheader-mark i {
   width: 34px; height: 34px; flex: none;
   display: grid; place-items: center;
-  border: 1px solid #ffffff40; border-radius: 50%;
+  border: 1px solid var(--on-dark-line); border-radius: 50%;
   font-style: normal; font-weight: 700; font-size: 13px;
 }
 .dheader h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
@@ -103,57 +132,61 @@ table { border-collapse: collapse; width: 100%; }
 .dheader-tools { display: flex; align-items: center; gap: var(--s3); flex: none; }
 .dheader-source {
   color: var(--navy-ink); font-size: 12px;
-  border: 1px solid #ffffff33; border-radius: var(--r-chip); padding: 4px 9px;
+  border: 1px solid var(--on-dark-line); border-radius: var(--r-chip); padding: 4px 9px;
 }
 .dheader-frame {
   min-height: 30px; padding: 5px 11px; white-space: nowrap;
-  background: #ffffff14; border: 1px solid #ffffff3d; border-radius: var(--r-chip);
-  color: #fff; font-size: 12px; font-weight: 650;
+  background: var(--on-dark-fill); border: 1px solid var(--on-dark-line); border-radius: var(--r-chip);
+  color: var(--ink-on-dark); font-size: 12px; font-weight: 650;
 }
-.dheader-frame:hover { background: #ffffff26; border-color: #ffffff66; }
+.dheader-frame:hover { background: var(--on-dark-fill-hover); border-color: var(--on-dark-line-hover); }
 
 /* ───────────────────── Xem thử khổ nhúng (iframe thật) ──────────────────── */
 .dframe { display: flex; flex-direction: column; height: 100dvh; background: var(--canvas); }
 .dframe-bar {
   flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4);
   height: 56px; padding: 0 clamp(12px, 2.5vw, 24px);
-  background: var(--navy); color: #fff;
+  background: var(--navy); color: var(--ink-on-dark);
 }
 .dframe-title { font-size: 13px; font-weight: 650; }
-.dframe-presets { display: flex; gap: 2px; padding: 3px; background: #ffffff1a; border-radius: var(--r-control); }
+.dframe-presets { display: flex; gap: 2px; padding: 3px; background: var(--on-dark-fill); border-radius: var(--r-control); }
 .dframe-presets button {
   min-height: 26px; padding: 3px 10px; border-radius: var(--r-chip);
   color: var(--navy-ink); font-size: 12px; font-weight: 650;
 }
-.dframe-presets button.is-active { background: #fff; color: var(--brand); }
+.dframe-presets button.is-active { background: var(--surface); color: var(--brand); }
 .dframe-slider { display: flex; align-items: center; min-width: 140px; flex: 1 1 140px; max-width: 260px; }
-.dframe-slider input { width: 100%; accent-color: #fff; }
+.dframe-slider input { width: 100%; accent-color: var(--ink-on-dark); }
 .dframe-size {
   color: var(--navy-ink); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .dframe-exit {
   min-height: 30px; padding: 5px 12px; margin-left: auto;
-  background: #ffffff14; border: 1px solid #ffffff3d; border-radius: var(--r-chip);
-  color: #fff; font-size: 12px; font-weight: 650;
+  background: var(--on-dark-fill); border: 1px solid var(--on-dark-line); border-radius: var(--r-chip);
+  color: var(--ink-on-dark); font-size: 12px; font-weight: 650;
 }
-.dframe-exit:hover { background: #ffffff26; }
+.dframe-exit:hover { background: var(--on-dark-fill-hover); }
 /* Nền phải TỐI hơn hẳn giao diện bên trong. Trước đây dùng `surface-sunken` gần
    trắng nên mép khung lẫn vào nền và không thấy được đâu là rìa thật của iframe —
    đúng thứ cần nhìn khi đang kiểm bố cục khổ hẹp. Kẻ ô nhạt để thấy được kích
-   thước tương đối. */
+   thước tương đối.
+   Bề mặt ĐO khổ iframe — đúng ngoại lệ "canvas, map, blueprint, measurement"
+   mà chính luật codex-grid-background nêu ra. */
+/* impeccable-disable-next-line codex-grid-background */
 .dframe-stage {
   flex: 1 1 auto; min-height: 0; display: flex; justify-content: center;
   padding: var(--s4) var(--s4) 0; overflow: auto;
   background:
-    linear-gradient(#ffffff12 1px, transparent 1px) 0 0 / 100% 24px,
-    linear-gradient(90deg, #ffffff12 1px, transparent 1px) 0 0 / 24px 100%,
-    #888ca3;
+    linear-gradient(var(--on-dark-hairline) 1px, transparent 1px) 0 0 / 100% 24px,
+    linear-gradient(90deg, var(--on-dark-hairline) 1px, transparent 1px) 0 0 / 24px 100%,
+    var(--frame-stage);
 }
 .dframe-window {
   flex: none; height: 100%; max-width: 100%;
   background: var(--canvas); border: 0;
   border-radius: var(--r-surface) var(--r-surface) 0 0;
-  box-shadow: 0 0 0 1px #00000040, 0 10px 34px #0000004d;
+  /* impeccable-disable-next-line design-system-color -- alpha của bóng, khai ở .impeccable/design.json */
+  box-shadow: var(--shadow-frame);
 }
 
 /* ──────────────────────────────── Shell ─────────────────────────────────── */
@@ -193,11 +226,11 @@ table { border-collapse: collapse; width: 100%; }
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
 .dfilters label, .dfield { display: grid; gap: 5px; min-width: 0; }
-.dfilters span, .dfield > span { color: var(--ink-2); font-size: 11px; font-weight: 650; }
+.dfilters span, .dfield > span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
 .dfilters select {
   min-height: 38px; max-width: 100%; padding: 6px 28px 6px 10px;
   background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M0 0h9L4.5 6z' fill='%235a6b80'/%3E%3C/svg%3E") no-repeat right 10px center;
-  border: 1px solid #c6d2e0; border-radius: var(--r-control);
+  border: 1px solid var(--control-border); border-radius: var(--r-control);
   font-size: 13px; appearance: none;
 }
 .dfilters select:hover { border-color: var(--blue-250); }
@@ -205,12 +238,48 @@ table { border-collapse: collapse; width: 100%; }
 .dfield-wide { flex: 1 1 280px; }
 .dfield-wide select { width: 100%; }
 
+/* Chỉ làm gọn thanh lọc khi dashboard thực sự nằm trong iframe. Trang web
+   thường tiếp tục dùng nguyên bố cục và khoảng cách ở trên. */
+.dfilters[data-embedded="true"] {
+  padding: 9px 10px; gap: var(--s3); border-radius: var(--r-control);
+}
+.dfilters[data-embedded="true"] .dfilters-summary {
+  display: flex; flex: 1 1 100%; min-width: 0;
+  align-items: center; justify-content: space-between; gap: var(--s3);
+}
+.dfilters[data-embedded="true"] .dfilters-summary p {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
+  line-height: 1.45;
+}
+.dfilters[data-embedded="true"] .dfilters-eyebrow {
+  flex: none; padding: 2px 7px; border-radius: 999px;
+  background: var(--blue-050); color: var(--brand); font-size: 12px; font-weight: 700;
+}
+.dfilters[data-embedded="true"] .dfilters-summary b {
+  color: var(--ink); font-size: 13px; font-weight: 650; white-space: nowrap;
+}
+.dfilters[data-embedded="true"] .dfilters-summary b + b::before {
+  content: "·"; margin-right: 8px; color: var(--ink-3); font-weight: 400;
+}
+.dfilters[data-embedded="true"] .dfilters-toggle {
+  flex: none; min-height: 34px; padding: 5px 11px;
+  border: 1px solid var(--control-border); border-radius: var(--r-control);
+  background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 650;
+}
+.dfilters[data-embedded="true"] .dfilters-toggle:hover {
+  border-color: var(--blue-250); background: var(--surface-sunken); color: var(--brand);
+}
+.dfilters[data-embedded="true"][data-open="false"] > label,
+.dfilters[data-embedded="true"][data-open="false"] > .dfield { display: none; }
+
 .dseg { display: flex; gap: 2px; padding: 3px; min-height: 38px; background: var(--divider); border-radius: var(--r-control); }
 .dseg button {
   min-height: 30px; padding: 3px 11px; border-radius: var(--r-chip);
   color: var(--ink-2); font-size: 12px; font-weight: 650;
 }
-.dseg button.is-active { background: var(--surface); color: var(--brand); box-shadow: 0 1px 2px #19334e18; }
+/* impeccable-disable-next-line design-system-color -- alpha của bóng, khai ở sidecar */
+.dseg button.is-active { background: var(--surface); color: var(--brand); box-shadow: var(--shadow-control); }
 .dseg.is-disabled { opacity: 0.5; }
 .dseg.is-disabled button { cursor: not-allowed; }
 
@@ -224,24 +293,43 @@ table { border-collapse: collapse; width: 100%; }
 .dmode { margin-bottom: var(--s3); }
 
 /* ──────────────────────────────── KPI ───────────────────────────────────── */
+/* Bốn cột ĐỀU nhau. Tỷ lệ `1 1 0.8 1.3` cũ được chỉnh theo nội dung tab Tổng
+   quan, nên ở tab Phân tích nó cho ô "Số khoản trong nhóm" (giá trị: "21") rộng
+   433px trong khi ô "Đóng góp vào biến động" chỉ được 267px. Một tỷ lệ cố định
+   áp lên bốn tập nội dung khác nhau thì đúng được một tập. */
 .dkpis {
-  display: grid; grid-template-columns: 1fr 1fr 0.8fr 1.3fr;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   background: var(--surface); border: 1px solid var(--hairline);
   border-radius: var(--r-surface); overflow: hidden;
 }
-.dkpis.is-compare { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.dkpis[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Nhịp có chủ ý thay vì một khoảng lặp lại: nhãn dính sát giá trị vì hai thứ đó
+   là MỘT đơn vị — tên của số và chính con số; dòng phụ tách xa hơn vì nó là lời
+   chú, không phải một phần của phép đo. Trước đây cả hai khe đều 2px nên ba dòng
+   đọc như ba dòng ngang hàng. Đệm về đúng thang 4: 12px và 16px. */
 .dkpis > div {
-  min-width: 0; padding: 13px 17px; display: grid; align-content: center; gap: 2px;
-  border-left: 1px solid var(--hairline);
+  min-width: 0; padding: var(--s3) var(--s4); display: grid; align-content: center;
+  gap: 1px; border-left: 1px solid var(--hairline);
 }
+.dkpis small { margin-top: 5px; }
 .dkpis > div:first-child { border-left: 0; }
-.dkpis span { color: var(--ink-2); font-size: 11px; font-weight: 650; }
-.dkpis strong { font-size: 23px; font-weight: 700; line-height: 1.25; letter-spacing: -0.025em; }
+/* `> div >` chứ không phải hậu duệ bất kỳ: nhãn là span CON TRỰC TIẾP của ô, còn
+   `.dmoney` bên trong `<strong>` cũng là một span và sẽ bị nuốt mất cỡ chữ. */
+/* Nhãn và dòng phụ từng dùng chung cả cỡ lẫn màu, chỉ khác trọng lượng — nên
+   squint test cho thấy chúng nhập thành một tầng. Tách bằng MÀU (ink-2 so với
+   ink-3) thay vì thêm một bậc cỡ, để thang chữ phụ vẫn đúng hai bậc. */
+.dkpis > div > span {
+  color: var(--ink-2); font-size: 12px; font-weight: 650; letter-spacing: 0.01em;
+}
+.dkpis strong {
+  font-size: 23px; font-weight: 700; line-height: 1.25; letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
 .dkpis strong em { color: var(--ink-2); font-size: 14px; font-style: normal; font-weight: 500; }
 .dkpis strong.is-code { font-size: 19px; letter-spacing: 0.02em; }
-.dkpis small { color: var(--ink-2); font-size: 11px; }
+.dkpis small { color: var(--ink-3); font-size: 12px; line-height: 1.45; }
 .dkpi-insight { background: var(--surface-sunken); }
-.dkpi-insight strong { font-size: 16px; letter-spacing: -0.01em; }
+.dkpi-insight strong { font-size: 16px; line-height: 1.35; letter-spacing: -0.01em; }
 .dkpi-insight.tone-positive strong { color: var(--pos); }
 .dkpi-insight.tone-critical strong { color: var(--neg); }
 .dkpi-insight.tone-warning strong { color: var(--note-ink); }
@@ -249,11 +337,40 @@ table { border-collapse: collapse; width: 100%; }
 .tone-pos { color: var(--pos); }
 .tone-neg { color: var(--neg); }
 
+/* ─────────────────────────── Chữ số và đơn vị ───────────────────────────── */
+
+/* Mọi con số dùng tabular numerals: chữ số rộng bằng nhau nên cột không nhảy
+   khi giá trị đổi, và dấu phẩy thẳng hàng giữa các dòng. */
+.dkpis strong, .dbar-value, .dlist-amount, .dtable .is-num, .dledger strong,
+.dcontrib strong, .dbridge strong, .dchange, .dmoney {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Số đứng một mình: chữ số giữ vai trò chính, đơn vị lùi lại phía sau. */
+.dmoney { display: inline-flex; align-items: baseline; gap: 0.28em; }
+/* 0,6em của 23px chỉ ra 14px — nhỏ hơn cả chữ thân bài, trong khi nó là thứ nói
+   con số kia nghĩa là gì. Nâng lên 0,7em và tăng trọng lượng. */
+.dmoney i {
+  font-size: 0.7em; font-weight: 600; font-style: normal;
+  color: var(--ink-2); letter-spacing: 0.01em;
+}
+
+/* Nhãn đơn vị của cả thẻ, ghi một lần ở phụ đề. */
+.dunit { color: var(--ink-2); font-weight: 650; white-space: nowrap; }
+
 /* ──────────────────────────────── Lưới ──────────────────────────────────── */
 /* Hai thẻ cùng một hàng phải cao bằng nhau: mép dưới lệch nhau làm lưới trông
    như bị vỡ. Ô lưới giãn hết chiều cao hàng (`stretch`), thẻ bên trong lấp đầy
    ô. Nội dung vẫn bám mép trên, phần dư nằm dưới đáy thẻ. */
+/* Chiều cao đầu thẻ vốn phụ thuộc nội dung: phụ đề dài một hay hai dòng, chỗ
+   điều khiển là một liên kết chữ hay một nhóm nút. Hai thẻ cạnh nhau vì thế có
+   thân bắt đầu lệch nhau, và mọi dòng bên dưới lệch theo. Chốt một sàn đủ cho
+   phụ đề hai dòng để mọi đầu thẻ cao bằng nhau; thẻ nào ngắn hơn thì phần dư
+   nằm ở đầu thẻ, đúng như phần dư chiều cao thẻ nằm ở đáy. */
 .dg { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s4); align-items: stretch; }
+/* Mọi vùng đặt nhiều thẻ cạnh nhau đều cần sàn này, không riêng lưới 12 cột. */
+.dg, .dstack-row, .dsplit { --head-min: 86px; }
 .dg-cell { grid-column: span var(--span); min-width: 0; display: flex; flex-direction: column; }
 .dg-cell > * { flex: 1 1 auto; }
 
@@ -267,10 +384,16 @@ table { border-collapse: collapse; width: 100%; }
 .dcard-head {
   display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
   gap: var(--s2) var(--s3); padding: 15px 16px 8px;
+  min-height: var(--head-min, auto);
 }
-.dcard-title { min-width: 0; }
+/* Cơ sở co giãn nhỏ hơn bề rộng tự nhiên của tiêu đề. Flexbox xuống dòng dựa
+   trên kích thước giả định *trước khi* co, nên một tiêu đề rộng bằng nội dung
+   đẩy nhóm điều khiển xuống dòng dù chỗ còn thừa sau khi co. Hệ quả nhìn thấy
+   được: hai thẻ cùng hàng có thân bắt đầu lệch nhau 46px. Vẫn cho phép xuống
+   dòng — ở thẻ hẹp kèm ô tìm kiếm thì xuống dòng mới là đúng. */
+.dcard-title { flex: 1 1 11rem; min-width: 0; }
 .dcard-title h2 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-.dcard-title p { margin-top: 2px; color: var(--ink-2); font-size: 11px; }
+.dcard-title p { margin-top: 2px; color: var(--ink-2); font-size: 12px; }
 /* `flex: none` giữ nguyên bề rộng max-content nên nhóm nút tràn ra khỏi thẻ hẹp.
    Cho phép co lại sau khi đã xuống dòng. */
 .dcard-actions { flex: 0 1 auto; min-width: 0; }
@@ -296,8 +419,8 @@ table { border-collapse: collapse; width: 100%; }
   font-size: 13px; font-weight: 650;
 }
 .dbtn:hover { border-color: var(--blue-250); color: var(--brand); }
-.dbtn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
-.dbtn-primary:hover { background: var(--blue-550); color: #fff; }
+.dbtn-primary { background: var(--brand); border-color: var(--brand); color: var(--ink-on-dark); }
+.dbtn-primary:hover { background: var(--blue-550); color: var(--ink-on-dark); }
 
 /* ───────────────────────── Danh sách thanh ──────────────────────────────── */
 /* Trong một thẻ đã bị kéo cao bằng thẻ bên cạnh, dòng thanh giãn ra để lấp chỗ
@@ -315,14 +438,36 @@ table { border-collapse: collapse; width: 100%; }
   border-top: 1px solid var(--divider);
 }
 .dbars li:first-child .dbar-row { border-top: 0; }
+/* 120ms nằm trong dải phản hồi tức thì: đủ để mắt bắt được là có gì đó đáp lại,
+   chưa đủ để cảm thấy chậm. */
+.dbar-row, .dlist button, .dcontrib-row, .dbtn, .dseg button, .dtabs button,
+.dsubnav button, .dlink, .dmap-zoom button, .dheader-frame {
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
 button.dbar-row:hover { background: var(--blue-050); }
 button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .dbar-row.is-static { cursor: default; }
-.dbar-rank { color: var(--ink-3); font-size: 11px; font-weight: 700; text-align: right; }
+.dbar-rank { color: var(--ink-3); font-size: 12px; font-weight: 700; text-align: right; }
 .dbar-main { min-width: 0; }
-.dbar-label { display: flex; justify-content: space-between; gap: var(--s3); font-size: 12px; }
-.dbar-label b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Giá trị không co được (nowrap), nên với `space-between` thuần thì tên bị ép
+   về 0 trong thẻ hẹp — "Thu nội địa" thành "T…". Cho phép xuống dòng và đặt sàn
+   cho tên: hết chỗ thì giá trị rơi xuống dòng dưới, tên vẫn đọc được. Ngưỡng
+   theo bề rộng THẺ chứ không theo viewport, nên thẻ hẹp ở màn rộng cũng đúng. */
+.dbar-label {
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+  gap: 2px var(--s3); font-size: 12px;
+}
+.dbar-label b {
+  flex: 1 1 7em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dbar-label > span { flex: 0 0 auto; margin-left: auto; }
 .dbar-label > span { color: var(--ink-2); white-space: nowrap; }
+/* Giá trị là thông tin chính của dòng, tỷ trọng là chú thích đi kèm nên nhạt và
+   nhỏ hơn — trước đây hai thứ cùng cỡ, cùng màu, cách nhau một dấu chấm. */
+.dbar-value { color: var(--ink); font-weight: 600; }
+.dbar-value em {
+  margin-left: 6px; color: var(--ink-3); font-size: 12px; font-style: normal; font-weight: 500;
+}
 .dbar-track {
   position: relative; display: block; height: 4px; margin-top: 5px;
   background: var(--data-track); border-radius: var(--r-bar);
@@ -332,23 +477,100 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
   background: var(--data-secondary); border-radius: var(--r-bar);
 }
 .dbars.is-two-sided .dbar-track::before {
-  content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #c6d2e0;
+  content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--control-border);
 }
 .dbar-track i.pos { background: var(--pos); }
 .dbar-track i.neg { background: var(--neg); }
 
-.dchange { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 11px; font-weight: 650; }
+.dchange { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 12px; font-weight: 650; }
 .dchange.up { color: var(--pos); }
 .dchange.down { color: var(--neg); }
 .dchange.flat, .dchange.neutral { color: var(--ink-2); font-weight: 500; }
 
 /* ────────────────────────────── Biểu đồ ─────────────────────────────────── */
 .dchart-wrap { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+
+/* Donut giữ một màu cho mỗi lát và đi kèm chú giải chữ, nên màu không phải tín
+   hiệu duy nhất. Chú giải là nút ở màn phân tích để mở tầng khoản thu bên dưới. */
+.ddonut-layout { display: grid; grid-template-columns: minmax(128px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: var(--s4); min-height: 190px; }
+.ddonut { position: relative; width: min(100%, 190px); aspect-ratio: 1; margin-inline: auto; }
+.ddonut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ddonut-track, .ddonut-segment { fill: none; stroke-width: 18; }
+.ddonut-track { stroke: var(--data-track); }
+.ddonut-segment { transition: opacity 120ms ease; }
+.ddonut-segment.is-interactive { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
+.ddonut-segment.is-interactive:hover { opacity: 0.78; }
+.ddonut-segment.is-interactive:focus { outline: none; }
+.ddonut-segment.is-interactive:focus-visible { opacity: 0.72; stroke-width: 24; }
+.ddonut-segment.is-selected { stroke-width: 22; }
+.ddonut > span { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
+.ddonut > span b { font-size: 19px; line-height: 1.1; }
+.ddonut > span small { color: var(--ink-3); font-size: 12px; }
+.ddonut-legend { display: grid; gap: 2px; }
+.ddonut-legend button, .ddonut-legend li > div { width: 100%; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 8px; border: 1px solid transparent; border-radius: var(--r-control); text-align: left; }
+.ddonut-legend button:hover { background: var(--blue-050); }
+.ddonut-legend button.is-selected { border-color: var(--blue-250); background: var(--blue-050); }
+.ddonut-legend i { width: 8px; height: 8px; border-radius: 2px; }
+.ddonut-legend span { min-width: 0; color: var(--ink-2); font-size: 12px; line-height: 1.35; }
+.ddonut-legend strong { font-size: 12px; font-variant-numeric: tabular-nums; }
+.dgroup-analysis { display: grid; gap: var(--s3); }
+.dgroup-detail { border-top: 1px solid var(--divider); padding-top: var(--s3); }
+.dgroup-detail > div { display: grid; gap: 2px; margin-bottom: 3px; }
+.dgroup-detail > div > strong { font-size: 13px; }
+.dgroup-detail > div > span, .dgroup-detail > small { color: var(--ink-3); font-size: 12px; }
+.dgroup-detail .dbar-row { padding-block: 6px; }
+
+/* ── Biểu đồ xu hướng vẽ tay ─────────────────────────────────────────────── */
+.dchart { position: relative; }
+.dchart svg { display: block; overflow: visible; }
+.dchart-grid { stroke: var(--divider); stroke-width: 1; shape-rendering: crispEdges; }
+.dchart-tick { fill: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.dchart-crosshair { stroke: var(--hairline); stroke-width: 1; shape-rendering: crispEdges; }
+.dchart-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.dchart-line.is-previous {
+  stroke: var(--data-reference); stroke-width: 2; stroke-dasharray: 5 4;
+}
+.dchart-line.is-current { stroke: var(--data-primary); stroke-width: 2.5; }
+.dchart-dot {
+  fill: var(--surface); stroke: var(--data-primary); stroke-width: 2;
+  transition: r 120ms ease;
+}
+.dchart-dot.is-active { stroke-width: 2.5; }
+
+/* Vẽ đường khi vào. `pathLength` chuẩn hoá mọi đường về 1 đơn vị nên một
+   keyframe dùng được cho mọi độ dài đường. */
+@keyframes dchart-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+.dchart-line.is-drawing {
+  pathLength: 1;
+  stroke-dasharray: 1;
+  animation: dchart-draw 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dchart-tip {
+  position: absolute; z-index: 5; pointer-events: none;
+  display: grid; gap: 3px; min-width: 160px; padding: 8px 10px;
+  background: var(--surface); border: 1px solid var(--hairline);
+  border-radius: var(--r-control); box-shadow: var(--shadow-tip);
+  font-size: 12px;
+}
+.dchart-tip b { font-weight: 650; }
+.dchart-tip span { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
+.dchart-tip em {
+  margin-left: auto; color: var(--ink); font-style: normal; font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.dchart-tip i {
+  flex: none; width: 12px; height: 0; border-top: 2px dashed var(--data-reference);
+}
+.dchart-tip i.solid { border-top: 2px solid var(--data-primary); }
 .dchart { flex: 1 1 auto; width: 100%; min-height: var(--chart-h, 260px); }
 .dlegend {
   display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4);
   border-top: 1px solid var(--divider); margin-top: var(--s2); padding-top: 9px;
-  color: var(--ink-2); font-size: 11px;
+  color: var(--ink-2); font-size: 12px;
 }
 .dlegend span { display: flex; align-items: center; gap: 6px; }
 .dlegend i { width: 17px; border-top: 2px dashed var(--data-reference); }
@@ -359,12 +581,12 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
   padding-bottom: var(--s3); border-bottom: 1px solid var(--divider);
 }
 .dbridge > div { display: grid; gap: 2px; }
-.dbridge span { color: var(--ink-2); font-size: 11px; font-weight: 650; }
+.dbridge span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
 .dbridge strong { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
-.dbridge-arrow { width: 22px; height: 1px; background: #c6d2e0; position: relative; margin-bottom: 9px; }
+.dbridge-arrow { width: 22px; height: 1px; background: var(--control-border); position: relative; margin-bottom: 9px; }
 .dbridge-arrow::after {
   content: ""; position: absolute; right: 0; top: -3px;
-  border: 3.5px solid transparent; border-left-color: #c6d2e0;
+  border: 3.5px solid transparent; border-left-color: var(--control-border);
 }
 .dbridge-diff { margin-left: auto; text-align: right; }
 .dbridge-diff strong.pos { color: var(--pos); }
@@ -383,7 +605,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dcontrib-row.is-static { cursor: default; }
 .dcontrib-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dcontrib-track { position: relative; height: 10px; background: var(--data-track); border-radius: var(--r-bar); }
-.dcontrib-track::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: #c6d2e0; }
+.dcontrib-track::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--control-border); }
 .dcontrib-track i { position: absolute; top: 1px; height: 8px; border-radius: var(--r-bar); }
 .dcontrib-track i.pos { background: var(--pos); }
 .dcontrib-track i.neg { background: var(--neg); }
@@ -418,10 +640,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    phía sau lộ ra một vệt dưới tiêu đề. Dùng inset shadow và nâng z-index. */
 .dtable thead th {
   position: sticky; top: 0; z-index: 1; background: var(--surface);
-  color: var(--ink-2); font-size: 11px; font-weight: 650;
+  color: var(--ink-2); font-size: 12px; font-weight: 650;
   border-bottom: 0; box-shadow: inset 0 -1px 0 var(--hairline);
 }
-.dtable thead th button { font-size: 11px; font-weight: 650; color: inherit; }
+.dtable thead th button { font-size: 12px; font-weight: 650; color: inherit; }
 .dtable thead th button:hover { color: var(--brand); }
 .dtable .is-num { text-align: right; }
 .dtable tbody th { font-weight: 500; white-space: normal; }
@@ -437,7 +659,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 
 .dsearch input {
   min-height: 32px; padding: 4px 10px; width: 170px; min-width: 0; max-width: 100%;
-  border: 1px solid #c6d2e0; border-radius: var(--r-control); font-size: 12px;
+  border: 1px solid var(--control-border); border-radius: var(--r-control); font-size: 12px;
 }
 /* Ô tìm kiếm cộng nhóm chọn rộng hơn thẻ danh sách ở 1024px (317px), nên phải
    cho xuống dòng và cho ô tìm kiếm co lại. */
@@ -449,13 +671,13 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 /* Bản đồ là hình đứng nên cột của nó hẹp hơn cột danh sách, không thì thẻ thừa
    ra một mảng trắng hai bên. Danh sách được phần rộng hơn cũng đúng: tên phường,
    xã và số tiền nằm chung một hàng. */
-.dsplit { display: grid; grid-template-columns: 7fr 5fr; gap: var(--s4); align-items: start; }
+.dsplit { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s4); align-items: start; }
 .dsplit-list { position: sticky; top: 68px; }
 .dsplit-list .dcard-body { max-height: 70vh; overflow-y: auto; }
 .dsplit-main { display: grid; gap: var(--s4); min-width: 0; }
 /* Dải KPI của tab chi tiết nằm trong cột hẹp của bố cục danh sách + bản đồ:
    bốn ô ngang chỉ còn khoảng 150px, hẹp hơn chính con số nó phải in. Luôn 2×2. */
-.dsplit-main .dkpis, .dsplit-main .dkpis.is-compare { grid-template-columns: 1fr 1fr; }
+.dsplit-main .dkpis { grid-template-columns: 1fr 1fr; }
 .dsplit-main .dkpis > div { border-top: 1px solid var(--hairline); }
 .dsplit-main .dkpis > div:nth-child(-n + 2) { border-top: 0; }
 .dsplit-main .dkpis > div:nth-child(odd) { border-left: 0; }
@@ -464,14 +686,14 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dlist button {
   width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto;
   align-items: center; gap: var(--s2); padding: 8px 6px; text-align: left;
-  border-top: 1px solid var(--divider); border-radius: var(--r-chip); font-size: 12.5px;
+  border-top: 1px solid var(--divider); border-radius: var(--r-chip); font-size: 13px;
 }
 .dlist li:first-child button { border-top: 0; }
 .dlist button:hover { background: var(--blue-050); }
 .dlist button.is-selected { background: var(--blue-050); box-shadow: inset 3px 0 0 var(--brand); }
-.dlist-rank { color: var(--ink-3); font-size: 11px; text-align: right; }
+.dlist-rank { color: var(--ink-3); font-size: 12px; text-align: right; }
 .dlist-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
-.dlist-amount { color: var(--ink-2); font-size: 11.5px; white-space: nowrap; }
+.dlist-amount { color: var(--ink-2); font-size: 12px; white-space: nowrap; }
 
 /* Chốt bản đồ theo CHIỀU CAO rồi suy ra chiều rộng, không để chiều rộng thẻ
    quyết định: ranh giới Hà Nội cao hơn rộng nên `height: auto` cho ra bản đồ
@@ -500,25 +722,26 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   min-height: 30px; min-width: 30px; padding: 0 8px;
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-control);
   color: var(--ink); font-size: 15px; font-weight: 650; line-height: 1;
-  box-shadow: 0 1px 2px #19334e1a;
+  /* impeccable-disable-next-line design-system-color -- alpha của bóng, khai ở sidecar */
+  box-shadow: var(--shadow-control);
 }
 .dmap-zoom button:hover:not(:disabled) { border-color: var(--blue-250); color: var(--brand); }
 .dmap-zoom button:disabled { opacity: 0.45; cursor: not-allowed; }
-.dmap-zoom-reset { font-size: 11px !important; font-weight: 650; white-space: nowrap; }
+.dmap-zoom-reset { font-size: 12px !important; font-weight: 650; white-space: nowrap; }
 
 .dmap-tip {
   position: absolute; z-index: 20; pointer-events: none; opacity: 0;
   padding: 6px 10px; border-radius: var(--r-chip);
-  background: #111c2ce6; color: #fff; font-size: 12px; transition: opacity 0.12s;
+  background: var(--tooltip-surface); color: var(--ink-on-dark); font-size: 12px; transition: opacity 0.12s;
 }
 .dmap-table { max-height: 460px; overflow-y: auto; }
 .dmap-legend {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-top: var(--s3); color: var(--ink-2); font-size: 11px;
+  margin-top: var(--s3); color: var(--ink-2); font-size: 12px;
 }
 .dmap-legend i { width: 18px; height: 10px; border-radius: 2px; }
 .dmap-legend i.is-nodata { margin-left: var(--s2); }
-.dmap-credit { margin-top: 6px; color: var(--ink-3); font-size: 11px; }
+.dmap-credit { margin-top: 6px; color: var(--ink-3); font-size: 12px; }
 
 /* ──────────────────────── So sánh: bộ dựng hai vế ───────────────────────── */
 .dbuilder {
@@ -527,26 +750,49 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
 .dbuilder label { display: grid; gap: 5px; }
-.dbuilder span { color: var(--ink-2); font-size: 11px; font-weight: 650; }
+.dbuilder span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
 .dbuilder select {
-  min-height: 38px; padding: 6px 10px; border: 1px solid #c6d2e0;
+  min-height: 38px; padding: 6px 10px; border: 1px solid var(--control-border);
   border-radius: var(--r-control); background: var(--surface); font-size: 13px;
 }
-.dbuilder-arrow { color: var(--ink-3); font-size: 18px; padding-bottom: 6px; }
-.dbuilder-note { flex: 1 1 100%; color: var(--ink-2); font-size: 11px; }
+/* impeccable-disable-next-line design-system-font-size -- glyph mũi tên một lần, không phải bậc chữ */
+.dbuilder-arrow { color: var(--ink-3); font-size: 19px; padding-bottom: 6px; }
+.dbuilder-note { flex: 1 1 100%; color: var(--ink-2); font-size: 12px; }
 .dpicker { display: flex; align-items: flex-end; gap: var(--s2); }
 .dpicker-label { color: var(--ink); font-size: 12px; font-weight: 650; padding-bottom: 9px; }
 
 /* ────────────────────────────── Drawer ──────────────────────────────────── */
-.ddrawer-scrim { position: fixed; inset: 0; z-index: 60; background: #0e2a4780; }
+
+/*
+ * Drawer trượt ra từ đúng cạnh nó neo vào. Trước đây nó hiện ra tức thì, nên
+ * người dùng không thấy nó đến từ đâu và mất một nhịp để hiểu mình vừa mở cái
+ * gì đè lên cái gì. Đây là chỗ duy nhất trong ứng dụng mà chuyển động làm việc
+ * giải thích quan hệ không gian — phần còn lại cố tình đứng yên.
+ *
+ * `cubic-bezier(0.16, 1, 0.3, 1)` giảm tốc mạnh ở cuối: tới nơi dứt khoát chứ
+ * không trôi. 260ms là lớp phủ, không phải màn dàn cảnh.
+ */
+@keyframes ddrawer-in {
+  from { transform: translateX(16px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes dscrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ddrawer-scrim {
+  position: fixed; inset: 0; z-index: 60; background: var(--scrim);
+  animation: dscrim-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
 .ddrawer {
   position: fixed; z-index: 61; top: 0; right: 0; height: 100vh;
   width: min(600px, 42vw); overflow-y: auto;
   padding: var(--s5); background: var(--surface);
-  border-left: 1px solid var(--hairline); box-shadow: -18px 0 42px #0e2a4722;
+  border-left: 1px solid var(--hairline); box-shadow: var(--shadow-overlay);
+  animation: ddrawer-in 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ddrawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
-.ddrawer-eyebrow { color: var(--ink-2); font-size: 11px; font-weight: 650; }
+.ddrawer-eyebrow { color: var(--ink-2); font-size: 12px; font-weight: 650; }
 .ddrawer h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.015em; margin-top: 3px; }
 .ddrawer-close {
   flex: none; width: 34px; height: 34px; display: grid; place-items: center;
@@ -558,11 +804,11 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .ddrawer-meta { display: grid; border-top: 1px solid var(--hairline); }
 .ddrawer-meta > div {
   display: flex; justify-content: space-between; gap: var(--s4);
-  padding: 9px 0; border-bottom: 1px solid var(--divider); font-size: 12.5px;
+  padding: 9px 0; border-bottom: 1px solid var(--divider); font-size: 13px;
 }
 .ddrawer-meta dt { color: var(--ink-2); }
 .ddrawer-meta dd { text-align: right; font-weight: 600; }
-.ddrawer-note { margin-top: var(--s3); color: var(--ink-2); font-size: 11.5px; }
+.ddrawer-note { margin-top: var(--s3); color: var(--ink-2); font-size: 12px; }
 .ddrawer-chart { margin: var(--s4) 0; }
 .ddrawer-cta { width: 100%; }
 
@@ -577,11 +823,11 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dstate.is-error { border-color: var(--note-line); background: var(--note-surface); }
 .dstate.is-error b { color: var(--note-ink); }
 .dstate.is-quiet { border-style: dashed; background: none; }
-.dempty { padding: var(--s4) 0; color: var(--ink-2); font-size: 12.5px; }
+.dempty { padding: var(--s4) 0; color: var(--ink-2); font-size: 13px; }
 .dnote {
   padding: 9px 12px; margin-top: var(--s2);
   background: var(--surface-sunken); border-radius: var(--r-chip);
-  color: var(--ink-2); font-size: 11.5px;
+  color: var(--ink-2); font-size: 12px;
 }
 .dnote.is-warn { background: var(--note-surface); border: 1px solid var(--note-line); color: var(--note-ink); }
 
@@ -604,8 +850,15 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dsplit { grid-template-columns: 6fr 6fr; }
 }
 
+/* Ở dải này tab địa bàn vẫn chia đôi danh sách/bản đồ, nên card cơ cấu bên
+   trong chỉ còn khoảng 200px. Đưa chú giải xuống dưới donut để không bị cắt. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .dsplit-main .ddonut-layout { grid-template-columns: 1fr; gap: var(--s2); }
+  .dsplit-main .ddonut { width: min(100%, 150px); }
+}
+
 @media (max-width: 1179px) {
-  .dkpis, .dkpis.is-compare { grid-template-columns: 1fr 1fr; }
+  .dkpis { grid-template-columns: 1fr 1fr; }
   .dkpis > div { border-top: 1px solid var(--hairline); }
   .dkpis > div:nth-child(-n + 2) { border-top: 0; }
   .dkpis > div:nth-child(odd) { border-left: 0; }
@@ -645,7 +898,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dheader p, .dheader-source, .dheader-frame { display: none; }
   .dshell { padding: 0 10px 32px; }
   .dtabs { gap: var(--s4); }
-  .dtabs button { font-size: 12.5px; min-height: 48px; }
+  .dtabs button { font-size: 13px; min-height: 48px; }
   /* Sáu bộ lọc trên lưới cố định: hai cột ở điện thoại, ba cột khi còn đủ rộng
      để bớt một hàng chiếm chỗ phía trên nội dung. */
   .dfilters { display: grid; grid-template-columns: 1fr 1fr; padding: 12px; }
@@ -664,10 +917,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
     flex: 1 1 auto; min-width: 0;
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
   }
-  .dfilters-summary b { font-size: 12.5px; font-weight: 650; }
+  .dfilters-summary b { font-size: 13px; font-weight: 650; }
   /* Dấu chấm giữa các mục là ký tự trang trí, không đưa vào cây trợ năng. */
   .dfilters-summary b + b::before { content: "·"; color: var(--ink-3); margin-right: 8px; font-weight: 400; }
-  .dfilters-eyebrow { color: var(--ink-2); font-size: 11px; font-weight: 650; }
+  .dfilters-eyebrow { color: var(--ink-2); font-size: 12px; font-weight: 650; }
   .dfilters-toggle { flex: none; min-height: 36px; }
   .dfilters[data-open="false"] > label,
   .dfilters[data-open="false"] > .dfield { display: none; }
@@ -692,12 +945,6 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dbuilder { display: grid; grid-template-columns: 1fr; }
   .dbuilder-arrow { display: none; }
   .dpicker { flex-wrap: wrap; }
-  /* Touch target tối thiểu 44px trên mobile. */
-  .dtabs button, .dsubnav button, .dbtn, .dlist button, .dbar-row { min-height: 44px; }
-  /* `.dseg` ngoài thanh lọc: cả nhóm cao 44px, nút bên trong 38px cộng viền
-     đệm 3px mỗi bên vẫn cho vùng chạm 44px. */
-  .dseg { min-height: 44px; }
-  .dseg button { min-height: 38px; }
 }
 
 @media (min-width: 600px) and (max-width: 767px) {
@@ -713,13 +960,108 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dg-cell[style*="--span: 6"],
   .dg-cell[style*="--span: 5"],
   .dg-cell[style*="--span: 4"] { grid-column: span 12; }
-  .dstack-row { grid-template-columns: 1fr; }
+  /* Phải nhắc lại `.is-chart-pair`: luật 7fr/5fr của nó có độ đặc hiệu 0-2-0,
+     cao hơn `.dstack-row` một mình, nên nếu chỉ viết `.dstack-row` thì cặp biểu
+     đồ vẫn nằm cạnh nhau ở 390px với bề rộng 148px. */
+  .dstack-row, .dstack-row.is-chart-pair { grid-template-columns: 1fr; }
+  /* Gỡ sàn đúng tại mốc thẻ xếp chồng, không sớm hơn: mỗi hàng chỉ còn một thẻ
+     nên không còn gì để căn, và sàn lúc này chỉ là khoảng trống phải cuộn qua.
+     Gỡ ở 767px thì dải 700–767 vẫn hai cột mà mất sàn — lệch trở lại 46px. */
+  .dg, .dstack-row, .dsplit { --head-min: auto; }
 }
 
+/* ─────────────────────── Vùng chạm theo loại con trỏ ────────────────────── */
+
+/*
+ * Điều kiện là `pointer: coarse`, KHÔNG phải bề rộng màn hình.
+ *
+ * Bề rộng không nói được thiết bị nhập liệu là gì. Laptop cảm ứng ở 1440px vẫn
+ * chạm bằng ngón tay, còn người dùng chuột thu cửa sổ còn 500px thì không cần
+ * vùng chạm to. Quy tắc cũ gắn vào `max-width: 767px` nên sai cả hai chiều.
+ *
+ * Chọn theo VAI TRÒ, không theo tên class. Danh sách class cụ thể là thứ đã để
+ * nút sắp xếp cột bảng cao 21px lọt lưới suốt — nó không nằm trong danh sách,
+ * thế là xong. Bất kỳ điều khiển nào thêm sau này đều tự động được tính.
+ */
+@media (pointer: coarse) {
+  .dshell button,
+  .dshell [role="button"],
+  .dshell [role="tab"],
+  .dshell a[href],
+  .dshell select,
+  .dshell input,
+  .dshell summary,
+  .dheader button,
+  .dframe-bar button,
+  .dskip {
+    min-height: 44px;
+  }
+  /* `.dskip` là khối, cần căn giữa chữ theo chiều dọc sau khi nâng chiều cao. */
+  .dskip { display: inline-flex; align-items: center; }
+
+  /* Ô trong bảng dùng `table-layout: fixed`; `min-height` trên nút bên trong ô
+     không nâng được chiều cao hàng, phải nới bằng đệm dọc. */
+  .dtable thead th { padding: 0; }
+  .dtable thead th button {
+    width: 100%; min-height: 44px; padding: 12px 10px;
+    text-align: inherit;
+  }
+  .dtable th.is-num button, .dtable thead th.is-num button { text-align: right; }
+
+  /* Liên kết trong nội dung: nở vùng chạm bằng đệm, không đẩy dòng chữ ra xa. */
+  .dlink { display: inline-flex; align-items: center; min-height: 44px; padding: 4px 6px; }
+
+  /* Nhóm chọn: cả nhóm 48px để nút bên trong đủ 44px sau lớp đệm 2px. */
+  .dseg { min-height: 48px; padding: 2px; }
+  .dseg button { min-height: 44px; }
+
+  /* Nút phóng bản đồ nằm đè lên bản đồ nên vuông, cần cả hai chiều. */
+  .dmap-zoom button { min-width: 44px; }
+
+  /* Khoảng hở giữa các đích chạm liền kề: ngón tay không nhắm chính xác bằng
+     con trỏ chuột, hai đích sát nhau là nguồn bấm nhầm. */
+  .dlist-tools, .dactions, .dcard-actions { gap: var(--s3); }
+  .dmap-zoom { gap: 6px; }
+}
+
+/*
+ * Thiết bị không hover được thì mọi affordance chỉ hiện khi hover đều vô hình.
+ * Ở đây các dòng bấm được vốn dựa vào nền `:hover` để lộ ra là bấm được, nên
+ * thay bằng một dấu hiệu thường trực.
+ */
+@media (hover: none) {
+  button.dbar-row::after,
+  .dlist button::after {
+    content: ""; flex: none; width: 5px; height: 5px; margin-left: 2px;
+    border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3);
+    transform: rotate(-45deg);
+  }
+  .dcontrib-row:is(button)::after {
+    content: ""; width: 5px; height: 5px;
+    border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3);
+    transform: rotate(-45deg);
+  }
+}
+
+/*
+ * Giảm chuyển động: BỚT chuyển động, không phải TẮT hết phản hồi.
+ *
+ * Cách cũ đặt mọi thứ về 0,01ms nên giết luôn chuyển màu khi hover và khi bấm —
+ * tức là người đã bật cờ thì mất cả tín hiệu xác nhận thao tác, đúng thứ họ cần
+ * giữ nhất. Thay bằng: chặn các thuộc tính DI CHUYỂN trong không gian
+ * (`transform`, kích thước, vị trí) qua danh sách thuộc tính được phép chuyển
+ * tiếp, còn màu, độ mờ và viền vẫn chuyển tiếp, chỉ nhanh hơn.
+ *
+ * Hoạt ảnh JavaScript không nghe được khối này; d3 và Recharts nhận cờ qua
+ * `useReducedMotion` ở phía TypeScript.
+ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-property: opacity, background-color, border-color, color, fill, stroke,
+      box-shadow, outline-color !important;
+    transition-duration: 120ms !important;
     scroll-behavior: auto !important;
   }
 }

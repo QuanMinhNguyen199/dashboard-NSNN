@@ -1,5 +1,6 @@
 import {
   ALL_ITEMS,
+  DOMESTIC_GROUPS,
   DOMESTIC_ITEMS,
   INDICATOR_BY_SLUG,
   LOCATIONS,
@@ -32,6 +33,7 @@ import type {
   AdvancedComparisonData,
   AdvancedComparisonFilters,
   AmountRow,
+  BudgetEstimate,
   Coverage,
   DashboardFilters,
   DataMeta,
@@ -94,6 +96,34 @@ function rowOf(
   const amount = sumOf(filters, options) ?? 0;
   const previous = sumOf(filters, { ...options, year: prevYear(filters) });
   return { id, name, amount, previous, share: share(amount, denominator ?? null) };
+}
+
+/**
+ * Dự toán giao đầu năm — **số mô phỏng**.
+ *
+ * API không có trường này (xem `BudgetEstimate`). Ở đây suy ra từ thực hiện cả
+ * năm trước nhân hệ số tăng, vì ba lý do: nó bám đúng phạm vi đang lọc (chỉ
+ * tiêu, cấp ngân sách đều đã nằm trong `filters`), nó **tất định** nên cùng bộ
+ * lọc luôn ra cùng con số — không có gì nhảy múa giữa hai lần tải — và nó nằm
+ * trong khoảng hợp lý để tiến độ đọc ra tầm 60–90% thay vì một tỷ lệ vô nghĩa.
+ *
+ * Hệ số 1,08 là quy ước của prototype, không phải chỉ tiêu thật của Hà Nội.
+ */
+const ESTIMATE_GROWTH = 1.08;
+
+function estimateOf(filters: DashboardFilters): BudgetEstimate | null {
+  const wholeYear = { ...filters, period: ALL_PERIODS, accumulation: "YTD" as const };
+  const lastYear = sumOf({ ...wholeYear, year: prevYear(filters) });
+  if (lastYear === null || lastYear <= 0) return null;
+
+  // Làm tròn tới tỷ: dự toán là con số giao bằng văn bản, không phải kết quả đo.
+  const annual = Math.round((lastYear * ESTIMATE_GROWTH) / 1e9) * 1e9;
+  const ytd = sumOf(filters, { months: monthsOf({ ...filters, accumulation: "YTD" }) });
+  return {
+    annual,
+    progress: ytd === null || annual <= 0 ? null : ytd / annual,
+    origin: "mock",
+  };
 }
 
 /* ─────────────────────────── Xu hướng 12 tháng ─────────────────────────── */
@@ -241,6 +271,7 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     domesticItems,
     locations,
     budgetLevels,
+    estimate: estimateOf(filters),
     waterfall: waterfallOf(sources, {
       start: `Cùng kỳ ${prevYear(filters)}`,
       end: periodLabel(filters),
@@ -298,6 +329,25 @@ export function buildRevenueAnalysis(
 
   const breakdown = items.map((item) => rowOf(item.code, item.name, filters, { items: [item] }, total));
 
+  // Tầng giữa của thu nội địa: 21 khoản gộp thành ba nhóm. Thành viên lấy từ
+  // `item.group` — nguồn duy nhất — nên thêm một khoản mới vào danh mục là nó tự
+  // vào đúng nhóm, không phải nhớ sửa thêm một danh sách mã ở chỗ khác.
+  const groups =
+    scope === "domestic"
+      ? DOMESTIC_GROUPS.map((group) => {
+          const members = items.filter((item) => item.group === group.id);
+          const row = rowOf(group.id, group.name, filters, { items: members }, total);
+          const groupTotal = row.amount;
+          return {
+            ...row,
+            meta: group.note,
+            items: members
+              .map((item) => rowOf(item.code, item.name, filters, { items: [item] }, groupTotal))
+              .sort((a, b) => b.amount - a.amount),
+          };
+        })
+      : null;
+
   // XNK: tách tổng gộp, các dòng hoàn và thu ròng để đối chiếu được với nhau.
   const netReconciliation =
     scope === "import-export"
@@ -323,6 +373,7 @@ export function buildRevenueAnalysis(
   return {
     meta: metaOf(filters, source.cityOnly ? "Toàn thành phố (không phân bổ theo địa bàn)" : "Toàn thành phố Hà Nội"),
     scope,
+    groups,
     kpis: {
       total: { id: scope, name: source.name, amount: total, previous },
       share: share(total, cityTotal),
