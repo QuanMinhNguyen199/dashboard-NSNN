@@ -213,6 +213,7 @@ nên có mặt.
 | Drawer xem nhanh | "Nguồn này thế nào?" mà không rời Tổng quan | Mỗi lần tò mò một nguồn là một lần mất ngữ cảnh đang xem |
 | So sánh nâng cao | "Hai kỳ / hai nguồn / hai địa bàn khác nhau chỗ nào?" | So sánh thủ công bằng cách mở hai tab và tự trừ |
 | Thanh phạm vi thu gọn ở khổ hẹp | "Tôi đang xem số của phạm vi nào?" | Ở khung iframe hẹp, sáu ô lọc chiếm gần một phần ba màn hình và đẩy hết số liệu xuống dưới |
+| Xem thử khổ nhúng | "Nhúng vào khung hẹp thì trông thế nào?" | Phải co cửa sổ trình duyệt thủ công mới kiểm được, nên bố cục khổ hẹp hay bị bỏ sót tới lúc khách nhúng thật |
 
 ## 9. Drawer xem nhanh nguồn thu
 
