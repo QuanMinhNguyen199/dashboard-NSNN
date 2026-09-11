@@ -58,9 +58,25 @@ export function App() {
             <p>Kho bạc Nhà nước khu vực I · Thành phố Hà Nội</p>
           </div>
         </div>
-        <p className="dheader-source">
-          {providerKind === "mock" ? "Dữ liệu mô phỏng phục vụ prototype" : `Nguồn dữ liệu: ${providerKind.toUpperCase()}`}
-        </p>
+        <div className="dheader-tools">
+          <p className="dheader-source">
+            {providerKind === "mock" ? "Dữ liệu mô phỏng phục vụ prototype" : `Nguồn dữ liệu: ${providerKind.toUpperCase()}`}
+          </p>
+          {/* Mở ở khổ 500px — đúng bề ngang một khung chat cạnh agent. Bộ lọc
+              đang chọn được mang theo vì query hiện tại giữ nguyên. */}
+          <button
+            type="button"
+            className="dheader-frame"
+            onClick={() => {
+              const query = new URLSearchParams(window.location.search);
+              query.set("frame", "500");
+              window.location.search = query.toString();
+            }}
+            title="Mở dashboard trong một khung nhúng thật để xem bố cục ở khổ hẹp"
+          >
+            Xem thử khổ nhúng
+          </button>
+        </div>
       </header>
 
       <div className="dshell">

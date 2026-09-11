@@ -1,8 +1,11 @@
 name: CI
 
+# Chạy trên MỌI nhánh, không riêng main: đẩy code lên nhánh nào cũng biết ngay
+# build có sạch và 16 tiêu chí có còn đạt hay không, thay vì đợi tới lúc merge.
 on:
   push:
-    branches: [main]
+    branches: ["**"]
+    tags-ignore: ["**"]
   pull_request:
   workflow_dispatch:
 

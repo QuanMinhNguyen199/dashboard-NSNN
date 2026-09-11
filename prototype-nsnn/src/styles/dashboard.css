@@ -100,9 +100,57 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dheader h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
 .dheader p { color: var(--navy-ink); font-size: 12px; margin-top: 2px; }
+.dheader-tools { display: flex; align-items: center; gap: var(--s3); flex: none; }
 .dheader-source {
   color: var(--navy-ink); font-size: 12px;
   border: 1px solid #ffffff33; border-radius: var(--r-chip); padding: 4px 9px;
+}
+.dheader-frame {
+  min-height: 30px; padding: 5px 11px; white-space: nowrap;
+  background: #ffffff14; border: 1px solid #ffffff3d; border-radius: var(--r-chip);
+  color: #fff; font-size: 12px; font-weight: 650;
+}
+.dheader-frame:hover { background: #ffffff26; border-color: #ffffff66; }
+
+/* ───────────────────── Xem thử khổ nhúng (iframe thật) ──────────────────── */
+.dframe { display: flex; flex-direction: column; height: 100dvh; background: var(--canvas); }
+.dframe-bar {
+  flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4);
+  height: 56px; padding: 0 clamp(12px, 2.5vw, 24px);
+  background: var(--navy); color: #fff;
+}
+.dframe-title { font-size: 13px; font-weight: 650; }
+.dframe-presets { display: flex; gap: 2px; padding: 3px; background: #ffffff1a; border-radius: var(--r-control); }
+.dframe-presets button {
+  min-height: 26px; padding: 3px 10px; border-radius: var(--r-chip);
+  color: var(--navy-ink); font-size: 12px; font-weight: 650;
+}
+.dframe-presets button.is-active { background: #fff; color: var(--brand); }
+.dframe-slider { display: flex; align-items: center; min-width: 140px; flex: 1 1 140px; max-width: 260px; }
+.dframe-slider input { width: 100%; accent-color: #fff; }
+.dframe-size {
+  color: var(--navy-ink); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.dframe-exit {
+  min-height: 30px; padding: 5px 12px; margin-left: auto;
+  background: #ffffff14; border: 1px solid #ffffff3d; border-radius: var(--r-chip);
+  color: #fff; font-size: 12px; font-weight: 650;
+}
+.dframe-exit:hover { background: #ffffff26; }
+/* Nền kẻ ô để thấy rõ mép khung so với vùng trống xung quanh. */
+.dframe-stage {
+  flex: 1 1 auto; min-height: 0; display: flex; justify-content: center;
+  padding: var(--s4) var(--s4) 0; overflow: auto;
+  background:
+    linear-gradient(var(--divider) 1px, transparent 1px) 0 0 / 100% 24px,
+    linear-gradient(90deg, var(--divider) 1px, transparent 1px) 0 0 / 24px 100%,
+    var(--surface-sunken);
+}
+.dframe-window {
+  flex: none; height: 100%; max-width: 100%;
+  background: var(--canvas); border: 1px solid var(--hairline);
+  border-radius: var(--r-surface) var(--r-surface) 0 0;
+  box-shadow: 0 6px 24px #19334e1f;
 }
 
 /* ──────────────────────────────── Shell ─────────────────────────────────── */
@@ -591,7 +639,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 @media (max-width: 767px) {
   .dheader { padding: 12px 15px; }
   .dheader h1 { font-size: 16px; }
-  .dheader p, .dheader-source { display: none; }
+  .dheader p, .dheader-source, .dheader-frame { display: none; }
   .dshell { padding: 0 10px 32px; }
   .dtabs { gap: var(--s4); }
   .dtabs button { font-size: 12.5px; min-height: 48px; }
