@@ -311,7 +311,7 @@ ai canh. Đây không phải danh sách "nên có" — đạt hết mới gọi 
 | 16 | TypeScript và production build sạch | Build hỏng thì không deploy được; type sai thường là dấu hiệu của một giả định dữ liệu sai |
 
 **Cách kiểm:** 16 tiêu chí đầu chạy tự động qua trình duyệt thật bằng
-`prototype-nsnn/scripts/acceptance.mjs`; tiêu chí build chạy bằng `npm run build`. Cả hai nằm
+`web/scripts/acceptance.mjs`; tiêu chí build chạy bằng `npm run build`. Cả hai nằm
 trong GitHub Actions nên mỗi lần đẩy code đều được kiểm lại.
 
 ## 15. Giả định cần xác nhận

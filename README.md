@@ -9,19 +9,19 @@ URL state đầy đủ, lớp provider API/MCP/Mock có runtime validation, và 
 ## Chạy
 
 ```bash
-cd prototype-nsnn
+cd web
 npm install
 npm run dev          # http://localhost:5173
 ```
 
-Hướng dẫn đầy đủ, giả định của mock và giới hạn còn lại: [`prototype-nsnn/README.md`](prototype-nsnn/README.md).
+Hướng dẫn đầy đủ, giả định của mock và giới hạn còn lại: [`web/README.md`](web/README.md).
 
 ## Nội dung repo
 
 | Thư mục | Nội dung |
 |---|---|
-| [`prototype-nsnn/`](prototype-nsnn/) | **Ứng dụng.** React + TypeScript + Vite. Source, `DESIGN.md`, script nghiệm thu. |
-| [`prototype-nsnn/archive/legacy-clone/`](prototype-nsnn/archive/legacy-clone/) | Bản clone nguyên trạng website ba tab của giai đoạn trước. Không còn trong build, giữ để tra cứu. |
+| [`web/`](web/) | **Ứng dụng.** React + TypeScript + Vite. Source, `DESIGN.md`, script nghiệm thu. |
+| [`web/archive/legacy-clone/`](web/archive/legacy-clone/) | Bản clone nguyên trạng website ba tab của giai đoạn trước. Không còn trong build, giữ để tra cứu. |
 | [`reference-nsnn/`](reference-nsnn/) | Bộ khảo sát website tham chiếu: 143 phản hồi API đã lưu, 40 trạng thái giao diện, CSS/bundle gốc, GeoJSON ranh giới 126 phường/xã và 30 quận/huyện trước 01/07/2025. |
 | [`verification/`](verification/) | Ảnh và text đối chiếu của giai đoạn clone. |
 | [`Attachment/`](Attachment/) | Ảnh đính kèm của tài liệu đặc tả. |
@@ -36,7 +36,7 @@ Hướng dẫn đầy đủ, giả định của mock và giới hạn còn lạ
 | [`phan-tich.md`](phan-tich.md) | Mục tiêu phân tích và mô hình phân cấp nguồn thu. |
 | [`PROMPT-CLAUDE-NSNN.md`](PROMPT-CLAUDE-NSNN.md) | Yêu cầu của giai đoạn clone nguyên trạng. |
 | [`bao-cao-kiem-tra-tabs.md`](bao-cao-kiem-tra-tabs.md) | Báo cáo kiểm tra website tham chiếu. |
-| [`prototype-nsnn/DESIGN.md`](prototype-nsnn/DESIGN.md) | Hệ thống thị giác: token, thang màu dữ liệu, quy tắc bố cục. |
+| [`web/DESIGN.md`](web/DESIGN.md) | Hệ thống thị giác: token, thang màu dữ liệu, quy tắc bố cục. |
 
 ## Kiến trúc
 

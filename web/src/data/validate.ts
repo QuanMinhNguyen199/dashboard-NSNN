@@ -1,0 +1,183 @@
+import type {
+  AdvancedComparisonData,
+  AdvancedComparisonMode,
+  DashboardNavigationAction,
+  LocationDetailData,
+  OverviewData,
+  RevenueAnalysisData,
+  TabId,
+} from "@/domain/types";
+import { LOCATION_BY_ID, SOURCE_BY_CODE } from "@/domain/catalog";
+
+/**
+ * Ranh giới tin cậy giữa dữ liệu bên ngoài và giao diện.
+ *
+ * MCP và API chỉ được trả **dữ liệu** và **navigation intent đã whitelist**.
+ * Không component, không HTML, không JavaScript, không CSS class, không URL thô.
+ * Ứng dụng tự dịch intent đã kiểm tra thành URL nội bộ.
+ */
+
+export const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+const isFinite_ = (value: unknown): value is number =>
+  typeof value === "number" && Number.isFinite(value);
+const isNullableNumber = (value: unknown) => value === null || isFinite_(value);
+
+export const SOURCES_ALLOWED = ["api", "mcp", "fixture", "mock"];
+export const TABS_ALLOWED: TabId[] = ["overview", "revenue-analysis", "location-detail", "advanced-compare"];
+const MODES_ALLOWED: AdvancedComparisonMode[] = ["period", "revenue", "location"];
+
+export class PayloadError extends Error {}
+
+/** Không phải lỗi: lát cắt hợp lệ nhưng chưa có quan sát nào. */
+export class NoDataError extends Error {
+  readonly name = "NoDataError";
+}
+
+export function assert(condition: unknown, message: string): asserts condition {
+  if (!condition) throw new PayloadError(message);
+}
+
+function validateAmountRow(value: unknown, where: string) {
+  assert(isRecord(value), `${where}: dòng số liệu không phải object.`);
+  assert(typeof value.id === "string" && typeof value.name === "string", `${where}: thiếu id hoặc name.`);
+  assert(isFinite_(value.amount), `${where}: amount phải là số hữu hạn.`);
+  assert(isNullableNumber(value.previous), `${where}: previous phải là số hoặc null.`);
+}
+
+function validateTrend(value: unknown, where: string) {
+  assert(Array.isArray(value), `${where}: trend phải là mảng.`);
+  for (const point of value) {
+    assert(isRecord(point) && isFinite_(point.month), `${where}: điểm xu hướng thiếu month.`);
+    assert(
+      isNullableNumber(point.current) && isNullableNumber(point.previous),
+      `${where}: giá trị xu hướng phải là số hoặc null.`,
+    );
+  }
+}
+
+function validateWaterfall(value: unknown, where: string) {
+  assert(isRecord(value), `${where}: waterfall không phải object.`);
+  assert(isFinite_(value.start) && isFinite_(value.end), `${where}: waterfall thiếu mốc đầu/cuối.`);
+  assert(Array.isArray(value.steps), `${where}: waterfall thiếu các bước.`);
+  for (const step of value.steps)
+    assert(
+      isRecord(step) && typeof step.name === "string" && isFinite_(step.delta),
+      `${where}: bước waterfall không hợp lệ.`,
+    );
+  // Đối chiếu bắt buộc: tổng các bước phải khớp chênh lệch chung.
+  const sum = (value.steps as { delta: number }[]).reduce((total, step) => total + step.delta, 0);
+  assert(
+    Math.abs(sum - ((value.end as number) - (value.start as number))) < 1000,
+    `${where}: tổng các bước waterfall lệch quá 1.000 đồng so với chênh lệch chung.`,
+  );
+}
+
+function validateMeta(value: unknown, where: string) {
+  assert(isRecord(value), `${where}: thiếu metadata.`);
+  assert(SOURCES_ALLOWED.includes(String(value.source)), `${where}: nguồn dữ liệu không hợp lệ.`);
+  assert(value.unit === "VND", `${where}: đơn vị phải được chuẩn hoá về VND tại adapter.`);
+  assert(typeof value.periodLabel === "string", `${where}: thiếu nhãn kỳ.`);
+  assert(typeof value.derivedQuarter === "boolean", `${where}: thiếu cờ quý dẫn xuất.`);
+  assert(isRecord(value.coverage), `${where}: thiếu thông tin độ phủ.`);
+  assert(
+    isFinite_(value.coverage.covered) && isFinite_(value.coverage.total),
+    `${where}: độ phủ phải là số.`,
+  );
+}
+
+export function validateOverview(value: unknown): OverviewData {
+  assert(isRecord(value), "Overview: payload rỗng.");
+  validateMeta(value.meta, "Overview");
+  validateAmountRow(value.kpiPeriod, "Overview.kpiPeriod");
+  validateAmountRow(value.kpiYtd, "Overview.kpiYtd");
+  validateTrend(value.trend, "Overview");
+  for (const key of ["sources", "domesticItems", "locations", "budgetLevels"] as const) {
+    assert(Array.isArray(value[key]), `Overview.${key}: phải là mảng.`);
+    for (const row of value[key] as unknown[]) validateAmountRow(row, `Overview.${key}`);
+  }
+  assert(
+    (value.domesticItems as unknown[]).length === 21,
+    "Overview: khoản thu nội địa phải đủ đúng 21 dòng.",
+  );
+  validateWaterfall(value.waterfall, "Overview");
+  return value as unknown as OverviewData;
+}
+
+export function validateRevenueAnalysis(value: unknown): RevenueAnalysisData {
+  assert(isRecord(value), "Phân tích thu: payload rỗng.");
+  validateMeta(value.meta, "Phân tích thu");
+  assert(
+    typeof value.scope === "string" && value.scope in SOURCE_BY_CODE,
+    "Phân tích thu: nguồn thu không nằm trong danh mục.",
+  );
+  assert(Array.isArray(value.breakdown), "Phân tích thu: thiếu bảng chi tiết.");
+  for (const row of value.breakdown as unknown[]) validateAmountRow(row, "Phân tích thu.breakdown");
+  validateTrend(value.trend, "Phân tích thu");
+  validateWaterfall(value.waterfall, "Phân tích thu");
+  return value as unknown as RevenueAnalysisData;
+}
+
+export function validateLocationDetail(value: unknown): LocationDetailData {
+  assert(isRecord(value), "Chi tiết địa bàn: payload rỗng.");
+  validateMeta(value.meta, "Chi tiết địa bàn");
+  assert(
+    isRecord(value.location) && typeof value.location.id === "string" && value.location.id in LOCATION_BY_ID,
+    "Chi tiết địa bàn: mã địa bàn không nằm trong danh mục 126 phường/xã.",
+  );
+  validateAmountRow(value.kpiPeriod, "Chi tiết địa bàn.kpiPeriod");
+  validateTrend(value.trend, "Chi tiết địa bàn");
+  return value as unknown as LocationDetailData;
+}
+
+export function validateAdvancedComparison(value: unknown): AdvancedComparisonData {
+  assert(isRecord(value), "So sánh: payload rỗng.");
+  validateMeta(value.meta, "So sánh");
+  assert(MODES_ALLOWED.includes(value.mode as AdvancedComparisonMode), "So sánh: chế độ không hợp lệ.");
+  assert(isRecord(value.a) && isRecord(value.b), "So sánh: thiếu một trong hai vế.");
+  assert(Array.isArray(value.rows), "So sánh: thiếu bảng delta.");
+  validateWaterfall(value.waterfall, "So sánh");
+  return value as unknown as AdvancedComparisonData;
+}
+
+/** Lọc navigation intent: chỉ giữ những intent đúng dạng và trỏ tới thực thể có thật. */
+export function sanitizeNavigation(value: unknown): DashboardNavigationAction[] {
+  if (!Array.isArray(value)) return [];
+  const out: DashboardNavigationAction[] = [];
+  for (const raw of value) {
+    if (!isRecord(raw)) continue;
+    switch (raw.type) {
+      case "OPEN_REVENUE_PREVIEW":
+        if (typeof raw.sourceId === "string" && raw.sourceId in SOURCE_BY_CODE)
+          out.push({ type: raw.type, sourceId: raw.sourceId });
+        break;
+      case "OPEN_REVENUE_ANALYSIS":
+        if (typeof raw.sourceId === "string" && raw.sourceId in SOURCE_BY_CODE) {
+          const view = ["overview", "ranking", "waterfall"].includes(String(raw.view))
+            ? (raw.view as "overview" | "ranking" | "waterfall")
+            : undefined;
+          out.push({ type: raw.type, sourceId: raw.sourceId, view });
+        }
+        break;
+      case "OPEN_LOCATION_DETAIL":
+        if (typeof raw.locationId === "string" && raw.locationId in LOCATION_BY_ID)
+          out.push({ type: raw.type, locationId: raw.locationId });
+        break;
+      case "OPEN_ADVANCED_COMPARISON":
+        if (
+          MODES_ALLOWED.includes(raw.mode as AdvancedComparisonMode) &&
+          Array.isArray(raw.entityIds) &&
+          raw.entityIds.every((id) => typeof id === "string")
+        )
+          out.push({
+            type: raw.type,
+            mode: raw.mode as AdvancedComparisonMode,
+            entityIds: (raw.entityIds as string[]).slice(0, 5),
+          });
+        break;
+      default:
+        break; // Mọi thứ khác bị bỏ qua một cách an toàn.
+    }
+  }
+  return out;
+}

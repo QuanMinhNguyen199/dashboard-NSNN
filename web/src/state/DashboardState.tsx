@@ -1,0 +1,295 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import {
+  ALL_PERIODS,
+  INDICATORS,
+  LOCATION_BY_ID,
+  SOURCE_BY_CODE,
+  YEARS,
+  type IndicatorSlug,
+  type SourceCode,
+} from "@/domain/catalog";
+import { periodCount } from "@/domain/metrics";
+import type {
+  AdvancedComparisonMode,
+  DashboardFilters,
+  DashboardNavigationAction,
+  TabId,
+} from "@/domain/types";
+
+/**
+ * Nơi duy nhất sở hữu và đồng bộ URL state.
+ *
+ * Không component nào khác được đọc hay ghi `location.search`. Bộ lọc chung được
+ * giữ nguyên khi chuyển tab; tham số riêng của tab chỉ xuất hiện khi tab đó đang mở.
+ * Mở drawer dùng `pushState` để Back đóng drawer mà không mất bộ lọc.
+ */
+
+const TABS: TabId[] = ["overview", "revenue-analysis", "location-detail", "advanced-compare"];
+const MODES: AdvancedComparisonMode[] = ["period", "revenue", "location"];
+const VIEWS = ["overview", "ranking", "waterfall"] as const;
+export type AnalysisView = (typeof VIEWS)[number];
+
+export interface DashboardUrlState {
+  tab: TabId;
+  filters: DashboardFilters;
+  /** Tab Phân tích thu */
+  section: SourceCode;
+  view: AnalysisView;
+  /** Tab Chi tiết địa bàn */
+  location: string | null;
+  /** Drawer xem nhanh nguồn thu */
+  panelSource: SourceCode | null;
+  /** Tab So sánh nâng cao */
+  mode: AdvancedComparisonMode;
+  periodA: string;
+  periodB: string;
+  compareSource: SourceCode;
+  compareSourceB: SourceCode;
+  locationA: string | null;
+  locationB: string | null;
+}
+
+const DEFAULT_FILTERS: DashboardFilters = {
+  year: 2026,
+  periodType: "MONTH",
+  period: 8,
+  accumulation: "PERIOD",
+  indicator: "tong-so",
+  budgetLevel: "NSNN",
+};
+
+/** Kỳ mới nhất thực sự có dữ liệu — không bao giờ mặc định vào kỳ tương lai. */
+function clampPeriod(filters: DashboardFilters): DashboardFilters {
+  if (filters.period === ALL_PERIODS) return filters;
+  const max = periodCount(filters);
+  return { ...filters, period: Math.min(Math.max(filters.period, 1), Math.max(max, 1)) };
+}
+
+function readUrl(search: string): DashboardUrlState {
+  const q = new URLSearchParams(search);
+  const num = (key: string, fallback: number) => {
+    const value = Number(q.get(key));
+    return Number.isFinite(value) && value > 0 ? value : fallback;
+  };
+  const one = <T extends string>(key: string, allowed: readonly T[], fallback: T): T => {
+    const value = q.get(key) as T | null;
+    return value && allowed.includes(value) ? value : fallback;
+  };
+
+  const year = YEARS.includes(num("year", 2026) as (typeof YEARS)[number])
+    ? num("year", 2026)
+    : DEFAULT_FILTERS.year;
+  const periodType = one("periodType", ["MONTH", "QUARTER"] as const, DEFAULT_FILTERS.periodType);
+  const filters = clampPeriod({
+    year,
+    periodType,
+    // `num` chỉ nhận số dương nên phải đọc riêng: 0 là "tất cả các kỳ", hợp lệ.
+    period: q.get("period") === String(ALL_PERIODS)
+      ? ALL_PERIODS
+      : num("period", periodType === "MONTH" ? 8 : 2),
+    accumulation: one("acc", ["PERIOD", "YTD"] as const, DEFAULT_FILTERS.accumulation),
+    indicator: one(
+      "indicator",
+      INDICATORS.map((i) => i.slug) as readonly IndicatorSlug[],
+      DEFAULT_FILTERS.indicator,
+    ),
+    budgetLevel: one("level", ["NSNN", "NSTW", "NSDP"] as const, DEFAULT_FILTERS.budgetLevel),
+  });
+
+  const sources = Object.keys(SOURCE_BY_CODE) as SourceCode[];
+  const locationOf = (key: string) => {
+    const raw = q.get(key);
+    return raw && raw in LOCATION_BY_ID ? raw : null;
+  };
+
+  return {
+    tab: one("tab", TABS, "overview"),
+    filters,
+    section: one("section", sources, "domestic"),
+    view: one("view", VIEWS, "overview"),
+    location: locationOf("location"),
+    panelSource: q.get("panel") === "revenue-preview" ? one("source", sources, "domestic") : null,
+    mode: one("mode", MODES, "period"),
+    periodA: q.get("periodA") ?? "2025m8",
+    periodB: q.get("periodB") ?? "2026m8",
+    compareSource: one("source", sources, "domestic"),
+    compareSourceB: one("sourceB", sources, "import-export"),
+    locationA: locationOf("locationA"),
+    locationB: locationOf("locationB"),
+  };
+}
+
+function writeUrl(state: DashboardUrlState): string {
+  const q = new URLSearchParams();
+  q.set("tab", state.tab);
+  q.set("year", String(state.filters.year));
+  q.set("periodType", state.filters.periodType);
+  q.set("period", String(state.filters.period));
+  q.set("acc", state.filters.accumulation);
+  q.set("level", state.filters.budgetLevel);
+  q.set("indicator", state.filters.indicator);
+
+  if (state.tab === "revenue-analysis") {
+    q.set("section", state.section);
+    q.set("view", state.view);
+  }
+  if (state.tab === "location-detail" && state.location) q.set("location", state.location);
+  if (state.tab === "advanced-compare") {
+    q.set("mode", state.mode);
+    if (state.mode === "period") {
+      q.set("periodA", state.periodA);
+      q.set("periodB", state.periodB);
+    } else if (state.mode === "revenue") {
+      q.set("source", state.compareSource);
+      q.set("sourceB", state.compareSourceB);
+    } else {
+      if (state.locationA) q.set("locationA", state.locationA);
+      if (state.locationB) q.set("locationB", state.locationB);
+    }
+  }
+  if (state.panelSource) {
+    q.set("panel", "revenue-preview");
+    q.set("source", state.panelSource);
+  }
+  return `?${q.toString()}`;
+}
+
+interface DashboardContextValue extends DashboardUrlState {
+  setFilters: (patch: Partial<DashboardFilters>) => void;
+  setTab: (tab: TabId) => void;
+  setSection: (section: SourceCode) => void;
+  setView: (view: AnalysisView) => void;
+  selectLocation: (id: string | null) => void;
+  openPreview: (source: SourceCode) => void;
+  closePreview: () => void;
+  setMode: (mode: AdvancedComparisonMode) => void;
+  setCompare: (patch: Partial<Pick<DashboardUrlState, "periodA" | "periodB" | "compareSource" | "compareSourceB" | "locationA" | "locationB">>) => void;
+  /** Chuyển một intent đã whitelist thành điều hướng nội bộ. */
+  dispatchIntent: (action: DashboardNavigationAction) => void;
+}
+
+const Ctx = createContext<DashboardContextValue | null>(null);
+
+export function DashboardProvider({ children }: { children: ReactNode }) {
+  const [state, setState] = useState<DashboardUrlState>(() => readUrl(window.location.search));
+  /** Chỉ drawer dùng pushState; mọi thay đổi khác dùng replaceState. */
+  const pushNext = useRef(false);
+
+  useEffect(() => {
+    const url = writeUrl(state);
+    if (pushNext.current) {
+      pushNext.current = false;
+      window.history.pushState(null, "", url);
+    } else if (url !== window.location.search) {
+      window.history.replaceState(null, "", url);
+    }
+  }, [state]);
+
+  // Back/Forward của trình duyệt là nguồn sự thật: đọc lại URL, không đoán.
+  useEffect(() => {
+    const onPop = () => setState(readUrl(window.location.search));
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  const patch = useCallback((next: Partial<DashboardUrlState>) => {
+    setState((current) => ({ ...current, ...next }));
+  }, []);
+
+  const value = useMemo<DashboardContextValue>(
+    () => ({
+      ...state,
+      setFilters: (next) =>
+        setState((current) => {
+          const merged = { ...current.filters, ...next };
+          // Đổi năm hoặc loại kỳ thì phải kiểm tra lại kỳ đang chọn.
+          return { ...current, filters: clampPeriod(merged), panelSource: null };
+        }),
+      setTab: (tab) => setState((current) => ({ ...current, tab, panelSource: null })),
+      setSection: (section) => patch({ section }),
+      setView: (view) => patch({ view }),
+      selectLocation: (location) =>
+        setState((current) => ({ ...current, location, tab: location ? "location-detail" : current.tab })),
+      openPreview: (panelSource) => {
+        pushNext.current = true;
+        patch({ panelSource });
+      },
+      closePreview: () => {
+        // Đóng bằng nút hoặc Escape thì lùi lại đúng một bước để Back và nút đóng
+        // để lại cùng một lịch sử.
+        if (window.history.state !== null || window.location.search.includes("panel="))
+          window.history.back();
+        else patch({ panelSource: null });
+      },
+      setMode: (mode) => patch({ mode }),
+      setCompare: (next) => patch(next),
+      dispatchIntent: (action) => {
+        switch (action.type) {
+          case "OPEN_REVENUE_PREVIEW":
+            pushNext.current = true;
+            patch({ panelSource: action.sourceId as SourceCode });
+            break;
+          case "OPEN_REVENUE_ANALYSIS":
+            setState((current) => ({
+              ...current,
+              tab: "revenue-analysis",
+              section: action.sourceId as SourceCode,
+              view: action.view ?? "overview",
+              panelSource: null,
+            }));
+            break;
+          case "OPEN_LOCATION_DETAIL":
+            setState((current) => ({
+              ...current,
+              tab: "location-detail",
+              location: action.locationId,
+              panelSource: null,
+            }));
+            break;
+          case "OPEN_ADVANCED_COMPARISON":
+            setState((current) => {
+              const [a, b] = action.entityIds;
+              if (action.mode === "location")
+                return { ...current, tab: "advanced-compare", mode: "location", locationA: a ?? null, locationB: b ?? null, panelSource: null };
+              if (action.mode === "revenue")
+                return {
+                  ...current,
+                  tab: "advanced-compare",
+                  mode: "revenue",
+                  compareSource: (a as SourceCode) ?? current.compareSource,
+                  compareSourceB: (b as SourceCode) ?? current.compareSourceB,
+                  panelSource: null,
+                };
+              return {
+                ...current,
+                tab: "advanced-compare",
+                mode: "period",
+                periodA: a ?? current.periodA,
+                periodB: b ?? current.periodB,
+                panelSource: null,
+              };
+            });
+            break;
+        }
+      },
+    }),
+    [state, patch],
+  );
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+export function useDashboardState(): DashboardContextValue {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error("useDashboardState() phải gọi trong <DashboardProvider>");
+  return ctx;
+}
