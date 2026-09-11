@@ -26,15 +26,15 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: prototype-nsnn/package-lock.json
+          cache-dependency-path: web/package-lock.json
 
       - name: Cài phụ thuộc
-        working-directory: prototype-nsnn
+        working-directory: web
         run: npm ci
 
       # Base lấy từ chính tên repo nên đổi tên repo không làm hỏng đường dẫn asset.
       - name: Build
-        working-directory: prototype-nsnn
+        working-directory: web
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
         run: npm run build
@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: prototype-nsnn/dist
+          path: web/dist
 
   deploy:
     name: Phát hành
