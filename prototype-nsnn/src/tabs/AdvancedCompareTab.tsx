@@ -260,6 +260,7 @@ function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?
             {
               id: "waterfall",
               span: 7,
+              wide: true,
               render: () => (
                 <Card title="Cầu nối chênh lệch" subtitle="Từ vế A sang vế B">
                   <WaterfallChart data={data.waterfall} />
@@ -269,6 +270,8 @@ function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?
             {
               id: "delta-table",
               span: 5,
+              // Bảng năm cột đi kèm: cả hàng cùng xuống một cột khi hẹp.
+              wide: true,
               render: () => (
                 <Card title="Bảng chênh lệch" subtitle="Sắp theo độ lớn tuyệt đối">
                   <div className="dtable-wrap">
@@ -306,7 +309,7 @@ function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?
               id: "trend",
               span: 12,
               render: () => (
-                <Card title="Xu hướng hai vế" subtitle="Mười hai tháng, cùng thang đo">
+                <Card title="Xu hướng hai vế" subtitle="12 tháng, cùng thang đo">
                   <TrendChart
                     points={data.trendB.map((point, index) => ({
                       ...point,

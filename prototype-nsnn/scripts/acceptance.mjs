@@ -342,6 +342,64 @@ const run = async () => {
   }
   check(13, "Không tràn ngang ở 390px, 1024px và 1440px", overflow, []);
 
+  // 16 — Không thẻ nào bị cắt nội dung ngang bên trong
+  //
+  // Khác tiêu chí 13: trang không tràn ngang vẫn có thể có thẻ mà nội dung bên
+  // trong rộng hơn chính nó (header thẻ, dải KPI, thanh lọc), và chỗ thừa bị
+  // `overflow: hidden` của thẻ nuốt mất — nhìn thì tưởng thiếu chữ.
+  const clipped = [];
+  for (const width of [390, 700, 768, 1024, 1280]) {
+    for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
+      await page.setViewport({ width, height: 900 });
+      await page.goto(
+        BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`,
+        { waitUntil: "networkidle0" },
+      );
+      await wait(1500);
+      const bad = await page.evaluate(() =>
+        [...document.querySelectorAll(".dcard, .dcard-head, .dkpis > div, .dfilters")]
+          .filter((el) => el.scrollWidth - el.clientWidth > 1)
+          .map((el) => `${el.className.split(" ")[0]}+${el.scrollWidth - el.clientWidth}`),
+      );
+      if (bad.length) clipped.push(`${tab}@${width}px:${bad.join(",")}`);
+    }
+  }
+  check(16, "Không thẻ nào bị cắt nội dung ngang", clipped, []);
+
+  // 17 — Hai thẻ cùng một hàng phải cao bằng nhau
+  //
+  // Lưới `align-items: start` cho mỗi thẻ cao theo nội dung riêng, nên mép dưới
+  // lệch nhau và cả hàng trông như vỡ.
+  const unevenRows = [];
+  for (const width of [768, 960, 1280, 1600]) {
+    for (const tab of ["overview", "revenue-analysis", "location-detail"]) {
+      await page.setViewport({ width, height: 900 });
+      await page.goto(BASE + `/?tab=${tab}&location=00004`, { waitUntil: "networkidle0" });
+      await wait(1500);
+      const off = await page.evaluate(() => {
+        const bad = [];
+        for (const sel of [".dg", ".dstack-row"])
+          for (const box of document.querySelectorAll(sel)) {
+            const byTop = new Map();
+            for (const cell of box.children) {
+              const r = cell.getBoundingClientRect();
+              if (!r.height) continue;
+              const card = cell.classList.contains("dcard") ? cell : cell.firstElementChild;
+              if (!card) continue;
+              const key = Math.round(r.top);
+              if (!byTop.has(key)) byTop.set(key, []);
+              byTop.get(key).push(Math.round(card.getBoundingClientRect().height));
+            }
+            for (const [, hs] of byTop)
+              if (hs.length > 1 && Math.max(...hs) - Math.min(...hs) > 1) bad.push(hs.join("/"));
+          }
+        return bad;
+      });
+      if (off.length) unevenRows.push(`${tab}@${width}px:${off.join(" ")}`);
+    }
+  }
+  check(17, "Thẻ cùng hàng cao bằng nhau", unevenRows, []);
+
   await page.setViewport({ width: 1440, height: 1000 });
 
   // 15 — Không có lỗi JavaScript

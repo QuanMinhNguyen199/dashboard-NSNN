@@ -109,16 +109,19 @@ function AnalysisBody({ data, partial }: { data: RevenueAnalysisData; partial?: 
             {
               id: "table",
               span: 8,
+              // Bảng sáu cột: dưới 1280px cho chiếm trọn hàng thay vì cuộn ngang trong thẻ.
+              wide: true,
               render: () => <BreakdownTable data={data} />,
             },
             {
               id: "locations",
               span: 4,
+              wide: true,
               // Nguồn do trung ương quản lý không phân bổ theo địa bàn: widget bị
               // loại khỏi lưới thay vì hiện một bảng rỗng.
               hidden: data.byLocation.length === 0,
               render: () => (
-                <Card title="Đóng góp theo địa bàn" subtitle="Mười phường, xã đóng góp nhiều nhất">
+                <Card title="Đóng góp theo địa bàn" subtitle="10 phường, xã đóng góp nhiều nhất">
                   <Bars
                     rows={data.byLocation}
                     onSelect={(row) =>
@@ -144,7 +147,7 @@ function AnalysisBody({ data, partial }: { data: RevenueAnalysisData; partial?: 
               render: () => (
                 <Card
                   title="Biến động trong nhóm"
-                  subtitle="Bấm một khoản để mở so sánh nâng cao"
+                  subtitle="Đóng góp của từng khoản vào mức chênh · chọn để so sánh"
                   actions={
                     <button
                       type="button"
@@ -297,7 +300,7 @@ function NetReconciliation({ data }: { data: RevenueAnalysisData }) {
     >
       <ul className="dledger">
         <li>
-          <span>Tổng gộp bảy dòng</span>
+          <span>Tổng bảy khoản gộp</span>
           <strong>{money(net.gross)}</strong>
         </li>
         {net.deductions.map((row) => (

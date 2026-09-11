@@ -23,7 +23,20 @@ export interface SlotConfig {
   span: ColSpan;
   /** Widget bị loại khỏi lưới khi không áp dụng cho ngữ cảnh hiện tại. */
   hidden?: boolean;
+  /**
+   * Widget cần cả chiều ngang mới đọc được (bảng nhiều cột). Dưới 1280px nó
+   * chiếm trọn 12 cột thay vì co lại rồi phải cuộn ngang trong thẻ. Đánh dấu cả
+   * hai widget cùng hàng, nếu không widget còn lại sẽ đứng một mình nửa hàng.
+   */
+  wide?: boolean;
   render: () => ReactNode;
+}
+
+interface ResolvedSlot {
+  id: string;
+  span: ColSpan;
+  wide: boolean;
+  node: ReactNode;
 }
 
 /**
@@ -31,12 +44,17 @@ export interface SlotConfig {
  * đủ 12 cột thay vì để lại khoảng trống.
  *   8 + 4 → 12 · 7 + 5 → 12 · 6 + 6 → 12
  */
-export function resolveRow(slots: SlotConfig[]): { id: string; span: ColSpan; node: ReactNode }[] {
+export function resolveRow(slots: SlotConfig[]): ResolvedSlot[] {
   const visible = slots.filter((slot) => !slot.hidden);
   if (visible.length === 0) return [];
   if (visible.length === 1)
-    return [{ id: visible[0].id, span: 12, node: visible[0].render() }];
-  return visible.map((slot) => ({ id: slot.id, span: slot.span, node: slot.render() }));
+    return [{ id: visible[0].id, span: 12, wide: false, node: visible[0].render() }];
+  return visible.map((slot) => ({
+    id: slot.id,
+    span: slot.span,
+    wide: slot.wide === true,
+    node: slot.render(),
+  }));
 }
 
 /** Dựng nhiều hàng, mỗi hàng tự giải span riêng. */
@@ -45,7 +63,11 @@ export function GridRows({ rows }: { rows: SlotConfig[][] }) {
     <Grid>
       {rows.flatMap((row) =>
         resolveRow(row).map((slot) => (
-          <div key={slot.id} className="dg-cell" style={spanStyle(slot.span)}>
+          <div
+            key={slot.id}
+            className={slot.wide ? "dg-cell is-wide" : "dg-cell"}
+            style={spanStyle(slot.span)}
+          >
             {slot.node}
           </div>
         )),

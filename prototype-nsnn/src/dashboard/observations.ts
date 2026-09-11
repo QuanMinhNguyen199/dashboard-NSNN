@@ -4,6 +4,7 @@ import {
   LOCATIONS,
   SOURCE_BY_CODE,
   latestMonth,
+  ALL_PERIODS,
   type BudgetLevel,
   type ItemDef,
   type SourceCode,
@@ -141,7 +142,17 @@ export function amountOf(
 }
 
 /** Các tháng thuộc kỳ đang chọn, theo PERIOD hoặc YTD. */
-export function monthsOf(filters: Pick<DashboardFilters, "periodType" | "period" | "accumulation">): number[] {
+export function monthsOf(
+  filters: Pick<DashboardFilters, "year" | "periodType" | "period" | "accumulation">,
+): number[] {
+  // Cả năm = mọi tháng ĐÃ có số liệu của năm đó, không phụ thuộc Chu kỳ đang
+  // chọn: Chu kỳ chỉ quyết định độ mịn của danh sách kỳ cụ thể. Nếu để chu kỳ
+  // quý cắt về quý trọn vẹn thì cùng một mốc "cả năm" lại ra hai con số khác
+  // nhau tuỳ Chu kỳ — khó hiểu và không có lý do nghiệp vụ nào.
+  if (filters.period === ALL_PERIODS) {
+    const last = latestMonth(filters.year);
+    return Array.from({ length: last }, (_, i) => i + 1);
+  }
   const end = filters.periodType === "MONTH" ? filters.period : filters.period * 3;
   const start = filters.periodType === "MONTH" ? end : end - 2;
   const from = filters.accumulation === "YTD" ? 1 : start;

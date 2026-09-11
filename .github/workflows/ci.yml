@@ -37,9 +37,12 @@ jobs:
         run: npm run build
 
   acceptance:
-    name: 14 tiêu chí nghiệm thu
+    name: 16 tiêu chí nghiệm thu
     runs-on: ubuntu-latest
     needs: build
+    # Bộ kiểm quét nhiều mốc rộng trên trình duyệt thật; chốt trần để một lần treo
+    # không giữ runner cho tới hết hạn mặc định.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 

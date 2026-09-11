@@ -150,6 +150,7 @@ table { border-collapse: collapse; width: 100%; }
   font-size: 13px; appearance: none;
 }
 .dfilters select:hover { border-color: var(--blue-250); }
+.dfilters-summary { display: none; }
 .dfield-wide { flex: 1 1 280px; }
 .dfield-wide select { width: 100%; }
 
@@ -159,6 +160,8 @@ table { border-collapse: collapse; width: 100%; }
   color: var(--ink-2); font-size: 12px; font-weight: 650;
 }
 .dseg button.is-active { background: var(--surface); color: var(--brand); box-shadow: 0 1px 2px #19334e18; }
+.dseg.is-disabled { opacity: 0.5; }
+.dseg.is-disabled button { cursor: not-allowed; }
 
 .dsubnav { display: flex; gap: var(--s2); border-bottom: 1px solid var(--hairline); margin-bottom: var(--s4); }
 .dsubnav button {
@@ -196,24 +199,40 @@ table { border-collapse: collapse; width: 100%; }
 .tone-neg { color: var(--neg); }
 
 /* ──────────────────────────────── Lưới ──────────────────────────────────── */
-.dg { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s4); align-items: start; }
-.dg-cell { grid-column: span var(--span); min-width: 0; }
+/* Hai thẻ cùng một hàng phải cao bằng nhau: mép dưới lệch nhau làm lưới trông
+   như bị vỡ. Ô lưới giãn hết chiều cao hàng (`stretch`), thẻ bên trong lấp đầy
+   ô. Nội dung vẫn bám mép trên, phần dư nằm dưới đáy thẻ. */
+.dg { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s4); align-items: stretch; }
+.dg-cell { grid-column: span var(--span); min-width: 0; display: flex; flex-direction: column; }
+.dg-cell > * { flex: 1 1 auto; }
 
 .dcard {
+  display: flex; flex-direction: column;
   background: var(--surface); border: 1px solid var(--hairline);
   border-radius: var(--r-surface); overflow: hidden;
 }
+/* `flex-wrap` là bắt buộc, không phải cho đẹp: tiêu đề cộng ô tìm kiếm rộng hơn
+   thẻ 317px của cột danh sách ở 1024px và làm tràn ngang bên trong thẻ. */
 .dcard-head {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3);
-  padding: 15px 16px 8px;
+  display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+  gap: var(--s2) var(--s3); padding: 15px 16px 8px;
 }
+.dcard-title { min-width: 0; }
 .dcard-title h2 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
 .dcard-title p { margin-top: 2px; color: var(--ink-2); font-size: 11px; }
-.dcard-actions { flex: none; }
-.dcard-body { padding: 0 16px 14px; }
+/* `flex: none` giữ nguyên bề rộng max-content nên nhóm nút tràn ra khỏi thẻ hẹp.
+   Cho phép co lại sau khi đã xuống dòng. */
+.dcard-actions { flex: 0 1 auto; min-width: 0; }
+.dcard-body {
+  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+  padding: 0 16px 14px;
+}
 
 .dstack { display: grid; gap: var(--s4); }
-.dstack-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); align-items: start; }
+.dstack-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); align-items: stretch; }
+/* Biểu đồ ghép với một danh sách ngắn: biểu đồ lấy phần rộng hơn và tự giãn cao
+   bằng danh sách, nên cặp này không để lại khoảng trống. */
+.dstack-row.is-chart-pair { grid-template-columns: 7fr 5fr; }
 .dactions { display: flex; gap: var(--s2); }
 
 .dlink {
@@ -230,7 +249,15 @@ table { border-collapse: collapse; width: 100%; }
 .dbtn-primary:hover { background: var(--blue-550); color: #fff; }
 
 /* ───────────────────────── Danh sách thanh ──────────────────────────────── */
-.dbars { display: grid; }
+/* Trong một thẻ đã bị kéo cao bằng thẻ bên cạnh, dòng thanh giãn ra để lấp chỗ
+   trống nhưng có trần: quá 92px thì dòng trông như bị kéo méo, thà để trống. */
+.dbars { flex: 1 1 auto; display: flex; flex-direction: column; }
+.dbars > li { flex: 1 1 auto; max-height: 92px; display: flex; }
+/* Danh sách chỉ hai dòng (NSTW/NSĐP, cơ cấu nguồn thu của một địa bàn) nằm cạnh
+   danh sách năm, tám dòng: trần 92px không lấp nổi nên nới riêng cho trường hợp
+   này. Dòng cao hơn nhưng nội dung vẫn căn giữa nên đọc như một thẻ thoáng. */
+.dbars:has(> li:nth-child(2):last-child) > li { max-height: 150px; }
+.dbars > li > .dbar-row { flex: 1 1 auto; }
 .dbar-row {
   width: 100%; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto;
   align-items: center; gap: 10px; padding: 9px 0; text-align: left;
@@ -265,7 +292,8 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .dchange.flat, .dchange.neutral { color: var(--ink-2); font-weight: 500; }
 
 /* ────────────────────────────── Biểu đồ ─────────────────────────────────── */
-.dchart { width: 100%; }
+.dchart-wrap { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+.dchart { flex: 1 1 auto; width: 100%; min-height: var(--chart-h, 260px); }
 .dlegend {
   display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4);
   border-top: 1px solid var(--divider); margin-top: var(--s2); padding-top: 9px;
@@ -291,7 +319,10 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .dbridge-diff strong.pos { color: var(--pos); }
 .dbridge-diff strong.neg { color: var(--neg); }
 
-.dcontrib { display: grid; gap: 2px; padding-top: var(--s3); }
+.dwaterfall { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+.dcontrib { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; padding-top: var(--s3); }
+.dcontrib > li { flex: 1 1 auto; max-height: 60px; display: flex; }
+.dcontrib > li > .dcontrib-row { flex: 1 1 auto; }
 .dcontrib-row {
   width: 100%; display: grid; grid-template-columns: minmax(130px, 1.1fr) 3fr minmax(96px, auto);
   align-items: center; gap: var(--s3); padding: 7px 0; font-size: 12px; text-align: left;
@@ -310,12 +341,17 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dcontrib strong.neg { color: var(--neg); }
 
 /* ─────────────────────────────── Bảng ───────────────────────────────────── */
-.dtable-wrap { overflow-x: auto; }
+/* Bảng dài (21 khoản, 126 phường xã) tự nong thẻ cao gấp đôi thẻ bên cạnh và
+   kéo cả trang dài ra. Chặn chiều cao rồi cuộn trong thẻ — `thead` đã sticky nên
+   tiêu đề cột vẫn thấy khi cuộn. */
+.dtable-wrap { overflow: auto; max-height: 62vh; }
 /* `table-layout: fixed` là bắt buộc, không phải để trang trí: với layout tự động,
    kích thước min-content của bảng lan ngược lên tài liệu và làm cả trang tràn
    ngang ở 390px, dù bảng đã nằm trong một vùng cuộn riêng. Cột đầu giữ 36% để
    tên khoản thu vẫn đọc được; `min-width` cho bảng cuộn ngang bên trong thẻ. */
-.dtable { font-size: 12px; table-layout: fixed; width: 100%; }
+/* `separate` + `border-spacing: 0` chứ không phải `collapse`: ở chế độ collapse
+   thì thead sticky không che được nội dung dòng cuộn phía sau. */
+.dtable { font-size: 12px; table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
 .dtable th:first-child, .dtable td:first-child { width: 36%; }
 /* min-width chỉ đặt từ tablet trở lên: ở 390px nó chính là thứ đẩy cả trang
    tràn ngang, nên màn hình hẹp dùng bảng vừa khung và ẩn bớt cột phụ. */
@@ -327,10 +363,12 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--divider);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+/* Bảng cuộn trong thẻ: `border-bottom` trên ô sticky không dính theo ô nên dòng
+   phía sau lộ ra một vệt dưới tiêu đề. Dùng inset shadow và nâng z-index. */
 .dtable thead th {
-  position: sticky; top: 0; background: var(--surface);
+  position: sticky; top: 0; z-index: 1; background: var(--surface);
   color: var(--ink-2); font-size: 11px; font-weight: 650;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 0; box-shadow: inset 0 -1px 0 var(--hairline);
 }
 .dtable thead th button { font-size: 11px; font-weight: 650; color: inherit; }
 .dtable thead th button:hover { color: var(--brand); }
@@ -347,16 +385,29 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dledger li.is-total { border-bottom: 0; border-top: 2px solid var(--ink); font-weight: 700; padding-top: 11px; }
 
 .dsearch input {
-  min-height: 32px; padding: 4px 10px; min-width: 170px;
+  min-height: 32px; padding: 4px 10px; width: 170px; min-width: 0; max-width: 100%;
   border: 1px solid #c6d2e0; border-radius: var(--r-control); font-size: 12px;
 }
-.dlist-tools { display: flex; align-items: center; gap: var(--s2); }
+/* Ô tìm kiếm cộng nhóm chọn rộng hơn thẻ danh sách ở 1024px (317px), nên phải
+   cho xuống dòng và cho ô tìm kiếm co lại. */
+.dlist-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.dlist-tools .dsearch { flex: 1 1 130px; min-width: 0; }
+.dlist-tools .dsearch input { width: 100%; }
 
 /* ──────────────────── Chi tiết địa bàn: danh sách + bản đồ ──────────────── */
-.dsplit { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s4); align-items: start; }
+/* Bản đồ là hình đứng nên cột của nó hẹp hơn cột danh sách, không thì thẻ thừa
+   ra một mảng trắng hai bên. Danh sách được phần rộng hơn cũng đúng: tên phường,
+   xã và số tiền nằm chung một hàng. */
+.dsplit { display: grid; grid-template-columns: 7fr 5fr; gap: var(--s4); align-items: start; }
 .dsplit-list { position: sticky; top: 68px; }
 .dsplit-list .dcard-body { max-height: 70vh; overflow-y: auto; }
 .dsplit-main { display: grid; gap: var(--s4); min-width: 0; }
+/* Dải KPI của tab chi tiết nằm trong cột hẹp của bố cục danh sách + bản đồ:
+   bốn ô ngang chỉ còn khoảng 150px, hẹp hơn chính con số nó phải in. Luôn 2×2. */
+.dsplit-main .dkpis, .dsplit-main .dkpis.is-compare { grid-template-columns: 1fr 1fr; }
+.dsplit-main .dkpis > div { border-top: 1px solid var(--hairline); }
+.dsplit-main .dkpis > div:nth-child(-n + 2) { border-top: 0; }
+.dsplit-main .dkpis > div:nth-child(odd) { border-left: 0; }
 
 .dlist { display: grid; }
 .dlist button {
@@ -371,10 +422,39 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dlist-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 .dlist-amount { color: var(--ink-2); font-size: 11.5px; white-space: nowrap; }
 
-.dmap { position: relative; }
-.dmap svg { width: 100%; height: auto; }
+/* Chốt bản đồ theo CHIỀU CAO rồi suy ra chiều rộng, không để chiều rộng thẻ
+   quyết định: ranh giới Hà Nội cao hơn rộng nên `height: auto` cho ra bản đồ
+   cao bằng cả thẻ và người dùng phải cuộn mới thấy hết. */
+/* Kích thước tính theo CHIỀU RỘNG rồi để `aspect-ratio` suy ra chiều cao. Nếu
+   chốt chiều cao thì ở cột hẹp `max-width` sẽ cắt ngang tỉ lệ và bản đồ bị đóng
+   khung thừa lề trên dưới. Cận `56vh` giữ cho bản đồ luôn nằm trong một màn. */
+.dmap-card { --map-w: min(100%, 560px, 56vh); }
+.dmap {
+  position: relative; margin-inline: auto;
+  width: var(--map-w); aspect-ratio: 5 / 6;
+}
+/* Chú giải và nguồn bám đúng mép bản đồ, không bám mép thẻ: bản đồ dạng đứng
+   nên nó hẹp hơn thẻ ở màn hình rộng. */
+.dmap-legend, .dmap-credit { max-width: var(--map-w); margin-inline: auto; }
+.dmap svg { display: block; width: 100%; height: 100%; }
 .dmap svg path { cursor: pointer; }
-.dmap svg path.is-selected { stroke: var(--ink); stroke-width: 1.2; }
+/* Không phóng bản đồ khi chọn nên viền phải đủ đậm để tìm ra ô đang chọn giữa
+   126 ô. `paint-order` giữ viền nằm trọn ngoài hình, không ăn vào màu. */
+.dmap svg path.is-selected { stroke: var(--ink); stroke-width: 2.4; paint-order: stroke fill; }
+.dmap-zoom {
+  position: absolute; right: 8px; top: 8px; z-index: 10;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+}
+.dmap-zoom button {
+  min-height: 30px; min-width: 30px; padding: 0 8px;
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-control);
+  color: var(--ink); font-size: 15px; font-weight: 650; line-height: 1;
+  box-shadow: 0 1px 2px #19334e1a;
+}
+.dmap-zoom button:hover:not(:disabled) { border-color: var(--blue-250); color: var(--brand); }
+.dmap-zoom button:disabled { opacity: 0.45; cursor: not-allowed; }
+.dmap-zoom-reset { font-size: 11px !important; font-weight: 650; white-space: nowrap; }
+
 .dmap-tip {
   position: absolute; z-index: 20; pointer-events: none; opacity: 0;
   padding: 6px 10px; border-radius: var(--r-chip);
@@ -455,12 +535,57 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dnote.is-warn { background: var(--note-surface); border: 1px solid var(--note-line); color: var(--note-ink); }
 
 /* ───────────────────────────── Responsive ───────────────────────────────── */
+
+/* Bốn ngưỡng, mỗi ngưỡng giải một việc:
+     1279 — cặp 8+4 nới thành 7+5, vẫn đứng cạnh nhau (nửa màn hình / iframe);
+     1179 — dải KPI xuống 2×2 trước khi mỗi ô hẹp hơn con số nó phải chứa;
+     1023 — nội dung trong thẻ chuyển sang bố cục hẹp (nhãn xuống dòng, bản đồ
+            rời khỏi bố cục hai cột);
+      767 — chrome mobile;
+      699 — hết chỗ cho hai cột, xếp chồng toàn bộ. */
+
+/* Trước đây mọi thẻ 8 và 4 cột đều bị ép về 12 ở đây: ở 960px điều đó cho thẻ
+   rộng 912px chứa danh sách năm dòng — thừa chiều ngang mà trang dài gấp đôi.
+   Giữ nguyên cặp, chỉ cân lại tỷ lệ để cột hẹp còn đủ chỗ cho nhãn. */
 @media (max-width: 1279px) {
-  .dg-cell { grid-column: span 12; }
-  .dg-cell[style*="--span: 6"] { grid-column: span 6; }
+  .dg-cell[style*="--span: 8"] { grid-column: span 7; }
+  .dg-cell[style*="--span: 4"] { grid-column: span 5; }
+  .dsplit { grid-template-columns: 6fr 6fr; }
+}
+
+@media (max-width: 1179px) {
+  .dkpis, .dkpis.is-compare { grid-template-columns: 1fr 1fr; }
+  .dkpis > div { border-top: 1px solid var(--hairline); }
+  .dkpis > div:nth-child(-n + 2) { border-top: 0; }
+  .dkpis > div:nth-child(odd) { border-left: 0; }
+  .dkpis > div { padding: 11px 15px; }
+}
+
+@media (max-width: 1023px) {
+  .dmap-card { --map-w: min(100%, 420px, 46vh); }
+  /* Bảng nhiều cột không co thêm được: cả hàng chứa nó xuống một cột thay vì
+     nằm trong thẻ 5/12 rồi phải cuộn ngang. */
+  .dg-cell.is-wide { grid-column: span 12; }
   .dsplit { grid-template-columns: 1fr; }
   .dsplit-list { position: static; }
   .dsplit-list .dcard-body { max-height: 340px; }
+  /* Thẻ chỉ còn khoảng 300–400px: tên và số không đứng chung một hàng được nữa,
+     và đặt chúng cách nhau nửa thẻ thì mắt không nối được cặp giá trị. */
+  .dbar-label { display: grid; gap: 1px; }
+  .dcard-head { padding: 13px 13px 7px; }
+  .dcard-body { padding: 0 13px 12px; }
+  /* Hạ trần chiều cao biểu đồ, không nâng biểu đồ nào vốn đã thấp hơn. */
+  .dchart { min-height: min(var(--chart-h, 260px), 210px); }
+  /* Bản đồ vuông theo viewBox: chiếm trọn bề ngang khi xếp chồng thì nó cao
+     ngang cả màn hình và đẩy chỉ số của địa bàn xuống quá hai lần cuộn. Giới hạn
+     bề ngang giữ khung vuông thay vì để `meet` bỏ lề hai bên. */
+  /* Xếp chồng thì bản đồ chen giữa danh sách và chỉ số của địa bàn đang chọn,
+     đẩy chỉ số xuống quá một màn hình. Cho chỉ số lên ngay dưới danh sách; dải
+     KPI không có điểm dừng bàn phím nên thứ tự tab không đổi. */
+  .dsplit-main > .dnote { order: 1; }
+  .dsplit-main > .dkpis, .dsplit-main > .dstate { order: 2; }
+  .dsplit-main > .dmap-card { order: 3; }
+  .dsplit-main > .dstack { order: 4; }
 }
 
 @media (max-width: 767px) {
@@ -470,19 +595,41 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dshell { padding: 0 10px 32px; }
   .dtabs { gap: var(--s4); }
   .dtabs button { font-size: 12.5px; min-height: 48px; }
+  /* Sáu bộ lọc trên lưới cố định: hai cột ở điện thoại, ba cột khi còn đủ rộng
+     để bớt một hàng chiếm chỗ phía trên nội dung. */
   .dfilters { display: grid; grid-template-columns: 1fr 1fr; padding: 12px; }
   .dfield-wide { grid-column: 1 / -1; }
   .dfilters select { width: 100%; }
-  .dkpis, .dkpis.is-compare { grid-template-columns: 1fr 1fr; }
-  .dkpis > div { border-top: 1px solid var(--hairline); }
-  .dkpis > div:nth-child(-n + 2) { border-top: 0; }
-  .dkpis > div:nth-child(odd) { border-left: 0; }
+  /* Khổ hẹp: mặc định chỉ hiện một dòng phạm vi, sáu ô điều khiển ẩn cho tới
+     khi bấm "Đổi bộ lọc". Lưới điều khiển cao 326px trong khung iframe cao
+     1100px, đẩy toàn bộ KPI và biểu đồ xuống dưới nếp gấp. */
+  /* `nowrap` ở cấp ngoài: chữ phạm vi tự xuống dòng bên trong khối của nó, còn
+     nút luôn nằm bên phải dòng đầu thay vì rơi xuống một dòng riêng. */
+  .dfilters-summary {
+    display: flex; flex-wrap: nowrap; align-items: flex-start; justify-content: space-between;
+    gap: var(--s3); grid-column: 1 / -1;
+  }
+  .dfilters-summary p {
+    flex: 1 1 auto; min-width: 0;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
+  }
+  .dfilters-summary b { font-size: 12.5px; font-weight: 650; }
+  /* Dấu chấm giữa các mục là ký tự trang trí, không đưa vào cây trợ năng. */
+  .dfilters-summary b + b::before { content: "·"; color: var(--ink-3); margin-right: 8px; font-weight: 400; }
+  .dfilters-eyebrow { color: var(--ink-2); font-size: 11px; font-weight: 650; }
+  .dfilters-toggle { flex: none; min-height: 36px; }
+  .dfilters[data-open="false"] > label,
+  .dfilters[data-open="false"] > .dfield { display: none; }
+
+  /* Quy tắc touch target 44px bên dưới chỉ chạm tới nút trong `.dseg` nên nhóm
+     chọn cao 50px trong khi select vẫn 38px: hai cột lệch nhau, nhãn không
+     thẳng hàng. Ép mọi điều khiển của thanh lọc về đúng 44px. */
+  .dfilters select, .dfilters .dseg { min-height: 44px; }
+  .dfilters .dseg { width: 100%; }
+  .dfilters .dseg button { flex: 1 1 0; min-height: 38px; padding: 3px 6px; }
   .dkpis strong { font-size: 19px; }
-  .dg-cell, .dg-cell[style*="--span: 6"] { grid-column: span 12; }
-  .dstack-row { grid-template-columns: 1fr; }
   .dbar-row { grid-template-columns: 20px minmax(0, 1fr); }
   .dbar-row > .dchange { grid-column: 2; }
-  .dbar-label { display: grid; gap: 1px; }
   .dcontrib-row { grid-template-columns: 1fr auto; }
   .dcontrib-track { grid-row: 2; grid-column: 1 / -1; }
   .ddrawer { width: 100vw; height: 100dvh; padding: var(--s4); }
@@ -495,9 +642,27 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dbuilder-arrow { display: none; }
   .dpicker { flex-wrap: wrap; }
   /* Touch target tối thiểu 44px trên mobile. */
-  .dtabs button, .dsubnav button, .dseg button, .dbtn, .dlist button, .dbar-row {
-    min-height: 44px;
-  }
+  .dtabs button, .dsubnav button, .dbtn, .dlist button, .dbar-row { min-height: 44px; }
+  /* `.dseg` ngoài thanh lọc: cả nhóm cao 44px, nút bên trong 38px cộng viền
+     đệm 3px mỗi bên vẫn cho vùng chạm 44px. */
+  .dseg { min-height: 44px; }
+  .dseg button { min-height: 38px; }
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+  .dfilters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Dưới 700px thì 5/12 cột chỉ còn khoảng 270px — hẹp hơn cả nhãn ngắn nhất.
+   Từ đây mới xếp chồng toàn bộ. */
+@media (max-width: 699px) {
+  .dg-cell,
+  .dg-cell[style*="--span: 8"],
+  .dg-cell[style*="--span: 7"],
+  .dg-cell[style*="--span: 6"],
+  .dg-cell[style*="--span: 5"],
+  .dg-cell[style*="--span: 4"] { grid-column: span 12; }
+  .dstack-row { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

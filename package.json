@@ -1,0 +1,13 @@
+{
+  "name": "nsnn-workspace",
+  "private": true,
+  "description": "Vỏ tiện dụng: mọi lệnh đều uỷ quyền xuống prototype-nsnn/, nơi chứa mã nguồn thật.",
+  "scripts": {
+    "dev": "npm --prefix prototype-nsnn run dev",
+    "build": "npm --prefix prototype-nsnn run build",
+    "preview": "npm --prefix prototype-nsnn run preview",
+    "typecheck": "npm --prefix prototype-nsnn run typecheck",
+    "acceptance": "npm --prefix prototype-nsnn run acceptance",
+    "postinstall": "npm --prefix prototype-nsnn install"
+  }
+}

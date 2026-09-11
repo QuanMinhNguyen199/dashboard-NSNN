@@ -118,7 +118,7 @@ function OverviewBody({
               id: "sources",
               span: 4,
               render: () => (
-                <Card title="Cơ cấu nguồn thu" subtitle="Bấm một nguồn để xem nhanh">
+                <Card title="Cơ cấu nguồn thu" subtitle="Tỷ trọng trên tổng thu · chọn để xem nhanh">
                   <Bars
                     rows={data.sources}
                     total={data.sources.reduce((sum, row) => sum + row.amount, 0)}
@@ -138,7 +138,7 @@ function OverviewBody({
               render: () => (
                 <Card
                   title="Top khoản thu nội địa"
-                  subtitle="Xếp trong đúng 21 khoản thu nội địa"
+                  subtitle="Năm khoản lớn nhất trong 21 khoản nội địa"
                   actions={
                     <button
                       type="button"
@@ -193,7 +193,7 @@ function OverviewBody({
               render: () => (
                 <Card
                   title="Tăng trưởng địa bàn"
-                  subtitle="Loại các mẫu so sánh không hợp lệ"
+                  subtitle="Bỏ qua địa bàn chưa đủ số liệu kỳ trước"
                   actions={
                     <Segmented
                       label="Chiều tăng trưởng"
@@ -238,7 +238,7 @@ function OverviewBody({
               render: () => (
                 <Card
                   title="Biến động so cùng kỳ"
-                  subtitle="Bấm một mục để so sánh chi tiết ở tab So sánh nâng cao"
+                  subtitle="Đóng góp của từng nguồn vào mức chênh · chọn để so sánh"
                 >
                   <WaterfallChart
                     data={data.waterfall}

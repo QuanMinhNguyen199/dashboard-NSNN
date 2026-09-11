@@ -16,3 +16,6 @@ Thumbs.db
 
 # Cache tối ưu phụ thuộc của Vite
 .vite/
+
+# Lệnh ở gốc chỉ uỷ quyền xuống prototype-nsnn/, không có phụ thuộc riêng
+/package-lock.json

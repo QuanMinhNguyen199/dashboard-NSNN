@@ -1,4 +1,5 @@
-import { INDICATORS, YEARS } from "../dashboard/catalog";
+import { useState } from "react";
+import { ALL_PERIODS, INDICATOR_BY_SLUG, INDICATORS, YEARS, latestMonth } from "../dashboard/catalog";
 import { periodCount } from "../dashboard/selectors";
 import { useDashboardState } from "../state/DashboardState";
 import type { AccumulationMode, PeriodType } from "../dashboard/types";
@@ -12,11 +13,46 @@ import { Segmented } from "./primitives";
  */
 export function FilterBar() {
   const { filters, setFilters } = useDashboardState();
-  const periods = Array.from({ length: periodCount(filters) }, (_, i) => i + 1);
+  const count = periodCount(filters);
+  const periods = Array.from({ length: count }, (_, i) => i + 1);
   const periodLabel = filters.periodType === "MONTH" ? "Tháng" : "Quý";
+  const allPeriods = filters.period === ALL_PERIODS;
+  const [open, setOpen] = useState(false);
+  // Năm đã đủ mười hai tháng thì gọi đúng tên là "Cả năm"; năm đang chạy thì
+  // nói rõ mới có bao nhiêu tháng, không gọi là cả năm cho một phần năm.
+  const months = latestMonth(filters.year);
+  const allLabel = months === 12 ? "Cả năm" : `Từ đầu năm (${months} tháng)`;
+
+  // Dòng tóm tắt chỉ hiện ở khổ hẹp. Sáu bộ lọc xếp thành lưới chiếm 326px —
+  // gần một phần ba khung iframe 1100px — nên đẩy hết số liệu xuống dưới nếp
+  // gấp. Thu gọn lại vẫn nêu đủ phạm vi bằng chữ, đúng Scope Bar Rule.
+  const scope = [
+    String(filters.year),
+    allPeriods ? allLabel : `${periodLabel} ${filters.period}`,
+    allPeriods ? null : filters.accumulation === "YTD" ? "Lũy kế" : "Trong kỳ",
+    filters.budgetLevel === "NSNN" ? "Tổng NSNN" : filters.budgetLevel === "NSTW" ? "NSTW" : "NSĐP",
+    INDICATOR_BY_SLUG[filters.indicator]?.name ?? filters.indicator,
+  ].filter(Boolean);
 
   return (
-    <section className="dfilters" aria-label="Bộ lọc chung">
+    <section className="dfilters" data-open={open} aria-label="Bộ lọc chung">
+      <div className="dfilters-summary">
+        <p>
+          <span className="dfilters-eyebrow">Đang xem</span>
+          {scope.map((part) => (
+            <b key={part as string}>{part}</b>
+          ))}
+        </p>
+        <button
+          type="button"
+          className="dbtn dfilters-toggle"
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? "Xong" : "Chọn lại"}
+        </button>
+      </div>
+
       <label>
         <span>Năm</span>
         <select
@@ -50,6 +86,7 @@ export function FilterBar() {
           value={filters.period}
           onChange={(event) => setFilters({ period: Number(event.target.value) })}
         >
+          <option value={ALL_PERIODS}>{allLabel}</option>
           {periods.map((period) => (
             <option key={period} value={period}>
               {periodLabel} {period}
@@ -62,12 +99,15 @@ export function FilterBar() {
         <span>Cách tính</span>
         <Segmented
           label="Cách tính"
-          value={filters.accumulation}
+          value={allPeriods ? "YTD" : filters.accumulation}
           options={[
             { value: "PERIOD" as AccumulationMode, label: "Trong kỳ" },
             { value: "YTD" as AccumulationMode, label: "Lũy kế" },
           ]}
           onChange={(accumulation) => setFilters({ accumulation })}
+          // Chọn tất cả các kỳ thì số đã là lũy kế toàn bộ, "trong kỳ" vô nghĩa.
+          disabled={allPeriods}
+          hint={`${allLabel} luôn là số cộng dồn từ tháng 1, nên không chọn được cách tính.`}
         />
       </div>
 
