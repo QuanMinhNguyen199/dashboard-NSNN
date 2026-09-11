@@ -137,20 +137,23 @@ table { border-collapse: collapse; width: 100%; }
   color: #fff; font-size: 12px; font-weight: 650;
 }
 .dframe-exit:hover { background: #ffffff26; }
-/* Nền kẻ ô để thấy rõ mép khung so với vùng trống xung quanh. */
+/* Nền phải TỐI hơn hẳn giao diện bên trong. Trước đây dùng `surface-sunken` gần
+   trắng nên mép khung lẫn vào nền và không thấy được đâu là rìa thật của iframe —
+   đúng thứ cần nhìn khi đang kiểm bố cục khổ hẹp. Kẻ ô nhạt để thấy được kích
+   thước tương đối. */
 .dframe-stage {
   flex: 1 1 auto; min-height: 0; display: flex; justify-content: center;
   padding: var(--s4) var(--s4) 0; overflow: auto;
   background:
-    linear-gradient(var(--divider) 1px, transparent 1px) 0 0 / 100% 24px,
-    linear-gradient(90deg, var(--divider) 1px, transparent 1px) 0 0 / 24px 100%,
-    var(--surface-sunken);
+    linear-gradient(#ffffff12 1px, transparent 1px) 0 0 / 100% 24px,
+    linear-gradient(90deg, #ffffff12 1px, transparent 1px) 0 0 / 24px 100%,
+    #3aadc9;
 }
 .dframe-window {
   flex: none; height: 100%; max-width: 100%;
-  background: var(--canvas); border: 1px solid var(--hairline);
+  background: var(--canvas); border: 0;
   border-radius: var(--r-surface) var(--r-surface) 0 0;
-  box-shadow: 0 6px 24px #19334e1f;
+  box-shadow: 0 0 0 1px #00000040, 0 10px 34px #0000004d;
 }
 
 /* ──────────────────────────────── Shell ─────────────────────────────────── */
