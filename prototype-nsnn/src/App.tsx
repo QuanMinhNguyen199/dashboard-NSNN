@@ -62,8 +62,7 @@ export function App() {
           <p className="dheader-source">
             {providerKind === "mock" ? "Dữ liệu mô phỏng phục vụ prototype" : `Nguồn dữ liệu: ${providerKind.toUpperCase()}`}
           </p>
-          {/* Mở ở khổ 500px — đúng bề ngang một khung chat cạnh agent. Bộ lọc
-              đang chọn được mang theo vì query hiện tại giữ nguyên. */}
+          {/* Mở ở khổ 500px — đúng bề ngang một khung chat cạnh agent. */}
           <button
             type="button"
             className="dheader-frame"
@@ -72,9 +71,9 @@ export function App() {
               query.set("frame", "500");
               window.location.search = query.toString();
             }}
-            title="Mở dashboard trong một khung nhúng thật để xem bố cục ở khổ hẹp"
+            title="Mở dashboard trong một iframe thật để xem bố cục ở khổ hẹp"
           >
-            Xem thử khổ nhúng
+            Xem thử iframe
           </button>
         </div>
       </header>
