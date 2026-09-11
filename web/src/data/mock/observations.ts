@@ -88,6 +88,30 @@ function locationWeights(year: number, group: string) {
 }
 
 /**
+ * Tổng trọng số của các địa bàn CHƯA có số liệu, dùng để chuẩn hoá lại phần
+ * chia cho các địa bàn đã báo cáo.
+ *
+ * Giá trị chỉ phụ thuộc `(năm, tháng, nhóm)` — không phụ thuộc khoản thu hay
+ * địa bàn đang tính — nhưng trước đây nó được tính lại bên trong `amountOf`,
+ * tức là quét đủ 126 địa bàn trên MỖI lần gọi. Riêng tổng của Tổng quan gọi
+ * `amountOf` 5.292 lần, thành ~667.000 vòng lặp cho đúng một con số. Ghi nhớ lại
+ * biến nó thành một phép tra bảng.
+ */
+const missingWeightCache = new Map<string, number>();
+
+function missingWeightOf(year: number, month: number, group: string, weights: number[]): number {
+  const key = `${year}:${month}:${group}`;
+  const cached = missingWeightCache.get(key);
+  if (cached !== undefined) return cached;
+  let sum = 0;
+  for (let i = 0; i < LOCATIONS.length; i++) {
+    if (!hasObservation(year, month, LOCATIONS[i].id)) sum += weights[i];
+  }
+  missingWeightCache.set(key, sum);
+  return sum;
+}
+
+/**
  * Hai phường/xã cố ý thiếu số liệu năm 2026 để kiểm thử trạng thái `partial`.
  * Đây là quan sát **thiếu**, không phải giá trị 0.
  */
@@ -130,10 +154,7 @@ export function amountOf(
     const { weights, total } = locationWeights(year, group);
     const index = LOCATION_INDEX.get(locationId);
     if (index === undefined) return null;
-    const missingWeight = LOCATIONS.reduce(
-      (sum, l, i) => sum + (hasObservation(year, month, l.id) ? 0 : weights[i]),
-      0,
-    );
+    const missingWeight = missingWeightOf(year, month, group, weights);
     amountTy *= weights[index] / (total - missingWeight);
   }
 

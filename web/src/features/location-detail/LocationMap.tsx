@@ -4,6 +4,7 @@ import { select, type Selection } from "d3-selection";
 import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import "d3-transition";
 import { Card, money } from "@/components/primitives";
+import { useReducedMotion } from "@/components/useReducedMotion";
 
 // Ranh giới Hà Nội sau phép chiếu Mercator cao hơn rộng (tỉ lệ ≈ 5:6). Khung
 // vuông cũ để thừa lề hai bên mà vẫn cao bằng đúng chiều rộng thẻ.
@@ -51,6 +52,11 @@ export function LocationMap({
   }>({});
   const [ready, setReady] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  // Giảm chuyển động: bỏ hẳn phần chuyển tiếp, GIỮ nguyên kết quả. Bản đồ vẫn
+  // đổi màu và vẫn nhảy tới địa bàn đang chọn, chỉ là tới nơi ngay lập tức.
+  // Giảm chuyển động nghĩa là ít chuyển động hơn, không phải mất phản hồi.
+  const reduced = useReducedMotion();
+  const ms = (normal: number) => (reduced ? 0 : normal);
   const [failed, setFailed] = useState(false);
   const [showTable, setShowTable] = useState(false);
 
@@ -147,7 +153,7 @@ export function LocationMap({
       })
       .classed("is-selected", (d) => d.properties.name_slug === selectedSlug)
       .transition()
-      .duration(400)
+      .duration(ms(400))
       .attr("fill", (d) => {
         const row = bySlug.get(d.properties.name_slug);
         return row ? binOf(row.amount) : NO_DATA;
@@ -157,7 +163,7 @@ export function LocationMap({
       ? features?.find((f) => f.properties.name_slug === selectedSlug)
       : null;
     if (!selected || !path) {
-      svg.transition().duration(400).call(zoomBehavior.transform, zoomIdentity);
+      svg.transition().duration(ms(400)).call(zoomBehavior.transform, zoomIdentity);
       return;
     }
     paths.filter((d) => d.properties.name_slug === selectedSlug).raise();
@@ -172,21 +178,21 @@ export function LocationMap({
     const scale = Math.min(3, Math.min(W / width, H / height) / 1.4);
     svg
       .transition()
-      .duration(450)
+      .duration(ms(450))
       .call(
         zoomBehavior.transform,
         zoomIdentity.translate(W / 2, H / 2).scale(scale).translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
       );
-  }, [ready, rows, selectedId, onSelect]);
+  }, [ready, rows, selectedId, onSelect, reduced]);
 
   const scaleBy = (factor: number) => {
     const { svg, zoom: zoomBehavior } = store.current;
-    if (svg && zoomBehavior) svg.transition().duration(250).call(zoomBehavior.scaleBy, factor);
+    if (svg && zoomBehavior) svg.transition().duration(ms(250)).call(zoomBehavior.scaleBy, factor);
   };
   const resetZoom = () => {
     const { svg, zoom: zoomBehavior } = store.current;
     if (svg && zoomBehavior)
-      svg.transition().duration(350).call(zoomBehavior.transform, zoomIdentity);
+      svg.transition().duration(ms(350)).call(zoomBehavior.transform, zoomIdentity);
   };
 
   return (

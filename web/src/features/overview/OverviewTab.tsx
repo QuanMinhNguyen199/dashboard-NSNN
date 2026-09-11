@@ -4,8 +4,20 @@ import { useOverview } from "@/data/hooks";
 import type { AmountRow, OverviewData } from "@/domain/types";
 import type { SourceCode } from "@/domain/catalog";
 import { GridRows } from "@/components/Grid";
-import { TrendChart, TrendTable, WaterfallChart } from "@/components/charts";
-import { Bars, Card, Change, CoverageNote, ResourceView, Segmented, money, pct } from "@/components/primitives";
+import { Kpi, KpiInsight, KpiStrip } from "@/components/Kpi";
+import { DonutChart, TrendChart, TrendTable, WaterfallChart } from "@/components/charts";
+import {
+  Bars,
+  Card,
+  Change,
+  CoverageNote,
+  Money,
+  ResourceView,
+  Segmented,
+  moneyScale,
+  money,
+  pct,
+} from "@/components/primitives";
 
 /**
  * Tổng quan luôn ở phạm vi toàn thành phố, nên không có bộ chọn địa bàn trong
@@ -46,44 +58,41 @@ function OverviewBody({
     .map((entry) => entry.row);
 
   const topItems = [...data.domesticItems].sort((a, b) => b.amount - a.amount).slice(0, 5);
+  // Thu trong kỳ và Lũy kế là cùng một đại lượng trên hai khung thời gian, nằm
+  // cạnh nhau nên phải cùng đơn vị và cùng số lẻ mới so được.
+  const kpiUnit = moneyScale([data.kpiPeriod.amount, data.kpiYtd.amount]);
 
   return (
     <>
       <CoverageNote message={partial} />
 
-      <section className="dkpis" aria-label="Chỉ số chính">
-        <div>
-          <span>Thu trong kỳ</span>
-          <strong>{money(data.kpiPeriod.amount)}</strong>
-          <small>
-            <Change current={data.kpiPeriod.amount} previous={data.kpiPeriod.previous} /> so cùng kỳ
-          </small>
-        </div>
-        <div>
-          <span>Lũy kế từ đầu năm</span>
-          <strong>{money(data.kpiYtd.amount)}</strong>
-          <small>
-            <Change current={data.kpiYtd.amount} previous={data.kpiYtd.previous} /> so cùng kỳ
-          </small>
-        </div>
-        <div>
-          <span>Độ phủ địa bàn</span>
-          <strong>
-            {data.meta.coverage.covered}
-            <em>/{data.meta.coverage.total}</em>
-          </strong>
-          <small>
-            {data.meta.coverage.missing.length
-              ? `Thiếu ${data.meta.coverage.missing.length} địa bàn`
-              : "Đầy đủ báo cáo"}
-          </small>
-        </div>
-        <div className={`dkpi-insight tone-${data.insight.tone}`}>
-          <span>Cần chú ý</span>
-          <strong>{data.insight.title}</strong>
-          <small>{data.insight.detail}</small>
-        </div>
-      </section>
+      <KpiStrip label="Chỉ số chính">
+        <Kpi
+          label="Thu trong kỳ"
+          note={<><Change current={data.kpiPeriod.amount} previous={data.kpiPeriod.previous} label="" /> so cùng kỳ</>}
+        >
+          <Money value={data.kpiPeriod.amount} scale={kpiUnit} />
+        </Kpi>
+        <Kpi
+          label="Lũy kế từ đầu năm"
+          note={<><Change current={data.kpiYtd.amount} previous={data.kpiYtd.previous} label="" /> so cùng kỳ</>}
+        >
+          <Money value={data.kpiYtd.amount} scale={kpiUnit} />
+        </Kpi>
+        <Kpi
+          label="Tiến độ so dự toán"
+          note={
+            data.estimate
+              ? `Dự toán${data.estimate.origin === "mock" ? " mô phỏng" : ""}: ${money(data.estimate.annual)}`
+              : "Chưa có dữ liệu dự toán"
+          }
+        >
+          {data.estimate?.progress == null ? "—" : pct(data.estimate.progress * 100)}
+        </Kpi>
+        <KpiInsight label="Cần chú ý" tone={data.insight.tone} note={data.insight.detail}>
+          {data.insight.title}
+        </KpiInsight>
+      </KpiStrip>
 
       <GridRows
         rows={[
@@ -118,7 +127,11 @@ function OverviewBody({
               id: "sources",
               span: 4,
               render: () => (
-                <Card title="Cơ cấu nguồn thu" subtitle="Tỷ trọng trên tổng thu · chọn để xem nhanh">
+                <Card
+                  title="Cơ cấu nguồn thu"
+                  subtitle="Tỷ trọng trên tổng thu · chọn để xem nhanh"
+                  unit={moneyScale(data.sources.map((row) => row.amount))}
+                >
                   <Bars
                     rows={data.sources}
                     total={data.sources.reduce((sum, row) => sum + row.amount, 0)}
@@ -139,6 +152,7 @@ function OverviewBody({
                 <Card
                   title="Top khoản thu nội địa"
                   subtitle="Năm khoản lớn nhất trong 21 khoản nội địa"
+                  unit={moneyScale(topItems.map((row) => row.amount))}
                   actions={
                     <button
                       type="button"
@@ -166,6 +180,7 @@ function OverviewBody({
                 <Card
                   title="Top địa bàn"
                   subtitle={`${data.meta.coverage.covered}/${data.meta.coverage.total} phường, xã có số liệu`}
+                  unit={moneyScale(ranked.slice(0, 5).map((row) => row.amount))}
                   actions={
                     <Segmented
                       label="Chiều xếp hạng"
@@ -194,6 +209,7 @@ function OverviewBody({
                 <Card
                   title="Tăng trưởng địa bàn"
                   subtitle="Bỏ qua địa bàn chưa đủ số liệu kỳ trước"
+                  unit={moneyScale(growth.slice(0, 5).map((row) => row.amount))}
                   actions={
                     <Segmented
                       label="Chiều tăng trưởng"
@@ -221,12 +237,11 @@ function OverviewBody({
               // khỏi lưới và widget bên cạnh nở ra đủ 12 cột.
               hidden: data.budgetLevels.length === 0,
               render: () => (
-                <Card title="Cơ cấu NSTW và NSĐP" subtitle="Tỷ trọng trên tổng NSNN">
-                  <Bars
-                    rows={data.budgetLevels}
-                    total={data.budgetLevels.reduce((sum, row) => sum + row.amount, 0)}
-                    scale="share"
-                  />
+                <Card
+                  title="Cơ cấu NSTW và NSĐP"
+                  subtitle="Tỷ trọng trên tổng NSNN"
+                >
+                  <DonutChart rows={data.budgetLevels} centerLabel="NSNN" />
                 </Card>
               ),
             },

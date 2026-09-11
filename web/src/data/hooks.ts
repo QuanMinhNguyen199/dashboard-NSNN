@@ -25,6 +25,7 @@ function useAsyncResource<T>(
   load: (signal: AbortSignal) => Promise<DashboardResponse<T>>,
   enabled: boolean,
   notApplicableReason?: string,
+  keepPreviousData = false,
 ): { resource: ResourceState<T>; retry: () => void } {
   const [resource, setResource] = useState<ResourceState<T>>(
     enabled ? { status: "loading" } : { status: "not-applicable", reason: notApplicableReason ?? "" },
@@ -41,7 +42,14 @@ function useAsyncResource<T>(
     }
     const run = ++latest.current;
     const controller = new AbortController();
-    setResource({ status: "loading" });
+    // Chuyển nhanh giữa các thực thể cùng loại (đặc biệt là phường/xã) không
+    // được làm cả vùng nội dung co về một placeholder thấp rồi nở lại. Giữ dữ
+    // liệu trước đó trong lúc request mới chạy để chiều cao trang ổn định.
+    setResource((current) =>
+      keepPreviousData && (current.status === "ready" || current.status === "partial")
+        ? current
+        : { status: "loading" },
+    );
 
     loadRef.current(controller.signal).then(
       (response) => {
@@ -106,11 +114,16 @@ export function useLocationDetail(filters: DashboardFilters, locationId: string 
     `location|${locationId}|${filterKey(filters)}`,
     (signal) => provider.getLocationDetail(filters, locationId!, signal),
     !!locationId,
-    "Chưa chọn phường, xã.",
+    "Chọn một phường, xã trong danh sách để xem chi tiết.",
+    true,
   );
 }
 
-export function useAdvancedComparison(filters: AdvancedComparisonFilters, ready: boolean) {
+export function useAdvancedComparison(
+  filters: AdvancedComparisonFilters,
+  ready: boolean,
+  waiting: string,
+) {
   const key = [
     "compare",
     filters.mode,
@@ -126,6 +139,6 @@ export function useAdvancedComparison(filters: AdvancedComparisonFilters, ready:
     key,
     (signal) => provider.getAdvancedComparison(filters, signal),
     ready,
-    "Chưa chọn đủ hai vế để so sánh.",
+    waiting,
   );
 }

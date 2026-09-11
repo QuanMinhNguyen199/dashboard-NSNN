@@ -56,6 +56,19 @@ export const SOURCES: SourceDef[] = [
   },
 ];
 
+/**
+ * Hai nguồn thu chỉ ghép được khi cùng phạm vi phân bổ: nguồn phân bổ về địa bàn
+ * và nguồn do trung ương quản lý không có mẫu số chung nên đặt cạnh nhau là sai.
+ * Luật này chi phối cả giá trị mặc định, ô chọn, lẫn điều kiện gọi dữ liệu — để
+ * ba chỗ đó lệch nhau thì người dùng rơi vào cặp mà chính giao diện cấm.
+ */
+export const sameAllocationScope = (a: SourceCode, b: SourceCode) =>
+  SOURCE_BY_CODE[a].cityOnly === SOURCE_BY_CODE[b].cityOnly;
+
+/** Nguồn ghép được với `a` và khác `a`; dùng khi vế A đổi làm vế B thành vô lệ. */
+export const firstComparableTo = (a: SourceCode): SourceCode =>
+  (SOURCES.find((s) => s.code !== a && sameAllocationScope(a, s.code)) ?? SOURCES[0]).code;
+
 export const SOURCE_BY_CODE = Object.fromEntries(SOURCES.map((s) => [s.code, s])) as Record<
   SourceCode,
   SourceDef
@@ -69,7 +82,7 @@ export interface ItemDef {
   name: string;
   source: SourceCode;
   /** Nhóm phân tích của khoản thu nội địa. */
-  group?: "sxkd" | "nha-dat" | "phi-le-phi-khac";
+  group?: DomesticGroupId;
   /** Dòng hoàn thuế/khấu trừ: trừ ra khi tính thu ròng. */
   deduction?: boolean;
 }
@@ -100,15 +113,21 @@ export const DOMESTIC_ITEMS: ItemDef[] = [
 ];
 
 /** Nhóm phân tích của khoản thu nội địa (đặc tả v2 §3). */
+/**
+ * Ba nhóm lớn của thu nội địa — tầng giữa mà 21 khoản được gộp vào.
+ *
+ * Danh sách thành viên **không** lặp lại ở đây: trường `group` trên từng khoản
+ * trong `DOMESTIC_ITEMS` là nguồn duy nhất. Trước đây nhóm còn mang thêm mảng
+ * `codes` liệt kê lại chính các khoản đó — hai danh sách song song luôn có ngày
+ * lệch nhau, và khi lệch thì không có cách nào biết bên nào đúng.
+ */
 export const DOMESTIC_GROUPS = [
-  { id: "sxkd", name: "Sản xuất kinh doanh", codes: ["1.1", "1.2", "2", "3"] },
-  { id: "nha-dat", name: "Nhà, đất", codes: ["8", "9", "10", "11", "12"] },
-  {
-    id: "phi-le-phi-khac",
-    name: "Phí, lệ phí và khoản khác",
-    codes: ["4", "5", "6", "7", "13", "14", "15", "16", "17", "18", "19", "20"],
-  },
+  { id: "sxkd", name: "Khối doanh nghiệp", note: "Doanh nghiệp nhà nước, FDI và ngoài quốc doanh" },
+  { id: "nha-dat", name: "Khối nhà đất", note: "Tiền sử dụng đất, thuê đất và thuế liên quan" },
+  { id: "phi-le-phi-khac", name: "Khối phí, lệ phí và khoản khác", note: "Thuế TNCN, phí, lệ phí và các khoản còn lại" },
 ] as const;
+
+export type DomesticGroupId = (typeof DOMESTIC_GROUPS)[number]["id"];
 
 /** Bảy dòng gộp và ba dòng hoàn để tính thu XNK ròng. */
 export const IMPORT_EXPORT_ITEMS: ItemDef[] = [
@@ -192,4 +211,3 @@ export const YEARS = [2026, 2025, 2024] as const;
 export const ALL_PERIODS = 0;
 
 export const latestMonth = (year: number) => (year === 2026 ? 8 : 12);
-export const latestQuarter = (year: number) => Math.floor(latestMonth(year) / 3);

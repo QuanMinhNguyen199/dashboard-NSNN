@@ -35,7 +35,12 @@ export function FilterBar() {
   ].filter(Boolean);
 
   return (
-    <section className="dfilters" data-open={open} aria-label="Bộ lọc chung">
+    <section
+      className="dfilters"
+      data-open={open}
+      data-embedded={window.self !== window.top}
+      aria-label="Bộ lọc chung"
+    >
       <div className="dfilters-summary">
         <p>
           <span className="dfilters-eyebrow">Đang xem</span>
