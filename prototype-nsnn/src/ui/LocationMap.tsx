@@ -5,8 +5,10 @@ import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import "d3-transition";
 import { Card, money } from "./primitives";
 
-const W = 800;
-const H = 800;
+// Ranh giới Hà Nội sau phép chiếu Mercator cao hơn rộng (tỉ lệ ≈ 5:6). Khung
+// vuông cũ để thừa lề hai bên mà vẫn cao bằng đúng chiều rộng thẻ.
+const W = 500;
+const H = 600;
 /** Thang đơn sắc lam: nhạt là thấp, đậm là cao. */
 const BINS = ["#86b6ef", "#5598e7", "#2a78d6", "#1c5cab", "#0d366b"];
 const NO_DATA = "#e5eaf1";
@@ -48,6 +50,7 @@ export function LocationMap({
     features?: Feature[];
   }>({});
   const [ready, setReady] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [failed, setFailed] = useState(false);
   const [showTable, setShowTable] = useState(false);
 
@@ -73,11 +76,22 @@ export function LocationMap({
         const path = geoPath(geoMercator().fitSize([W, H], geo));
         const zoomBehavior = zoom<SVGSVGElement, unknown>()
           .scaleExtent([1, 12])
-          // Kéo để pan; chỉ Ctrl+wheel mới phóng to, wheel thường vẫn cuộn trang.
-          .filter((event: any) =>
-            event.type !== "wheel" ? !event.ctrlKey && !event.button : event.ctrlKey,
-          )
-          .on("zoom", (event) => g.attr("transform", event.transform.toString()));
+          // Kéo để di chuyển. Lăn chuột trần là phóng to/thu nhỏ — không bắt
+          // người dùng đoán ra tổ hợp phím.
+          //
+          // Một ngoại lệ giữ cho trang không bị khoá: khi bản đồ đã ở mức toàn
+          // thành phố mà vẫn lăn xuống (tức đòi thu nhỏ thêm) thì không còn gì
+          // để thu, nhường sự kiện lại cho trang cuộn. Nhờ đó cuộn dọc qua bản
+          // đồ vẫn trôi bình thường thay vì mắc kẹt tại đó.
+          .filter(function (this: SVGSVGElement, event: any) {
+            if (event.type !== "wheel") return !event.ctrlKey && !event.button;
+            const atCityLevel = ((this as any).__zoom?.k ?? 1) <= 1.001;
+            return !(atCityLevel && event.deltaY > 0);
+          })
+          .on("zoom", (event) => {
+            g.attr("transform", event.transform.toString());
+            setZoomLevel(event.transform.k);
+          });
         svg.call(zoomBehavior);
 
         const paths = g
@@ -106,7 +120,7 @@ export function LocationMap({
 
   useEffect(() => {
     const { paths, svg, path, zoom: zoomBehavior, features } = store.current;
-    if (!ready || !paths || !svg || !path || !zoomBehavior || !tipRef.current) return;
+    if (!ready || !paths || !svg || !zoomBehavior || !tipRef.current) return;
 
     const bySlug = new Map(rows.map((row) => [row.slug, row]));
     const max = Math.max(0, ...rows.map((row) => row.amount));
@@ -142,7 +156,7 @@ export function LocationMap({
     const selected = selectedSlug
       ? features?.find((f) => f.properties.name_slug === selectedSlug)
       : null;
-    if (!selected) {
+    if (!selected || !path) {
       svg.transition().duration(400).call(zoomBehavior.transform, zoomIdentity);
       return;
     }
@@ -151,7 +165,11 @@ export function LocationMap({
     const width = x1 - x0;
     const height = y1 - y0;
     if (!width || !height) return;
-    const scale = Math.min(12, Math.min(W / width, H / height) / 1.4);
+    // Phóng có trần: đưa mắt tới địa bàn đang chọn nhưng vẫn giữ các phường, xã
+    // quanh nó trong khung. Lấp đầy khung bằng một ô là mất bối cảnh so sánh —
+    // mà so sánh mới là lý do tồn tại của bản đồ nhiệt. Nút "Toàn thành phố"
+    // luôn nằm sẵn ở góc để quay về.
+    const scale = Math.min(3, Math.min(W / width, H / height) / 1.4);
     svg
       .transition()
       .duration(450)
@@ -161,10 +179,21 @@ export function LocationMap({
       );
   }, [ready, rows, selectedId, onSelect]);
 
+  const scaleBy = (factor: number) => {
+    const { svg, zoom: zoomBehavior } = store.current;
+    if (svg && zoomBehavior) svg.transition().duration(250).call(zoomBehavior.scaleBy, factor);
+  };
+  const resetZoom = () => {
+    const { svg, zoom: zoomBehavior } = store.current;
+    if (svg && zoomBehavior)
+      svg.transition().duration(350).call(zoomBehavior.transform, zoomIdentity);
+  };
+
   return (
     <Card
+      className="dmap-card"
       title="Bản đồ 126 phường, xã"
-      subtitle="Ranh giới hành chính từ 01/07/2025 · Ctrl kèm lăn chuột để phóng to"
+      subtitle="Ranh giới hành chính từ 01/07/2025 · lăn chuột để phóng to, kéo để di chuyển"
       actions={
         <button
           type="button"
@@ -212,6 +241,24 @@ export function LocationMap({
         <div className="dmap" ref={boxRef} hidden={failed}>
           <svg ref={svgRef} role="img" aria-label="Bản đồ số thu theo phường, xã" />
           <div className="dmap-tip" ref={tipRef} aria-hidden="true" />
+          {/* Lăn chuột trần để cuộn trang, nên phóng to phải có nút thấy được
+              chứ không chỉ trông vào Ctrl kèm lăn chuột — thao tác đó không ai
+              đoán ra, và trên màn cảm ứng thì không có. */}
+          <div className="dmap-zoom">
+            <button type="button" onClick={() => scaleBy(1.6)} aria-label="Phóng to bản đồ">
+              +
+            </button>
+            <button type="button" onClick={() => scaleBy(1 / 1.6)} aria-label="Thu nhỏ bản đồ">
+              −
+            </button>
+            {/* Chỉ hiện khi đang phóng: ở mức ban đầu thì nút này không có
+                việc gì làm, để đó chỉ tổ che mất bản đồ. */}
+            {zoomLevel > 1.01 && (
+              <button type="button" className="dmap-zoom-reset" onClick={resetZoom}>
+                Toàn thành phố
+              </button>
+            )}
+          </div>
         </div>
       )}
 

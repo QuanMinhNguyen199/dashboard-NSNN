@@ -8,6 +8,7 @@ import {
   SOURCE_BY_CODE,
   itemsOfSource,
   latestMonth,
+  ALL_PERIODS,
   type ItemDef,
   type SourceCode,
 } from "./catalog";
@@ -57,7 +58,11 @@ export const share = (part: number | null, whole: number | null): number | null 
   part === null || whole === null || whole === 0 ? null : (part / whole) * 100;
 
 const periodLabel = (f: DashboardFilters) =>
-  `${f.periodType === "MONTH" ? "Tháng" : "Quý"} ${f.period}/${f.year}`;
+  f.period === ALL_PERIODS
+    ? latestMonth(f.year) === 12
+      ? `Cả năm ${f.year}`
+      : `${latestMonth(f.year)} tháng đầu ${f.year}`
+    : `${f.periodType === "MONTH" ? "Tháng" : "Quý"} ${f.period}/${f.year}`;
 
 function coverageOf(filters: DashboardFilters): Coverage {
   const missing =
@@ -170,13 +175,13 @@ export function waterfallOf(
 /* ─────────────────────────────── Tổng quan ─────────────────────────────── */
 
 export function buildOverview(filters: DashboardFilters): OverviewData | null {
-  if (filters.period < 1 || filters.period > periodCount(filters)) return null;
+  if (filters.period !== ALL_PERIODS && (filters.period < 1 || filters.period > periodCount(filters)))
+    return null;
 
   const total = sumOf(filters) ?? 0;
-  const ytdMonths = Array.from(
-    { length: filters.periodType === "MONTH" ? filters.period : filters.period * 3 },
-    (_, i) => i + 1,
-  );
+  // Lũy kế = chính khoảng kỳ hiện tại tính từ tháng 1; để `monthsOf` lo cả
+  // trường hợp "tất cả các kỳ" thay vì dựng lại công thức ở đây.
+  const ytdMonths = monthsOf({ ...filters, accumulation: "YTD" });
 
   const kpiPeriod: AmountRow = {
     id: "period",

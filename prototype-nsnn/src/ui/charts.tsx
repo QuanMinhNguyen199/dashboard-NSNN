@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { CSSProperties } from "react";
 import type { TrendPoint, Waterfall } from "../dashboard/types";
 import { money, pct } from "./primitives";
 
@@ -44,8 +45,8 @@ export function TrendChart({
   const axis = peak >= 2e12 ? { divisor: 1e12, unit: "nghìn tỷ đồng" } : { divisor: 1e9, unit: "tỷ đồng" };
 
   return (
-    <div>
-      <div className="dchart" style={{ height }}>
+    <div className="dchart-wrap">
+      <div className="dchart" style={{ "--chart-h": `${height}px` } as CSSProperties}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={points} margin={{ top: 12, right: 12, bottom: 0, left: 4 }}>
             <CartesianGrid vertical={false} stroke="var(--divider)" />
@@ -124,7 +125,7 @@ export function WaterfallChart({
   const scale = Math.max(...data.steps.map((step) => Math.abs(step.delta)), 1);
 
   return (
-    <div>
+    <div className="dwaterfall">
       <div className="dbridge">
         <div>
           <span>{data.startLabel}</span>

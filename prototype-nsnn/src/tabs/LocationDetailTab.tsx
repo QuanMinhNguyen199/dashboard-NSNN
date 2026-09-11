@@ -6,7 +6,7 @@ import type { LocationDetailData } from "../dashboard/types";
 import { useDashboardState } from "../state/DashboardState";
 import { LocationMap } from "../ui/LocationMap";
 import { TrendChart } from "../ui/charts";
-import { Bars, Card, Change, CoverageNote, ResourceView, money, pct } from "../ui/primitives";
+import { Bars, Card, Change, CoverageNote, ResourceView, Segmented, money, pct } from "../ui/primitives";
 
 const collator = new Intl.Collator("vi");
 const fold = (text: string) =>
@@ -82,13 +82,17 @@ export function LocationDetailTab() {
                 onChange={(event) => setQuery(event.target.value)}
               />
             </label>
-            <button
-              type="button"
-              className="dlink"
-              onClick={() => setOrder((value) => (value === "high" ? "low" : "high"))}
-            >
-              {order === "high" ? "Cao nhất trước" : "Thấp nhất trước"}
-            </button>
+            {/* Nút bật tắt cũ ghi trạng thái ĐANG dùng, nên không rõ bấm vào
+                thì thành gì. Dùng đúng nhóm chọn như thẻ "Top địa bàn". */}
+            <Segmented
+              label="Thứ tự danh sách"
+              value={order}
+              options={[
+                { value: "high" as const, label: "Cao nhất" },
+                { value: "low" as const, label: "Thấp nhất" },
+              ]}
+              onChange={setOrder}
+            />
           </div>
         }
       >
@@ -160,11 +164,13 @@ function LocationBody({ data, partial }: { data: LocationDetailData; partial?: s
       </section>
 
       <div className="dstack">
-        <Card title="Xu hướng theo tháng" subtitle="So với cùng kỳ năm trước">
-          <TrendChart points={data.trend} year={filters.year} height={220} />
-        </Card>
-
-        <div className="dstack-row">
+        {/* Cơ cấu của một địa bàn chỉ còn hai nguồn (XNK và dầu thô do trung ương
+            quản lý, không phân bổ), nên ghép nó với biểu đồ chứ không ghép với
+            danh sách tám khoản — ghép sai làm thẻ ngắn trống gần một phần ba. */}
+        <div className="dstack-row is-chart-pair">
+          <Card title="Xu hướng theo tháng" subtitle="So với cùng kỳ năm trước">
+            <TrendChart points={data.trend} year={filters.year} height={220} />
+          </Card>
           <Card title="Cơ cấu nguồn thu" subtitle="Chỉ các nguồn phân bổ được theo địa bàn">
             <Bars
               rows={data.sources}
@@ -172,10 +178,11 @@ function LocationBody({ data, partial }: { data: LocationDetailData; partial?: s
               scale="share"
             />
           </Card>
-          <Card title="Khoản thu chính" subtitle="Tám khoản lớn nhất trên địa bàn">
-            <Bars rows={data.topItems} />
-          </Card>
         </div>
+
+        <Card title="Khoản thu chính" subtitle="8 khoản lớn nhất trên địa bàn">
+          <Bars rows={data.topItems} />
+        </Card>
 
         <div className="dactions">
           <button

@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  ALL_PERIODS,
   INDICATORS,
   LOCATION_BY_ID,
   SOURCE_BY_CODE,
@@ -68,6 +69,7 @@ const DEFAULT_FILTERS: DashboardFilters = {
 
 /** Kỳ mới nhất thực sự có dữ liệu — không bao giờ mặc định vào kỳ tương lai. */
 function clampPeriod(filters: DashboardFilters): DashboardFilters {
+  if (filters.period === ALL_PERIODS) return filters;
   const max = periodCount(filters);
   return { ...filters, period: Math.min(Math.max(filters.period, 1), Math.max(max, 1)) };
 }
@@ -90,7 +92,10 @@ function readUrl(search: string): DashboardUrlState {
   const filters = clampPeriod({
     year,
     periodType,
-    period: num("period", periodType === "MONTH" ? 8 : 2),
+    // `num` chỉ nhận số dương nên phải đọc riêng: 0 là "tất cả các kỳ", hợp lệ.
+    period: q.get("period") === String(ALL_PERIODS)
+      ? ALL_PERIODS
+      : num("period", periodType === "MONTH" ? 8 : 2),
     accumulation: one("acc", ["PERIOD", "YTD"] as const, DEFAULT_FILTERS.accumulation),
     indicator: one(
       "indicator",

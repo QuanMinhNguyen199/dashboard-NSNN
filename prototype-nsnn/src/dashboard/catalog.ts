@@ -185,5 +185,11 @@ export const LOCATION_BY_SLUG = Object.fromEntries(LOCATIONS.map((l) => [l.slug,
 export const YEARS = [2026, 2025, 2024] as const;
 
 /** Tháng cuối cùng thực sự có dữ liệu. Tháng sau đó là null, không phải 0. */
+/**
+ * Giá trị `period` nghĩa là "tất cả các kỳ đã có số liệu của năm".
+ * Dùng 0 vì mọi kỳ thật đều đánh số từ 1, nên không đụng giá trị hợp lệ nào.
+ */
+export const ALL_PERIODS = 0;
+
 export const latestMonth = (year: number) => (year === 2026 ? 8 : 12);
 export const latestQuarter = (year: number) => Math.floor(latestMonth(year) / 3);

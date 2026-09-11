@@ -81,8 +81,11 @@ export function Change({
   const value = yoy(current, previous);
   if (value === null)
     return (
-      <span className="dchange neutral" title="Kỳ trước không có mẫu số hợp lệ để tính tỷ lệ.">
-        Chưa đủ cơ sở
+      <span
+        className="dchange neutral"
+        title="Cùng kỳ năm trước chưa có số liệu, hoặc quá nhỏ để tỷ lệ phần trăm còn có nghĩa."
+      >
+        Chưa có kỳ trước
       </span>
     );
   const tone = value > 0.05 ? "up" : value < -0.05 ? "down" : "flat";
@@ -100,18 +103,30 @@ export function Segmented<T extends string>({
   value,
   options,
   onChange,
+  disabled = false,
+  hint,
 }: {
   label: string;
   value: T;
   options: readonly { value: T; label: string }[];
   onChange: (value: T) => void;
+  /** Tắt khi lựa chọn không còn nghĩa trong ngữ cảnh hiện tại. */
+  disabled?: boolean;
+  /** Lý do bị tắt — hiện qua title để người dùng biết vì sao. */
+  hint?: string;
 }) {
   return (
-    <div className="dseg" role="group" aria-label={label}>
+    <div
+      className={cx("dseg", disabled && "is-disabled")}
+      role="group"
+      aria-label={label}
+      title={disabled ? hint : undefined}
+    >
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
+          disabled={disabled}
           aria-pressed={value === option.value}
           className={value === option.value ? "is-active" : undefined}
           onClick={() => onChange(option.value)}
@@ -136,7 +151,7 @@ export function Bars({
   total,
   scale = "amount",
   onSelect,
-  emptyText = "Không có dòng nào đủ điều kiện.",
+  emptyText = "Không có mục nào khớp bộ lọc hiện tại.",
 }: {
   rows: AmountRow[];
   total?: number | null;
@@ -168,7 +183,8 @@ export function Bars({
             <span className="dbar-rank">{index + 1}</span>
             <span className="dbar-main">
               <span className="dbar-label">
-                <b>{row.name}</b>
+                {/* Tên dài bị cắt ở thẻ hẹp: giữ nguyên bản đầy đủ trong title. */}
+                <b title={row.name}>{row.name}</b>
                 <span>
                   {money(row.amount)}
                   {row.share != null && ` · ${pct(row.share)}`}
