@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { ALL_PERIODS, INDICATOR_BY_SLUG, INDICATORS, YEARS, latestMonth } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
-import { useDashboardState } from "@/state/DashboardState";
-import type { AccumulationMode, PeriodType } from "@/domain/types";
+import { DEFAULT_FILTERS, useDashboardState } from "@/state/DashboardState";
+import { useHostContext } from "@/host/HostContext";
+import type { AccumulationMode, DashboardFilters, PeriodType } from "@/domain/types";
 import { Segmented } from "@/components/primitives";
 
 /**
@@ -12,53 +13,82 @@ import { Segmented } from "@/components/primitives";
  * tương lai rồi diễn giải dữ liệu thiếu thành 0.
  */
 export function FilterBar() {
-  const { filters, setFilters } = useDashboardState();
+  const { filters, resetFilters, setFilters } = useDashboardState();
+  const { host, embedded, postToHost } = useHostContext();
   const count = periodCount(filters);
   const periods = Array.from({ length: count }, (_, i) => i + 1);
   const periodLabel = filters.periodType === "MONTH" ? "Tháng" : "Quý";
   const allPeriods = filters.period === ALL_PERIODS;
   const [open, setOpen] = useState(false);
+  const compact = embedded || host.source === "mobile";
+  const usesHostFilter = host.source === "mobile" && host.capabilities.openFilterModal;
   // Năm đã đủ mười hai tháng thì gọi đúng tên là "Cả năm"; năm đang chạy thì
   // nói rõ mới có bao nhiêu tháng, không gọi là cả năm cho một phần năm.
   const months = latestMonth(filters.year);
   const allLabel = months === 12 ? "Cả năm" : `Từ đầu năm (${months} tháng)`;
+  const budgetLabel =
+    filters.budgetLevel === "NSNN"
+      ? "Tổng NSNN"
+      : filters.budgetLevel === "NSTW"
+        ? "NSTW"
+        : "NSĐP";
+  const indicatorLabel = INDICATOR_BY_SLUG[filters.indicator]?.name ?? filters.indicator;
+  const mobilePeriodValue = allPeriods
+    ? `Từ đầu năm ${filters.year}`
+    : `${periodLabel} ${filters.period}/${filters.year}`;
+  const mobileCalculation = allPeriods
+    ? `${months} tháng có dữ liệu`
+    : filters.accumulation === "YTD"
+      ? "Lũy kế"
+      : "Trong kỳ";
 
-  // Dòng tóm tắt chỉ hiện ở khổ hẹp. Sáu bộ lọc xếp thành lưới chiếm 326px —
-  // gần một phần ba khung iframe 1100px — nên đẩy hết số liệu xuống dưới nếp
-  // gấp. Thu gọn lại vẫn nêu đủ phạm vi bằng chữ, đúng Scope Bar Rule.
-  const scope = [
-    String(filters.year),
-    allPeriods ? allLabel : `${periodLabel} ${filters.period}`,
-    allPeriods ? null : filters.accumulation === "YTD" ? "Lũy kế" : "Trong kỳ",
-    filters.budgetLevel === "NSNN" ? "Tổng NSNN" : filters.budgetLevel === "NSTW" ? "NSTW" : "NSĐP",
-    INDICATOR_BY_SLUG[filters.indicator]?.name ?? filters.indicator,
-  ].filter(Boolean);
+  const isDefaultFilter = (Object.keys(DEFAULT_FILTERS) as (keyof DashboardFilters)[]).every(
+    (key) => filters[key] === DEFAULT_FILTERS[key],
+  );
 
   return (
     <section
       className="dfilters"
       data-open={open}
-      data-embedded={window.self !== window.top}
+      data-embedded={compact}
+      data-host={host.source}
       aria-label="Bộ lọc chung"
     >
       <div className="dfilters-summary">
-        <p>
-          <span className="dfilters-eyebrow">Đang xem</span>
-          {scope.map((part) => (
-            <b key={part as string}>{part}</b>
-          ))}
-        </p>
+        <div className="dfilters-mobile-copy">
+          <div className="dfilters-mobile-group">
+            <span>Kỳ báo cáo</span>
+            <strong title={mobilePeriodValue}>{mobilePeriodValue}</strong>
+            <small title={mobileCalculation}>{mobileCalculation}</small>
+          </div>
+          <div className="dfilters-mobile-group">
+            <span>Chỉ tiêu</span>
+            <strong title={indicatorLabel}>{indicatorLabel}</strong>
+            <small title={budgetLabel}>{budgetLabel}</small>
+          </div>
+        </div>
         <button
           type="button"
           className="dbtn dfilters-toggle"
-          aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
+          aria-expanded={usesHostFilter ? undefined : open}
+          onClick={() => {
+            if (usesHostFilter) {
+              postToHost("NSNN_OPEN_FILTER", { currentFilters: filters });
+              return;
+            }
+            setOpen((value) => !value);
+          }}
         >
-          {open ? "Xong" : "Chọn lại"}
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            <path d="M2 3.25h12M4.5 8h7M6.5 12.75h3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <span className="dfilters-toggle-label">
+            {open ? "Xong" : "Bộ lọc"}
+          </span>
         </button>
       </div>
 
-      <label>
+      <label className="dfilter-year">
         <span>Năm</span>
         <select
           value={filters.year}
@@ -72,7 +102,7 @@ export function FilterBar() {
         </select>
       </label>
 
-      <div className="dfield">
+      <div className="dfield dfilter-cycle">
         <span>Chu kỳ</span>
         <Segmented
           label="Chu kỳ"
@@ -85,7 +115,7 @@ export function FilterBar() {
         />
       </div>
 
-      <label>
+      <label className="dfilter-period">
         <span>{periodLabel}</span>
         <select
           value={filters.period}
@@ -100,7 +130,7 @@ export function FilterBar() {
         </select>
       </label>
 
-      <div className="dfield">
+      <div className="dfield dfilter-accumulation">
         <span>Cách tính</span>
         <Segmented
           label="Cách tính"
@@ -116,7 +146,7 @@ export function FilterBar() {
         />
       </div>
 
-      <label>
+      <label className="dfilter-budget">
         <span>Cấp ngân sách</span>
         <select
           value={filters.budgetLevel}
@@ -130,7 +160,7 @@ export function FilterBar() {
         </select>
       </label>
 
-      <label className="dfield-wide">
+      <label className="dfilter-indicator">
         <span>Chỉ tiêu</span>
         <select
           value={filters.indicator}
@@ -145,6 +175,20 @@ export function FilterBar() {
           ))}
         </select>
       </label>
+
+      {open && (
+        <div className="dfilters-reset-row">
+          <button
+            type="button"
+            className="dfilters-reset"
+            onClick={resetFilters}
+            disabled={isDefaultFilter}
+            title="Đặt lại về Tháng 8/2026, Trong kỳ, Tổng NSNN và TỔNG SỐ"
+          >
+            Đặt lại bộ lọc
+          </button>
+        </div>
+      )}
     </section>
   );
 }

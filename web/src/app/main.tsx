@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import { DashboardProvider } from "@/state/DashboardState";
 import { FramePreview, frameWidthFromUrl } from "@/devtools/FramePreview";
+import { HostProvider } from "@/host/HostContext";
 import "@/styles/dashboard.css";
 
 // Chế độ xem thử khổ nhúng dựng cây riêng, không bọc `DashboardProvider`:
@@ -12,9 +13,11 @@ const frameWidth = frameWidthFromUrl(window.location.search);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {frameWidth === null ? (
-      <DashboardProvider>
-        <App />
-      </DashboardProvider>
+      <HostProvider>
+        <DashboardProvider>
+          <App />
+        </DashboardProvider>
+      </HostProvider>
     ) : (
       <FramePreview initialWidth={frameWidth} />
     )}

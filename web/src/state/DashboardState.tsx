@@ -62,7 +62,7 @@ export interface DashboardUrlState {
   locationB: string | null;
 }
 
-const DEFAULT_FILTERS: DashboardFilters = {
+export const DEFAULT_FILTERS: DashboardFilters = {
   year: 2026,
   periodType: "MONTH",
   period: 8,
@@ -134,6 +134,13 @@ function readUrl(search: string): DashboardUrlState {
 
 function writeUrl(state: DashboardUrlState): string {
   const q = new URLSearchParams();
+  // `host` và `platform` là ngữ cảnh tích hợp, không phải dashboard state.
+  // Giữ chúng qua mọi lần đồng bộ URL để bản mobile fallback vẫn đúng khi reload.
+  const integration = new URLSearchParams(window.location.search);
+  for (const key of ["host", "platform"] as const) {
+    const value = integration.get(key);
+    if (value) q.set(key, value);
+  }
   q.set("tab", state.tab);
   q.set("year", String(state.filters.year));
   q.set("periodType", state.filters.periodType);
@@ -170,6 +177,7 @@ function writeUrl(state: DashboardUrlState): string {
 
 interface DashboardContextValue extends DashboardUrlState {
   setFilters: (patch: Partial<DashboardFilters>) => void;
+  resetFilters: () => void;
   setTab: (tab: TabId) => void;
   setSection: (section: SourceCode) => void;
   setView: (view: AnalysisView) => void;
@@ -220,6 +228,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           // Đổi năm hoặc loại kỳ thì phải kiểm tra lại kỳ đang chọn.
           return { ...current, filters: clampPeriod(merged), panelSource: null };
         }),
+      resetFilters: () =>
+        setState((current) => ({
+          ...current,
+          filters: { ...DEFAULT_FILTERS },
+          panelSource: null,
+        })),
       setTab: (tab) => setState((current) => ({ ...current, tab, panelSource: null })),
       setSection: (section) => patch({ section }),
       setView: (view) => patch({ view }),
