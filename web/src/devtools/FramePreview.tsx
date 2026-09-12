@@ -24,6 +24,20 @@ const PRESETS = [
   { width: 1280, label: "1280", note: "Toàn cỡ" },
 ];
 
+const MOBILE_DEVICES = [
+  { id: "iphone-se", label: "iPhone SE", width: 375, height: 667, platform: "ios" },
+  { id: "iphone-13-mini", label: "iPhone 13 mini", width: 375, height: 812, platform: "ios" },
+  { id: "iphone-14", label: "iPhone 14", width: 390, height: 844, platform: "ios" },
+  { id: "iphone-14-pro-max", label: "iPhone 14 Pro Max", width: 430, height: 932, platform: "ios" },
+  { id: "iphone-15-pro-max", label: "iPhone 15 Pro Max", width: 430, height: 932, platform: "ios" },
+  { id: "pixel-5", label: "Pixel 5", width: 393, height: 851, platform: "android" },
+  { id: "pixel-7", label: "Pixel 7", width: 412, height: 915, platform: "android" },
+  { id: "galaxy-s8-plus", label: "Galaxy S8+", width: 360, height: 740, platform: "android" },
+  { id: "galaxy-s20-ultra", label: "Galaxy S20 Ultra", width: 412, height: 915, platform: "android" },
+  { id: "galaxy-s23", label: "Galaxy S23", width: 360, height: 780, platform: "android" },
+  { id: "galaxy-z-fold-5", label: "Galaxy Z Fold 5", width: 344, height: 882, platform: "android" },
+] as const;
+
 const MIN = 320;
 const MAX = 1440;
 
@@ -43,6 +57,7 @@ export const frameWidthFromUrl = (search: string): number | null => {
 const previewSrc = () => {
   const query = new URLSearchParams(window.location.search);
   query.delete("frame");
+  query.delete("device");
   const tail = query.toString();
   return `${window.location.pathname}${tail ? `?${tail}` : ""}`;
 };
@@ -55,16 +70,52 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
   // Tính một lần khi mở: đổi chiều rộng không được làm iframe tải lại, nếu
   // không thì mọi thao tác bên trong (tab, bộ lọc, địa bàn đang chọn) mất sạch.
   const src = useMemo(previewSrc, []);
+  const requestedHost = useMemo(() => {
+    const query = new URLSearchParams(window.location.search);
+    return query.get("host") === "mobile" ? "mobile" : "web";
+  }, []);
+  const [mobileDeviceId, setMobileDeviceId] = useState(() => {
+    const query = new URLSearchParams(window.location.search);
+    const requested = query.get("device");
+    if (MOBILE_DEVICES.some((device) => device.id === requested)) return requested!;
+    const platform = query.get("platform");
+    const candidates = MOBILE_DEVICES.filter((device) => !platform || device.platform === platform);
+    return (candidates.length ? candidates : MOBILE_DEVICES).reduce((nearest, device) =>
+      Math.abs(device.width - initialWidth) < Math.abs(nearest.width - initialWidth) ? device : nearest
+    ).id;
+  });
+  const mobileDevice =
+    MOBILE_DEVICES.find((device) => device.id === mobileDeviceId) ?? MOBILE_DEVICES[1];
+
+  const announceHost = (device = mobileDevice) => {
+    frameRef.current?.contentWindow?.postMessage(
+      {
+        type: "NSNN_HOST_CONTEXT",
+        payload: {
+          source: requestedHost,
+          platform: requestedHost === "mobile" ? device.platform : "desktop",
+          displayMode: requestedHost === "mobile" ? "report" : "dashboard",
+          // Dev preview không có modal native; dashboard giữ panel HTML hoạt động.
+          capabilities: { openFilterModal: false, navigation: true },
+        },
+      },
+      window.location.origin,
+    );
+  };
 
   useEffect(() => {
-    document.title = "Xem thử iframe · Thu NSNN Hà Nội";
-  }, []);
+    document.title = `${requestedHost === "mobile" ? "Xem thử mobile" : "Xem thử iframe"} · Thu NSNN Hà Nội`;
+  }, [requestedHost]);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     query.set("frame", String(width));
+    if (requestedHost === "mobile") {
+      query.set("device", mobileDevice.id);
+      query.set("platform", mobileDevice.platform);
+    }
     window.history.replaceState(null, "", `${window.location.pathname}?${query}`);
-  }, [width]);
+  }, [mobileDevice.id, mobileDevice.platform, requestedHost, width]);
 
   // Chiều cao thật của khung, để con số hiển thị là số thật chứ không phải ước lượng.
   useEffect(() => {
@@ -82,6 +133,8 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
       if (inner) {
         const query = new URLSearchParams(inner.search);
         query.delete("frame");
+        query.delete("host");
+        query.delete("platform");
         const tail = query.toString();
         target = `${inner.pathname}${tail ? `?${tail}` : ""}`;
       }
@@ -93,39 +146,69 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
 
   return (
     <div className="dframe">
-      <header className="dframe-bar">
-        <span className="dframe-title">Xem thử iframe</span>
+      <header className="dframe-bar" data-host={requestedHost}>
+        <span className="dframe-title">
+          {requestedHost === "mobile" ? "Xem thử mobile" : "Xem thử iframe"}
+        </span>
 
-        <div className="dframe-presets" role="group" aria-label="Khổ dựng sẵn">
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.width}
-              type="button"
-              title={preset.note}
-              aria-pressed={width === preset.width}
-              className={width === preset.width ? "is-active" : undefined}
-              onClick={() => setWidth(preset.width)}
+        {requestedHost === "web" && (
+          <>
+            <span className="dframe-host">Web host</span>
+
+            <div className="dframe-presets" role="group" aria-label="Khổ dựng sẵn">
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.width}
+                  type="button"
+                  title={preset.note}
+                  aria-pressed={width === preset.width}
+                  className={width === preset.width ? "is-active" : undefined}
+                  onClick={() => setWidth(preset.width)}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            <label className="dframe-slider">
+              <span className="sr-only">Chiều rộng khung, tính bằng pixel</span>
+              <input
+                type="range"
+                min={MIN}
+                max={MAX}
+                step={10}
+                value={width}
+                onChange={(event) => setWidth(Number(event.target.value))}
+              />
+            </label>
+
+            <output className="dframe-size">
+              {width} × {height || "—"} px
+            </output>
+          </>
+        )}
+
+        {requestedHost === "mobile" && (
+          <label className="dframe-device">
+            <span className="sr-only">Thiết bị Mobile dùng để xem thử</span>
+            <select
+              value={mobileDevice.id}
+              onChange={(event) => {
+                const device =
+                  MOBILE_DEVICES.find((item) => item.id === event.target.value) ?? MOBILE_DEVICES[1];
+                setMobileDeviceId(device.id);
+                setWidth(device.width);
+                announceHost(device);
+              }}
             >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-
-        <label className="dframe-slider">
-          <span className="sr-only">Chiều rộng khung, tính bằng pixel</span>
-          <input
-            type="range"
-            min={MIN}
-            max={MAX}
-            step={10}
-            value={width}
-            onChange={(event) => setWidth(Number(event.target.value))}
-          />
-        </label>
-
-        <output className="dframe-size">
-          {width} × {height || "—"} px
-        </output>
+              {MOBILE_DEVICES.map((device) => (
+                <option key={device.id} value={device.id}>
+                  {device.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <button type="button" className="dframe-exit" onClick={exit}>
           Thoát
@@ -138,7 +221,11 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
           className="dframe-window"
           title="Dashboard Thu NSNN trong iframe"
           src={src}
-          style={{ width }}
+          style={{
+            width,
+            height: requestedHost === "mobile" ? mobileDevice.height : undefined,
+          }}
+          onLoad={() => announceHost()}
         />
       </div>
     </div>
