@@ -341,7 +341,9 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dapp[data-host="mobile"] .dtabs {
   margin-bottom: var(--s3); scrollbar-width: none;
+  cursor: grab; user-select: none; overscroll-behavior-inline: contain;
 }
+.dapp[data-host="mobile"] .dtabs.is-dragging { cursor: grabbing; }
 .dapp[data-host="mobile"] .dtabs::-webkit-scrollbar { display: none; }
 .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="false"] {
   position: relative; z-index: 20;

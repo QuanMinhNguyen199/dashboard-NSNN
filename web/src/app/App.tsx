@@ -17,6 +17,12 @@ export function App() {
   const { tab, setTab, filters, setFilters } = useDashboardState();
   const { host, embedded, commands, postToHost } = useHostContext();
   const tablistRef = useRef<HTMLDivElement | null>(null);
+  const tabDrag = useRef({
+    pointerId: null as number | null,
+    startX: 0,
+    startScrollLeft: 0,
+    suppressClick: false,
+  });
   const handledCommand = useRef(0);
   const active = TABS.find((item) => item.id === tab) ?? TABS[0];
   const mobileHost = host.source === "mobile";
@@ -37,6 +43,38 @@ export function App() {
     requestAnimationFrame(() => {
       tablistRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
     });
+  };
+
+  /** Trong preview desktop, kéo chuột ngang mô phỏng thao tác vuốt thanh tab. */
+  const onTabPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!mobileHost || event.pointerType !== "mouse" || event.button !== 0) return;
+    tabDrag.current.pointerId = event.pointerId;
+    tabDrag.current.startX = event.clientX;
+    tabDrag.current.startScrollLeft = event.currentTarget.scrollLeft;
+    tabDrag.current.suppressClick = false;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.classList.add("is-dragging");
+  };
+
+  const onTabPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (tabDrag.current.pointerId !== event.pointerId) return;
+    const distance = event.clientX - tabDrag.current.startX;
+    if (Math.abs(distance) > 4) tabDrag.current.suppressClick = true;
+    if (!tabDrag.current.suppressClick) return;
+    event.preventDefault();
+    event.currentTarget.scrollLeft = tabDrag.current.startScrollLeft - distance;
+  };
+
+  const finishTabDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (tabDrag.current.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId))
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    tabDrag.current.pointerId = null;
+    event.currentTarget.classList.remove("is-dragging");
+    // `click` phát ngay sau pointerup; dọn cờ ở task kế tiếp để chặn đúng lần đó.
+    window.setTimeout(() => {
+      tabDrag.current.suppressClick = false;
+    }, 0);
   };
 
   // Tiêu đề trang đi theo workspace để lịch sử trình duyệt đọc được.
@@ -173,6 +211,10 @@ export function App() {
           aria-label="Khu vực phân tích"
           ref={tablistRef}
           onKeyDown={onKeyDown}
+          onPointerDown={onTabPointerDown}
+          onPointerMove={onTabPointerMove}
+          onPointerUp={finishTabDrag}
+          onPointerCancel={finishTabDrag}
         >
           {TABS.map((item) => (
             <button
@@ -185,7 +227,10 @@ export function App() {
               tabIndex={tab === item.id ? 0 : -1}
               title={item.question}
               className={tab === item.id ? "is-active" : undefined}
-              onClick={() => setTab(item.id)}
+              onClick={() => {
+                if (tabDrag.current.suppressClick) return;
+                setTab(item.id);
+              }}
             >
               {item.label}
             </button>
