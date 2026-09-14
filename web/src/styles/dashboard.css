@@ -602,6 +602,7 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 /* Giá trị là thông tin chính của dòng, tỷ trọng là chú thích đi kèm nên nhạt và
    nhỏ hơn — trước đây hai thứ cùng cỡ, cùng màu, cách nhau một dấu chấm. */
 .dbar-value { color: var(--ink); font-weight: 600; }
+.dbar-unit { color: var(--ink-3); font-weight: 500; }
 .dbar-value em {
   margin-left: 6px; color: var(--ink-3); font-size: 12px; font-style: normal; font-weight: 500;
 }
@@ -631,25 +632,62 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
    hiệu duy nhất. Chú giải là nút ở màn phân tích để mở tầng khoản thu bên dưới. */
 .ddonut-layout { display: grid; grid-template-columns: minmax(128px, 0.8fr) minmax(0, 1.2fr); align-items: center; gap: var(--s4); min-height: 190px; }
 .ddonut { position: relative; width: min(100%, 190px); aspect-ratio: 1; margin-inline: auto; }
-.ddonut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ddonut svg { width: 100%; height: 100%; }
 .ddonut-track, .ddonut-segment { fill: none; stroke-width: 18; }
 .ddonut-track { stroke: var(--data-track); }
 .ddonut-segment { transition: opacity 120ms ease; }
 .ddonut-segment.is-interactive { cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
 .ddonut-segment.is-interactive:hover { opacity: 0.78; }
+.ddonut-segment.is-muted { opacity: 0.28; }
+.ddonut-segment.is-hovered { opacity: 1; stroke-width: 22; }
 .ddonut-segment.is-interactive:focus { outline: none; }
 .ddonut-segment.is-interactive:focus-visible { opacity: 0.72; stroke-width: 24; }
 .ddonut-segment.is-selected { stroke-width: 22; }
 .ddonut > span { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
 .ddonut > span b { font-size: 19px; line-height: 1.1; }
 .ddonut > span small { color: var(--ink-3); font-size: 12px; }
-.ddonut-legend { display: grid; gap: 2px; }
+.ddonut-legend { display: grid; gap: 4px; min-width: 0; }
+.ddonut-legend li { position: relative; }
 .ddonut-legend button, .ddonut-legend li > div { width: 100%; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 8px; border: 1px solid transparent; border-radius: var(--r-control); text-align: left; }
 .ddonut-legend button:hover { background: var(--blue-050); }
+.ddonut-legend li > div:hover, .ddonut-legend li > div:focus-visible { background: var(--blue-050); }
+.ddonut-legend li > div:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .ddonut-legend button.is-selected { border-color: var(--blue-250); background: var(--blue-050); }
 .ddonut-legend i { width: 8px; height: 8px; border-radius: 2px; }
-.ddonut-legend span { min-width: 0; color: var(--ink-2); font-size: 12px; line-height: 1.35; }
+.ddonut-legend span { min-width: 0; color: var(--ink-2); font-size: 12px; line-height: 1.35; white-space: nowrap; }
 .ddonut-legend strong { font-size: 12px; font-variant-numeric: tabular-nums; }
+.ddonut-tooltip {
+  position: absolute; z-index: 4; left: 16px; top: calc(100% + 2px);
+  width: max-content; max-width: 230px; padding: 5px 8px;
+  border-radius: var(--r-chip); background: var(--ink); color: var(--ink-on-dark) !important;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 16%); opacity: 0; visibility: hidden;
+  pointer-events: none; transform: translateY(-2px); transition: opacity 120ms ease, transform 120ms ease;
+}
+.ddonut-legend li:last-child .ddonut-tooltip { top: auto; bottom: calc(100% + 2px); }
+.ddonut-legend li:hover .ddonut-tooltip,
+.ddonut-legend li:focus-within .ddonut-tooltip { opacity: 1; visibility: visible; transform: translateY(0); }
+.ddonut-layout.is-callout { grid-template-columns: 1fr; min-height: 190px; }
+.ddonut.is-callout { width: min(100%, 340px); aspect-ratio: 340 / 194; }
+.ddonut.is-callout .ddonut-track, .ddonut.is-callout .ddonut-segment { stroke-width: 24; }
+.ddonut.is-callout .ddonut-segment.is-selected { stroke-width: 28; }
+.ddonut.is-callout .ddonut-segment.is-interactive:focus-visible { stroke-width: 30; }
+.ddonut-labels { position: absolute; inset: 0; pointer-events: none; }
+.ddonut-float-label {
+  position: absolute; z-index: 1; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 4px; max-width: 152px;
+  padding: 4px 5px; border: 1px solid var(--hairline); border-radius: var(--r-chip);
+  background: color-mix(in srgb, var(--surface) 94%, transparent); color: var(--ink-2);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 8%); white-space: nowrap; pointer-events: auto;
+  font-size: 12px; line-height: 1.2;
+}
+.ddonut-float-label i { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; }
+.ddonut-float-label span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ddonut-float-label strong { flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--brand); }
+.ddonut-float-label.is-selected {
+  border-color: var(--blue-250); background: var(--blue-050); color: var(--brand); font-weight: 650;
+}
+.ddonut-float-label:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .dbudget-local {
   margin-top: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--divider);
 }
@@ -665,6 +703,7 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .dbudget-local li strong {
   flex: 0 0 auto; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums;
 }
+.dbudget-value small { color: var(--ink-3); font-size: inherit; font-weight: 500; }
 .dbudget-track {
   position: relative; display: block; height: 4px; overflow: hidden;
   background: var(--data-track); border-radius: var(--r-bar);
@@ -1053,6 +1092,11 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 
 @media (max-width: 767px) {
+  /* Tên ba nhóm thu phải đọc đủ. Ở khổ điện thoại, legend xuống dưới donut;
+     cố giữ cạnh phải sẽ buộc cắt tên hoặc làm thẻ tràn ngang. */
+  .ddonut-layout:not(.is-callout) { grid-template-columns: 1fr; gap: var(--s2); }
+  .ddonut-layout:not(.is-callout) .ddonut { width: min(100%, 168px); }
+  .ddonut-layout:not(.is-callout) .ddonut-legend { width: 100%; }
   .dheader { padding: 12px 15px; }
   .dheader h1 { font-size: 16px; }
   .dheader p, .dheader-source, .dheader-frame { display: none; }

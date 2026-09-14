@@ -272,6 +272,7 @@ export function Bars({
   total,
   scale = "amount",
   money: moneyUnit,
+  showMoneyUnit = false,
   onSelect,
   emptyText = "Không có mục nào khớp bộ lọc hiện tại.",
 }: {
@@ -280,6 +281,8 @@ export function Bars({
   scale?: "amount" | "share" | "change";
   /** Thang tiền dùng chung; bỏ trống thì tự tính từ chính các dòng đang hiển thị. */
   money?: MoneyScale;
+  /** Hiện hậu tố đơn vị ngay sau từng số khi danh sách không có đầu cột riêng. */
+  showMoneyUnit?: boolean;
   onSelect?: (row: AmountRow) => void;
   emptyText?: string;
 }) {
@@ -313,6 +316,7 @@ export function Bars({
                 <b title={row.name}>{row.name}</b>
                 <span className="dbar-value">
                   {inScale(row.amount, unit)}
+                  {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
                   {row.share != null && <em>{pct(row.share)}</em>}
                 </span>
               </span>

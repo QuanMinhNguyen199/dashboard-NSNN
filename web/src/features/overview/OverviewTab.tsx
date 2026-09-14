@@ -264,7 +264,9 @@ function OverviewBody({
                           <li key={row.id}>
                             <div>
                               <span>{row.name}</span>
-                              <strong title={money(row.amount)}>{inScale(row.amount, budgetDetailUnit)}</strong>
+                              <strong className="dbudget-value" title={money(row.amount)}>
+                                {inScale(row.amount, budgetDetailUnit)} <small>{budgetDetailUnit.short}</small>
+                              </strong>
                             </div>
                             <span className="dbudget-track" aria-hidden="true">
                               <i
