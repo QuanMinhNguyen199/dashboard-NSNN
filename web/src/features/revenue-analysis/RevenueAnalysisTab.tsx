@@ -210,14 +210,19 @@ function DomesticGroupStructure({
 }) {
   return (
     <div className="dgroup-analysis">
-      <DonutChart rows={groups} centerLabel="Thu nội địa" selectedId={selected?.id} onSelect={onSelect} />
+      <DonutChart
+        rows={groups}
+        centerLabel="Thu nội địa"
+        selectedId={selected?.id}
+        onSelect={onSelect}
+      />
       {selected && (
         <div className="dgroup-detail">
           <div>
             <strong>{selected.name}</strong>
             {selected.meta && <span>{selected.meta}</span>}
           </div>
-          <Bars rows={selected.items.slice(0, 5)} />
+          <Bars rows={selected.items.slice(0, 5)} showMoneyUnit />
           {selected.items.length > 5 && <small>Còn {selected.items.length - 5} khoản trong bảng chi tiết bên dưới.</small>}
         </div>
       )}

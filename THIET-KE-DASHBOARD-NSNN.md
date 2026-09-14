@@ -183,7 +183,9 @@ Tổng quan luôn có phạm vi toàn thành phố, không đặt location selec
 [ Waterfall biến động — 12 ]
 ```
 
-Thẻ **Theo cấp ngân sách** gồm donut `NSTW/NSĐP` có thể chọn trực tiếp. Chọn NSTW hiển thị
+Thẻ **Theo cấp ngân sách** gồm donut `NSTW/NSĐP` có thể chọn trực tiếp. Desktop đặt legend
+đầy đủ bên phải; mobile đưa legend xuống dưới để không cắt tên. Hover hoặc focus legend làm nổi
+lát tương ứng và hiện tooltip số tiền cùng tỷ trọng. Chọn NSTW hiển thị
 phân rã theo bốn nguồn thu; chọn NSĐP hiển thị `NS cấp tỉnh`, `NS cấp xã`, `NS cấp huyện`.
 Hai công thức bắt buộc là
 `NSNN = NSTW + NSĐP` và `NSĐP = cấp tỉnh + cấp huyện + cấp xã`; số 0 hoặc số âm vẫn phải
@@ -290,6 +292,8 @@ KPI gồm giá trị, tỷ trọng, YoY và đóng góp vào biến động chun
 
 ### Thu nội địa
 
+- Donut ba nhóm dùng legend dọc bên phải trên desktop; mobile đặt legend bên dưới để luôn hiện đủ tên.
+- Hover hoặc focus legend làm nổi lát tương ứng và hiện tooltip gồm số tiền cùng tỷ trọng.
 - Bảng đủ đúng 21 khoản.
 - Tìm kiếm và sắp xếp.
 - Sort theo amount, tỷ trọng, YoY, tăng và giảm.
@@ -329,6 +333,8 @@ Yêu cầu:
 
 Phân tích địa bàn gồm KPI, xu hướng, cơ cấu nguồn thu, top khoản thu, coverage và nguồn dữ
 liệu. Hành động `So sánh với địa bàn khác` dẫn sang `advanced-compare&mode=location`.
+Donut cơ cấu nguồn thu dùng legend đầy đủ bên phải trên desktop và chuyển xuống dưới trên mobile.
+Hover hoặc focus một dòng legend làm nổi lát tương ứng và hiện tooltip số tiền cùng tỷ trọng.
 
 ## 11. Tab So sánh nâng cao
 

@@ -1,4 +1,5 @@
 import { TrendChart } from "@/components/TrendChart";
+import { useId, useState } from "react";
 
 export { TrendChart };
 
@@ -13,42 +14,78 @@ export function DonutChart({
   centerLabel = "Tổng",
   selectedId,
   onSelect,
+  labels = "legend",
+  getCalloutLabel = (row) => row.name,
 }: {
   rows: AmountRow[];
   centerLabel?: string;
   selectedId?: string;
   onSelect?: (id: string) => void;
+  labels?: "legend" | "callout";
+  getCalloutLabel?: (row: AmountRow) => string;
 }) {
+  const chartId = useId();
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const positiveRows = rows.filter((row) => row.amount > 0);
   const total = positiveRows.reduce((sum, row) => sum + row.amount, 0);
   if (!positiveRows.length || total <= 0) return null;
 
-  const radius = 45;
+  const callout = labels === "callout";
+  const centerX = callout ? 170 : 60;
+  const centerY = callout ? 97 : 60;
+  const radius = callout ? 62 : 45;
   const circumference = 2 * Math.PI * radius;
-  let offset = 0;
+  let runningOffset = 0;
+  const slices = positiveRows.map((row, index) => {
+    const length = (row.amount / total) * circumference;
+    const middleAngle = -Math.PI / 2 + ((runningOffset + length / 2) / circumference) * Math.PI * 2;
+    const slice = { row, index, length, offset: runningOffset, middleAngle };
+    runningOffset += length;
+    return slice;
+  });
+  const calloutPositions = new Map<string, { left: number; top: number }>();
+  if (callout) {
+    for (const side of [-1, 1] as const) {
+      const onSide = slices
+        .filter(({ middleAngle }) => (Math.cos(middleAngle) >= 0 ? 1 : -1) === side)
+        .map((slice) => ({ slice, top: 50 + Math.sin(slice.middleAngle) * 37 }))
+        .sort((a, b) => a.top - b.top);
+      const gap = 18;
+      for (let index = 1; index < onSide.length; index += 1)
+        onSide[index].top = Math.max(onSide[index].top, onSide[index - 1].top + gap);
+      const overflow = onSide.at(-1)?.top ?? 0;
+      if (overflow > 88) for (const item of onSide) item.top -= overflow - 88;
+      const underflow = onSide[0]?.top ?? 100;
+      if (underflow < 12) for (const item of onSide) item.top += 12 - underflow;
+      for (const { slice, top } of onSide)
+        calloutPositions.set(slice.row.id, { left: side > 0 ? 77.5 : 22.5, top });
+    }
+  }
 
   return (
-    <div className="ddonut-layout">
-      <div className="ddonut">
-        <svg viewBox="0 0 120 120" role={onSelect ? "group" : "img"} aria-label={`Cơ cấu ${positiveRows.map((row) => `${row.name} ${pct((row.amount / total) * 100)}`).join(", ")}`}>
-          <circle className="ddonut-track" cx="60" cy="60" r={radius} />
-          {positiveRows.map((row, index) => {
-            const length = (row.amount / total) * circumference;
+    <div className={`ddonut-layout${callout ? " is-callout" : ""}`}>
+      <div className={`ddonut${callout ? " is-callout" : ""}`}>
+        <svg viewBox={callout ? "0 0 340 194" : "0 0 120 120"} role={onSelect ? "group" : "img"} aria-label={`Cơ cấu ${positiveRows.map((row) => `${row.name} ${pct((row.amount / total) * 100)}`).join(", ")}`}>
+          <circle className="ddonut-track" cx={centerX} cy={centerY} r={radius} transform={`rotate(-90 ${centerX} ${centerY})`} />
+          {slices.map(({ row, index, length, offset }) => {
             const segment = (
               <circle
                 key={row.id}
-                className={`ddonut-segment${onSelect ? " is-interactive" : ""}${selectedId === row.id ? " is-selected" : ""}`}
-                cx="60"
-                cy="60"
+                className={`ddonut-segment${onSelect ? " is-interactive" : ""}${selectedId === row.id ? " is-selected" : ""}${hoveredId === row.id ? " is-hovered" : ""}${hoveredId && hoveredId !== row.id ? " is-muted" : ""}`}
+                cx={centerX}
+                cy={centerY}
                 r={radius}
                 stroke={DONUT_COLORS[index % DONUT_COLORS.length]}
                 strokeDasharray={`${length} ${circumference - length}`}
                 strokeDashoffset={-offset}
+                transform={`rotate(-90 ${centerX} ${centerY})`}
                 role={onSelect ? "button" : undefined}
                 tabIndex={onSelect ? 0 : undefined}
                 aria-pressed={onSelect ? selectedId === row.id : undefined}
                 data-segment-id={row.id}
                 aria-label={onSelect ? `${row.name}, ${pct((row.amount / total) * 100)}. Chọn để xem chi tiết` : undefined}
+                onPointerEnter={() => setHoveredId(row.id)}
+                onPointerLeave={() => setHoveredId(null)}
                 onClick={onSelect ? () => onSelect(row.id) : undefined}
                 onKeyDown={onSelect ? (event) => {
                   if (event.key === "Enter" || event.key === " ") {
@@ -57,17 +94,41 @@ export function DonutChart({
                   }
                 } : undefined}
               >
-                <title>{row.name}: {pct((row.amount / total) * 100)}</title>
+                <title>{row.name}: {money(row.amount)} · {pct((row.amount / total) * 100)}</title>
               </circle>
             );
-            offset += length;
             return segment;
           })}
         </svg>
         <span><b>100%</b><small>{centerLabel}</small></span>
+        {callout && (
+          <div className="ddonut-labels">
+            {slices.map(({ row, index }) => {
+              const position = calloutPositions.get(row.id)!;
+              const content = (
+                <>
+                  <i style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }} />
+                  <span>{getCalloutLabel(row)}</span>
+                  <strong>{pct((row.amount / total) * 100)}</strong>
+                </>
+              );
+              const style = { left: `${position.left}%`, top: `${position.top}%` };
+              return onSelect ? (
+                <button key={row.id} type="button"
+                  className={`ddonut-float-label${selectedId === row.id ? " is-selected" : ""}`}
+                  style={style} aria-pressed={selectedId === row.id} onClick={() => onSelect(row.id)} title={row.name}>
+                  {content}
+                </button>
+              ) : (
+                <div key={row.id} className="ddonut-float-label" style={style} title={row.name}>{content}</div>
+              );
+            })}
+          </div>
+        )}
       </div>
-      <ul className="ddonut-legend">
+      {!callout && <ul className="ddonut-legend">
         {positiveRows.map((row, index) => {
+          const tooltipId = `${chartId}-${row.id}`;
           const content = (
             <>
               <i style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }} />
@@ -76,18 +137,30 @@ export function DonutChart({
             </>
           );
           return (
-            <li key={row.id}>
+            <li key={row.id} onPointerEnter={() => setHoveredId(row.id)} onPointerLeave={() => setHoveredId(null)}>
               {onSelect ? (
-                <button type="button" className={selectedId === row.id ? "is-selected" : undefined} aria-pressed={selectedId === row.id} onClick={() => onSelect(row.id)}>
+                <button type="button" className={selectedId === row.id ? "is-selected" : undefined}
+                  aria-pressed={selectedId === row.id} aria-describedby={tooltipId}
+                  onFocus={() => setHoveredId(row.id)} onBlur={() => setHoveredId(null)} onClick={() => onSelect(row.id)}>
                   {content}
                 </button>
               ) : (
-                <div>{content}</div>
+                <div
+                  tabIndex={0}
+                  aria-describedby={tooltipId}
+                  onFocus={() => setHoveredId(row.id)}
+                  onBlur={() => setHoveredId(null)}
+                >
+                  {content}
+                </div>
               )}
+              <span id={tooltipId} className="ddonut-tooltip" role="tooltip">
+                {money(row.amount)} · {pct((row.amount / total) * 100)}
+              </span>
             </li>
           );
         })}
-      </ul>
+      </ul>}
     </div>
   );
 }
