@@ -14,7 +14,7 @@ Bản chạy thử: <https://quanminhnguyen199.github.io/dashboard-NSNN/>
 npm install          # uỷ quyền xuống web/
 npm run dev          # http://localhost:5173
 npm run build
-npm run acceptance   # 16 tiêu chí trên Chrome thật (cần dev server đang chạy)
+npm run acceptance   # 17 tiêu chí trên Chrome thật (cần dev server đang chạy)
 ```
 
 Lệnh ở gốc repo chỉ uỷ quyền xuống [`web/`](web/); chạy trực tiếp trong `web/` cũng như
@@ -31,7 +31,7 @@ web/src/
   data/         ĐIỂM THAY NGUỒN DỮ LIỆU — provider, validate, hook
   domain/       Đúng dù dữ liệu đến từ đâu: danh mục, kiểu, toán về kỳ và tỷ lệ
   state/        Chủ sở hữu duy nhất của URL state
-  devtools/     Khung xem thử iframe
+  devtools/     Khung xem thử iframe và thiết bị mobile
 ```
 
 Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổi một file:**
@@ -42,7 +42,7 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 
 | Workflow | Chạy khi | Làm gì |
 |---|---|---|
-| [`ci.yml`](.github/workflows/ci.yml) | push **mọi nhánh** và pull request | typecheck → build → 16 tiêu chí nghiệm thu trên Chrome |
+| [`ci.yml`](.github/workflows/ci.yml) | push **mọi nhánh** và pull request | typecheck → build → 17 tiêu chí nghiệm thu trên Chrome |
 | [`deploy-pages.yml`](.github/workflows/deploy-pages.yml) | push `main` | build → phát hành GitHub Pages |
 
 ## Nội dung repo
@@ -67,6 +67,8 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 | [`PROMPT-CLAUDE-NSNN.md`](PROMPT-CLAUDE-NSNN.md) | Yêu cầu của giai đoạn clone nguyên trạng. |
 | [`bao-cao-kiem-tra-tabs.md`](bao-cao-kiem-tra-tabs.md) | Báo cáo kiểm tra website tham chiếu. |
 | [`web/DESIGN.md`](web/DESIGN.md) | Hệ thống thị giác: token, thang màu dữ liệu, quy tắc bố cục. |
+| [`HOST-INTEGRATION.md`](HOST-INTEGRATION.md) | Giao thức nhận diện Web/Mobile host và trao đổi message. |
+| [`REPORT-MOBILE-HOST-INTEGRATION.md`](REPORT-MOBILE-HOST-INTEGRATION.md) | Báo cáo BA ngắn về phạm vi tích hợp Mobile WebView. |
 
 ## Kiến trúc
 
@@ -80,5 +82,6 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 - **Quy tắc số liệu.** `0`, số âm và `null` là ba thứ khác nhau và không bị đánh đồng;
   `%YoY` trả “chưa có kỳ trước” thay vì bịa `−100%`; waterfall luôn khớp tổng chênh lệch.
 - **Dựng cho khung hẹp.** Bố cục dưới 1280px không phải bản rút gọn tạm bợ: cặp widget nới
-  tỷ lệ thay vì xếp chồng, thanh lọc thu về một dòng phạm vi, thẻ cùng hàng cao bằng nhau.
-  Nút `Xem thử iframe` mở chính nó trong một `<iframe>` thật để kiểm ở nhiều khổ.
+  tỷ lệ trước khi xếp chồng, thanh lọc thu về hai nhóm `Kỳ báo cáo`/`Chỉ tiêu`, và thẻ cùng
+  hàng cao bằng nhau. Preview hỗ trợ iframe Web và 11 thiết bị Mobile; trong Mobile preview
+  có thể kéo thanh tab ngang bằng chuột như thao tác vuốt.

@@ -3,7 +3,7 @@
 **Trạng thái:** Bản nháp cần xác nhận nghiệp vụ  
 **Nguồn tham chiếu chính:** `dac-ta-v2.html`  
 **Tài liệu thiết kế:** `THIET-KE-DASHBOARD-NSNN.md`  
-**Cập nhật:** 11/09/2026
+**Cập nhật:** 14/09/2026
 
 ## 1. Dashboard này dùng để làm gì?
 
@@ -65,6 +65,10 @@ Quy tắc:
 - Khi đang xem toàn bộ kỳ, `Cách tính` bị tắt và nêu lý do.
 - Địa bàn không phải filter chung của màn Tổng quan.
 - Filter riêng của một widget không được làm thay đổi KPI toàn trang.
+- Ở Web hẹp, iframe và Mobile, filter đóng thành hai nhóm dễ đọc: `Kỳ báo cáo` và
+  `Chỉ tiêu`. Khi mở, các trường giữ nguyên thứ tự nghiệp vụ.
+- `Cấp ngân sách` đứng cạnh `Chỉ tiêu`; trường chỉ tiêu được dành nhiều chiều rộng hơn.
+- `Đặt lại bộ lọc` đưa báo cáo về Tháng 8/2026, Trong kỳ, Tổng NSNN và TỔNG SỐ.
 
 ## 5. Chỉ số chính
 
@@ -212,8 +216,8 @@ nên có mặt.
 | Bảng thay thế cho bản đồ | Cùng câu hỏi, cho người không dùng được bản đồ | Dữ liệu bản đồ trở thành không tiếp cận được |
 | Drawer xem nhanh | "Nguồn này thế nào?" mà không rời Tổng quan | Mỗi lần tò mò một nguồn là một lần mất ngữ cảnh đang xem |
 | So sánh nâng cao | "Hai kỳ / hai nguồn / hai địa bàn khác nhau chỗ nào?" | So sánh thủ công bằng cách mở hai tab và tự trừ |
-| Thanh phạm vi thu gọn ở khổ hẹp | "Tôi đang xem số của phạm vi nào?" | Ở khung iframe hẹp, sáu ô lọc chiếm gần một phần ba màn hình và đẩy hết số liệu xuống dưới |
-| Xem thử iframe | "Nhúng vào khung hẹp thì trông thế nào?" | Phải co cửa sổ trình duyệt thủ công mới kiểm được, nên bố cục khổ hẹp hay bị bỏ sót tới lúc khách nhúng thật |
+| Thanh phạm vi thu gọn ở khổ hẹp | "Tôi đang xem số của phạm vi nào?" | Sáu ô lọc luôn mở sẽ đẩy KPI và biểu đồ chính xuống dưới; hai nhóm tóm tắt vẫn giữ đủ kỳ, cách tính, chỉ tiêu và cấp ngân sách |
+| Xem thử iframe và Mobile | "Khi nhúng hoặc mở trên điện thoại thì trông thế nào?" | Nếu chỉ co một `div`, media query và thao tác vuốt không phản ánh môi trường thật; preview dùng iframe thật, preset thiết bị và kéo tab bằng chuột |
 
 ## 9. Drawer xem nhanh nguồn thu
 
@@ -310,9 +314,10 @@ ai canh. Đây không phải danh sách "nên có" — đạt hết mới gọi 
 | 15 | Không có lỗi JavaScript chưa xử lý | Một lỗi chưa bắt có thể làm widget dừng cập nhật mà vẫn giữ số cũ trên màn hình |
 | 16 | TypeScript và production build sạch | Build hỏng thì không deploy được; type sai thường là dấu hiệu của một giả định dữ liệu sai |
 
-**Cách kiểm:** 16 tiêu chí đầu chạy tự động qua trình duyệt thật bằng
-`web/scripts/acceptance.mjs`; tiêu chí build chạy bằng `npm run build`. Cả hai nằm
-trong GitHub Actions nên mỗi lần đẩy code đều được kiểm lại.
+Bảng trên gom yêu cầu thành 16 nhóm nghiệp vụ. Script thực tế chạy 17 phép kiểm tra trên
+Chrome vì tách riêng ba lỗi bố cục: nội dung thẻ bị cắt, chiều cao thẻ cùng hàng và đơn vị
+tiền trong cột số. TypeScript và production build được kiểm bằng `npm run build`. Các lệnh
+nằm trong GitHub Actions nên mỗi lần đẩy code đều được kiểm lại.
 
 ## 15. Giả định cần xác nhận
 

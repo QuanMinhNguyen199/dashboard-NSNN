@@ -52,14 +52,16 @@ export function App() {
     tabDrag.current.startX = event.clientX;
     tabDrag.current.startScrollLeft = event.currentTarget.scrollLeft;
     tabDrag.current.suppressClick = false;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.currentTarget.classList.add("is-dragging");
   };
 
   const onTabPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     if (tabDrag.current.pointerId !== event.pointerId) return;
     const distance = event.clientX - tabDrag.current.startX;
-    if (Math.abs(distance) > 4) tabDrag.current.suppressClick = true;
+    if (Math.abs(distance) > 4 && !tabDrag.current.suppressClick) {
+      tabDrag.current.suppressClick = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.currentTarget.classList.add("is-dragging");
+    }
     if (!tabDrag.current.suppressClick) return;
     event.preventDefault();
     event.currentTarget.scrollLeft = tabDrag.current.startScrollLeft - distance;
@@ -67,8 +69,8 @@ export function App() {
 
   const finishTabDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     if (tabDrag.current.pointerId !== event.pointerId) return;
-    if (event.currentTarget.hasPointerCapture(event.pointerId))
-      event.currentTarget.releasePointerCapture(event.pointerId);
+    // Pointer capture tự được nhả sau pointerup. Nhả thủ công ngay tại đây làm
+    // trình duyệt mất button đích và không phát `click` cho thao tác nhấn tab.
     tabDrag.current.pointerId = null;
     event.currentTarget.classList.remove("is-dragging");
     // `click` phát ngay sau pointerup; dọn cờ ở task kế tiếp để chặn đúng lần đó.
