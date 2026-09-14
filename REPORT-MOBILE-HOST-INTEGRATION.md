@@ -3,9 +3,9 @@
 | Thông tin | Nội dung |
 |---|---|
 | Trạng thái | Prototype đã triển khai, chờ tích hợp với ứng dụng Mobile |
-| Ngày cập nhật | 11/09/2026 |
+| Ngày cập nhật | 14/09/2026 |
 | Phạm vi | Giao diện Mobile, nhận diện host và trao đổi dữ liệu qua `postMessage` |
-| Tài liệu kỹ thuật | [HOST-INTEGRATION.md]|
+| Tài liệu kỹ thuật | [HOST-INTEGRATION.md](HOST-INTEGRATION.md) |
 
 ## 1. Bối cảnh
 
@@ -29,8 +29,9 @@ giao diện và hành vi.
 
 | Chế độ | Cách hiển thị |
 |---|---|
-| Web host | Header đầy đủ, bộ lọc Web và layout desktop hiện tại |
-| Mobile host | Header gọn, tab cuộn ngang, filter pill và widget tự xếp theo chiều rộng |
+| Web host | Header đầy đủ; filter trực tiếp ở desktop và filter thu gọn khi web hẹp |
+| iframe Web | Thanh tóm tắt hai nhóm, panel lọc responsive và nút reset toàn chiều rộng |
+| Mobile host | Header gọn, tab cuộn ngang, filter thu gọn và widget tự xếp theo chiều rộng |
 
 Dashboard nhận biết host bằng message `NSNN_HOST_CONTEXT`. Tham số
 `?host=mobile&platform=android` được dùng để xem thử khi chưa có Mobile bridge.
@@ -38,6 +39,10 @@ Dashboard nhận biết host bằng message `NSNN_HOST_CONTEXT`. Tham số
 Mobile app có thể gửi lệnh đổi tab hoặc cập nhật bộ lọc. Dashboard phát lại trạng thái và
 chiều cao nội dung để host đồng bộ giao diện. Nếu app đã có modal lọc native, nút "Bộ lọc"
 gửi yêu cầu cho app. Nếu chưa có, dashboard mở bộ lọc HTML có sẵn.
+
+Bộ lọc HTML đặt `Cấp ngân sách` cạnh `Chỉ tiêu`, dành nhiều chiều rộng hơn cho tên chỉ tiêu
+và có nút `Đặt lại bộ lọc`. Preview Mobile mô phỏng 11 thiết bị iOS/Android; người dùng có
+thể kéo thanh tab bằng chuột như vuốt trên màn cảm ứng mà không kích hoạt nhầm tab.
 
 ## 4. Luồng nghiệp vụ
 
@@ -85,9 +90,11 @@ tra dữ liệu đầu vào và bỏ qua giá trị không hợp lệ.
 | AC-03 | Host đổi được tab bằng `NSNN_NAVIGATE` | Đạt |
 | AC-04 | Host đổi được bộ lọc bằng `NSNN_SET_FILTERS` | Đạt |
 | AC-05 | Nút lọc phát `NSNN_OPEN_FILTER` khi app có modal native | Đạt |
-| AC-06 | Filter pill không xuống dòng hoặc tràn trang ở 320, 390, 500 và 720 px | Đạt |
+| AC-06 | Thanh tóm tắt filter không xuống dòng hoặc tràn trang ở 320, 390, 500 và 720 px | Đạt |
 | AC-07 | Dashboard phát state và kích thước về host | Đạt |
 | AC-08 | Production build và kiểm tra hồi quy dashboard thành công | Đạt, 17/17 tiêu chí |
+| AC-09 | Preview Mobile kéo ngang thanh tab bằng chuột mà không đổi tab ngoài ý muốn | Đạt |
+| AC-10 | Filter fallback có reset và không tràn ở Web hẹp/iframe/Mobile | Đạt |
 
 ## 8. Phần Mobile app cần thực hiện
 
@@ -116,4 +123,4 @@ tra dữ liệu đầu vào và bỏ qua giá trị không hợp lệ.
 5. Khi bấm Back trên app, ưu tiên đóng drawer trong dashboard hay quay lại màn hình trước của app.
 
 Sau khi thống nhất năm điểm trên, đội Mobile có thể tích hợp theo
-[HOST-INTEGRATION.md](web/HOST-INTEGRATION.md) mà không cần thay đổi nghiệp vụ của dashboard.
+[HOST-INTEGRATION.md](HOST-INTEGRATION.md) mà không cần thay đổi nghiệp vụ của dashboard.

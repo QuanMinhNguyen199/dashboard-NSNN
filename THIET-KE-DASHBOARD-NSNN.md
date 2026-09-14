@@ -1,8 +1,11 @@
 # Thiết kế Dashboard Thu NSNN
 
-**Phiên bản:** 1.0  
-**Ngày cập nhật:** 10/09/2026  
-**Đặc tả nghiệp vụ tham chiếu:** `dac-ta-v2.html`  
+**Phiên bản:** 1.1
+
+**Ngày cập nhật:** 14/09/2026
+
+**Đặc tả nghiệp vụ tham chiếu:** `dac-ta-v2.html`
+
 **Phạm vi:** UI/UX, kiến trúc frontend, URL state, API/MCP và mock data
 
 ## 1. Mục tiêu sản phẩm
@@ -66,7 +69,8 @@ Thứ bậc giao diện từ trên xuống:
 6. Drawer xem nhanh khi cần.
 
 Thanh tab dùng `position: sticky` bên dưới header, không che nội dung. Tab hiện tại phải có
-trạng thái active rõ ràng và hỗ trợ điều hướng bàn phím.
+trạng thái active rõ ràng và hỗ trợ điều hướng bàn phím. Trên Mobile, tab cuộn ngang bằng
+vuốt; trong preview desktop, kéo chuột phải mô phỏng được cùng thao tác mà không chọn nhầm tab.
 
 ## 4. Ngôn ngữ thị giác
 
@@ -110,6 +114,13 @@ Quy tắc:
 - Chỉ có một nơi sở hữu và đồng bộ URL state.
 - Request cũ phải bị hủy khi filter thay đổi nhanh.
 - Response cũ không được ghi đè kết quả mới.
+- Web desktop rộng hiển thị điều khiển trực tiếp. Web dưới 768px, iframe và Mobile host
+  dùng thanh tóm tắt hai nhóm `Kỳ báo cáo`/`Chỉ tiêu`.
+- Khi mở, bốn trường đầu xếp hai cột; `Cấp ngân sách` và `Chỉ tiêu` dùng tỷ lệ 1/3–2/3.
+  Dưới 340px, hai trường này xuống hai hàng.
+- Nút `Đặt lại bộ lọc` nằm cuối panel, chiếm toàn bộ chiều rộng và khôi phục filter mặc định.
+- Nếu Mobile host khai báo `openFilterModal`, nút lọc phát `NSNN_OPEN_FILTER`; nếu không,
+  dashboard dùng panel HTML làm fallback.
 
 Filter cục bộ như xếp hạng cao/thấp, tăng/giảm, lựa chọn 2–5 địa bàn hoặc chế độ chart nằm
 trong header của widget và không thay đổi KPI toàn cục.
@@ -520,6 +531,9 @@ Không trộn mock với tổng chính thức trong một phép tính.
 13. Không tràn ngang ở 390px, 1024px và 1440px.
 14. TypeScript và production build thành công.
 15. Không có lỗi JavaScript chưa xử lý trên luồng chính.
+16. Không thẻ nào bị cắt nội dung ngang.
+17. Các thẻ cùng hàng có chiều cao bằng nhau.
+18. Một cột số chỉ sử dụng một đơn vị tiền.
 
 ## 19. Yêu cầu bàn giao
 

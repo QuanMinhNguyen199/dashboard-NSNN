@@ -1,6 +1,6 @@
 # Dashboard Thu NSNN Hà Nội
 
-Triển khai theo `../THIET-KE-DASHBOARD-NSNN.md` v1.0: bốn workspace, URL state đầy đủ,
+Triển khai theo `../THIET-KE-DASHBOARD-NSNN.md` v1.1: bốn workspace, URL state đầy đủ,
 drawer xem nhanh, lớp provider API/MCP/Mock có runtime validation, và dữ liệu mô phỏng
 tất định dựng từ một kho quan sát gốc duy nhất.
 
@@ -11,10 +11,14 @@ npm install
 npm run dev          # http://localhost:5173
 npm run build        # tsc -b && vite build
 npm run preview
-npm run acceptance   # 16 tiêu chí nghiệm thu qua trình duyệt (cần dev server đang chạy)
+npm run acceptance   # 17 tiêu chí nghiệm thu qua trình duyệt (cần dev server đang chạy)
 ```
 
 Từ gốc repo cũng chạy được y hệt — mọi lệnh uỷ quyền xuống `web/`.
+
+Giao thức phân biệt Web host, iframe và Mobile WebView nằm tại
+[`../HOST-INTEGRATION.md`](../HOST-INTEGRATION.md). Báo cáo BA ngắn về phần Mobile nằm tại
+[`../REPORT-MOBILE-HOST-INTEGRATION.md`](../REPORT-MOBILE-HOST-INTEGRATION.md).
 
 ## Cấu trúc thư mục
 
@@ -28,7 +32,7 @@ src/
     mock/       Kho quan sát mô phỏng và phần dựng widget từ nó
   domain/       Đúng dù dữ liệu đến từ đâu: danh mục, kiểu, toán về kỳ và tỷ lệ
   state/        Chủ sở hữu duy nhất của URL state
-  devtools/     Khung xem thử iframe
+  devtools/     Khung xem thử iframe và thiết bị mobile
   styles/
 ```
 
@@ -172,12 +176,14 @@ không phải bản rút gọn tạm bợ.
 | 1279px | Cặp 8+4 nới thành 7+5 và **vẫn đứng cạnh nhau**. Ép mỗi thẻ chiếm trọn hàng làm trang dài gấp đôi mà vẫn thừa chiều ngang |
 | 1179px | Dải KPI xuống 2×2, trước khi mỗi ô hẹp hơn chính con số nó phải in |
 | 1023px | Nội dung trong thẻ chuyển bố cục hẹp; bảng nhiều cột chiếm trọn hàng thay vì cuộn ngang trong thẻ |
-| 767px | Chrome mobile; thanh lọc thu gọn thành một dòng phạm vi |
+| 767px | Web responsive; thanh lọc chuyển thành bản tóm tắt và lưới hai cột khi mở |
 | 699px | Hết chỗ cho hai cột, xếp chồng toàn bộ |
 
-Dưới 768px, sáu ô lọc chiếm 326px — gần một phần ba khung iframe cao 1100px — nên thanh
-lọc thu gọn còn một dòng nêu phạm vi bằng chữ, bấm `Chọn lại` mới mở. Nhờ đó KPI và biểu
-đồ đầu tiên nằm trên nếp gấp.
+Dưới 768px, thanh lọc đóng gói ngữ cảnh thành hai nhóm `Kỳ báo cáo` và `Chỉ tiêu`. Nút
+`Bộ lọc` mở sáu điều khiển theo thứ tự quen thuộc. Hai trường cuối dùng tỷ lệ 1/3 cho
+`Cấp ngân sách` và 2/3 cho `Chỉ tiêu`; dưới 340px chúng tự xuống hai hàng. Nút
+`Đặt lại bộ lọc` chiếm toàn bộ chiều rộng và đưa state về Tháng 8/2026, Trong kỳ,
+Tổng NSNN, TỔNG SỐ. Cùng cấu trúc này được dùng trong iframe ở mọi chiều rộng.
 
 Thẻ cùng một hàng luôn cao bằng nhau: biểu đồ nở hết phần dư, danh sách thanh nở **có
 trần** để dòng không bị kéo méo, bảng dài cuộn trong thẻ thay vì nong thẻ cao gấp đôi thẻ
@@ -188,6 +194,11 @@ bên cạnh.
 Nút `Xem thử iframe` trên header mở dashboard trong một `<iframe>` **thật**, kèm khổ dựng
 sẵn 390/500/720/960/1280 và thanh trượt 320–1440px
 ([`src/devtools/FramePreview.tsx`](src/devtools/FramePreview.tsx)).
+
+Nút `Xem thử mobile` dùng cùng iframe thật nhưng chọn theo thiết bị: iPhone SE, iPhone 13
+mini, iPhone 14, iPhone 14 Pro Max, iPhone 15 Pro Max, Pixel 5, Pixel 7, Galaxy S8+,
+Galaxy S20 Ultra, Galaxy S23 và Galaxy Z Fold 5. Preview gửi đúng `platform` iOS/Android.
+Thanh tab có thể kéo ngang bằng chuột trong preview; trên màn cảm ứng vẫn dùng vuốt native.
 
 Phải là iframe chứ không phải một khung `div` hẹp: media query đọc kích thước **viewport**
 chứ không đọc container, nên thu nhỏ một div chỉ bóp nội dung lại mà bố cục vẫn giữ nguyên
@@ -223,7 +234,7 @@ npm run dev &          # nghiệm thu cần một dev server đang chạy
 npm run acceptance     # mặc định http://127.0.0.1:5173
 ```
 
-`scripts/acceptance.mjs` chạy 16 tiêu chí trên Chrome thật qua `puppeteer-core`; đặt
+`scripts/acceptance.mjs` chạy 17 tiêu chí trên Chrome thật qua `puppeteer-core`; đặt
 `CHROME_PATH` nếu Chrome ở đường dẫn khác. Mỗi tiêu chí canh một cách hỏng cụ thể, không
 phải một danh sách “nên có” — lý do từng cái ở
 [`../BA-NSNN.md`](../BA-NSNN.md) §14.
@@ -240,7 +251,7 @@ Hai workflow trong [`../.github/workflows/`](../.github/workflows/):
 
 | Workflow | Chạy khi | Làm gì |
 |---|---|---|
-| `ci.yml` | push **mọi nhánh** và pull request | typecheck → build → 16 tiêu chí trên Chrome |
+| `ci.yml` | push **mọi nhánh** và pull request | typecheck → build → 17 tiêu chí trên Chrome |
 | `deploy-pages.yml` | push `main` | build với `VITE_BASE` theo tên repo → phát hành GitHub Pages |
 
 Base của bản build lấy từ tên repo nên đổi tên repo không làm hỏng đường dẫn asset. Deploy

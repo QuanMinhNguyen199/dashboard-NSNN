@@ -1,6 +1,7 @@
 ---
 name: Tổng quan Thu ngân sách Nhà nước Hà Nội
 description: Hệ thống giao diện vận hành số liệu ngân sách công, dày thông tin nhưng điềm tĩnh và dễ quét.
+updated: 2026-09-14
 colors:
   institutional-navy: "#0e2a47"
   brand-blue: "#1657a8"
@@ -313,16 +314,16 @@ mỗi mốc là chỗ một thứ cụ thể vỡ, không phải kích thước 
 | 1279px | Cặp 8+4 nới thành **7+5 và vẫn đứng cạnh nhau**. Ép mỗi thẻ chiếm trọn hàng làm trang dài gấp đôi mà vẫn thừa chiều ngang |
 | 1179px | Dải KPI xuống 2×2, trước khi mỗi ô hẹp hơn chính con số nó phải in |
 | 1023px | Nội dung trong thẻ chuyển bố cục hẹp; bảng nhiều cột chiếm trọn hàng thay vì cuộn ngang trong thẻ; bản đồ rời bố cục hai cột |
-| 767px | Chrome mobile; thanh lọc thu gọn thành một dòng phạm vi |
+| 767px | Web responsive; thanh lọc chuyển thành hai nhóm tóm tắt và lưới điều khiển khi mở |
 | 699px | Hết chỗ cho hai cột, xếp chồng toàn bộ |
 
 **The Pairs Before Stacking Rule.** Dưới 1280px, cặp widget **nới tỷ lệ** trước,
 xếp chồng sau. Xếp chồng sớm cho thẻ rộng 912px chứa danh sách năm dòng — thừa
 chiều ngang mà trang dài gấp đôi.
 
-**The Scope Costs Height Rule.** Dưới 768px, sáu ô lọc chiếm 326px — gần một phần
-ba khung iframe cao 1100px. Thanh lọc thu về một dòng nêu phạm vi bằng chữ; mở ra
-khi người dùng cần. Bộ lọc là phương tiện, không phải nội dung.
+**The Scope Costs Height Rule.** Dưới 768px, sáu ô lọc luôn mở chiếm quá nhiều chiều cao.
+Thanh lọc đóng thành hai nhóm `Kỳ báo cáo` và `Chỉ tiêu`; mở ra khi người dùng cần.
+Iframe dùng cùng mẫu ở mọi chiều rộng để giao diện nhúng không tạo thêm một cách lọc khác.
 
 **The Equal Row Height Rule.** Thẻ cùng một hàng luôn cao bằng nhau. Biểu đồ nở
 hết phần dư; danh sách thanh nở **có trần** để dòng không bị kéo méo; bảng dài
@@ -385,7 +386,9 @@ phần tử con không được cong hơn khung chứa nó.
 ### Navigation
 
 - **Style:** tab văn bản trên nền canvas, khoảng cách 24px, đường đáy toàn hàng và trạng thái active bằng đường xanh 3px.
-- **Behavior:** bám đỉnh viewport, z-index 30, blur nhẹ. Trên mobile, khoảng cách giảm còn 16px và hàng tab cuộn ngang.
+- **Behavior:** bám đỉnh viewport, z-index 30. Trên mobile, khoảng cách giảm còn 16px và
+  hàng tab cuộn ngang. Preview desktop hỗ trợ kéo bằng chuột; ngưỡng kéo 4px chặn click
+  ngoài ý muốn. Thiết bị cảm ứng tiếp tục dùng cuộn native.
 - **Focus:** `:where(button, select, input, a, [tabindex]):focus-visible` cho outline xanh **2px**, lệch 2px. Một quy tắc phủ hết, không vá từng chỗ.
 
 ### Filters and segmented controls
@@ -393,6 +396,10 @@ phần tử con không được cong hơn khung chứa nó.
 - **Container:** surface trắng, viền 1px, radius 12px; dải ngữ cảnh nằm dưới với divider và nền trung tính nhạt.
 - **Select:** cao tối thiểu 38px, viền `control-border`, radius 6px; nhãn 12px/650.
 - **Segmented:** nền `divider`, padding 3px, radius 6px. Mục chọn chuyển sang trắng, chữ xanh và bóng `0 1px 2px #19334e18`.
+- **Responsive:** desktop rộng dùng điều khiển trực tiếp. Web hẹp, iframe và Mobile dùng
+  hai nhóm tóm tắt. Khi mở, hai hàng đầu chia đôi; hàng cuối dành 1/3 cho `Cấp ngân sách`
+  và 2/3 cho `Chỉ tiêu`. Dưới 340px, hai trường cuối xếp chồng.
+- **Reset:** nút secondary toàn chiều rộng ở cuối panel; bị vô hiệu khi state đã là mặc định.
 - **Behavior:** thay đổi loại kỳ phải kẹp giá trị kỳ về phạm vi hợp lệ; ngữ cảnh luôn nêu phạm vi và đơn vị.
 
 ### KPI strip
@@ -460,7 +467,7 @@ tỷ lệ cố định áp lên bốn tập nội dung khác nhau thì đúng đ
   một phường; thanh phạm vi nói rõ Tổng quan luôn tính cho toàn thành phố và mở
   lối tắt sang trang chi tiết.
 
-**The Scope Bar Rule.** Thanh phạm vi có mặt trên cả ba tab, ở đúng một vị trí,
+**The Scope Bar Rule.** Thanh phạm vi có mặt trên cả bốn tab, ở đúng một vị trí,
 và luôn có lối quay lại. Một bộ lọc không được phép im lặng vô hiệu.
 
 ### Vùng chạm
