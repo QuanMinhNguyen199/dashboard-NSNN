@@ -240,15 +240,39 @@ Biểu đồ đóng góp tách hai tổng thành một dòng cầu nối bằng 
 
 ### Hierarchy
 
-- **Display** (700, 32px, tracking −0.03em): giá trị chính trong drawer xem nhanh. Vai trò duy nhất dùng cỡ này.
-- **Metric** (700, 23px, line-height 1.25, tracking −0.025em): số KPI; xuống 19px ở mobile. Insight dùng biến thể 16px để giữ câu ngắn gọn.
-- **Headline** (650, 20px, line-height 1.5): tên sản phẩm trong đầu trang; xuống 16px ở mobile.
-- **Title** (700, 15px, line-height 1.5): tiêu đề widget và nhóm phân tích.
-- **Metric compact** (700, 19px, tracking −0.02em): số KPI ở mobile, và giá trị hai đầu cầu nối waterfall.
-- **Insight** (700, 16px, tracking −0.01em): câu cảnh báo trong ô KPI cuối. Ngắn, một dòng.
-- **Body** (400, 14px, line-height 1.55): văn bản giao diện và nội dung trạng thái.
-- **Caption** (400, 13px, line-height 1.5): câu trạng thái rỗng, ghi chú độ phủ, chú thích bảng.
-- **Label** (650, 12px, line-height 1.5): nhãn bộ lọc, KPI, biến động và metadata. Tab dùng 14px/650.
+Chín bậc cỡ, bốn trọng lượng, ba nhịp dòng — tất cả là token trong `:root`
+(`--fs-*`, `--fw-*`, `--lh-*`). Không một giá trị chữ nào nằm ngoài danh sách này.
+
+| Vai trò | Token | Đậm | Nhịp dòng | Tracking | Dùng ở đâu |
+|---|---|---|---|---|---|
+| Display | `--fs-display` 32px | 700 | 1.55 | −0.03em | Giá trị chính trong drawer xem nhanh. Vai trò duy nhất dùng cỡ này |
+| Metric | `--fs-metric` 23px | 700 | `--lh-metric` | −0.025em | Số KPI ở desktop |
+| Headline | `--fs-headline` 20px | 650 | 1.55 | −0.01em | Tên sản phẩm ở đầu trang; xuống 16px ở mobile |
+| Subject | `--fs-headline` 20px | 650 | `--lh-dense` | −0.02em | Tên đối tượng đang xem, đứng trên dải KPI |
+| Metric compact | `--fs-metric-sm` 19px | 700 | `--lh-metric` | −0.02em | Số KPI ở mobile, và giá trị hai đầu cầu nối waterfall |
+| Insight | `--fs-insight` 16px | 700 | `--lh-dense` | −0.01em | Câu cảnh báo trong ô KPI cuối. Ngắn, một dòng |
+| Title | `--fs-title` 15px | 700 | 1.55 | −0.01em | Tiêu đề widget và nhóm phân tích |
+| Body | `--fs-body` 14px | 400 | `--lh-body` | normal | Văn bản giao diện và nội dung trạng thái. Tab dùng 14px/650 |
+| Caption | `--fs-caption` 13px | 400 | `--lh-body` | normal | Câu trạng thái rỗng, ghi chú, chú thích bảng |
+| Label | `--fs-label` 12px | 650 | `--lh-body` | normal | Nhãn bộ lọc, KPI, biến động và metadata |
+
+**Bậc phái sinh duy nhất.** Hậu tố đơn vị trong `.dmoney i` dùng `0.7em` chứ không
+phải một bậc cố định: nó phải co theo chính con số nó chú thích, nên `0,7 × 23px`
+và `0,7 × 19px` cho hai giá trị khác nhau một cách có chủ đích. Đây là ngoại lệ
+được ghi nhận, không phải giá trị trôi.
+
+**The No Contextual Weight Rule.** Không dùng `bolder` hay `lighter` — chúng giải
+theo trọng lượng của cha nên cùng một vai trò ra hai kết quả ở hai chỗ. Mặc định
+của `<b>` chính là `bolder`, và trong ngữ cảnh 700 nó ra **900**: số KPI dựng bằng
+`<Money>` từng render ở 900 trong khi số KPI viết thẳng trong `<strong>` render ở
+700 — hai thẻ cạnh nhau, cùng vai trò, hai trọng lượng, không ai chọn con số đó.
+`.dmoney b` vì thế khai báo `font-weight: inherit`.
+
+**The One Job Per Step Rule.** Một bậc cỡ chỉ gánh số vai trò mà mắt còn phân biệt
+được. Trước lượt đồng bộ, bậc `12px` mang **mười lăm** tổ hợp đậm/nhịp-dòng khác
+nhau và chiếm 57% toàn bộ khai báo cỡ chữ — nên hai thứ khác việc lại trông y hệt
+nhau. Khi một bậc bắt đầu cần thêm biến thể, hãy tách bằng **màu** hoặc **khoảng
+trắng** trước khi tách bằng một tổ hợp chữ mới.
 
 **The Two-Step Secondary Rule.** Tầng chữ phụ chỉ có **hai** bậc: 12px cho nhãn
 và metadata, 13px cho câu trạng thái. Trước đây có năm cỡ trong khoảng 2px

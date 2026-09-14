@@ -149,6 +149,15 @@ function LocationBody({ data }: { data: LocationDetailData }) {
 
   return (
     <>
+      {/* Tên địa bàn phải nhìn thấy được. Trước đây nó chỉ tồn tại trong
+          `aria-label` của dải KPI, nên người dùng nhìn được nhận ÍT thông tin
+          hơn người dùng trình đọc màn hình — và ở khổ hẹp, dòng đang chọn trong
+          danh sách đã cuộn khuất nên không còn chỗ nào đối chiếu. */}
+      <h2 className="dsubject">
+        {data.location.name}
+        <small>Mã {data.location.id}</small>
+      </h2>
+
       <KpiStrip label={`Chỉ số ${data.location.name}`}>
         <Kpi
           label="Thu trong kỳ"
@@ -163,8 +172,11 @@ function LocationBody({ data }: { data: LocationDetailData }) {
         <Kpi label="Đóng góp vào thành phố" note="Trên tổng thu toàn thành phố cùng kỳ">
           {pct(data.shareOfCity)}
         </Kpi>
-        <Kpi label="Mã địa bàn" code note={data.meta.periodLabel}>
-          {data.location.id}
+        <Kpi
+          label="Lũy kế từ đầu năm"
+          note={<><Change current={data.kpiYtd.amount} previous={data.kpiYtd.previous} label="" /> so cùng kỳ</>}
+        >
+          <Money value={data.kpiYtd.amount} />
         </Kpi>
       </KpiStrip>
 

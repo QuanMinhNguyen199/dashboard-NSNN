@@ -79,6 +79,8 @@ Quy tắc:
 | So với cùng kỳ | So sánh với cùng tháng/quý của năm trước |
 | Tỷ trọng | Giá trị thành phần chia cho tổng cùng phạm vi |
 | Độ phủ | Số địa bàn có dữ liệu trên tổng địa bàn kỳ vọng |
+| Dự toán năm | Số giao đầu năm cho phạm vi đang lọc |
+| Tiến độ dự toán | Lũy kế từ đầu năm chia dự toán năm |
 | Chênh lệch tuyệt đối | Giá trị kỳ B trừ giá trị kỳ A |
 | Chênh lệch phần trăm | Chênh lệch chia cho giá trị kỳ A hợp lệ |
 
@@ -134,7 +136,7 @@ Không được cộng đồng thời một dòng tổng và các dòng con củ
 
 Người dùng cần thấy ngay:
 
-- KPI trong kỳ và lũy kế.
+- KPI trong kỳ, lũy kế và tiến độ so dự toán.
 - Xu hướng năm hiện tại so với năm trước.
 - Cơ cấu bốn nguồn thu.
 - Top 5 khoản thu nội địa.
@@ -232,6 +234,31 @@ Drawer giữ người dùng trong màn Tổng quan và chỉ hiển thị:
 Drawer có URL riêng, đóng được bằng Escape và nút Back của trình duyệt. Trên mobile, drawer
 hiển thị toàn màn hình.
 
+## 9.1. Dự toán và tiến độ dự toán
+
+Câu hỏi "đã hoàn thành bao nhiêu phần trăm dự toán" nằm trong nhóm câu hỏi chính
+mà lãnh đạo đặt ra, nên dashboard có một ô KPI trả lời nó.
+
+**Nguồn dữ liệu chưa có.** Toàn bộ 143 phản hồi API tham chiếu chỉ chứa trường số
+thực hiện (`amount`); không có trường dự toán, kế hoạch hay chỉ tiêu giao. Đặc tả
+v2 trước đây chủ động để dự toán ngoài phạm vi vì lý do này.
+
+**Cách prototype đang xử lý.** Lớp mock tự suy ra một con số dự toán từ thực hiện
+cả năm trước nhân hệ số 1,08, làm tròn tới tỷ. Con số này **tất định** (cùng bộ
+lọc luôn cho cùng kết quả) và bám đúng phạm vi đang lọc, nhưng nó **không phải
+chỉ tiêu được giao của Hà Nội**.
+
+**Ràng buộc bắt buộc với giao diện.** Hợp đồng dữ liệu mang trường `origin` nói
+rõ số đến từ `mock` hay `api`. Chừng nào `origin` còn là `mock`:
+
+- Nhãn KPI phải mang chữ `(mô phỏng)`.
+- Dòng phụ phải nêu cách suy ra và nói rõ đây không phải chỉ tiêu được giao.
+
+Khi API có trường thật, adapter trả `origin: "api"` và hai dấu hiệu trên tự biến
+mất — không phải sửa giao diện.
+
+**Cần xác nhận:** xem A09 và A10 ở mục 15.
+
 ## 10. Quy tắc dữ liệu
 
 Dashboard này không phải công cụ khám phá dữ liệu cá nhân — số trên màn hình được đọc lên
@@ -251,6 +278,7 @@ sai cụ thể, chứ không phải để code cho chặt chẽ.
 | Không xếp hạng dòng tổng như một địa bàn | Dòng tổng thành phố và tổng Kho bạc lớn hơn mọi phường, xã | Bảng xếp hạng luôn bị hai dòng đó chiếm đầu, vô nghĩa |
 | Nguồn do trung ương quản lý không phân bổ về địa bàn | Hải quan và dầu thô hạch toán ở cấp thành phố | Cộng nguyên phần thành phố vào từng phường làm tổng 126 địa bàn vượt xa tổng thật |
 | Waterfall khớp tổng | Tổng các bước phải đúng bằng giá trị cuối trừ đầu | Biểu đồ giải thích biến động mà chính nó không cân thì không dùng để giải thích được |
+| Phân rã khớp chỉ số | Tổng cột chênh lệch của bảng phải bằng chênh lệch mà KPI công bố | Bảng và KPI nói hai con số khác nhau dưới cùng một nhãn kỳ, cách nhau 20px, và người đọc không có cách nào biết bên nào đúng |
 | Partial vẫn hiển thị dữ liệu | Chờ đủ 126/126 mới cho xem là chặn mất việc điều hành hằng ngày | Độ phủ được đặt trong KPI/widget liên quan, không lặp thành banner ở mọi tab |
 
 ## 11. Trạng thái màn hình
@@ -288,7 +316,25 @@ Nếu chưa có API đầy đủ, prototype được phép dùng mock data với
 - Có đủ 21 khoản thu và danh mục địa bàn.
 - Có trường hợp số 0, số âm và dữ liệu thiếu để kiểm thử.
 - Không trộn mock với tổng chính thức.
-- Giao diện ghi rõ `Dữ liệu mô phỏng phục vụ prototype`.
+- Giao diện **không** mang nhãn "dữ liệu mô phỏng" — xem mục 13.1.
+
+## 13.1. Vì sao giao diện không mang nhãn "dữ liệu mô phỏng"
+
+Bản dựng này được bàn giao cho đội frontend làm **thiết kế chính**, không phải để
+trình chiếu cho người ra quyết định. Nhãn mô phỏng là giàn giáo của giai đoạn
+prototype: nếu để lại, đội frontend sẽ chép nó vào sản phẩm thật.
+
+**Hệ quả phải chấp nhận.** Ứng dụng vẫn chạy trên số liệu mô phỏng, và từ nay
+không còn gì trên màn hình nói điều đó. Rủi ro "một con số giả bị trích vào báo
+cáo thật" không biến mất — nó chuyển từ giao diện sang **quy trình**:
+
+- Bản chạy thử chỉ dùng để duyệt thiết kế, không dùng trong cuộc họp chuyên môn.
+- Người trình chiếu phải nói rõ tính chất số liệu.
+- Tài liệu bàn giao nêu rõ ở `BAO-CAO-PROTOTYPE.md` mục 4.
+
+**Khi nối API thật** thì hệ quả này tự hết. Hợp đồng vẫn giữ `BudgetEstimate.origin`
+để phân biệt `mock` với `api`, nên nếu sau này cần bật lại một dấu hiệu nào đó thì
+dữ liệu để làm việc đó đã có sẵn.
 
 ## 14. Tiêu chí nghiệm thu
 
@@ -310,14 +356,22 @@ ai canh. Đây không phải danh sách "nên có" — đạt hết mới gọi 
 | 11 | Không thẻ nào bị cắt nội dung ngang | Khác tiêu chí 10: trang không tràn nhưng nội dung trong thẻ vẫn bị `overflow: hidden` nuốt |
 | 12 | Thẻ cùng hàng cao bằng nhau | Mép dưới lệch nhau làm lưới trông như hỏng và làm người đọc nghi ngờ cả phần số liệu |
 | 13 | Giao diện có trạng thái loading, partial, no-data và error | Không phân biệt được "đang tải", "không có dữ liệu" và "lỗi" thì người dùng không biết nên chờ, nên đổi filter hay nên báo sự cố |
-| 14 | Mock data được nhận diện rõ | Số mô phỏng lọt vào báo cáo là rủi ro lớn nhất của một prototype |
+| 14 | Tính chất dữ liệu được nêu ở tài liệu bàn giao | Xem mục 13.1: giao diện là bản thiết kế nên không mang nhãn mô phỏng; trách nhiệm chuyển sang tài liệu và quy trình trình chiếu |
 | 15 | Không có lỗi JavaScript chưa xử lý | Một lỗi chưa bắt có thể làm widget dừng cập nhật mà vẫn giữ số cũ trên màn hình |
 | 16 | TypeScript và production build sạch | Build hỏng thì không deploy được; type sai thường là dấu hiệu của một giả định dữ liệu sai |
 
-Bảng trên gom yêu cầu thành 16 nhóm nghiệp vụ. Script thực tế chạy 17 phép kiểm tra trên
-Chrome vì tách riêng ba lỗi bố cục: nội dung thẻ bị cắt, chiều cao thẻ cùng hàng và đơn vị
-tiền trong cột số. TypeScript và production build được kiểm bằng `npm run build`. Các lệnh
-nằm trong GitHub Actions nên mỗi lần đẩy code đều được kiểm lại.
+### Ba con số, cùng một bộ tiêu chí
+
+Ba tài liệu đếm khác nhau vì chúng gom khác nhau, không phải vì chúng bất đồng:
+
+| Nơi | Số | Cách gom |
+|---|---|---|
+| Bảng trên (BA) | **16** | Gom theo **nhóm nghiệp vụ**: ba lỗi bố cục nằm chung một dòng |
+| `THIET-KE` §18 | **18** | Liệt kê theo **phép kiểm**, gồm cả tiêu chí 14 (TypeScript và build) |
+| `scripts/acceptance.mjs` | **17** | Số phép chạy **trên trình duyệt**; tiêu chí 14 không chạy được ở đó |
+
+`17 + 1 = 18`: tiêu chí 14 được kiểm bằng `npm run build` chứ không bằng Chrome. Cả hai
+lệnh nằm trong GitHub Actions nên mỗi lần đẩy code đều được kiểm lại.
 
 ## 15. Giả định cần xác nhận
 
@@ -333,6 +387,8 @@ Các nội dung dưới đây chưa được coi là nghiệp vụ chính thức
 | A06 | Quy tắc địa giới lịch sử trước và sau thay đổi hành chính |
 | A07 | Người dùng có được truy cập trực tiếp mọi chế độ so sánh hay không |
 | A08 | Phạm vi dữ liệu chính thức hiện có theo năm, kỳ và địa bàn |
+| A09 | Nguồn dự toán năm: hệ thống nào giữ, lấy theo đường nào, cập nhật theo chu kỳ nào. Prototype đang dùng số mô phỏng — xem mục 9.1 |
+| A10 | Ngày chốt số liệu: API có trả mốc "số liệu chốt đến ngày" không. Đây là câu hỏi đầu tiên người đọc bị chất vấn trong họp, hiện giao diện không có chỗ trả lời |
 
 ## 16. Thuật ngữ ngắn
 

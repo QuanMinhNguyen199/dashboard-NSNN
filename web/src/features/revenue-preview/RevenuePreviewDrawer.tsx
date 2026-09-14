@@ -127,8 +127,8 @@ export function RevenuePreviewDrawer() {
             <dd>{source.cityOnly ? "Toàn thành phố (không phân bổ)" : "Toàn thành phố Hà Nội"}</dd>
           </div>
           <div>
-            <dt>Nguồn dữ liệu</dt>
-            <dd>Mô phỏng · {items.length} khoản</dd>
+            <dt>Số khoản</dt>
+            <dd>{items.length} khoản</dd>
           </div>
         </dl>
 

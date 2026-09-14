@@ -250,8 +250,35 @@ export function validateAdvancedComparison(value: unknown): AdvancedComparisonDa
   assert(MODES_ALLOWED.includes(value.mode as AdvancedComparisonMode), "So sánh: chế độ không hợp lệ.");
   assert(isRecord(value.a) && isRecord(value.b), "So sánh: thiếu một trong hai vế.");
   assert(Array.isArray(value.rows), "So sánh: thiếu bảng delta.");
-  validateWaterfall(value.waterfall, "So sánh");
+  assertRowsReconcile(value, "So sánh");
+  if (value.waterfall !== null && value.waterfall !== undefined)
+    validateWaterfall(value.waterfall, "So sánh");
   return value as unknown as AdvancedComparisonData;
+}
+
+/**
+ * Phân rã phải cộng lại đúng bằng con số tổng đứng ngay trên nó.
+ *
+ * Đây là anh em của phép đối soát waterfall, áp cho quan hệ giữa **dải KPI** và
+ * **bảng chênh lệch** bên dưới. Lỗi mà nó canh không hiện ra như một lỗi: bảng
+ * vẫn đủ dòng, vẫn sắp xếp được, chỉ là tổng của nó khác con số phía trên. Người
+ * đọc thấy hai đáp án cho cùng một câu hỏi, cùng một nhãn kỳ, cách nhau 20px —
+ * và không có cách nào biết bên nào đúng.
+ *
+ * Ngưỡng 1.000 đồng là sai số làm tròn chấp nhận được, giống ngưỡng của waterfall.
+ */
+function assertRowsReconcile(value: Record<string, unknown>, where: string): void {
+  const delta = value.delta;
+  if (typeof delta !== "number" || !Number.isFinite(delta)) return;
+  let sum = 0;
+  for (const row of value.rows as unknown[]) {
+    if (!isRecord(row) || typeof row.delta !== "number" || !Number.isFinite(row.delta)) return;
+    sum += row.delta;
+  }
+  assert(
+    Math.abs(sum - delta) <= 1000,
+    `${where}: tổng chênh lệch các dòng (${Math.round(sum)}) không khớp chênh lệch của chỉ số (${Math.round(delta)}).`,
+  );
 }
 
 /** Lọc navigation intent: chỉ giữ những intent đúng dạng và trỏ tới thực thể có thật. */

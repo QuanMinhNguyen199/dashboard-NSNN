@@ -6,7 +6,13 @@ export { TrendChart };
 import type { AmountRow, TrendPoint, Waterfall } from "@/domain/types";
 import { inScale, money, moneyScale, pct } from "@/components/primitives";
 
-const DONUT_COLORS = ["#1657a8", "#5598e7", "#9abfe9", "#637a94"];
+/**
+ * Bốn bậc màu của biểu đồ tròn, tham chiếu qua token chứ không viết cứng mã hex:
+ * hệ này giữ luật "không một mã màu nào nằm ngoài `:root`". Cả bốn đều đạt ≥3:1
+ * trên nền trắng vì lát donut vừa mang thông tin vừa là thứ bấm được.
+ */
+const DONUT_TOKENS = ["--donut-1", "--donut-2", "--donut-3", "--donut-4"];
+const donutColor = (index: number) => `var(${DONUT_TOKENS[index % DONUT_TOKENS.length]})`;
 
 /** Biểu đồ cơ cấu nhỏ gọn, có bảng chú giải đọc được bằng bàn phím. */
 export function DonutChart({
@@ -75,7 +81,7 @@ export function DonutChart({
                 cx={centerX}
                 cy={centerY}
                 r={radius}
-                stroke={DONUT_COLORS[index % DONUT_COLORS.length]}
+                style={{ stroke: donutColor(index) }}
                 strokeDasharray={`${length} ${circumference - length}`}
                 strokeDashoffset={-offset}
                 transform={`rotate(-90 ${centerX} ${centerY})`}
@@ -100,14 +106,34 @@ export function DonutChart({
             return segment;
           })}
         </svg>
-        <span><b>100%</b><small>{centerLabel}</small></span>
+        {/* Tâm donut là vị trí đắt nhất của biểu đồ. "100%" chiếm chỗ đó để nói
+            một điều ai cũng biết, và không phản hồi khi người dùng chọn lát —
+            nên ở phép phân rã ba tầng, tầng giữa mất mốc neo: bấm xong không có
+            gì xác nhận mình vừa bấm cái nào. Ưu tiên lát đang rê chuột, rồi lát
+            đang chọn, cuối cùng mới là tổng. */}
+        {(() => {
+          const active =
+            positiveRows.find((row) => row.id === hoveredId) ??
+            positiveRows.find((row) => row.id === selectedId);
+          return active ? (
+            <span>
+              <b>{pct((active.amount / total) * 100)}</b>
+              <small>{active.name}</small>
+            </span>
+          ) : (
+            <span>
+              <b>{money(total)}</b>
+              <small>{centerLabel}</small>
+            </span>
+          );
+        })()}
         {callout && (
           <div className="ddonut-labels">
             {slices.map(({ row, index }) => {
               const position = calloutPositions.get(row.id)!;
               const content = (
                 <>
-                  <i style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }} />
+                  <i style={{ background: donutColor(index) }} />
                   <span>{getCalloutLabel(row)}</span>
                   <strong>{pct((row.amount / total) * 100)}</strong>
                 </>
@@ -131,7 +157,7 @@ export function DonutChart({
           const tooltipId = `${chartId}-${row.id}`;
           const content = (
             <>
-              <i style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }} />
+              <i style={{ background: donutColor(index) }} />
               <span>{row.name}</span>
               <strong>{pct((row.amount / total) * 100)}</strong>
             </>
@@ -211,7 +237,7 @@ export function WaterfallChart({
           const width = (Math.abs(step.delta) / scale) * 50;
           const inner = (
             <>
-              <span className="dcontrib-name">{step.name}</span>
+              <span className="dcontrib-name" title={step.name}>{step.name}</span>
               <span className="dcontrib-track">
                 <i
                   className={step.delta >= 0 ? "pos" : "neg"}

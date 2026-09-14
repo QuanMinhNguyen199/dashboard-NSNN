@@ -176,7 +176,10 @@ export function FilterBar() {
         </select>
       </label>
 
-      {open && (
+      {/* Render ở mọi ngữ cảnh. Trước đây điều kiện `open` khiến nút chỉ tồn tại
+          ở bản thu gọn, nên desktop rộng — nơi bày cả sáu điều khiển cùng lúc và
+          cũng là nơi dễ lạc bộ lọc nhất — hoàn toàn không có đường về mặc định. */}
+      {(
         <div className="dfilters-reset-row">
           <button
             type="button"

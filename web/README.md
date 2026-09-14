@@ -271,8 +271,11 @@ lên domain riêng ở gốc thì đặt `VITE_BASE=/`.
 - **Chưa nối API thật.** `VITE_DASHBOARD_PROVIDER=api` đã có adapter và validation nhưng
   backend `/api/dashboard/*` chưa tồn tại; chạy chế độ đó sẽ ra trạng thái lỗi có nút thử
   lại — đúng như thiết kế, không phải hỏng.
-- **Mock không phải số liệu nghiệp vụ.** Giao diện ghi rõ “Dữ liệu mô phỏng phục vụ
-  prototype” ở đầu trang. Không trộn mock với tổng chính thức trong bất kỳ phép tính nào.
+- **Mock không phải số liệu nghiệp vụ, và giao diện KHÔNG nói ra điều đó.** Nhãn cảnh báo
+  đã được gỡ vì bản dựng này là thiết kế bàn giao cho đội frontend — để lại thì nhãn sẽ bị
+  chép vào sản phẩm thật. Hệ quả: bản chạy thử chỉ dùng để duyệt thiết kế, không dùng trong
+  cuộc họp chuyên môn. Lý do đầy đủ ở [`../BA-NSNN.md`](../BA-NSNN.md) mục 13.1.
+  Không trộn mock với tổng chính thức trong bất kỳ phép tính nào.
 - **Xuất Excel chưa làm** — đặc tả §9 nêu ở phần bảng 21 khoản; hiện có tìm kiếm và sắp
   xếp mọi cột, chưa có nút xuất.
 - **CAGR khi so từ ba năm** là `[COULD]` trong đặc tả, chưa triển khai.

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { providerKind } from "@/data";
 import { INDICATORS, YEARS } from "@/domain/catalog";
 import type { DashboardFilters, TabId } from "@/domain/types";
 import { useHostContext } from "@/host/HostContext";
@@ -160,7 +159,6 @@ export function App() {
             <h1>Thu NSNN Hà Nội</h1>
             <p>{active.label}</p>
           </div>
-          <span>{providerKind === "mock" ? "Dữ liệu mô phỏng" : providerKind.toUpperCase()}</span>
         </header>
       ) : (
         <header className="dheader">
@@ -172,9 +170,6 @@ export function App() {
             </div>
           </div>
           <div className="dheader-tools">
-            <p className="dheader-source">
-              {providerKind === "mock" ? "Dữ liệu mô phỏng phục vụ prototype" : `Nguồn dữ liệu: ${providerKind.toUpperCase()}`}
-            </p>
             <button
               type="button"
               className="dheader-frame"
@@ -240,6 +235,7 @@ export function App() {
         </div>
 
         <FilterBar />
+
 
         <main
           id="workspace"

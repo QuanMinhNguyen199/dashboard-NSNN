@@ -463,6 +463,14 @@ export function buildLocationDetail(
   const previous = sumOf(filters, { ...scope, year: prevYear(filters) });
   const cityTotal = sumOf(filters);
 
+  const ytdMonths = monthsOf({ ...filters, accumulation: "YTD" });
+  const kpiYtd: AmountRow = {
+    id: "ytd",
+    name: "Lũy kế từ đầu năm",
+    amount: sumOf(filters, { ...scope, months: ytdMonths }) ?? 0,
+    previous: sumOf(filters, { ...scope, months: ytdMonths, year: prevYear(filters) }),
+  };
+
   // Xếp hạng chỉ trên danh mục 126 phường/xã: dòng tổng thành phố và dòng tổng
   // Kho bạc không nằm trong danh mục nên không thể lọt vào bảng.
   const ranked = LOCATIONS.map((l) => ({ id: l.id, amount: sumOf(filters, { locationIds: [l.id] }) }))
@@ -484,6 +492,7 @@ export function buildLocationDetail(
     meta: metaOf(filters, location.name),
     location,
     kpiPeriod: { id: location.id, name: location.name, amount, previous },
+    kpiYtd,
     rank: position < 0 ? null : { position: position + 1, total: ranked.length },
     shareOfCity: share(amount, cityTotal),
     trend: trendOf(filters, scope),
@@ -514,7 +523,15 @@ export function buildAdvancedComparison(
   let labelB: string;
   let idA: string;
   let idB: string;
-  let rowItems: ItemDef[] = itemsForIndicator(filters.indicator, DOMESTIC_ITEMS);
+  /**
+   * Tập khoản dùng để phân rã chênh lệch.
+   *
+   * Ràng buộc duy nhất nhưng bắt buộc: tổng các dòng phải **đúng bằng** chênh
+   * lệch mà dải KPI công bố. Trước đây tập này luôn là 21 khoản nội địa kể cả
+   * khi KPI cộng toàn NSNN, nên bảng và cầu nối nói một con số còn KPI ngay phía
+   * trên nói con số khác — cùng một nhãn kỳ, cách nhau 20px.
+   */
+  let rowItems: ItemDef[] = [];
 
   if (filters.mode === "period") {
     const a = parsePeriodToken(filters.periodA ?? "");
@@ -526,6 +543,8 @@ export function buildAdvancedComparison(
     idB = filters.periodB!;
     labelA = periodTokenLabel(idA);
     labelB = periodTokenLabel(idB);
+    // Hai kỳ, cùng phạm vi toàn thành phố: phân rã trên toàn danh mục.
+    rowItems = itemsForIndicator(filters.indicator, ALL_ITEMS);
   } else if (filters.mode === "revenue") {
     const a = SOURCE_BY_CODE[(filters.source ?? "domestic") as SourceCode];
     const b = SOURCE_BY_CODE[(filters.item ?? "import-export") as SourceCode];
@@ -540,7 +559,6 @@ export function buildAdvancedComparison(
     idB = b.code;
     labelA = a.shortName;
     labelB = b.shortName;
-    rowItems = [];
   } else {
     const a = LOCATION_BY_ID[filters.locationA ?? ""];
     const b = LOCATION_BY_ID[filters.locationB ?? ""];
@@ -553,6 +571,11 @@ export function buildAdvancedComparison(
     idB = b.id;
     labelA = a.name;
     labelB = b.name;
+    // Phường, xã chỉ nhận nguồn có phân bổ theo địa bàn. Đưa cả nguồn do trung
+    // ương quản lý vào đây sẽ tạo ra những dòng 0 − 0 và làm loãng bảng.
+    rowItems = itemsForIndicator(filters.indicator, ALL_ITEMS).filter(
+      (item) => !SOURCE_BY_CODE[item.source].cityOnly,
+    );
   }
 
   const totalA = sumOf(sideA, scopeA);
@@ -560,35 +583,40 @@ export function buildAdvancedComparison(
   const delta = totalA === null || totalB === null ? null : totalB - totalA;
   const deltaPct = yoy(totalB, totalA);
 
+  const rowOfPair = (id: string, name: string, a: number, b: number) => ({
+    id,
+    name,
+    a,
+    b,
+    delta: b - a,
+    pct: yoy(b, a),
+    // Mẫu số là chênh lệch của chính tập đang liệt kê — nay bằng đúng chênh lệch
+    // của KPI — nên các dòng cộng lại ra 100%, không phải 92,8%.
+    contribution: delta ? ((b - a) / delta) * 100 : 0,
+  });
+
   const rows =
     filters.mode === "revenue"
-      ? SOURCES.map((source) => {
-          const items = itemsOfSource(source.code);
-          const a = sumOf(sideA, { items }) ?? 0;
-          const b = sumOf(sideB, { items }) ?? 0;
-          return {
-            id: source.code,
-            name: source.shortName,
-            a,
-            b,
-            delta: b - a,
-            pct: yoy(b, a),
-            contribution: delta ? ((b - a) / delta) * 100 : 0,
-          };
-        })
-      : (rowItems.length ? rowItems : DOMESTIC_ITEMS).map((item) => {
-          const a = sumOf(sideA, { ...scopeA, items: [item] }) ?? 0;
-          const b = sumOf(sideB, { ...scopeB, items: [item] }) ?? 0;
-          return {
-            id: item.code,
-            name: item.name,
-            a,
-            b,
-            delta: b - a,
-            pct: yoy(b, a),
-            contribution: delta ? ((b - a) / delta) * 100 : 0,
-          };
-        });
+      ? // Hai vế là hai tập khoản RỜI NHAU: "Thuế TNCN" không tồn tại bên xuất
+        // nhập khẩu, nên so từng dòng giữa hai nguồn là vô nghĩa. Liệt kê hợp của
+        // hai tập — khoản thuộc vế A có B bằng 0 và ngược lại — vừa đọc được là
+        // mỗi vế gồm những gì, vừa giữ tổng đúng bằng chênh lệch của KPI.
+        [
+          ...(scopeA.items ?? []).map((item) =>
+            rowOfPair(item.code, item.name, sumOf(sideA, { items: [item] }) ?? 0, 0),
+          ),
+          ...(scopeB.items ?? []).map((item) =>
+            rowOfPair(item.code, item.name, 0, sumOf(sideB, { items: [item] }) ?? 0),
+          ),
+        ]
+      : rowItems.map((item) =>
+          rowOfPair(
+            item.code,
+            item.name,
+            sumOf(sideA, { ...scopeA, items: [item] }) ?? 0,
+            sumOf(sideB, { ...scopeB, items: [item] }) ?? 0,
+          ),
+        );
 
   const waterfallRows: AmountRow[] = rows.map((row) => ({
     id: row.id,
@@ -605,7 +633,13 @@ export function buildAdvancedComparison(
     delta,
     deltaPct,
     rows: rows.sort((x, y) => Math.abs(y.delta) - Math.abs(x.delta)),
-    waterfall: waterfallOf(waterfallRows, { start: labelA, end: labelB }),
+    // Cầu nối kể câu chuyện "đi từ A sang B qua từng bước". Giữa hai kỳ hay hai
+    // địa bàn thì đó là câu chuyện có thật. Giữa hai NGUỒN THU thì không: không
+    // ai "đi từ thu nội địa sang thu khác" — hai vế chỉ đứng cạnh nhau. Trả null
+    // để widget bị loại khỏi lưới thay vì vẽ một biểu đồ đúng số nhưng sai nghĩa.
+    waterfall: filters.mode === "revenue"
+      ? null
+      : waterfallOf(waterfallRows, { start: labelA, end: labelB }),
     trendA: trendOf(sideA, scopeA),
     trendB: trendOf(sideB, scopeB),
   };
