@@ -14,6 +14,37 @@
   --divider: #eaeff6;
   /* Viền của thứ BẤM ĐƯỢC: đậm hơn hairline có chủ ý, vì viền của một điều khiển
      phải nói lên rằng nó bấm được. Dùng 7 chỗ trước khi có tên. */
+  /* ─── Thang chữ ───────────────────────────────────────────────────────────
+     Chín bậc cho chín vai trò, không có giá trị nào ngoài danh sách này. Trước
+     đây 94 khai báo cỡ chữ nằm rải trong stylesheet và 57% trong số đó là
+     `12px` — một bậc gánh mười lăm tổ hợp đậm/line-height khác nhau, nên hai
+     vai trò khác việc lại trông y hệt nhau. Token hoá để thang không trôi được:
+     thêm một bậc mới là phải sửa ở đây và sửa cả DESIGN.md. */
+  --fs-display: 32px;
+  --fs-metric: 23px;
+  --fs-headline: 20px;
+  --fs-metric-sm: 19px;
+  --fs-insight: 16px;
+  --fs-title: 15px;
+  --fs-body: 14px;
+  --fs-caption: 13px;
+  --fs-label: 12px;
+
+  /* Bốn trọng lượng. 650 là bậc nhãn của hệ — đủ nặng để tách khỏi thân bài mà
+     chưa thành tiêu đề. Không dùng `bolder`/`lighter`: chúng phụ thuộc ngữ cảnh
+     cha nên cùng một vai trò ra hai kết quả khác nhau ở hai chỗ. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-label: 650;
+  --fw-bold: 700;
+
+  /* Ba nhịp dòng. Số lớn cần chặt, thân bài cần thoáng, dòng dữ liệu dày nằm
+     giữa. `line-height: 1` chỉ dành cho nút — đó là căn giữa điều khiển, không
+     phải nhịp đọc. */
+  --lh-metric: 1.25;
+  --lh-dense: 1.3;
+  --lh-body: 1.55;
+
   --control-border: #c6d2e0;
   --scrollbar-thumb: #c3cedd;
 
@@ -60,7 +91,15 @@
   --brand: #1657a8;
   --data-primary: var(--brand);
   --data-secondary: #3987e5;
-  --data-reference: #8c9bae;
+  /* 3,72:1 trên nền trắng. Giá trị cũ #8c9bae chỉ đạt 2,83:1 — dưới ngưỡng
+     WCAG 1.4.11 cho đồ hoạ mang thông tin, mà đường kỳ trước thì mang thông tin. */
+  --data-reference: #75869b;
+  /* Bốn bậc của biểu đồ tròn, tất cả ≥3:1 trên nền trắng vì lát donut vừa mang
+     thông tin vừa bấm được. Bậc cũ #9abfe9 chỉ đạt 1,91:1 và #5598e7 đạt 2,99:1. */
+  --donut-1: #0d366b;
+  --donut-2: #1657a8;
+  --donut-3: #3987e5;
+  --donut-4: #6f93c4;
   --data-track: #e7edf5;
 
   --pos: #187044;
@@ -125,31 +164,27 @@ table { border-collapse: collapse; width: 100%; }
   width: 34px; height: 34px; flex: none;
   display: grid; place-items: center;
   border: 1px solid var(--on-dark-line); border-radius: 50%;
-  font-style: normal; font-weight: 700; font-size: 13px;
+  font-style: normal; font-weight: var(--fw-bold); font-size: var(--fs-caption);
 }
-.dheader h1 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; }
-.dheader p { color: var(--navy-ink); font-size: 12px; margin-top: 2px; }
+.dheader h1 { font-size: var(--fs-headline); font-weight: var(--fw-label); letter-spacing: -0.01em; }
+.dheader p { color: var(--navy-ink); font-size: var(--fs-label); margin-top: 2px; }
 .dmobile-header {
   display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
   min-height: 52px;
   padding: max(9px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 9px max(12px, env(safe-area-inset-left));
   background: var(--navy); color: var(--ink-on-dark);
 }
-.dmobile-header h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-.dmobile-header p { margin-top: 1px; color: var(--navy-ink); font-size: 12px; }
+.dmobile-header h1 { font-size: var(--fs-title); font-weight: var(--fw-bold); letter-spacing: -0.01em; }
+.dmobile-header p { margin-top: 1px; color: var(--navy-ink); font-size: var(--fs-label); }
 .dmobile-header > span {
   flex: none; padding: 3px 7px; border: 1px solid var(--on-dark-line);
-  border-radius: var(--r-chip); color: var(--navy-ink); font-size: 12px; font-weight: 650;
+  border-radius: var(--r-chip); color: var(--navy-ink); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dheader-tools { display: flex; align-items: center; gap: var(--s3); flex: none; }
-.dheader-source {
-  color: var(--navy-ink); font-size: 12px;
-  border: 1px solid var(--on-dark-line); border-radius: var(--r-chip); padding: 4px 9px;
-}
 .dheader-frame {
   min-height: 30px; padding: 5px 11px; white-space: nowrap;
   background: var(--on-dark-fill); border: 1px solid var(--on-dark-line); border-radius: var(--r-chip);
-  color: var(--ink-on-dark); font-size: 12px; font-weight: 650;
+  color: var(--ink-on-dark); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dheader-frame:hover { background: var(--on-dark-fill-hover); border-color: var(--on-dark-line-hover); }
 
@@ -169,30 +204,30 @@ table { border-collapse: collapse; width: 100%; }
   min-height: 34px; max-width: 190px; padding: 5px 30px 5px 10px;
   border: 1px solid var(--on-dark-line); border-radius: var(--r-control);
   background: var(--on-dark-fill) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M0 0h9L4.5 6z' fill='%23d3e1f0'/%3E%3C/svg%3E") no-repeat right 10px center;
-  color: var(--ink-on-dark); font-size: 12px; font-weight: 650; appearance: none;
+  color: var(--ink-on-dark); font-size: var(--fs-label); font-weight: var(--fw-label); appearance: none;
 }
 .dframe-device select:hover { border-color: var(--on-dark-line-hover); }
 .dframe-device option { color: var(--ink); background: var(--surface); }
-.dframe-title { font-size: 13px; font-weight: 650; }
+.dframe-title { font-size: var(--fs-caption); font-weight: var(--fw-label); }
 .dframe-host {
   padding: 3px 7px; border: 1px solid var(--on-dark-line);
-  border-radius: var(--r-chip); color: var(--navy-ink); font-size: 12px; font-weight: 650;
+  border-radius: var(--r-chip); color: var(--navy-ink); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dframe-presets { display: flex; gap: 2px; padding: 3px; background: var(--on-dark-fill); border-radius: var(--r-control); }
 .dframe-presets button {
   min-height: 26px; padding: 3px 10px; border-radius: var(--r-chip);
-  color: var(--navy-ink); font-size: 12px; font-weight: 650;
+  color: var(--navy-ink); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dframe-presets button.is-active { background: var(--surface); color: var(--brand); }
 .dframe-slider { display: flex; align-items: center; min-width: 140px; flex: 1 1 140px; max-width: 260px; }
 .dframe-slider input { width: 100%; accent-color: var(--ink-on-dark); }
 .dframe-size {
-  color: var(--navy-ink); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  color: var(--navy-ink); font-size: var(--fs-label); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .dframe-exit {
   min-height: 30px; padding: 5px 12px; margin-left: auto;
   background: var(--on-dark-fill); border: 1px solid var(--on-dark-line); border-radius: var(--r-chip);
-  color: var(--ink-on-dark); font-size: 12px; font-weight: 650;
+  color: var(--ink-on-dark); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dframe-exit:hover { background: var(--on-dark-fill-hover); }
 /* Nền phải TỐI hơn hẳn giao diện bên trong. Trước đây dùng `surface-sunken` gần
@@ -233,7 +268,7 @@ table { border-collapse: collapse; width: 100%; }
 .dtabs button {
   padding: 16px 2px 12px; white-space: nowrap;
   border-bottom: 3px solid transparent;
-  color: var(--ink-2); font-size: 14px; font-weight: 650;
+  color: var(--ink-2); font-size: var(--fs-body); font-weight: var(--fw-label);
 }
 .dtabs button:hover { color: var(--ink); }
 .dtabs button.is-active { color: var(--brand); border-bottom-color: var(--brand); }
@@ -255,12 +290,12 @@ table { border-collapse: collapse; width: 100%; }
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
 .dfilters label, .dfield { display: grid; gap: 5px; min-width: 0; }
-.dfilters span, .dfield > span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.dfilters span, .dfield > span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
 .dfilters select {
   min-height: 38px; max-width: 100%; padding: 6px 28px 6px 10px;
   background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M0 0h9L4.5 6z' fill='%235a6b80'/%3E%3C/svg%3E") no-repeat right 10px center;
   border: 1px solid var(--control-border); border-radius: var(--r-control);
-  font-size: 13px; appearance: none;
+  font-size: var(--fs-caption); appearance: none;
 }
 .dfilters select:hover { border-color: var(--blue-250); }
 .dfilters-summary { display: none; }
@@ -279,24 +314,24 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters[data-embedded="true"] .dfilters-summary p {
   flex: 1 1 auto; min-width: 0;
   display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
-  line-height: 1.45;
+  line-height: var(--lh-body);
 }
 .dfilters[data-embedded="true"] .dfilters-eyebrow {
   flex: none; padding: 2px 7px; border-radius: 999px;
-  background: var(--blue-050); color: var(--brand); font-size: 12px; font-weight: 700;
+  background: var(--blue-050); color: var(--brand); font-size: var(--fs-label); font-weight: var(--fw-bold);
 }
 .dfilters[data-embedded="true"] .dfilters-summary b {
-  color: var(--ink); font-size: 13px; font-weight: 650; white-space: nowrap;
+  color: var(--ink); font-size: var(--fs-caption); font-weight: var(--fw-label); white-space: nowrap;
 }
 .dfilters[data-embedded="true"] .dfilters-summary b + b::before {
-  content: "·"; margin-right: 8px; color: var(--ink-3); font-weight: 400;
+  content: "·"; margin-right: 8px; color: var(--ink-3); font-weight: var(--fw-regular);
 }
 .dfilters[data-embedded="true"] .dfilters-toggle {
   flex: none; min-width: 76px; min-height: 44px; padding: 0 11px;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   border: 1px solid var(--control-border); border-radius: var(--r-control);
   border-color: var(--blue-250); background: var(--blue-050); color: var(--brand);
-  font-size: 13px; font-weight: 650;
+  font-size: var(--fs-caption); font-weight: var(--fw-label);
 }
 .dfilters[data-embedded="true"] .dfilters-toggle:hover {
   border-color: var(--blue-250); background: var(--surface-sunken); color: var(--brand);
@@ -314,14 +349,18 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-accumulation { grid-column: span 6; }
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-budget { grid-column: span 4; }
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-indicator { grid-column: span 8; }
+/* Desktop rộng: nút nằm gọn cuối hàng điều khiển, không chiếm trọn chiều rộng
+   và không có đường kẻ phân cách — nó là một điều khiển phụ, không phải một khối
+   hành động. Bản thu gọn đổi sang khối đầy đủ ở luật bên dưới. */
 .dfilters-reset-row {
-  grid-column: 1 / -1; display: none;
-  padding-top: var(--s3); border-top: 1px solid var(--hairline);
+  display: flex; align-items: flex-end; flex: none;
 }
 .dfilters-reset {
-  width: 100%; min-height: 44px; padding: 0 14px;
+  min-height: 36px; padding: 0 12px; white-space: nowrap;
   border: 1px solid var(--control-border); border-radius: var(--r-control);
-  background: var(--surface); color: var(--brand); font-size: 13px; font-weight: 700;
+  /* Cùng trọng lượng với mọi nút khác của hệ (`.dbtn`, `.dseg`, tab): trước đây
+     riêng nút này dùng 700 nên cùng một cỡ chữ có hai kiểu nút. */
+  background: var(--surface); color: var(--brand); font-size: var(--fs-caption); font-weight: var(--fw-label);
 }
 .dfilters-reset:hover:not(:disabled) {
   border-color: var(--blue-250); background: var(--blue-050);
@@ -329,7 +368,9 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters-reset:disabled {
   cursor: default; color: var(--ink-3); opacity: 0.65;
 }
-.dfilters[data-embedded="true"] .dfilters-reset-row { display: block; }
+.dfilters[data-embedded="true"] .dfilters-reset-row { display: block; grid-column: 1 / -1;
+  padding-top: var(--s3); border-top: 1px solid var(--hairline); }
+.dfilters[data-embedded="true"] .dfilters-reset { width: 100%; min-height: 44px; padding: 0 14px; }
 
 /* Mobile host dùng cùng dữ liệu với web nhưng tóm phạm vi thành hai dòng dễ quét.
    Chỉ khi người dùng mở lọc, sáu control đầy đủ mới trở lại. */
@@ -368,18 +409,18 @@ table { border-collapse: collapse; width: 100%; }
   padding-left: var(--s3); border-left: 1px solid var(--hairline);
 }
 .dfilters-mobile-group span {
-  color: var(--ink-3); font-size: 12px; font-weight: 650; line-height: 1.25;
+  color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-label); line-height: var(--lh-metric);
 }
 .dfilters-mobile-group strong,
 .dfilters-mobile-group small {
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .dfilters-mobile-group strong {
-  color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1.4;
+  color: var(--ink); font-size: var(--fs-caption); font-weight: var(--fw-bold); line-height: var(--lh-body);
   font-variant-numeric: tabular-nums;
 }
 .dfilters-mobile-group small {
-  color: var(--ink-2); font-size: 12px; font-weight: 500; line-height: 1.3;
+  color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-medium); line-height: var(--lh-dense);
 }
 .dapp[data-host="mobile"] .dfilters[data-embedded="true"] .dfilters-toggle {
   flex: none; min-width: 76px; min-height: 44px; padding: 0 11px;
@@ -413,7 +454,7 @@ table { border-collapse: collapse; width: 100%; }
 .dseg { display: flex; gap: 2px; padding: 3px; min-height: 38px; background: var(--divider); border-radius: var(--r-control); }
 .dseg button {
   min-height: 30px; padding: 3px 11px; border-radius: var(--r-chip);
-  color: var(--ink-2); font-size: 12px; font-weight: 650;
+  color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 /* impeccable-disable-next-line design-system-color -- alpha của bóng, khai ở sidecar */
 .dseg button.is-active { background: var(--surface); color: var(--brand); box-shadow: var(--shadow-control); }
@@ -423,7 +464,7 @@ table { border-collapse: collapse; width: 100%; }
 .dsubnav { display: flex; gap: var(--s2); border-bottom: 1px solid var(--hairline); margin-bottom: var(--s4); }
 .dsubnav button {
   padding: 9px 14px; border-bottom: 2px solid transparent;
-  color: var(--ink-2); font-size: 13px; font-weight: 650;
+  color: var(--ink-2); font-size: var(--fs-caption); font-weight: var(--fw-label);
 }
 .dsubnav button.is-active { color: var(--brand); border-bottom-color: var(--brand); }
 
@@ -456,17 +497,17 @@ table { border-collapse: collapse; width: 100%; }
    squint test cho thấy chúng nhập thành một tầng. Tách bằng MÀU (ink-2 so với
    ink-3) thay vì thêm một bậc cỡ, để thang chữ phụ vẫn đúng hai bậc. */
 .dkpis > div > span {
-  color: var(--ink-2); font-size: 12px; font-weight: 650; letter-spacing: 0.01em;
+  color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); letter-spacing: 0.01em;
 }
 .dkpis strong {
-  font-size: 23px; font-weight: 700; line-height: 1.25; letter-spacing: -0.025em;
+  font-size: var(--fs-metric); font-weight: var(--fw-bold); line-height: var(--lh-metric); letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
 }
-.dkpis strong em { color: var(--ink-2); font-size: 14px; font-style: normal; font-weight: 500; }
-.dkpis strong.is-code { font-size: 19px; letter-spacing: 0.02em; }
-.dkpis small { color: var(--ink-3); font-size: 12px; line-height: 1.45; }
+.dkpis strong em { color: var(--ink-2); font-size: var(--fs-body); font-style: normal; font-weight: var(--fw-medium); }
+.dkpis strong.is-code { font-size: var(--fs-metric-sm); letter-spacing: 0.02em; }
+.dkpis small { color: var(--ink-3); font-size: var(--fs-label); line-height: var(--lh-body); }
 .dkpi-insight { background: var(--surface-sunken); }
-.dkpi-insight strong { font-size: 16px; line-height: 1.35; letter-spacing: -0.01em; }
+.dkpi-insight strong { font-size: var(--fs-insight); line-height: var(--lh-dense); letter-spacing: -0.01em; }
 .dkpi-insight.tone-positive strong { color: var(--pos); }
 .dkpi-insight.tone-critical strong { color: var(--neg); }
 .dkpi-insight.tone-warning strong { color: var(--note-ink); }
@@ -485,16 +526,22 @@ table { border-collapse: collapse; width: 100%; }
 }
 
 /* Số đứng một mình: chữ số giữ vai trò chính, đơn vị lùi lại phía sau. */
+/* Chữ số mang đúng trọng lượng của vai trò chứa nó. Mặc định của `<b>` là
+   `bolder`, mà `bolder` trong ngữ cảnh 700 ra **900** — nên số KPI dựng bằng
+   `<Money>` render ở 900 còn số KPI viết thẳng trong `<strong>` render ở 700.
+   Hai thẻ cạnh nhau, cùng một vai trò, hai trọng lượng khác nhau, và không ai
+   chọn con số 900 đó cả. */
 .dmoney { display: inline-flex; align-items: baseline; gap: 0.28em; }
+.dmoney b { font-weight: inherit; }
 /* 0,6em của 23px chỉ ra 14px — nhỏ hơn cả chữ thân bài, trong khi nó là thứ nói
    con số kia nghĩa là gì. Nâng lên 0,7em và tăng trọng lượng. */
 .dmoney i {
-  font-size: 0.7em; font-weight: 600; font-style: normal;
+  font-size: 0.7em; font-weight: var(--fw-label); font-style: normal;
   color: var(--ink-2); letter-spacing: 0.01em;
 }
 
 /* Nhãn đơn vị của cả thẻ, ghi một lần ở phụ đề. */
-.dunit { color: var(--ink-2); font-weight: 650; white-space: nowrap; }
+.dunit { color: var(--ink-2); font-weight: var(--fw-label); white-space: nowrap; }
 
 /* ──────────────────────────────── Lưới ──────────────────────────────────── */
 /* Hai thẻ cùng một hàng phải cao bằng nhau: mép dưới lệch nhau làm lưới trông
@@ -530,8 +577,8 @@ table { border-collapse: collapse; width: 100%; }
    được: hai thẻ cùng hàng có thân bắt đầu lệch nhau 46px. Vẫn cho phép xuống
    dòng — ở thẻ hẹp kèm ô tìm kiếm thì xuống dòng mới là đúng. */
 .dcard-title { flex: 1 1 11rem; min-width: 0; }
-.dcard-title h2 { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-.dcard-title p { margin-top: 2px; color: var(--ink-2); font-size: 12px; }
+.dcard-title h2 { font-size: var(--fs-title); font-weight: var(--fw-bold); letter-spacing: -0.01em; }
+.dcard-title p { margin-top: 2px; color: var(--ink-2); font-size: var(--fs-label); }
 /* `flex: none` giữ nguyên bề rộng max-content nên nhóm nút tràn ra khỏi thẻ hẹp.
    Cho phép co lại sau khi đã xuống dòng. */
 .dcard-actions { flex: 0 1 auto; min-width: 0; }
@@ -548,17 +595,30 @@ table { border-collapse: collapse; width: 100%; }
 .dactions { display: flex; gap: var(--s2); }
 
 .dlink {
-  color: var(--brand); font-size: 12px; font-weight: 650;
+  color: var(--brand); font-size: var(--fs-label); font-weight: var(--fw-label);
   text-decoration: underline; text-underline-offset: 3px; padding: 4px 2px;
 }
 .dbtn {
   min-height: 36px; padding: 7px 14px; border: 1px solid var(--hairline);
   border-radius: var(--r-control); background: var(--surface);
-  font-size: 13px; font-weight: 650;
+  font-size: var(--fs-caption); font-weight: var(--fw-label);
 }
 .dbtn:hover { border-color: var(--blue-250); color: var(--brand); }
 .dbtn-primary { background: var(--brand); border-color: var(--brand); color: var(--ink-on-dark); }
 .dbtn-primary:hover { background: var(--blue-550); color: var(--ink-on-dark); }
+
+/* Tên đối tượng đang xem. Đứng trên dải KPI vì mọi con số bên dưới đều là số
+   CỦA NÓ — không có dòng này thì dải KPI là bốn con số không rõ thuộc về ai.
+   Dùng bậc Headline chứ không dùng bậc Metric: trước đây nó trùng khít thông số
+   của số liệu (19px/700/1.55) nên một tiêu đề và một con số trông y hệt nhau,
+   và squint test không còn phân biệt được tầng nào là tầng nào. */
+.dsubject {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s2) var(--s3);
+  margin-bottom: var(--s3); color: var(--ink);
+  font-size: var(--fs-headline); font-weight: var(--fw-label);
+  line-height: var(--lh-dense); letter-spacing: -0.02em;
+}
+.dsubject small { color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-label); letter-spacing: 0.01em; }
 
 /* ───────────────────────── Danh sách thanh ──────────────────────────────── */
 /* Trong một thẻ đã bị kéo cao bằng thẻ bên cạnh, dòng thanh giãn ra để lấp chỗ
@@ -585,7 +645,7 @@ table { border-collapse: collapse; width: 100%; }
 button.dbar-row:hover { background: var(--blue-050); }
 button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .dbar-row.is-static { cursor: default; }
-.dbar-rank { color: var(--ink-3); font-size: 12px; font-weight: 700; text-align: right; }
+.dbar-rank { color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-bold); text-align: right; }
 .dbar-main { min-width: 0; }
 /* Giá trị không co được (nowrap), nên với `space-between` thuần thì tên bị ép
    về 0 trong thẻ hẹp — "Thu nội địa" thành "T…". Cho phép xuống dòng và đặt sàn
@@ -593,19 +653,27 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
    theo bề rộng THẺ chứ không theo viewport, nên thẻ hẹp ở màn rộng cũng đúng. */
 .dbar-label {
   display: flex; flex-wrap: wrap; justify-content: space-between;
-  gap: 2px var(--s3); font-size: 12px;
+  gap: 2px var(--s3); font-size: var(--fs-label);
 }
 .dbar-label b {
-  flex: 1 1 7em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  /* Tên khoản thu xuống tối đa hai dòng thay vì cắt cụt. Dòng thanh có trần
+     92px nên vẫn còn chỗ, mà "Khu vực kinh tế ngoài quốc doanh" cụt thành
+     "Khu vực kinh tế ngoà…" thì mất đúng phần phân biệt nó với dòng bên cạnh. */
+  flex: 1 1 7em; min-width: 0; overflow: hidden; white-space: normal; line-height: var(--lh-dense);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
 }
 .dbar-label > span { flex: 0 0 auto; margin-left: auto; }
 .dbar-label > span { color: var(--ink-2); white-space: nowrap; }
+/* Số tiền lùi về hàng phụ khi thanh đang vẽ phần trăm. */
+.dbar-trail {
+  color: var(--ink-2); font-size: var(--fs-label); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
 /* Giá trị là thông tin chính của dòng, tỷ trọng là chú thích đi kèm nên nhạt và
    nhỏ hơn — trước đây hai thứ cùng cỡ, cùng màu, cách nhau một dấu chấm. */
-.dbar-value { color: var(--ink); font-weight: 600; }
-.dbar-unit { color: var(--ink-3); font-weight: 500; }
+.dbar-value { color: var(--ink); font-weight: var(--fw-label); }
+.dbar-unit { color: var(--ink-3); font-weight: var(--fw-medium); }
 .dbar-value em {
-  margin-left: 6px; color: var(--ink-3); font-size: 12px; font-style: normal; font-weight: 500;
+  margin-left: 6px; color: var(--ink-3); font-size: var(--fs-label); font-style: normal; font-weight: var(--fw-medium);
 }
 .dbar-track {
   position: relative; display: block; height: 4px; margin-top: 5px;
@@ -621,10 +689,10 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .dbar-track i.pos { background: var(--pos); }
 .dbar-track i.neg { background: var(--neg); }
 
-.dchange { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: 12px; font-weight: 650; }
+.dchange { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-size: var(--fs-label); font-weight: var(--fw-label); }
 .dchange.up { color: var(--pos); }
 .dchange.down { color: var(--neg); }
-.dchange.flat, .dchange.neutral { color: var(--ink-2); font-weight: 500; }
+.dchange.flat, .dchange.neutral { color: var(--ink-2); font-weight: var(--fw-medium); }
 
 /* ────────────────────────────── Biểu đồ ─────────────────────────────────── */
 .dchart-wrap { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
@@ -642,11 +710,27 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .ddonut-segment.is-muted { opacity: 0.28; }
 .ddonut-segment.is-hovered { opacity: 1; stroke-width: 22; }
 .ddonut-segment.is-interactive:focus { outline: none; }
-.ddonut-segment.is-interactive:focus-visible { opacity: 0.72; stroke-width: 24; }
+/* Chênh 2px giữa `is-selected` (22) và focus (24) là không nhìn ra. Thêm viền
+   trắng quanh cung đang focus: nó tách khỏi các cung liền kề ở mọi màu nền. */
+.ddonut-segment.is-interactive:focus-visible {
+  opacity: 1; stroke-width: 26;
+  paint-order: stroke; filter: drop-shadow(0 0 0 var(--surface));
+}
+.ddonut-focus-ring { fill: none; stroke: var(--brand); stroke-width: 2; }
 .ddonut-segment.is-selected { stroke-width: 22; }
-.ddonut > span { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
-.ddonut > span b { font-size: 19px; line-height: 1.1; }
-.ddonut > span small { color: var(--ink-3); font-size: 12px; }
+/* Tâm donut nay mang tên lát đang chọn chứ không phải chuỗi "100%" cố định, nên
+   phải chịu được chuỗi dài: giới hạn bề rộng theo lỗ donut và cho xuống dòng. */
+.ddonut > span {
+  position: absolute; inset: 0; display: grid; place-content: center;
+  justify-items: center; text-align: center; pointer-events: none;
+}
+.ddonut > span b { font-size: var(--fs-insight); line-height: var(--lh-metric); font-variant-numeric: tabular-nums; }
+.ddonut > span small {
+  max-width: 8em; color: var(--ink-3); font-size: var(--fs-label); line-height: var(--lh-metric);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.ddonut.is-callout > span b { font-size: var(--fs-metric-sm); }
+.ddonut.is-callout > span small { max-width: 10em; font-size: var(--fs-label); }
 .ddonut-legend { display: grid; gap: 4px; min-width: 0; }
 .ddonut-legend li { position: relative; }
 .ddonut-legend button, .ddonut-legend li > div { width: 100%; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 8px; border: 1px solid transparent; border-radius: var(--r-control); text-align: left; }
@@ -655,8 +739,8 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .ddonut-legend li > div:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .ddonut-legend button.is-selected { border-color: var(--blue-250); background: var(--blue-050); }
 .ddonut-legend i { width: 8px; height: 8px; border-radius: 2px; }
-.ddonut-legend span { min-width: 0; color: var(--ink-2); font-size: 12px; line-height: 1.35; white-space: nowrap; }
-.ddonut-legend strong { font-size: 12px; font-variant-numeric: tabular-nums; }
+.ddonut-legend span { min-width: 0; color: var(--ink-2); font-size: var(--fs-label); line-height: var(--lh-dense); white-space: nowrap; }
+.ddonut-legend strong { font-size: var(--fs-label); font-variant-numeric: tabular-nums; }
 .ddonut-tooltip {
   position: absolute; z-index: 4; left: 16px; top: calc(100% + 2px);
   width: max-content; max-width: 230px; padding: 5px 8px;
@@ -679,14 +763,14 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
   padding: 4px 5px; border: 1px solid var(--hairline); border-radius: var(--r-chip);
   background: color-mix(in srgb, var(--surface) 94%, transparent); color: var(--ink-2);
   box-shadow: 0 1px 3px rgb(15 23 42 / 8%); white-space: nowrap; pointer-events: auto;
-  font-size: 12px; line-height: 1.2;
+  font-size: var(--fs-label); line-height: var(--lh-metric);
 }
 .ddonut-float-label i { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; }
 .ddonut-float-label span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .ddonut-float-label strong { flex: 0 0 auto; font-variant-numeric: tabular-nums; }
 button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--brand); }
 .ddonut-float-label.is-selected {
-  border-color: var(--blue-250); background: var(--blue-050); color: var(--brand); font-weight: 650;
+  border-color: var(--blue-250); background: var(--blue-050); color: var(--brand); font-weight: var(--fw-label);
 }
 .ddonut-float-label:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
@@ -701,18 +785,18 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
   margin-top: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--divider);
 }
 .dbudget-local h3 {
-  margin-bottom: var(--s2); color: var(--ink-2); font-size: 12px; font-weight: 600;
+  margin-bottom: var(--s2); color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dbudget-local ul { display: grid; gap: 9px; }
 .dbudget-local li > div {
   display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3);
-  margin-bottom: 4px; font-size: 12px;
+  margin-bottom: 4px; font-size: var(--fs-label);
 }
 .dbudget-local li span { min-width: 0; color: var(--ink-2); }
 .dbudget-local li strong {
-  flex: 0 0 auto; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums;
+  flex: 0 0 auto; font-size: var(--fs-label); font-weight: var(--fw-label); font-variant-numeric: tabular-nums;
 }
-.dbudget-value small { color: var(--ink-3); font-size: inherit; font-weight: 500; }
+.dbudget-value small { color: var(--ink-3); font-size: inherit; font-weight: var(--fw-medium); }
 .dbudget-track {
   position: relative; display: block; height: 4px; overflow: hidden;
   background: var(--data-track); border-radius: var(--r-bar);
@@ -724,15 +808,15 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
 .dgroup-analysis { display: grid; gap: var(--s3); }
 .dgroup-detail { border-top: 1px solid var(--divider); padding-top: var(--s3); }
 .dgroup-detail > div { display: grid; gap: 2px; margin-bottom: 3px; }
-.dgroup-detail > div > strong { font-size: 13px; }
-.dgroup-detail > div > span, .dgroup-detail > small { color: var(--ink-3); font-size: 12px; }
+.dgroup-detail > div > strong { font-size: var(--fs-caption); }
+.dgroup-detail > div > span, .dgroup-detail > small { color: var(--ink-3); font-size: var(--fs-label); }
 .dgroup-detail .dbar-row { padding-block: 6px; }
 
 /* ── Biểu đồ xu hướng vẽ tay ─────────────────────────────────────────────── */
 .dchart { position: relative; }
 .dchart svg { display: block; overflow: visible; }
 .dchart-grid { stroke: var(--divider); stroke-width: 1; shape-rendering: crispEdges; }
-.dchart-tick { fill: var(--ink-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.dchart-tick { fill: var(--ink-2); font-size: var(--fs-label); font-variant-numeric: tabular-nums; }
 .dchart-crosshair { stroke: var(--hairline); stroke-width: 1; shape-rendering: crispEdges; }
 .dchart-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .dchart-line.is-previous {
@@ -762,12 +846,12 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
   display: grid; gap: 3px; min-width: 160px; padding: 8px 10px;
   background: var(--surface); border: 1px solid var(--hairline);
   border-radius: var(--r-control); box-shadow: var(--shadow-tip);
-  font-size: 12px;
+  font-size: var(--fs-label);
 }
-.dchart-tip b { font-weight: 650; }
+.dchart-tip b { font-weight: var(--fw-label); }
 .dchart-tip span { display: flex; align-items: center; gap: 6px; color: var(--ink-2); }
 .dchart-tip em {
-  margin-left: auto; color: var(--ink); font-style: normal; font-weight: 650;
+  margin-left: auto; color: var(--ink); font-style: normal; font-weight: var(--fw-label);
   font-variant-numeric: tabular-nums;
 }
 .dchart-tip i {
@@ -778,7 +862,7 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
 .dlegend {
   display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4);
   border-top: 1px solid var(--divider); margin-top: var(--s2); padding-top: 9px;
-  color: var(--ink-2); font-size: 12px;
+  color: var(--ink-2); font-size: var(--fs-label);
 }
 .dlegend span { display: flex; align-items: center; gap: 6px; }
 .dlegend i { width: 17px; border-top: 2px dashed var(--data-reference); }
@@ -789,8 +873,13 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
   padding-bottom: var(--s3); border-bottom: 1px solid var(--divider);
 }
 .dbridge > div { display: grid; gap: 2px; }
-.dbridge span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
-.dbridge strong { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+.dbridge span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
+/* Cùng vai trò Metric compact với số KPI mobile, nên phải cùng cả nhịp dòng:
+   trước đây nó thừa hưởng 1,55 của thân bài và cao hơn hẳn số KPI cùng cỡ. */
+.dbridge strong {
+  font-size: var(--fs-metric-sm); font-weight: var(--fw-bold);
+  line-height: var(--lh-metric); letter-spacing: -0.02em;
+}
 .dbridge-arrow { width: 22px; height: 1px; background: var(--control-border); position: relative; margin-bottom: 9px; }
 .dbridge-arrow::after {
   content: ""; position: absolute; right: 0; top: -3px;
@@ -806,12 +895,18 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
 .dcontrib > li > .dcontrib-row { flex: 1 1 auto; }
 .dcontrib-row {
   width: 100%; display: grid; grid-template-columns: minmax(130px, 1.1fr) 3fr minmax(96px, auto);
-  align-items: center; gap: var(--s3); padding: 7px 0; font-size: 12px; text-align: left;
+  align-items: center; gap: var(--s3); padding: 7px 0; font-size: var(--fs-label); text-align: left;
   border-radius: var(--r-chip);
 }
 button.dcontrib-row:hover { background: var(--blue-050); }
 .dcontrib-row.is-static { cursor: default; }
-.dcontrib-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Tên mục lục ngân sách là tập đóng và dài: "Cổ tức, lợi nhuận, vốn nhà nước
+   trung ương" cần 270px mà cột chỉ cho 156px. Cắt cụt ở đây là mất nghĩa của cả
+   dòng, mà hàng thì còn thừa chiều cao — nên cho xuống tối đa hai dòng. */
+.dcontrib-name {
+  min-width: 0; overflow: hidden; white-space: normal; line-height: var(--lh-dense);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+}
 .dcontrib-track { position: relative; height: 10px; background: var(--data-track); border-radius: var(--r-bar); }
 .dcontrib-track::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--control-border); }
 .dcontrib-track i { position: absolute; top: 1px; height: 8px; border-radius: var(--r-bar); }
@@ -832,7 +927,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    tên khoản thu vẫn đọc được; `min-width` cho bảng cuộn ngang bên trong thẻ. */
 /* `separate` + `border-spacing: 0` chứ không phải `collapse`: ở chế độ collapse
    thì thead sticky không che được nội dung dòng cuộn phía sau. */
-.dtable { font-size: 12px; table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
+.dtable { font-size: var(--fs-label); table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
 .dtable th:first-child, .dtable td:first-child { width: 36%; }
 /* min-width chỉ đặt từ tablet trở lên: ở 390px nó chính là thứ đẩy cả trang
    tràn ngang, nên màn hình hẹp dùng bảng vừa khung và ẩn bớt cột phụ. */
@@ -840,34 +935,56 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dtable { min-width: 620px; }
   .dtable.is-compact { min-width: 470px; }
 }
+/* Dưới 768px bảng cũng phải cuộn được. Trước đây nó vừa khung đúng bằng cách
+   **cắt cụt** ô: "+14,8% so cùng kỳ" còn 62px, "▲ 1.513" còn 47px, và vì
+   `.dtable-wrap` không có gì để cuộn nên con số mất hẳn chứ không phải khuất.
+   `min-width: 0` trên vùng cuộn là thứ giữ chiều rộng bảng không lan ngược lên
+   tài liệu — đó mới là nguyên nhân tràn trang ngày trước, không phải `min-width`
+   của chính bảng. */
+@media (max-width: 767px) {
+  .dtable { min-width: 560px; }
+  /* Bảng chênh lệch có cột số mang cả mũi tên chiều: "▼ 11.719" cần 58px mà
+     bản 420px chỉ chia cho nó 47px. */
+  .dtable.is-compact { min-width: 470px; }
+}
+/* `position: relative` là thứ giữ bảng nằm trong vùng cuộn. Không có nó, các
+   `span.sr-only` (position: absolute) bên trong bảng giải containing block ở tổ
+   tiên cao hơn nên KHÔNG bị vùng cuộn cắt: chúng nằm ở x=527 và kéo giãn chiều
+   rộng cuộn của cả tài liệu, dù `body` không hề tràn. Đây mới là nguyên nhân
+   tràn ngang ngày trước, không phải `min-width` của bảng. */
+.dtable-wrap { min-width: 0; position: relative; }
 .dtable th, .dtable td {
   padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--divider);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+/* Tiêu đề cột xuống dòng thay vì bị cắt. "Chênh lệch" cần 105px mà cột chỉ cho
+   79px, nên ở mọi khổ nó từng hiện thành "Chênh lệ…" — mất nghĩa của cả cột.
+   Hai dòng trong ô tiêu đề là chuyện bình thường của bảng số liệu. */
+.dtable th { white-space: normal; overflow: visible; text-overflow: clip; hyphens: none; }
 /* Bảng cuộn trong thẻ: `border-bottom` trên ô sticky không dính theo ô nên dòng
    phía sau lộ ra một vệt dưới tiêu đề. Dùng inset shadow và nâng z-index. */
 .dtable thead th {
   position: sticky; top: 0; z-index: 1; background: var(--surface);
-  color: var(--ink-2); font-size: 12px; font-weight: 650;
+  color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
   border-bottom: 0; box-shadow: inset 0 -1px 0 var(--hairline);
 }
-.dtable thead th button { font-size: 12px; font-weight: 650; color: inherit; }
+.dtable thead th button { font-size: var(--fs-label); font-weight: var(--fw-label); color: inherit; }
 .dtable thead th button:hover { color: var(--brand); }
 .dtable .is-num { text-align: right; }
-.dtable tbody th { font-weight: 500; white-space: normal; }
+.dtable tbody th { font-weight: var(--fw-medium); white-space: normal; }
 .dtable tbody tr:hover { background: var(--surface-sunken); }
 .dtable.is-compact th, .dtable.is-compact td { padding: 6px 8px; }
 
 .dledger { display: grid; }
 .dledger li {
   display: flex; justify-content: space-between; gap: var(--s4);
-  padding: 9px 0; border-bottom: 1px solid var(--divider); font-size: 13px;
+  padding: 9px 0; border-bottom: 1px solid var(--divider); font-size: var(--fs-caption);
 }
-.dledger li.is-total { border-bottom: 0; border-top: 2px solid var(--ink); font-weight: 700; padding-top: 11px; }
+.dledger li.is-total { border-bottom: 0; border-top: 2px solid var(--ink); font-weight: var(--fw-bold); padding-top: 11px; }
 
 .dsearch input {
   min-height: 32px; padding: 4px 10px; width: 170px; min-width: 0; max-width: 100%;
-  border: 1px solid var(--control-border); border-radius: var(--r-control); font-size: 12px;
+  border: 1px solid var(--control-border); border-radius: var(--r-control); font-size: var(--fs-label);
 }
 /* Ô tìm kiếm cộng nhóm chọn rộng hơn thẻ danh sách ở 1024px (317px), nên phải
    cho xuống dòng và cho ô tìm kiếm co lại. */
@@ -894,14 +1011,14 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dlist button {
   width: 100%; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto;
   align-items: center; gap: var(--s2); padding: 8px 6px; text-align: left;
-  border-top: 1px solid var(--divider); border-radius: var(--r-chip); font-size: 13px;
+  border-top: 1px solid var(--divider); border-radius: var(--r-chip); font-size: var(--fs-caption);
 }
 .dlist li:first-child button { border-top: 0; }
 .dlist button:hover { background: var(--blue-050); }
 .dlist button.is-selected { background: var(--blue-050); box-shadow: inset 3px 0 0 var(--brand); }
-.dlist-rank { color: var(--ink-3); font-size: 12px; text-align: right; }
-.dlist-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
-.dlist-amount { color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+.dlist-rank { color: var(--ink-3); font-size: var(--fs-label); text-align: right; }
+.dlist-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: var(--fw-medium); }
+.dlist-amount { color: var(--ink-2); font-size: var(--fs-label); white-space: nowrap; }
 
 /* Chốt bản đồ theo CHIỀU CAO rồi suy ra chiều rộng, không để chiều rộng thẻ
    quyết định: ranh giới Hà Nội cao hơn rộng nên `height: auto` cho ra bản đồ
@@ -929,27 +1046,27 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dmap-zoom button {
   min-height: 30px; min-width: 30px; padding: 0 8px;
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-control);
-  color: var(--ink); font-size: 15px; font-weight: 650; line-height: 1;
+  color: var(--ink); font-size: var(--fs-title); font-weight: var(--fw-label); line-height: 1;
   /* impeccable-disable-next-line design-system-color -- alpha của bóng, khai ở sidecar */
   box-shadow: var(--shadow-control);
 }
 .dmap-zoom button:hover:not(:disabled) { border-color: var(--blue-250); color: var(--brand); }
 .dmap-zoom button:disabled { opacity: 0.45; cursor: not-allowed; }
-.dmap-zoom-reset { font-size: 12px !important; font-weight: 650; white-space: nowrap; }
+.dmap-zoom-reset { font-size: var(--fs-label) !important; font-weight: var(--fw-label); white-space: nowrap; }
 
 .dmap-tip {
   position: absolute; z-index: 20; pointer-events: none; opacity: 0;
   padding: 6px 10px; border-radius: var(--r-chip);
-  background: var(--tooltip-surface); color: var(--ink-on-dark); font-size: 12px; transition: opacity 0.12s;
+  background: var(--tooltip-surface); color: var(--ink-on-dark); font-size: var(--fs-label); transition: opacity 0.12s;
 }
 .dmap-table { max-height: 460px; overflow-y: auto; }
 .dmap-legend {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-top: var(--s3); color: var(--ink-2); font-size: 12px;
+  margin-top: var(--s3); color: var(--ink-2); font-size: var(--fs-label);
 }
 .dmap-legend i { width: 18px; height: 10px; border-radius: 2px; }
 .dmap-legend i.is-nodata { margin-left: var(--s2); }
-.dmap-credit { margin-top: 6px; color: var(--ink-3); font-size: 12px; }
+.dmap-credit { margin-top: 6px; color: var(--ink-3); font-size: var(--fs-label); }
 
 /* ──────────────────────── So sánh: bộ dựng hai vế ───────────────────────── */
 .dbuilder {
@@ -958,16 +1075,16 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
 .dbuilder label { display: grid; gap: 5px; }
-.dbuilder span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
+.dbuilder span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
 .dbuilder select {
   min-height: 38px; padding: 6px 10px; border: 1px solid var(--control-border);
-  border-radius: var(--r-control); background: var(--surface); font-size: 13px;
+  border-radius: var(--r-control); background: var(--surface); font-size: var(--fs-caption);
 }
 /* impeccable-disable-next-line design-system-font-size -- glyph mũi tên một lần, không phải bậc chữ */
-.dbuilder-arrow { color: var(--ink-3); font-size: 19px; padding-bottom: 6px; }
-.dbuilder-note { flex: 1 1 100%; color: var(--ink-2); font-size: 12px; }
+.dbuilder-arrow { color: var(--ink-3); font-size: var(--fs-metric-sm); padding-bottom: 6px; }
+.dbuilder-note { flex: 1 1 100%; color: var(--ink-2); font-size: var(--fs-label); }
 .dpicker { display: flex; align-items: flex-end; gap: var(--s2); }
-.dpicker-label { color: var(--ink); font-size: 12px; font-weight: 650; padding-bottom: 9px; }
+.dpicker-label { color: var(--ink); font-size: var(--fs-label); font-weight: var(--fw-label); padding-bottom: 9px; }
 
 /* ────────────────────────────── Drawer ──────────────────────────────────── */
 
@@ -1000,23 +1117,28 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   animation: ddrawer-in 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .ddrawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
-.ddrawer-eyebrow { color: var(--ink-2); font-size: 12px; font-weight: 650; }
-.ddrawer h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.015em; margin-top: 3px; }
+.ddrawer-eyebrow { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
+/* Cùng vai trò Subject với `.dsubject`: cả hai đều là "tên của thứ mà mọi con số
+   bên dưới thuộc về". Hai vai trò giống việc thì không nên khác thông số chữ. */
+.ddrawer h2 {
+  font-size: var(--fs-headline); font-weight: var(--fw-label);
+  line-height: var(--lh-dense); letter-spacing: -0.02em; margin-top: 3px;
+}
 .ddrawer-close {
   flex: none; width: 34px; height: 34px; display: grid; place-items: center;
   border: 1px solid var(--hairline); border-radius: var(--r-control); color: var(--ink-2);
 }
 .ddrawer-close:hover { border-color: var(--neg); color: var(--neg); }
 .ddrawer-value { display: flex; align-items: baseline; gap: var(--s3); padding: var(--s5) 0 var(--s4); }
-.ddrawer-value strong { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; }
+.ddrawer-value strong { font-size: var(--fs-display); font-weight: var(--fw-bold); letter-spacing: -0.03em; }
 .ddrawer-meta { display: grid; border-top: 1px solid var(--hairline); }
 .ddrawer-meta > div {
   display: flex; justify-content: space-between; gap: var(--s4);
-  padding: 9px 0; border-bottom: 1px solid var(--divider); font-size: 13px;
+  padding: 9px 0; border-bottom: 1px solid var(--divider); font-size: var(--fs-caption);
 }
 .ddrawer-meta dt { color: var(--ink-2); }
-.ddrawer-meta dd { text-align: right; font-weight: 600; }
-.ddrawer-note { margin-top: var(--s3); color: var(--ink-2); font-size: 12px; }
+.ddrawer-meta dd { text-align: right; font-weight: var(--fw-label); }
+.ddrawer-note { margin-top: var(--s3); color: var(--ink-2); font-size: var(--fs-label); }
 .ddrawer-chart { margin: var(--s4) 0; }
 .ddrawer-cta { width: 100%; }
 
@@ -1026,16 +1148,16 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   padding: var(--s5); background: var(--surface);
   border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
-.dstate span { color: var(--ink-2); font-size: 13px; }
+.dstate span { color: var(--ink-2); font-size: var(--fs-caption); }
 .dstate.is-loading { color: var(--ink-2); }
 .dstate.is-error { border-color: var(--note-line); background: var(--note-surface); }
 .dstate.is-error b { color: var(--note-ink); }
 .dstate.is-quiet { border-style: dashed; background: none; }
-.dempty { padding: var(--s4) 0; color: var(--ink-2); font-size: 13px; }
+.dempty { padding: var(--s4) 0; color: var(--ink-2); font-size: var(--fs-caption); }
 .dnote {
   padding: 9px 12px; margin-top: var(--s2);
   background: var(--surface-sunken); border-radius: var(--r-chip);
-  color: var(--ink-2); font-size: 12px;
+  color: var(--ink-2); font-size: var(--fs-label);
 }
 .dnote.is-warn { background: var(--note-surface); border: 1px solid var(--note-line); color: var(--note-ink); }
 
@@ -1107,11 +1229,11 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .ddonut-layout:not(.is-callout) .ddonut { width: min(100%, 168px); }
   .ddonut-layout:not(.is-callout) .ddonut-legend { width: 100%; }
   .dheader { padding: 12px 15px; }
-  .dheader h1 { font-size: 16px; }
-  .dheader p, .dheader-source, .dheader-frame { display: none; }
+  .dheader h1 { font-size: var(--fs-insight); }
+  .dheader p, .dheader-frame { display: none; }
   .dshell { padding: 0 10px 32px; }
   .dtabs { gap: var(--s4); }
-  .dtabs button { font-size: 13px; min-height: 48px; }
+  .dtabs button { font-size: var(--fs-caption); min-height: 48px; }
   /* Sáu bộ lọc trên lưới cố định: hai cột ở điện thoại, ba cột khi còn đủ rộng
      để bớt một hàng chiếm chỗ phía trên nội dung. */
   .dfilters { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); padding: 12px; }
@@ -1134,10 +1256,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
     flex: 1 1 auto; min-width: 0;
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px;
   }
-  .dfilters-summary b { font-size: 13px; font-weight: 650; }
+  .dfilters-summary b { font-size: var(--fs-caption); font-weight: var(--fw-label); }
   /* Dấu chấm giữa các mục là ký tự trang trí, không đưa vào cây trợ năng. */
-  .dfilters-summary b + b::before { content: "·"; color: var(--ink-3); margin-right: 8px; font-weight: 400; }
-  .dfilters-eyebrow { color: var(--ink-2); font-size: 12px; font-weight: 650; }
+  .dfilters-summary b + b::before { content: "·"; color: var(--ink-3); margin-right: 8px; font-weight: var(--fw-regular); }
+  .dfilters-eyebrow { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
   .dfilters-toggle {
     flex: none; min-width: 76px; min-height: 44px; padding: 0 11px;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -1153,7 +1275,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dfilters select, .dfilters .dseg { min-height: 44px; }
   .dfilters .dseg { width: 100%; }
   .dfilters .dseg button { flex: 1 1 0; min-height: 38px; padding: 3px 6px; }
-  .dkpis strong { font-size: 19px; }
+  .dkpis strong { font-size: var(--fs-metric-sm); }
   .dbar-row { grid-template-columns: 20px minmax(0, 1fr); }
   .dbar-row > .dchange { grid-column: 2; }
   .dcontrib-row { grid-template-columns: 1fr auto; }

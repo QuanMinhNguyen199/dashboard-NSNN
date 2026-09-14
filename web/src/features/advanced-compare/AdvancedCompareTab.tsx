@@ -276,9 +276,12 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
               id: "waterfall",
               span: 7,
               wide: true,
+              // Không có cầu nối ở chế độ so nguồn thu; `resolveRow` cho bảng
+              // chênh lệch nở đủ 12 cột thay vì để trống nửa hàng.
+              hidden: data.waterfall === null,
               render: () => (
-                <Card title="Cầu nối chênh lệch" subtitle="Từ vế A sang vế B">
-                  <WaterfallChart data={data.waterfall} />
+                <Card title="Cầu nối chênh lệch" subtitle={`Từ ${data.a.label} sang ${data.b.label}`}>
+                  <WaterfallChart data={data.waterfall!} />
                 </Card>
               ),
             },
@@ -290,7 +293,11 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
               render: () => (
                 <Card
                   title="Bảng chênh lệch"
-                  subtitle="Sắp theo độ lớn tuyệt đối"
+                  subtitle={
+                    data.mode === "revenue"
+                      ? "Các khoản của hai vế; khoản chỉ có ở một vế thì vế kia bằng 0"
+                      : "Sắp theo độ lớn tuyệt đối"
+                  }
                   unit={deltaUnit}
                 >
                   <div className="dtable-wrap">

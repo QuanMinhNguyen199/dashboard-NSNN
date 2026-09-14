@@ -83,7 +83,7 @@ function OverviewBody({
           label="Tiến độ so dự toán"
           note={
             data.estimate
-              ? `Dự toán${data.estimate.origin === "mock" ? " mô phỏng" : ""}: ${money(data.estimate.annual)}`
+              ? `Dự toán năm ${money(data.estimate.annual)}`
               : "Chưa có dữ liệu dự toán"
           }
         >
@@ -179,7 +179,7 @@ function OverviewBody({
               render: () => (
                 <Card
                   title="Top địa bàn"
-                  subtitle={`${data.meta.coverage.covered}/${data.meta.coverage.total} phường, xã có số liệu`}
+                  subtitle="Năm địa bàn thu cao nhất"
                   unit={moneyScale(ranked.slice(0, 5).map((row) => row.amount))}
                   actions={
                     <Segmented

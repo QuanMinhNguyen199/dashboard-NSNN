@@ -4,7 +4,10 @@ Prototype dashboard **Thu ngân sách nhà nước — Thành phố Hà Nội**:
 URL state đầy đủ, lớp provider API/MCP/Mock có runtime validation, và dữ liệu mô phỏng tất
 định dựng từ một kho quan sát gốc duy nhất.
 
-> **Dữ liệu trong ứng dụng là mô phỏng phục vụ prototype, không phải số liệu quyết toán.**
+> **Dữ liệu trong ứng dụng là mô phỏng, không phải số liệu quyết toán.** Giao diện *không*
+> hiển thị cảnh báo này — bản dựng là thiết kế bàn giao cho đội frontend, nhãn cảnh báo đã
+> được gỡ để không bị chép vào sản phẩm thật. Vì vậy bản chạy thử chỉ dùng để duyệt thiết kế.
+> Lý do đầy đủ: [`BA-NSNN.md`](BA-NSNN.md) mục 13.1.
 
 Bản chạy thử: <https://quanminhnguyen199.github.io/dashboard-NSNN/>
 
@@ -59,6 +62,8 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 
 | File | Vai trò |
 |---|---|
+| [`BAO-CAO-PROTOTYPE.md`](BAO-CAO-PROTOTYPE.md) | **Báo cáo prototype** — trạng thái bàn giao, số liệu nào thật/nào mô phỏng, kết quả kiểm chứng và các điểm cần chốt. Viết cho người duyệt. |
+| [`DE-XUAT-HOP-DONG-API.md`](DE-XUAT-HOP-DONG-API.md) | **Đề xuất hợp đồng API** — vì sao 40 trường hiện tại buộc backend phải biết bố cục dashboard, và ba sửa đổi để tách nhịp phát hành hai đội. Bàn trước khi backend dựng. |
 | [`BA-NSNN.md`](BA-NSNN.md) | **Tài liệu nghiệp vụ** — vì sao cần từng quy tắc dữ liệu, từng tiêu chí nghiệm thu và từng feature. Đọc trước khi sửa công thức. |
 | [`THIET-KE-DASHBOARD-NSNN.md`](THIET-KE-DASHBOARD-NSNN.md) | **Đặc tả thiết kế đang triển khai** — UI/UX, URL state, API/MCP, mock data, tiêu chí nghiệm thu. |
 | [`dac-ta-v2.html`](dac-ta-v2.html) | Đặc tả nghiệp vụ v2. |

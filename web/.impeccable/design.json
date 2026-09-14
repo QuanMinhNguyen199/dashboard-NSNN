@@ -566,6 +566,8 @@
       },
       "The Head Floor Rule",
       "The Restate Specificity Rule",
+      "The No Contextual Weight Rule",
+      "The One Job Per Step Rule",
       {
         "name": "The Even Cell Rule",
         "section": "layout",

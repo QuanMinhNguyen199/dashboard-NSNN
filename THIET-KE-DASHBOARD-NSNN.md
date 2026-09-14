@@ -72,6 +72,19 @@ Thanh tab dùng `position: sticky` bên dưới header, không che nội dung. T
 trạng thái active rõ ràng và hỗ trợ điều hướng bàn phím. Trên Mobile, tab cuộn ngang bằng
 vuốt; trong preview desktop, kéo chuột phải mô phỏng được cùng thao tác mà không chọn nhầm tab.
 
+### 3.1. Dòng phạm vi
+
+Giữa bộ lọc và dải KPI có một dải bắt buộc:
+
+**Dòng phạm vi** nêu đúng một lần: phạm vi đang xem, độ phủ địa bàn, và cờ quý
+dẫn xuất khi có. Không nhắc lại kỳ báo cáo — thanh lọc ngay phía trên đã nói. Widget bên dưới **không** lặp lại mẫu số của riêng mình —
+trước đây cùng một tập 126 phường/xã được nói bằng bốn giọng khác nhau trên cùng
+một màn hình.
+
+Dòng phạm vi **không** in đơn vị tiền ở cấp tài liệu: đơn vị thuộc về từng cột số
+theo quy tắc đơn vị cột, nên một dòng "Đơn vị: tỷ đồng" sẽ nói sai về phần lớn
+con số bên dưới.
+
 ## 4. Ngôn ngữ thị giác
 
 - Giữ header xanh navy và nhận diện hiện có.
@@ -195,8 +208,12 @@ hiển thị vì có thể là số điều chỉnh hợp lệ.
 
 1. Thu trong kỳ.
 2. Lũy kế từ đầu năm.
-3. Độ phủ địa bàn.
+3. Tiến độ so dự toán, dòng phụ nêu dự toán năm.
 4. Cảnh báo hoặc insight quan trọng.
+
+Độ phủ địa bàn không còn là một ô KPI riêng: nó nằm trong dòng phạm vi chung
+(mục 3.1) cùng với phạm vi và kỳ, và số địa bàn thiếu được nêu đích danh ở ô
+`Cần chú ý`.
 
 ### Xu hướng
 
@@ -364,6 +381,16 @@ biến động chung.
 
 Không cho phép so sánh các scope, unit, indicator hoặc cấp ngân sách không tương thích.
 
+**Phân rã phải đối soát với chỉ số.** Tổng cột chênh lệch của bảng phải đúng bằng
+chênh lệch mà dải KPI công bố; runtime validation từ chối payload lệch quá 1.000
+đồng. Không có ràng buộc này thì bảng và KPI nói hai con số khác nhau dưới cùng
+một nhãn kỳ, và người đọc không có cách nào biết bên nào đúng.
+
+**Chế độ `revenue` không có waterfall.** "Đi từ nguồn A sang nguồn B" không phải
+một biến động có thật — hai vế chỉ đứng cạnh nhau. Widget cầu nối bị loại khỏi
+lưới và bảng chênh lệch nở đủ 12 cột. Bảng khi đó liệt kê hợp của hai tập khoản:
+khoản chỉ có ở một vế thì vế kia bằng 0.
+
 ## 12. Dynamic grid
 
 ```ts
@@ -507,11 +534,9 @@ Mock cần phủ:
 - Giá trị 0, số âm hợp lệ và dữ liệu thiếu.
 
 KPI, trend, structure, ranking, table và waterfall phải được tính từ cùng base observations.
-Không sinh số độc lập cho từng widget. Giao diện phải ghi rõ:
-
-```text
-Dữ liệu mô phỏng phục vụ prototype
-```
+Không sinh số độc lập cho từng widget. Giao diện **không** mang nhãn mô phỏng:
+bản dựng này là thiết kế bàn giao cho đội frontend, và nhãn đó sẽ bị chép vào sản
+phẩm thật. Xem `BA-NSNN.md` mục 13.1.
 
 Không trộn mock với tổng chính thức trong một phép tính.
 

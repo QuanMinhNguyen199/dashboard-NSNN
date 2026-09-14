@@ -314,15 +314,30 @@ export function Bars({
               <span className="dbar-label">
                 {/* Tên dài bị cắt ở thẻ hẹp: giữ nguyên bản đầy đủ trong title. */}
                 <b title={row.name}>{row.name}</b>
+                {/* Số in đậm phải là đại lượng mà THANH đang vẽ. Ở chế độ
+                    `change`, thanh dài theo %YoY nhưng trước đây số in ra lại là
+                    số tiền — nên thanh dài nhất bảng nằm cạnh con số nhỏ nhất
+                    bảng, và người quét ba giây đọc ngược hoàn toàn. */}
                 <span className="dbar-value">
-                  {inScale(row.amount, unit)}
-                  {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
-                  {row.share != null && <em>{pct(row.share)}</em>}
+                  {scale === "change" ? (
+                    <Change current={row.amount} previous={row.previous} label="" />
+                  ) : (
+                    <>
+                      {inScale(row.amount, unit)}
+                      {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
+                      {row.share != null && <em>{pct(row.share)}</em>}
+                    </>
+                  )}
                 </span>
               </span>
               <span className="dbar-track">
                 <i
-                  className={scale === "change" ? (change >= 0 ? "pos" : "neg") : undefined}
+                  /* Xanh lá / đỏ chỉ có nghĩa khi tập đang hiển thị CÓ cả hai
+                     chiều. Năm dòng cùng dương mà tô cả năm màu xanh thì màu
+                     không còn mang tin, chỉ còn là trang trí. */
+                  className={
+                    scale === "change" && twoSided ? (change >= 0 ? "pos" : "neg") : undefined
+                  }
                   style={{
                     width: `${Math.max(width, 0.5)}%`,
                     left: twoSided ? (change >= 0 ? "50%" : `${50 - width}%`) : 0,
@@ -330,7 +345,14 @@ export function Bars({
                 />
               </span>
             </span>
-            <Change current={row.amount} previous={row.previous} />
+            {scale === "change" ? (
+              <span className="dbar-trail">
+                {inScale(row.amount, unit)}
+                {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
+              </span>
+            ) : (
+              <Change current={row.amount} previous={row.previous} />
+            )}
           </>
         );
         return (

@@ -161,6 +161,8 @@ export interface LocationDetailData {
   meta: DataMeta;
   location: { id: string; name: string; slug: string };
   kpiPeriod: AmountRow;
+  /** Lũy kế từ đầu năm của chính địa bàn — đối xứng với dải KPI Tổng quan. */
+  kpiYtd: AmountRow;
   rank: { position: number; total: number } | null;
   shareOfCity: number | null;
   trend: TrendPoint[];
@@ -182,7 +184,8 @@ export interface AdvancedComparisonData {
   delta: number | null;
   deltaPct: number | null;
   rows: { id: string; name: string; a: number; b: number; delta: number; pct: number | null; contribution: number }[];
-  waterfall: Waterfall;
+  /** `null` ở chế độ so nguồn thu: "đi từ nguồn A sang nguồn B" không có nghĩa. */
+  waterfall: Waterfall | null;
   trendA: TrendPoint[];
   trendB: TrendPoint[];
 }
