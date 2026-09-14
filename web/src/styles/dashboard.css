@@ -513,6 +513,7 @@ table { border-collapse: collapse; width: 100%; }
 
 .dcard {
   display: flex; flex-direction: column;
+  container-type: inline-size;
   background: var(--surface); border: 1px solid var(--hairline);
   border-radius: var(--r-surface); overflow: hidden;
 }
@@ -688,6 +689,14 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
   border-color: var(--blue-250); background: var(--blue-050); color: var(--brand); font-weight: 650;
 }
 .ddonut-float-label:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Quyết định theo bề rộng THẺ thay vì viewport: trong iframe 960px, card 5/12
+   vẫn chỉ khoảng 350px và không đủ chỗ cho tên nhóm dài ở cạnh donut. */
+@container (max-width: 470px) {
+  .ddonut-layout:not(.is-callout) { grid-template-columns: 1fr; gap: var(--s2); }
+  .ddonut-layout:not(.is-callout) .ddonut { width: min(100%, 168px); }
+  .ddonut-layout:not(.is-callout) .ddonut-legend { width: 100%; }
+}
 .dbudget-local {
   margin-top: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--divider);
 }

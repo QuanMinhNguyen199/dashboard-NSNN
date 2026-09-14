@@ -294,6 +294,7 @@ KPI gồm giá trị, tỷ trọng, YoY và đóng góp vào biến động chun
 
 - Donut ba nhóm dùng legend dọc bên phải trên desktop; mobile đặt legend bên dưới để luôn hiện đủ tên.
 - Hover hoặc focus legend làm nổi lát tương ứng và hiện tooltip gồm số tiền cùng tỷ trọng.
+- Điều kiện xếp legend dựa trên bề rộng card (`470px`), không dựa riêng viewport; iframe rộng nhưng card 5/12 hẹp vẫn không cắt tên.
 - Bảng đủ đúng 21 khoản.
 - Tìm kiếm và sắp xếp.
 - Sort theo amount, tỷ trọng, YoY, tăng và giảm.
