@@ -10,7 +10,6 @@ import {
   Bars,
   Card,
   Change,
-  CoverageNote,
   Money,
   ResourceView,
   inScale,
@@ -53,13 +52,13 @@ export function RevenueAnalysisTab() {
       </nav>
 
       <ResourceView resource={resource} retry={retry} minHeight={420}>
-        {(data, partial) => <AnalysisBody data={data} partial={partial} />}
+        {(data) => <AnalysisBody data={data} />}
       </ResourceView>
     </>
   );
 }
 
-function AnalysisBody({ data, partial }: { data: RevenueAnalysisData; partial?: string }) {
+function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
   const { filters, view, group, setView, setGroup, dispatchIntent } = useDashboardState();
   const source = SOURCE_BY_CODE[data.scope];
   const sourceLabel = data.scope === "domestic" ? source.name : source.shortName;
@@ -68,8 +67,6 @@ function AnalysisBody({ data, partial }: { data: RevenueAnalysisData; partial?: 
 
   return (
     <>
-      <CoverageNote message={partial} />
-
       <KpiStrip label={`Chỉ số ${sourceLabel}`} columns={3}>
         <Kpi
           label={`${sourceLabel} trong kỳ`}

@@ -650,6 +650,29 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .ddonut-legend i { width: 8px; height: 8px; border-radius: 2px; }
 .ddonut-legend span { min-width: 0; color: var(--ink-2); font-size: 12px; line-height: 1.35; }
 .ddonut-legend strong { font-size: 12px; font-variant-numeric: tabular-nums; }
+.dbudget-local {
+  margin-top: var(--s2); padding-top: var(--s3); border-top: 1px solid var(--divider);
+}
+.dbudget-local h3 {
+  margin-bottom: var(--s2); color: var(--ink-2); font-size: 12px; font-weight: 600;
+}
+.dbudget-local ul { display: grid; gap: 9px; }
+.dbudget-local li > div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3);
+  margin-bottom: 4px; font-size: 12px;
+}
+.dbudget-local li span { min-width: 0; color: var(--ink-2); }
+.dbudget-local li strong {
+  flex: 0 0 auto; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums;
+}
+.dbudget-track {
+  position: relative; display: block; height: 4px; overflow: hidden;
+  background: var(--data-track); border-radius: var(--r-bar);
+}
+.dbudget-track i {
+  display: block; height: 100%; background: var(--data-secondary); border-radius: inherit;
+}
+.dbudget-track i.is-negative { background: var(--neg); }
 .dgroup-analysis { display: grid; gap: var(--s3); }
 .dgroup-detail { border-top: 1px solid var(--divider); padding-top: var(--s3); }
 .dgroup-detail > div { display: grid; gap: 2px; margin-bottom: 3px; }

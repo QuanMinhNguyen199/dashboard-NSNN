@@ -92,7 +92,7 @@ export function validateOverview(value: unknown): OverviewData {
   validateAmountRow(value.kpiPeriod, "Overview.kpiPeriod");
   validateAmountRow(value.kpiYtd, "Overview.kpiYtd");
   validateTrend(value.trend, "Overview");
-  for (const key of ["sources", "domesticItems", "locations", "budgetLevels"] as const) {
+  for (const key of ["sources", "domesticItems", "locations", "budgetLevels", "centralBudgetSources", "localBudgetLevels"] as const) {
     assert(Array.isArray(value[key]), `Overview.${key}: phải là mảng.`);
     for (const row of value[key] as unknown[]) validateAmountRow(row, `Overview.${key}`);
   }
@@ -100,9 +100,78 @@ export function validateOverview(value: unknown): OverviewData {
     (value.domesticItems as unknown[]).length === 21,
     "Overview: khoản thu nội địa phải đủ đúng 21 dòng.",
   );
+  validateBudgetLevels(
+    value.budgetLevels,
+    value.centralBudgetSources,
+    value.localBudgetLevels,
+    value.kpiPeriod,
+    "Overview",
+  );
   validateEstimate(value.estimate, "Overview");
   validateWaterfall(value.waterfall, "Overview");
   return value as unknown as OverviewData;
+}
+
+/**
+ * Hai tầng cấp ngân sách là các phép phân rã, không phải danh sách độc lập.
+ * Kiểm tra mã và phép cộng ở biên dữ liệu để UI không thể vẽ một donut đẹp
+ * nhưng sai tổng.
+ */
+function validateBudgetLevels(
+  topValue: unknown,
+  centralValue: unknown,
+  localValue: unknown,
+  totalValue: unknown,
+  where: string,
+): void {
+  assert(
+    Array.isArray(topValue) && Array.isArray(centralValue) && Array.isArray(localValue),
+    `${where}: thiếu cơ cấu cấp ngân sách.`,
+  );
+  assert(isRecord(totalValue) && isFinite_(totalValue.amount), `${where}: thiếu tổng NSNN để đối soát.`);
+  const top = topValue as { id: string; amount: number }[];
+  const central = centralValue as { id: string; amount: number }[];
+  const local = localValue as { id: string; amount: number }[];
+
+  if (!top.length) {
+    assert(
+      !central.length && !local.length,
+      `${where}: không có cơ cấu NSTW/NSĐP thì không được có dữ liệu phân rã.`,
+    );
+    return;
+  }
+
+  assert(
+    top.length === 2 && ["NSTW", "NSDP"].every((id) => top.some((row) => row.id === id)),
+    `${where}: cấp cao nhất phải gồm đúng NSTW và NSĐP.`,
+  );
+  assert(
+    local.length === 3 && ["PROVINCE", "DISTRICT", "COMMUNE"].every((id) => local.some((row) => row.id === id)),
+    `${where}: NSĐP phải được phân rã đủ cấp tỉnh, huyện và xã.`,
+  );
+  assert(
+    central.length === 4 && ["domestic", "import-export", "crude-oil", "other"].every((id) => central.some((row) => row.id === id)),
+    `${where}: NSTW phải được phân rã đủ bốn nguồn thu.`,
+  );
+
+  const topSum = top.reduce((sum, row) => sum + row.amount, 0);
+  assert(
+    Math.abs(topSum - (totalValue.amount as number)) < 1000,
+    `${where}: NSTW + NSĐP lệch quá 1.000 đồng so với tổng NSNN.`,
+  );
+
+  const nsdp = top.find((row) => row.id === "NSDP")!.amount;
+  const nstw = top.find((row) => row.id === "NSTW")!.amount;
+  const centralSum = central.reduce((sum, row) => sum + row.amount, 0);
+  assert(
+    Math.abs(centralSum - nstw) < 1000,
+    `${where}: tổng bốn nguồn thu lệch quá 1.000 đồng so với NSTW.`,
+  );
+  const localSum = local.reduce((sum, row) => sum + row.amount, 0);
+  assert(
+    Math.abs(localSum - nsdp) < 1000,
+    `${where}: tổng tỉnh + huyện + xã lệch quá 1.000 đồng so với NSĐP.`,
+  );
 }
 
 export function validateRevenueAnalysis(value: unknown): RevenueAnalysisData {

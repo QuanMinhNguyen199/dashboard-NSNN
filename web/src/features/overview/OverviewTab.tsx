@@ -10,7 +10,7 @@ import {
   Bars,
   Card,
   Change,
-  CoverageNote,
+  inScale,
   Money,
   ResourceView,
   Segmented,
@@ -29,24 +29,23 @@ export function OverviewTab() {
 
   return (
     <ResourceView resource={resource} retry={retry} minHeight={420}>
-      {(data, partial) => <OverviewBody data={data} partial={partial} dispatch={dispatchIntent} />}
+      {(data) => <OverviewBody data={data} dispatch={dispatchIntent} />}
     </ResourceView>
   );
 }
 
 function OverviewBody({
   data,
-  partial,
   dispatch,
 }: {
   data: OverviewData;
-  partial?: string;
   dispatch: ReturnType<typeof useDashboardState>["dispatchIntent"];
 }) {
   const { filters } = useDashboardState();
   const [rankDirection, setRankDirection] = useState<"high" | "low">("high");
   const [growthDirection, setGrowthDirection] = useState<"up" | "down">("up");
   const [showTrendTable, setShowTrendTable] = useState(false);
+  const [selectedBudgetLevel, setSelectedBudgetLevel] = useState<"NSTW" | "NSDP">("NSDP");
 
   const ranked = [...data.locations].sort((a, b) =>
     rankDirection === "high" ? b.amount - a.amount : a.amount - b.amount,
@@ -61,11 +60,12 @@ function OverviewBody({
   // Thu trong kỳ và Lũy kế là cùng một đại lượng trên hai khung thời gian, nằm
   // cạnh nhau nên phải cùng đơn vị và cùng số lẻ mới so được.
   const kpiUnit = moneyScale([data.kpiPeriod.amount, data.kpiYtd.amount]);
+  const budgetDetailRows = selectedBudgetLevel === "NSTW" ? data.centralBudgetSources : data.localBudgetLevels;
+  const budgetDetailUnit = moneyScale(budgetDetailRows.map((row) => row.amount));
+  const budgetDetailMax = Math.max(...budgetDetailRows.map((row) => Math.abs(row.amount)), 1);
 
   return (
     <>
-      <CoverageNote message={partial} />
-
       <KpiStrip label="Chỉ số chính">
         <Kpi
           label="Thu trong kỳ"
@@ -238,10 +238,45 @@ function OverviewBody({
               hidden: data.budgetLevels.length === 0,
               render: () => (
                 <Card
-                  title="Cơ cấu NSTW và NSĐP"
-                  subtitle="Tỷ trọng trên tổng NSNN"
+                  title="Theo cấp ngân sách"
+                  subtitle="Tỷ trọng trên tổng NSNN · chọn một phần để xem chi tiết"
+                  unit={budgetDetailUnit}
                 >
-                  <DonutChart rows={data.budgetLevels} centerLabel="NSNN" />
+                  <DonutChart
+                    rows={data.budgetLevels}
+                    centerLabel="NSNN"
+                    selectedId={selectedBudgetLevel}
+                    onSelect={(id) => setSelectedBudgetLevel(id as "NSTW" | "NSDP")}
+                  />
+                  <section
+                    className="dbudget-local"
+                    aria-live="polite"
+                    aria-label={`Phân rã ngân sách ${selectedBudgetLevel === "NSTW" ? "trung ương" : "địa phương"}`}
+                  >
+                    <h3>
+                      {selectedBudgetLevel === "NSTW"
+                        ? "Trong đó ngân sách trung ương"
+                        : "Trong đó ngân sách địa phương"}
+                    </h3>
+                    <ul>
+                      {budgetDetailRows.map((row) => {
+                        return (
+                          <li key={row.id}>
+                            <div>
+                              <span>{row.name}</span>
+                              <strong title={money(row.amount)}>{inScale(row.amount, budgetDetailUnit)}</strong>
+                            </div>
+                            <span className="dbudget-track" aria-hidden="true">
+                              <i
+                                className={row.amount < 0 ? "is-negative" : undefined}
+                                style={{ width: `${Math.max((Math.abs(row.amount) / budgetDetailMax) * 100, 0.8)}%` }}
+                              />
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
                 </Card>
               ),
             },

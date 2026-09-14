@@ -11,7 +11,6 @@ import {
   Bars,
   Card,
   Change,
-  CoverageNote,
   Money,
   ResourceView,
   Segmented,
@@ -138,20 +137,18 @@ export function LocationDetailTab() {
         <LocationMap rows={mapRows} selectedId={location} onSelect={selectLocation} />
 
         <ResourceView resource={resource} retry={retry} minHeight={220}>
-          {(data, partial) => <LocationBody data={data} partial={partial} />}
+          {(data) => <LocationBody data={data} />}
         </ResourceView>
       </div>
     </div>
   );
 }
 
-function LocationBody({ data, partial }: { data: LocationDetailData; partial?: string }) {
+function LocationBody({ data }: { data: LocationDetailData }) {
   const { filters, dispatchIntent } = useDashboardState();
 
   return (
     <>
-      <CoverageNote message={partial} />
-
       <KpiStrip label={`Chỉ số ${data.location.name}`}>
         <Kpi
           label="Thu trong kỳ"

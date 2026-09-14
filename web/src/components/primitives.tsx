@@ -355,7 +355,7 @@ export function ResourceView<T>({
 }: {
   resource: ResourceState<T>;
   retry?: () => void;
-  children: (data: T, partial?: string) => ReactNode;
+  children: (data: T) => ReactNode;
   minHeight?: number;
 }) {
   if (resource.status === "loading")
@@ -390,15 +390,5 @@ export function ResourceView<T>({
         <span>{resource.reason}</span>
       </div>
     );
-  return <>{children(resource.data, resource.status === "partial" ? resource.message : undefined)}</>;
-}
-
-export function CoverageNote({ message }: { message?: string }) {
-  if (!message) return null;
-  return (
-    <p className="dnote" role="note">
-      <span aria-hidden="true">⚠</span> {message} Các số dưới đây là dữ liệu thật của phần đã báo cáo,
-      không suy diễn cho phần còn thiếu.
-    </p>
-  );
+  return <>{children(resource.data)}</>;
 }

@@ -135,6 +135,8 @@ nguồn cấp cao, NSTW và NSĐP.
   Hai nguồn này không phân bổ theo địa bàn và bị loại hẳn khi phạm vi là một phường/xã.
 - Hai phường/xã cố ý thiếu dữ liệu năm 2026 để kiểm thử trạng thái `partial`; đó là quan
   sát **thiếu**, không phải giá trị 0.
+- Không hiển thị banner coverage lặp lại ở đầu mỗi tab. Tổng quan đưa số địa bàn thiếu vào
+  KPI `Cần chú ý`; trạng thái `partial` vẫn được giữ trong tầng dữ liệu.
 - `I.15 Tiền sử dụng khu vực biển` bằng 0 — giá trị 0 hợp lệ, hiển thị là 0.
 - `V`, `VIII` và ba dòng hoàn thuế XNK mang giá trị **âm** hợp lệ, không bị clamp.
 - Quý được cộng từ ba giá trị PERIOD tháng và mang cờ `derivedQuarter`; mock không có file
@@ -163,8 +165,15 @@ Span đi qua CSS custom property đã kiểm tra, **không** dựng tên class T
 khi sibling bị ẩn: 8+4 → 12, 7+5 → 12, 6+6 → 12. Không dùng `grid-auto-flow: dense` vì nó
 đảo thứ tự đọc và thứ tự tab bàn phím.
 
-Ví dụ đang chạy: chọn `Cấp ngân sách = NSTW` làm widget “Cơ cấu NSTW và NSĐP” mất nghĩa và
+Ví dụ đang chạy: chọn `Cấp ngân sách = NSTW` làm widget “Theo cấp ngân sách” mất nghĩa và
 bị loại khỏi lưới, “Tăng trưởng địa bàn” bên cạnh nở ra đủ 12 cột.
+
+Ở phạm vi `NSNN`, người dùng chọn trực tiếp lát hoặc chú giải NSTW/NSĐP để đổi phần phân rã.
+NSTW được phân theo bốn nguồn thu; NSĐP được phân theo cấp tỉnh, huyện, xã. Widget đối soát
+`NSNN = NSTW + NSĐP`, `NSTW = tổng bốn nguồn` và `NSĐP = cấp tỉnh + cấp huyện + cấp xã`
+trước khi vẽ. Prototype đang dùng phân rã NSĐP mock tất định vì kho quan sát chưa có ba cấp con;
+adapter API/MCP phải trả `centralBudgetSources` và `localBudgetLevels`. Số 0 và số âm là giá trị
+hợp lệ, không được đổi thành trạng thái thiếu dữ liệu.
 
 ## Khổ hẹp và khung nhúng
 

@@ -261,6 +261,60 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
         })
       : [];
 
+  const centralBudgetSources = (() => {
+    const central = budgetLevels.find((row) => row.id === "NSTW");
+    if (!central) return [];
+    const scoped = { ...filters, budgetLevel: "NSTW" as const };
+    return SOURCES.map((source) =>
+      rowOf(source.code, source.shortName, scoped, { items: itemsOfSource(source.code) }, central.amount),
+    );
+  })();
+
+  /*
+   * API tham chiếu dùng ba mã PROVINCE/DISTRICT/COMMUNE nhưng kho quan sát của
+   * prototype hiện chỉ có hai cấp NSTW/NSDP. Tách tất định dưới đây chỉ phục vụ
+   * mock UI; số cuối cùng được lấy làm phần dư để bảo toàn tuyệt đối:
+   *   NSĐP = cấp tỉnh + cấp huyện + cấp xã.
+   * Cấp huyện âm là điều chỉnh hợp lệ theo mẫu nghiệp vụ, không được ép về 0.
+   */
+  const localBudgetLevels = (() => {
+    const local = budgetLevels.find((row) => row.id === "NSDP");
+    if (!local) return [];
+
+    const split = (amount: number | null) => {
+      if (amount === null) return { province: null, district: null, commune: null };
+      const province = Math.round(amount * 0.575);
+      const district = -Math.round(Math.abs(amount) * 0.0023);
+      return { province, district, commune: amount - province - district };
+    };
+    const current = split(local.amount);
+    const previous = split(local.previous);
+
+    return [
+      {
+        id: "PROVINCE",
+        name: "NS cấp tỉnh",
+        amount: current.province!,
+        previous: previous.province,
+        share: share(current.province!, local.amount),
+      },
+      {
+        id: "COMMUNE",
+        name: "NS cấp xã",
+        amount: current.commune!,
+        previous: previous.commune,
+        share: share(current.commune!, local.amount),
+      },
+      {
+        id: "DISTRICT",
+        name: "NS cấp huyện",
+        amount: current.district!,
+        previous: previous.district,
+        share: share(current.district!, local.amount),
+      },
+    ] satisfies AmountRow[];
+  })();
+
   return {
     meta: metaOf(filters, "Toàn thành phố Hà Nội"),
     kpiPeriod,
@@ -271,6 +325,8 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     domesticItems,
     locations,
     budgetLevels,
+    centralBudgetSources,
+    localBudgetLevels,
     estimate: estimateOf(filters),
     waterfall: waterfallOf(sources, {
       start: `Cùng kỳ ${prevYear(filters)}`,
