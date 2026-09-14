@@ -447,7 +447,9 @@ tỷ lệ cố định áp lên bốn tập nội dung khác nhau thì đúng đ
 - **Loading:** skeleton trắng có viền, ba khối cao 54px và pulse 1.4s; vùng có `aria-live`.
 - **Empty:** surface trạng thái nêu không có số liệu và hướng người dùng đổi kỳ.
 - **Error:** surface có `role="alert"`, thông báo ngắn và nút “Thử lại”.
-- **Partial:** vẫn hiển thị dữ liệu thật, đồng thời nêu độ phủ và số địa bàn thiếu; không tạo dòng 0 thay cho quan sát thiếu.
+- **Partial:** vẫn hiển thị dữ liệu và không tạo dòng 0 thay cho quan sát thiếu. Không dùng
+  banner coverage chung; Tổng quan nêu địa bàn thiếu trong KPI, widget khác đặt độ phủ sát
+  số liệu nếu thông tin đó cần cho cách đọc.
 
 ### Detail drawer
 

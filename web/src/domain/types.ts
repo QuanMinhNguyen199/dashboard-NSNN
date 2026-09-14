@@ -103,7 +103,12 @@ export interface OverviewData {
   sources: AmountRow[];
   domesticItems: AmountRow[];
   locations: AmountRow[];
+  /** Hai phần không giao nhau của NSNN: NSTW và NSĐP. */
   budgetLevels: AmountRow[];
+  /** Phân rã NSTW theo bốn nguồn thu, phục vụ chi tiết khi chọn lát NSTW. */
+  centralBudgetSources: AmountRow[];
+  /** Phân rã NSĐP; tổng ba dòng phải khớp đúng dòng NSĐP phía trên. */
+  localBudgetLevels: AmountRow[];
   /** `null` khi không có dự toán cho phạm vi đang lọc. */
   estimate: BudgetEstimate | null;
   waterfall: Waterfall;

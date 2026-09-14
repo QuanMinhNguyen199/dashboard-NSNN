@@ -208,7 +208,7 @@ nên có mặt.
 | Top khoản thu nội địa | "Trong 21 khoản, khoản nào chi phối?" | Phải mở bảng 21 dòng mới thấy được điều mà 5 dòng đã đủ nói |
 | Top địa bàn, cả cao nhất và thấp nhất | "Phường, xã nào đóng góp nhiều, nơi nào đang hụt?" | Chỉ xem nơi thu cao là bỏ mất nhóm cần hỗ trợ |
 | Tăng trưởng địa bàn tách riêng khỏi Top địa bàn | "Nơi nào đang chuyển động mạnh?" | Địa bàn nhỏ nhưng tăng vọt bị lấp sau các địa bàn lớn |
-| Cơ cấu NSTW và NSĐP | "Phần nào thuộc ngân sách địa phương?" | Không tách được phần thành phố thực sự điều hành |
+| Theo cấp ngân sách | "Bao nhiêu thuộc NSTW, bao nhiêu thuộc NSĐP; NSĐP nằm ở cấp nào?" | Không tách được phần thành phố thực sự điều hành và không đối chiếu được cấp tỉnh, huyện, xã |
 | Waterfall biến động | "Vì sao kỳ này chênh so cùng kỳ?" | Chỉ biết chênh bao nhiêu mà không biết do đâu |
 | Bảng chi tiết có tìm kiếm và sắp xếp | "Khoản X cụ thể bao nhiêu?" | Không tra cứu được một khoản cụ thể để đối chiếu báo cáo giấy |
 | Đối chiếu thu ròng | "Số gộp và số ròng lệch nhau vì gì?" | Thu xuất nhập khẩu luôn bị hiểu nhầm giữa tổng gộp và số sau hoàn, khấu trừ |
@@ -251,7 +251,7 @@ sai cụ thể, chứ không phải để code cho chặt chẽ.
 | Không xếp hạng dòng tổng như một địa bàn | Dòng tổng thành phố và tổng Kho bạc lớn hơn mọi phường, xã | Bảng xếp hạng luôn bị hai dòng đó chiếm đầu, vô nghĩa |
 | Nguồn do trung ương quản lý không phân bổ về địa bàn | Hải quan và dầu thô hạch toán ở cấp thành phố | Cộng nguyên phần thành phố vào từng phường làm tổng 126 địa bàn vượt xa tổng thật |
 | Waterfall khớp tổng | Tổng các bước phải đúng bằng giá trị cuối trừ đầu | Biểu đồ giải thích biến động mà chính nó không cân thì không dùng để giải thích được |
-| Partial vẫn hiển thị kèm độ phủ | Chờ đủ 126/126 mới cho xem là chặn mất việc điều hành hằng ngày | Hoặc chặn người dùng, hoặc để họ tưởng số chưa đủ là số đã đủ |
+| Partial vẫn hiển thị dữ liệu | Chờ đủ 126/126 mới cho xem là chặn mất việc điều hành hằng ngày | Độ phủ được đặt trong KPI/widget liên quan, không lặp thành banner ở mọi tab |
 
 ## 11. Trạng thái màn hình
 
@@ -259,7 +259,7 @@ sai cụ thể, chứ không phải để code cho chặt chẽ.
 |---|---|
 | Loading | Giữ khung giao diện ổn định và báo đang tải |
 | Ready | Hiển thị dữ liệu, bao gồm giá trị 0 |
-| Partial | Hiển thị dữ liệu và cảnh báo độ phủ |
+| Partial | Hiển thị dữ liệu; độ phủ nằm trong KPI hoặc widget cần thông tin đó |
 | No data | Giải thích không có dữ liệu và gợi ý đổi filter |
 | Not applicable | Ẩn widget và cho widget bên cạnh mở rộng |
 | Error | Thông báo rõ và cho phép thử lại khi phù hợp |

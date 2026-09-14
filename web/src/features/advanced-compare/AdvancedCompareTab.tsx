@@ -8,7 +8,6 @@ import { Kpi, KpiStrip } from "@/components/Kpi";
 import { TrendChart, WaterfallChart } from "@/components/charts";
 import {
   Card,
-  CoverageNote,
   Money,
   ResourceView,
   Segmented,
@@ -68,7 +67,7 @@ export function AdvancedCompareTab() {
       <CompareBuilder />
 
       <ResourceView resource={resource} retry={retry} minHeight={380}>
-        {(data, partial) => <CompareBody data={data} partial={partial} />}
+        {(data) => <CompareBody data={data} />}
       </ResourceView>
     </>
   );
@@ -230,7 +229,7 @@ function PeriodPicker({
   );
 }
 
-function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?: string }) {
+function CompareBody({ data }: { data: AdvancedComparisonData }) {
   const { filters } = useDashboardState();
   const bothKnown = data.a.total !== null && data.b.total !== null;
   // Bảng chênh lệch: ba cột tiền phải cùng một đơn vị mới đọc được theo hàng ngang.
@@ -240,8 +239,6 @@ function CompareBody({ data, partial }: { data: AdvancedComparisonData; partial?
 
   return (
     <>
-      <CoverageNote message={partial} />
-
       <KpiStrip label="Chỉ số so sánh">
         <Kpi label={data.a.label} note="Vế A">
           {data.a.total === null ? "chưa có số liệu" : <Money value={data.a.total} scale={kpiUnit} />}

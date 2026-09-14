@@ -176,12 +176,18 @@ Tổng quan luôn có phạm vi toàn thành phố, không đặt location selec
 
 [ Top khoản thu nội địa — 8 ] [ Top địa bàn — 4 ]
 
-[ Tăng trưởng địa bàn — 6 ] [ Cơ cấu NSTW/NSĐP — 6 ]
+[ Tăng trưởng địa bàn — 6 ] [ Theo cấp ngân sách — 6 ]
 
 [ So sánh nhanh 2–5 địa bàn — 12 ]
 
 [ Waterfall biến động — 12 ]
 ```
+
+Thẻ **Theo cấp ngân sách** gồm donut `NSTW/NSĐP` có thể chọn trực tiếp. Chọn NSTW hiển thị
+phân rã theo bốn nguồn thu; chọn NSĐP hiển thị `NS cấp tỉnh`, `NS cấp xã`, `NS cấp huyện`.
+Hai công thức bắt buộc là
+`NSNN = NSTW + NSĐP` và `NSĐP = cấp tỉnh + cấp huyện + cấp xã`; số 0 hoặc số âm vẫn phải
+hiển thị vì có thể là số điều chỉnh hợp lệ.
 
 ### KPI
 
@@ -391,7 +397,9 @@ type ResourceState<T> =
 - Số âm có thể hợp lệ.
 - Null là thiếu hoặc chưa có.
 - `not-applicable` loại widget khỏi grid.
-- `partial` vẫn hiển thị dữ liệu và cảnh báo coverage.
+- `partial` vẫn hiển thị dữ liệu. Không dùng banner coverage chung trên mọi tab; Tổng quan
+  đưa số địa bàn thiếu vào KPI `Cần chú ý`, còn widget nào cần độ phủ phải đặt thông tin
+  ngay cạnh số liệu liên quan.
 - `error` có retry khi phù hợp.
 - Loading giữ ổn định layout.
 - Error Boundary chỉ xử lý lỗi render.
