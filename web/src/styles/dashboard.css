@@ -336,7 +336,12 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters[data-embedded="true"] .dfilters-toggle:hover {
   border-color: var(--blue-250); background: var(--surface-sunken); color: var(--brand);
 }
+/* Nút đặt lại thuộc về panel đang mở, nên đóng panel là nó đi theo. Trước đây
+   nó không nằm trong danh sách này: sáu ô lọc ẩn đi còn nút vẫn ở lại, lơ lửng
+   dưới thanh tóm tắt, rộng 111px giữa khoảng trống 344px — và nó mời người dùng
+   đặt lại một bộ lọc mà họ còn chưa mở ra xem. */
 .dfilters[data-embedded="true"][data-open="false"] > label,
+.dfilters[data-embedded="true"][data-open="false"] > .dfilters-reset-row,
 .dfilters[data-embedded="true"][data-open="false"] > .dfield { display: none; }
 .dfilters[data-embedded="true"][data-open="true"] {
   display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -368,8 +373,13 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters-reset:disabled {
   cursor: default; color: var(--ink-3); opacity: 0.65;
 }
-.dfilters[data-embedded="true"] .dfilters-reset-row { display: block; grid-column: 1 / -1;
-  padding-top: var(--s3); border-top: 1px solid var(--hairline); }
+/* Dáng "khối đầy đủ" của nút đặt lại. Hai ngữ cảnh cần nó: panel nhúng ở bất
+   kỳ bề rộng nào, và panel xếp chồng dưới 768px (luật thứ hai nằm trong media
+   query tương ứng). Cả hai trỏ về cùng một bộ giá trị để không trôi khỏi nhau. */
+.dfilters[data-embedded="true"] .dfilters-reset-row {
+  display: block; grid-column: 1 / -1;
+  padding-top: var(--s3); border-top: 1px solid var(--hairline);
+}
 .dfilters[data-embedded="true"] .dfilters-reset { width: 100%; min-height: 44px; padding: 0 14px; }
 
 /* Mobile host dùng cùng dữ liệu với web nhưng tóm phạm vi thành hai dòng dễ quét.
@@ -1074,7 +1084,15 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   padding: 13px 15px; margin-bottom: var(--s4);
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
-.dbuilder label { display: grid; gap: 5px; }
+/* `minmax(0, 1fr)` chứ không chỉ `min-width: 0`: track lưới mặc định là `auto`
+   nên nó nở theo bề rộng NỘI TẠI của `<select>` — tên nguồn dài nhất cộng chuỗi
+   "— khác phạm vi phân bổ" — và ô chọn rộng 303px nằm trong label 268px, tràn
+   ngang ở 320px. `min-width: 0` trên label không chạm tới track bên trong nó. */
+.dbuilder label {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px;
+  min-width: 0; flex: 1 1 11em;
+}
+.dbuilder select { width: 100%; }
 .dbuilder span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
 .dbuilder select {
   min-height: 38px; padding: 6px 10px; border: 1px solid var(--control-border);
@@ -1240,7 +1258,18 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dfilter-year, .dfilter-cycle, .dfilter-period, .dfilter-accumulation { grid-column: span 6; }
   .dfilter-budget { grid-column: span 4; }
   .dfilter-indicator { grid-column: span 8; }
-  .dfilters-reset-row { display: block; }
+  /* Khi panel chuyển sang lưới, hàng reset phải được gán cột như mọi ô khác.
+     Thiếu `grid-column` thì nó rơi vào một cột trong mười hai — rộng 14px ở
+     390px — và cái nút 107px tràn ra ngoài ô của chính nó. Trước đây chỉ nhánh
+     `[data-embedded]` có luật này, nên `?host=mobile` thì đúng còn trình duyệt
+     điện thoại thật và khổ iframe thì hỏng. */
+  .dfilters-reset-row {
+    display: block; grid-column: 1 / -1;
+    padding-top: var(--s3); border-top: 1px solid var(--hairline);
+  }
+  /* 44px là vùng chạm tối thiểu; nút đặt lại ở đây là hành động kết thúc một
+     phiên lọc nên chiếm trọn chiều rộng, không nép vào cuối hàng như desktop. */
+  .dfilters-reset { width: 100%; min-height: 44px; padding: 0 14px; }
   .dfield-wide { grid-column: 1 / -1; }
   .dfilters select { width: 100%; }
   /* Khổ hẹp: mặc định chỉ hiện một dòng phạm vi, sáu ô điều khiển ẩn cho tới
@@ -1267,6 +1296,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
     background: var(--blue-050); color: var(--brand);
   }
   .dfilters[data-open="false"] > label,
+  .dfilters[data-open="false"] > .dfilters-reset-row,
   .dfilters[data-open="false"] > .dfield { display: none; }
 
   /* Quy tắc touch target 44px bên dưới chỉ chạm tới nút trong `.dseg` nên nhóm
@@ -1295,8 +1325,13 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dfilter-budget, .dfilter-indicator { grid-column: 1 / -1; }
 }
 
+/* Còn đủ rộng cho ba ô một hàng. Giữ nguyên lưới 12 cột và đổi nhịp span thay
+   vì đổi `grid-template-columns` sang `repeat(3, …)`: các ô lọc mang span 6/4/8
+   của lưới 12, đặt chúng vào lưới 3 cột thì grid phải sinh cột ngầm, và
+   `grid-column: 1 / -1` chỉ chạm hết lưới TƯỜNG MINH — nút "Đặt lại bộ lọc" vì
+   thế hụt đúng 80px so với các ô phía trên. */
 @media (min-width: 600px) and (max-width: 767px) {
-  .dfilters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dfilter-year, .dfilter-cycle, .dfilter-period, .dfilter-accumulation { grid-column: span 4; }
 }
 
 /* Dưới 700px thì 5/12 cột chỉ còn khoảng 270px — hẹp hơn cả nhãn ngắn nhất.
