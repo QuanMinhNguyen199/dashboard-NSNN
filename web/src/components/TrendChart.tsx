@@ -97,20 +97,34 @@ export function TrendChart({
   height = 260,
   labelA,
   labelB,
+  peers = false,
 }: {
   points: TrendPoint[];
   year: number;
   height?: number;
   labelA?: string;
   labelB?: string;
+  /**
+   * Hai chuỗi NGANG HÀNG chứ không phải "hiện tại so với mốc tham chiếu".
+   *
+   * Nét đứt phi sắc `--data-reference` được DESIGN.md dành riêng cho mốc tham
+   * chiếu — nó cố ý trông nhạt hơn để không tranh chấp với chuỗi chính. Tab So
+   * sánh nhét vế A vào đúng slot đó, nên hai phường ngang hàng được vẽ bằng thứ
+   * ngôn ngữ nói "cái này chỉ là nền". Ai học được "đứt xám = năm trước" ở ba
+   * tab sẽ đọc sai tab thứ tư. Ở chế độ này, vế A dùng `--data-family` — bậc mà
+   * DESIGN.md chỉ định cho "kỳ A".
+   */
+  peers?: boolean;
 }) {
   const reduced = useReducedMotion();
   const boxRef = useRef<HTMLDivElement | null>(null);
   const width = useWidth(boxRef);
   const [hover, setHover] = useState<number | null>(null);
 
-  const nameCurrent = labelB ?? `Năm ${year}`;
-  const namePrevious = labelA ?? `Năm ${year - 1}`;
+  // Chú giải ghi cả vai trò chứ không chỉ ghi năm: "2025" một mình không nói
+  // được nó là mốc so sánh, và người đọc phải tự suy ra từ việc nó nhỏ hơn.
+  const nameCurrent = labelB ?? `Năm ${year} (hiện tại)`;
+  const namePrevious = labelA ?? `Năm ${year - 1} (cùng kỳ)`;
   const hasGap = points.some((p) => p.current === null || p.previous === null);
 
   const peak = Math.max(
@@ -199,7 +213,7 @@ export function TrendChart({
             )}
 
             {paths.previous.map((d, i) => (
-              <path key={`p${i}`} className="dchart-line is-previous" d={d} />
+              <path key={`p${i}`} className={`dchart-line ${peers ? "is-peer" : "is-previous"}`} d={d} />
             ))}
             {paths.current.map((d, i) => (
               <path
@@ -253,7 +267,7 @@ export function TrendChart({
           {nameCurrent}
         </span>
         <span>
-          <i />
+          <i className={peers ? "is-peer" : undefined} />
           {namePrevious}
         </span>
         <span>Đơn vị trục: {axis.unit}</span>

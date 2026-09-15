@@ -114,7 +114,7 @@ export function useLocationDetail(filters: DashboardFilters, locationId: string 
     `location|${locationId}|${filterKey(filters)}`,
     (signal) => provider.getLocationDetail(filters, locationId!, signal),
     !!locationId,
-    "Chọn một phường, xã trong danh sách để xem chi tiết.",
+    "Chọn một phường, xã ở ô “Chi tiết địa bàn” phía trên, hoặc bấm một vùng trên bản đồ.",
     true,
   );
 }

@@ -269,6 +269,15 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
         </Kpi>
       </KpiStrip>
 
+      {data.rows.length === 0 && (
+        <p className="dnote" role="note">
+          Hai nguồn thu không có khoản thu chung nên chỉ so được ở mức tổng —
+          một bảng theo khoản sẽ phải điền 0 cho những khoản vốn không tồn tại ở
+          vế kia, và con số đó đọc ra thành “mất trắng” chứ không phải “không áp
+          dụng”.
+        </p>
+      )}
+
       <GridRows
         rows={[
           [
@@ -287,6 +296,9 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
             },
             {
               id: "delta-table",
+              // Không có phân rã thì không dựng bảng rỗng; `resolveRow` cho
+              // widget còn lại nở đủ 12 cột.
+              hidden: data.rows.length === 0,
               span: 5,
               // Bảng năm cột đi kèm: cả hàng cùng xuống một cột khi hẹp.
               wide: true,
@@ -344,6 +356,7 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
                     year={filters.year}
                     labelA={data.a.label}
                     labelB={data.b.label}
+                    peers
                   />
                 </Card>
               ),

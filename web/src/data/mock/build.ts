@@ -209,11 +209,20 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
   // trường hợp "tất cả các kỳ" thay vì dựng lại công thức ở đây.
   const ytdMonths = monthsOf({ ...filters, accumulation: "YTD" });
 
+  /**
+   * "Thu trong kỳ" phải LUÔN là số của riêng kỳ đó, kể cả khi `Cách tính` đang
+   * để Lũy kế. Trước đây nó dùng `monthsOf(filters)` nên bị chính bộ lọc đổi ý
+   * nghĩa: chọn Lũy kế thì ô này hiện đúng con số của ô "Lũy kế từ đầu năm" bên
+   * cạnh — hai nhãn khác nhau, cùng một số, và một trong hai nhãn nói sai về số
+   * nó đang mang. Dải KPI đã bày sẵn cả hai khung thời gian, nên mỗi ô giữ đúng
+   * khung của mình là đủ.
+   */
+  const periodMonths = monthsOf({ ...filters, accumulation: "PERIOD" });
   const kpiPeriod: AmountRow = {
     id: "period",
     name: "Thu trong kỳ",
-    amount: sumOf(filters, { months: monthsOf(filters) }) ?? 0,
-    previous: sumOf(filters, { months: monthsOf(filters), year: prevYear(filters) }),
+    amount: sumOf(filters, { months: periodMonths }) ?? 0,
+    previous: sumOf(filters, { months: periodMonths, year: prevYear(filters) }),
   };
   const kpiYtd: AmountRow = {
     id: "ytd",
@@ -319,6 +328,12 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     meta: metaOf(filters, "Toàn thành phố Hà Nội"),
     kpiPeriod,
     kpiYtd,
+    scopeTotal: {
+      id: "scope-total",
+      name: "Tổng theo phạm vi đang lọc",
+      amount: total,
+      previous: sumOf({ ...filters, year: prevYear(filters) }),
+    },
     insight: insightOf(kpiPeriod, locations, coverageOf(filters)),
     trend: trendOf(filters),
     sources,
@@ -456,11 +471,14 @@ export function buildLocationDetail(
   if (!location) return null;
 
   const scope = { locationIds: [locationId] };
-  const amount = sumOf(filters, scope);
+  // Xem chú thích ở `buildOverview`: ô "Thu trong kỳ" không được đổi nghĩa theo
+  // `Cách tính`, vì ô "Lũy kế từ đầu năm" ngay cạnh đã lo khung thời gian kia.
+  const periodMonths = monthsOf({ ...filters, accumulation: "PERIOD" });
+  const amount = sumOf(filters, { ...scope, months: periodMonths });
   // Không có quan sát nào: trả null để provider chuyển thành trạng thái
   // "chưa có số liệu", thay vì dựng một trang toàn số 0.
   if (amount === null) return null;
-  const previous = sumOf(filters, { ...scope, year: prevYear(filters) });
+  const previous = sumOf(filters, { ...scope, months: periodMonths, year: prevYear(filters) });
   const cityTotal = sumOf(filters);
 
   const ytdMonths = monthsOf({ ...filters, accumulation: "YTD" });
@@ -598,17 +616,12 @@ export function buildAdvancedComparison(
   const rows =
     filters.mode === "revenue"
       ? // Hai vế là hai tập khoản RỜI NHAU: "Thuế TNCN" không tồn tại bên xuất
-        // nhập khẩu, nên so từng dòng giữa hai nguồn là vô nghĩa. Liệt kê hợp của
-        // hai tập — khoản thuộc vế A có B bằng 0 và ngược lại — vừa đọc được là
-        // mỗi vế gồm những gì, vừa giữ tổng đúng bằng chênh lệch của KPI.
-        [
-          ...(scopeA.items ?? []).map((item) =>
-            rowOfPair(item.code, item.name, sumOf(sideA, { items: [item] }) ?? 0, 0),
-          ),
-          ...(scopeB.items ?? []).map((item) =>
-            rowOfPair(item.code, item.name, 0, sumOf(sideB, { items: [item] }) ?? 0),
-          ),
-        ]
+        // nhập khẩu. Bản trước liệt kê hợp hai tập và điền 0 cho vế không có
+        // khoản đó — tổng thì khớp, nhưng màn hình đọc ra thành "vế B mất trắng
+        // mọi khoản", và dải KPI kết luận −99,4% bằng chữ đỏ. Đó đúng là thứ
+        // *The No Missing As Zero Rule* cấm. Hai nguồn thu chỉ so được ở mức
+        // tổng, nên không dựng bảng theo khoản nữa.
+        []
       : rowItems.map((item) =>
           rowOfPair(
             item.code,

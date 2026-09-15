@@ -148,7 +148,7 @@ export function App() {
   }, [embedded, postToHost]);
 
   return (
-    <div className="dapp" data-host={host.source} data-platform={host.platform}>
+    <div className="dapp" data-host={host.source} data-platform={host.platform} data-embedded={embedded}>
       <a className="dskip" href="#workspace">
         Bỏ qua điều hướng
       </a>

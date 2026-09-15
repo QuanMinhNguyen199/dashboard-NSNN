@@ -1,5 +1,5 @@
 import { TrendChart } from "@/components/TrendChart";
-import { useId, useState } from "react";
+import { useId, useState, type CSSProperties } from "react";
 
 export { TrendChart };
 
@@ -41,6 +41,21 @@ export function DonutChart({
   const centerY = callout ? 97 : 60;
   const radius = callout ? 62 : 45;
   const circumference = 2 * Math.PI * radius;
+  /**
+   * Bậc màu đi theo ĐỘ LỚN, không theo thứ tự mảng.
+   *
+   * Thang đơn sắc tồn tại để "đậm = nhiều". Gán màu theo chỉ số mảng thì thứ tự
+   * dữ liệu quyết định độ đậm: ở donut ba nhóm nội địa, lát 18,3% nhận màu đậm
+   * hơn lát 30,2% — thang nói ngược lại chính con số nó đang mã hoá, và người
+   * quét nhanh đọc sai thứ hạng. Giữ nguyên THỨ TỰ LÁT theo danh mục nghiệp vụ;
+   * chỉ bậc màu được xếp lại.
+   */
+  const rankByAmount = new Map(
+    [...positiveRows]
+      .sort((a, b) => b.amount - a.amount)
+      .map((row, rank) => [row.id, rank]),
+  );
+
   let runningOffset = 0;
   const slices = positiveRows.map((row, index) => {
     const length = (row.amount / total) * circumference;
@@ -81,7 +96,7 @@ export function DonutChart({
                 cx={centerX}
                 cy={centerY}
                 r={radius}
-                style={{ stroke: donutColor(index) }}
+                style={{ stroke: donutColor(rankByAmount.get(row.id) ?? index) }}
                 strokeDasharray={`${length} ${circumference - length}`}
                 strokeDashoffset={-offset}
                 transform={`rotate(-90 ${centerX} ${centerY})`}
@@ -133,7 +148,7 @@ export function DonutChart({
               const position = calloutPositions.get(row.id)!;
               const content = (
                 <>
-                  <i style={{ background: donutColor(index) }} />
+                  <i style={{ background: donutColor(rankByAmount.get(row.id) ?? index) }} />
                   <span>{getCalloutLabel(row)}</span>
                   <strong>{pct((row.amount / total) * 100)}</strong>
                 </>
@@ -157,7 +172,7 @@ export function DonutChart({
           const tooltipId = `${chartId}-${row.id}`;
           const content = (
             <>
-              <i style={{ background: donutColor(index) }} />
+              <i style={{ background: donutColor(rankByAmount.get(row.id) ?? index) }} />
               <span>{row.name}</span>
               <strong>{pct((row.amount / total) * 100)}</strong>
             </>
@@ -207,12 +222,61 @@ export function WaterfallChart({
 }) {
   const difference = data.end - data.start;
   const scale = Math.max(...data.steps.map((step) => Math.abs(step.delta)), 1);
+  /**
+   * Chỉ chia đôi rãnh khi tập đang xem THẬT SỰ có cả hai dấu — đúng luật mà
+   * `Bars` đã cài (`twoSided ? 50 : 100`) nhưng widget này thì chưa. Với một tập
+   * toàn dương, `left: 50%` cố định khiến một nửa chiều ngang mã hoá con số
+   * không: ở "Biến động trong nhóm" (11 bước đều dương) đó là 50% widget chết,
+   * và ở Tổng quan nửa trái được dành cho một giá trị −3 trong khi giá trị dương
+   * lớn nhất là +6.964 — tỷ lệ 1:2300.
+   */
+  const hasNegative = data.steps.some((step) => step.delta < 0);
+  const hasPositive = data.steps.some((step) => step.delta > 0);
+  const twoSided = hasNegative && hasPositive;
+  const reach = twoSided ? 50 : 100;
+  const origin = twoSided ? 50 : hasNegative ? 100 : 0;
   // Cầu nối và các bước phải cùng một đơn vị: đây là phép cộng, đọc theo cột
   // dọc. Trước đây "48,62 nghìn tỷ" đứng cạnh "+367,6 tỷ" trong cùng một phép.
   const unit = moneyScale([data.start, data.end, difference, ...data.steps.map((s) => s.delta)]);
 
+  /**
+   * Số ĐỌC ĐƯỢC phải cộng ra số tổng ĐỌC ĐƯỢC.
+   *
+   * Mỗi bước được làm tròn riêng rồi in ra, nên sai số làm tròn tích luỹ mà
+   * không ai gánh: trên Tổng quan bốn bước in ra +6.964, +368, +173, −3 — cộng
+   * lại là 7.502, trong khi dòng tổng in +7.501. Ở tầng số thô thì khớp; ở tầng
+   * chữ trên màn hình thì không. Với một tài liệu được đọc thành tiếng trong
+   * cuộc họp, tầng chữ mới là tầng thật.
+   *
+   * Cách bù: dồn toàn bộ phần dư vào bước có phần thập phân bị cắt nhiều nhất —
+   * quy tắc "largest remainder". Bước đó lệch đúng một đơn vị hiển thị cuối
+   * cùng, và tổng thì khớp.
+   */
+  const displayDeltas = (() => {
+    const step = Math.pow(10, -unit.decimals) * unit.divisor;
+    const rounded = data.steps.map((s) => Math.round(s.delta / step) * step);
+    const target = Math.round(difference / step) * step;
+    const residual = target - rounded.reduce((sum, v) => sum + v, 0);
+    if (Math.abs(residual) < step / 2) return rounded;
+    // Bước nào bị cắt nhiều nhất thì nhận phần dư.
+    let worst = 0;
+    let worstGap = -1;
+    data.steps.forEach((s, i) => {
+      const gap = Math.abs(s.delta - rounded[i]);
+      if (gap > worstGap) { worstGap = gap; worst = i; }
+    });
+    const out = [...rounded];
+    out[worst] += residual;
+    return out;
+  })();
+
   return (
-    <div className="dwaterfall" data-unit={unit.divisor}>
+    <div
+      className="dwaterfall"
+      data-unit={unit.divisor}
+      data-two-sided={twoSided ? "true" : "false"}
+      style={{ "--origin": `${origin}%` } as CSSProperties}
+    >
       <div className="dbridge">
         <div>
           <span>{data.startLabel}</span>
@@ -233,8 +297,8 @@ export function WaterfallChart({
       </div>
 
       <ul className="dcontrib">
-        {data.steps.map((step) => {
-          const width = (Math.abs(step.delta) / scale) * 50;
+        {data.steps.map((step, index) => {
+          const width = (Math.abs(step.delta) / scale) * reach;
           const inner = (
             <>
               <span className="dcontrib-name" title={step.name}>{step.name}</span>
@@ -243,13 +307,13 @@ export function WaterfallChart({
                   className={step.delta >= 0 ? "pos" : "neg"}
                   style={{
                     width: `${Math.max(width, 0.6)}%`,
-                    left: step.delta >= 0 ? "50%" : `${50 - width}%`,
+                    left: step.delta >= 0 ? `${origin}%` : `${origin - width}%`,
                   }}
                 />
               </span>
               <strong className={step.delta >= 0 ? "pos" : "neg"}>
                 {step.delta >= 0 ? "+" : "−"}
-                {inScale(Math.abs(step.delta), unit)}
+                {inScale(Math.abs(displayDeltas[index]), unit)}
               </strong>
             </>
           );

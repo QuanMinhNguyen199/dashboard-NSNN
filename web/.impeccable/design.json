@@ -568,6 +568,10 @@
       "The Restate Specificity Rule",
       "The No Contextual Weight Rule",
       "The One Job Per Step Rule",
+      "The Declared Token Rule",
+      "The Rank Not Order Rule",
+      "The Peer Not Reference Rule",
+      "The Alternative Carries The Answer Rule",
       {
         "name": "The Even Cell Rule",
         "section": "layout",

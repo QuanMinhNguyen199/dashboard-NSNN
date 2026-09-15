@@ -222,8 +222,18 @@ function DomesticGroupStructure({
             <strong>{selected.name}</strong>
             {selected.meta && <span>{selected.meta}</span>}
           </div>
-          <Bars rows={selected.items.slice(0, 5)} showMoneyUnit />
-          {selected.items.length > 5 && <small>Còn {selected.items.length - 5} khoản trong bảng chi tiết bên dưới.</small>}
+          {/* Bốn thanh và một dòng ghi chú ở MỌI nhóm, không phải "tối đa năm".
+              Ba nhóm có 4, 5 và 12 khoản, nên `slice(0, 5)` cho ba chiều cao
+              khác nhau và dòng ghi chú chỉ hiện ở nhóm đông — đổi lát donut là
+              thẻ cao thêm 40px rồi 22px, thẻ cùng hàng giãn theo, và mọi thứ
+              phía dưới trang xê dịch. Cấu trúc giống nhau thì không cần giữ chỗ
+              bằng một con số ma nào cả. */}
+          <Bars rows={selected.items.slice(0, 4)} showMoneyUnit />
+          <small>
+            {selected.items.length > 4
+              ? `Còn ${selected.items.length - 4} khoản trong bảng chi tiết bên dưới.`
+              : `Đủ cả ${selected.items.length} khoản của nhóm.`}
+          </small>
         </div>
       )}
     </div>

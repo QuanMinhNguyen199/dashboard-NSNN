@@ -96,8 +96,15 @@ export interface DataMeta {
 
 export interface OverviewData {
   meta: DataMeta;
+  /** Luôn là số của riêng kỳ đang chọn, không đổi theo `accumulation`. */
   kpiPeriod: AmountRow;
   kpiYtd: AmountRow;
+  /**
+   * Tổng của đúng phạm vi đang lọc — có tính `accumulation`. Là mốc để đối soát
+   * các phân rã theo cấp ngân sách: chúng cũng tính theo bộ lọc, nên so chúng
+   * với `kpiPeriod` (vốn cố định trong-kỳ) sẽ lệch mỗi khi chọn Lũy kế.
+   */
+  scopeTotal: AmountRow;
   insight: { tone: "neutral" | "positive" | "warning" | "critical"; title: string; detail: string };
   trend: TrendPoint[];
   sources: AmountRow[];

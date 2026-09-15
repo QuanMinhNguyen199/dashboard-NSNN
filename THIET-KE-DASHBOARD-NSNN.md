@@ -332,18 +332,17 @@ Click một khoản hoặc cột waterfall có thể mở So sánh nâng cao ở
 ## 10. Tab Chi tiết phường/xã
 
 ```text
-[ Danh sách địa bàn có tìm kiếm — 5 ]
-[ Bản đồ và phân tích địa bàn — 7 ]
+[ Bản đồ và phân tích địa bàn — 12 ]
 ```
 
-Danh sách và bản đồ dùng chung một selected-location state.
+Ô lọc `Chi tiết địa bàn` và bản đồ dùng chung một selected-location state.
 
 Yêu cầu:
 
-- Tìm kiếm tên tiếng Việt.
-- Xếp hạng cao/thấp.
-- Keyboard navigation.
-- Hiển thị selected state rõ ràng.
+- Ô lọc nằm ở thanh lọc chung, mọi tab đều thấy; chọn một địa bàn sẽ điều hướng sang tab
+  này chứ không lọc lại số của tab đang đứng.
+- Ô lọc luôn phản ánh địa bàn đang xem, kể cả khi chọn bằng bản đồ.
+- Hiển thị selected state rõ ràng trên bản đồ.
 - Không đưa dòng tổng thành phố hoặc tổng Kho bạc vào xếp hạng.
 - Click bản đồ và click danh sách cho cùng kết quả.
 - Có table alternative cho bản đồ.
