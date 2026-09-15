@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ALL_PERIODS, INDICATOR_BY_SLUG, INDICATORS, YEARS, latestMonth } from "@/domain/catalog";
+import { ALL_PERIODS, INDICATOR_BY_SLUG, INDICATORS, LOCATIONS, YEARS, latestMonth } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
 import { DEFAULT_FILTERS, useDashboardState } from "@/state/DashboardState";
 import { useHostContext } from "@/host/HostContext";
@@ -13,7 +13,7 @@ import { Segmented } from "@/components/primitives";
  * tương lai rồi diễn giải dữ liệu thiếu thành 0.
  */
 export function FilterBar() {
-  const { filters, resetFilters, setFilters } = useDashboardState();
+  const { filters, location, resetFilters, setFilters, setTab, dispatchIntent } = useDashboardState();
   const { host, embedded, postToHost } = useHostContext();
   const count = periodCount(filters);
   const periods = Array.from({ length: count }, (_, i) => i + 1);
@@ -42,8 +42,45 @@ export function FilterBar() {
       ? "Lũy kế"
       : "Trong kỳ";
 
-  const isDefaultFilter = (Object.keys(DEFAULT_FILTERS) as (keyof DashboardFilters)[]).every(
-    (key) => filters[key] === DEFAULT_FILTERS[key],
+  // Địa bàn tính vào "đã đổi" vì nó là một ô trong chính thanh lọc này. Bỏ sót
+  // nó thì chọn một phường xong nút vẫn xám, và người dùng đọc ra là nút hỏng.
+  const isDefaultFilter =
+    location === null &&
+    (Object.keys(DEFAULT_FILTERS) as (keyof DashboardFilters)[]).every(
+      (key) => filters[key] === DEFAULT_FILTERS[key],
+    );
+
+  /**
+   * Không phải một bộ lọc mà là một lối đi tắt: chọn một phường, xã đưa thẳng
+   * sang tab Chi tiết địa bàn, chọn "Toàn thành phố" đưa về Tổng quan. Nó KHÔNG
+   * lọc lại số của tab đang đứng — `dispatchIntent`/`setTab` điều hướng chứ
+   * không chạm vào `filters`.
+   *
+   * Render đúng một lần, ở vị trí ngay trước `Cấp ngân sách`. Khi panel thu gọn
+   * lại (iframe, mobile, web hẹp) thì CSS **miễn** ô này khỏi luật ẩn-khi-đóng
+   * thay vì dựng thêm một bản sao ở chỗ khác: chọn địa bàn là đổi thứ đang xem
+   * chứ không phải tinh chỉnh cách xem, nên đặt nó sau một cánh cửa là sai —
+   * nhưng hai bản sao cùng một `<select>` trong một form thì còn sai hơn.
+   */
+  const locationField = (
+    <label className="dfilter-location">
+      <span>Chi tiết địa bàn</span>
+      <select
+        value={location ?? ""}
+        onChange={(event) => {
+          const id = event.target.value;
+          if (id) dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: id });
+          else setTab("overview");
+        }}
+      >
+        <option value="">Toàn thành phố</option>
+        {LOCATIONS.map((item) => (
+          <option key={item.id} value={item.id}>
+            {item.name}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 
   return (
@@ -87,6 +124,7 @@ export function FilterBar() {
           </span>
         </button>
       </div>
+
 
       <label className="dfilter-year">
         <span>Năm</span>
@@ -145,6 +183,8 @@ export function FilterBar() {
           hint={`${allLabel} luôn là số cộng dồn từ tháng 1, nên không chọn được cách tính.`}
         />
       </div>
+
+      {locationField}
 
       <label className="dfilter-budget">
         <span>Cấp ngân sách</span>

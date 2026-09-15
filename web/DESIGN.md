@@ -366,6 +366,34 @@ cách ép nó thẳng hàng đều tốn nhiều chiều cao hơn phần lệch 
 (0-1-0) bất kể thứ tự, nên luật xếp chồng ở 699px viết thiếu biến thể sẽ im lặng
 không áp dụng — cặp biểu đồ từng nằm cạnh nhau ở 390px với bề rộng 148px.
 
+**The Declared Token Rule.** Mọi `var(--x)` phải có một nơi đặt `--x`. Biến CSS
+không tồn tại **không báo lỗi**: khai báo chứa nó thành invalid at computed-value
+time và bị xoá im lặng — không console, không build warning, không khác gì một
+luật viết đúng nhưng bị đè. Trong một lượt rà soát, bốn biến kiểu này đã lần lượt
+xoá mất vòng focus của hai điều khiển, nền tooltip bản đồ, nền khung xem thử, và
+nét vẽ của một chuỗi dữ liệu. Ba trong bốn được DESIGN.md liệt kê sẵn ở phần màu
+— tức là tài liệu mô tả một hệ token mà stylesheet chưa hề có. `npm run build`
+chạy `scripts/check-tokens.mjs` trước `tsc` để chặn cả lớp lỗi này.
+
+**The Rank Not Order Rule.** Bậc màu của thang đơn sắc đi theo **độ lớn**, không
+theo thứ tự mảng. Thang đơn sắc tồn tại để "đậm = nhiều"; gán màu theo chỉ số
+mảng thì thứ tự dữ liệu quyết định độ đậm, và biểu đồ nói ngược lại chính con số
+nó đang mã hoá — donut ba nhóm nội địa từng cho lát 18,3% màu đậm hơn lát 30,2%.
+Thứ tự *lát* vẫn theo danh mục nghiệp vụ; chỉ bậc màu được xếp lại.
+
+**The Peer Not Reference Rule.** Nét đứt phi sắc `--data-reference` chỉ dành cho
+**mốc tham chiếu** — nó cố ý nhạt để không tranh chấp với chuỗi chính. Hai vế của
+một phép so sánh là hai chuỗi **ngang hàng**: vế A dùng `--data-family`, nét liền.
+Mượn slot "kỳ trước" để vẽ vế A làm người đã học "đứt xám = năm trước" ở ba tab
+đọc sai tab thứ tư.
+
+**The Alternative Carries The Answer Rule.** Bảng thay thế một biểu đồ phải trả
+lời **đúng câu hỏi** mà biểu đồ trả lời, không chỉ chứa cùng dữ liệu. Bảng thay
+bản đồ nhiệt từng sắp theo vần A-B-C: thứ tự đó không mang tin nào, nên người
+không dùng được bản đồ mất hẳn thông tin thứ hạng — nó chỉ còn tồn tại dưới dạng
+màu. Nay sắp giảm dần theo giá trị, một thang tiền cho cả cột, và đánh dấu dòng
+đang xem như bản đồ đánh dấu ô đang chọn.
+
 **The Twelve-Column Rule.** Widget chỉ dùng các nhịp 4, 6, 8 hoặc 12 cột đã có trong API component; chọn độ rộng theo lượng thông tin chứ không theo trang trí.
 
 **The Context Before Metrics Rule.** Tab, bộ lọc, phạm vi/đơn vị và nguồn dữ liệu phải xuất hiện trước KPI và biểu đồ trong thứ tự đọc.

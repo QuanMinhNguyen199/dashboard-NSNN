@@ -3,7 +3,7 @@ import { geoMercator, geoPath, type GeoPath } from "d3-geo";
 import { select, type Selection } from "d3-selection";
 import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import "d3-transition";
-import { Card, money } from "@/components/primitives";
+import { Card, inScale, money, moneyScale } from "@/components/primitives";
 import { useReducedMotion } from "@/components/useReducedMotion";
 
 // Ranh giới Hà Nội sau phép chiếu Mercator cao hơn rộng (tỉ lệ ≈ 5:6). Khung
@@ -195,11 +195,27 @@ export function LocationMap({
       svg.transition().duration(ms(350)).call(zoomBehavior.transform, zoomIdentity);
   };
 
+  /**
+   * Bảng thay thế phải trả lời ĐÚNG CÂU HỎI mà bản đồ nhiệt trả lời: ai cao, ai
+   * thấp. Trước đây nó sắp theo vần A-B-C — thứ tự đó không mang tin nào, nên
+   * người không dùng được bản đồ mất hẳn thông tin thứ hạng, và nó chỉ còn tồn
+   * tại dưới dạng màu. Cùng một thang tiền cho cả cột: `money()` tự chọn thang
+   * theo từng giá trị nên một cột ra "67,59 tỷ · 448,6 tỷ · 1.103 tỷ" — ba mức
+   * số lẻ, không so được bằng mắt.
+   */
+  const tableRows = [...rows].sort((a, b) => b.amount - a.amount);
+  const tableUnit = moneyScale(tableRows.map((row) => row.amount));
+
   return (
     <Card
       className="dmap-card"
-      title="Bản đồ 126 phường, xã"
-      subtitle="Ranh giới hành chính từ 01/07/2025 · lăn chuột để phóng to, kéo để di chuyển"
+      title={showTable ? "Số thu theo phường, xã" : "Bản đồ 126 phường, xã"}
+      subtitle={
+        showTable
+          ? `${tableRows.length} phường, xã · xếp từ cao xuống thấp`
+          : "Ranh giới hành chính từ 01/07/2025 · lăn chuột để phóng to, kéo để di chuyển"
+      }
+      unit={showTable ? tableUnit : undefined}
       actions={
         <button
           type="button"
@@ -213,12 +229,16 @@ export function LocationMap({
     >
       {failed && (
         <p className="dnote is-warn" role="alert">
-          Không tải được ranh giới bản đồ. Danh sách bên trái vẫn dùng được bình thường.
+          Không tải được ranh giới bản đồ. Dùng “Xem dạng bảng” để tra theo tên phường, xã.
         </p>
       )}
 
-      {showTable ? (
-        <div className="dtable-wrap dmap-table">
+      {/* Bảng và bản đồ cùng nằm trong DOM, chỉ đổi cái nào hiện. Tháo `.dmap`
+          ra rồi gắn lại sẽ tạo một `<svg>` mới mà effect vẽ d3 không chạy lại —
+          nó phụ thuộc `rows`/`selectedId`, không phụ thuộc nút chuyển — nên bấm
+          "Xem bản đồ" chỉ còn một khung rỗng. Giữ trong DOM cũng giữ luôn mức
+          phóng người dùng đang đặt. */}
+      <div className="dtable-wrap dmap-table" hidden={!showTable}>
           <table className="dtable">
             <caption className="sr-only">Số thu theo phường, xã — bảng thay thế bản đồ</caption>
             <thead>
@@ -229,22 +249,26 @@ export function LocationMap({
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, index) => (
-                <tr key={row.id} aria-selected={row.id === selectedId}>
+              {tableRows.map((row, index) => (
+                <tr
+                  key={row.id}
+                  aria-selected={row.id === selectedId}
+                  className={row.id === selectedId ? "is-selected" : undefined}
+                >
                   <td className="is-num">{index + 1}</td>
                   <th scope="row">
                     <button type="button" className="dlink" onClick={() => onSelect(row.id)}>
                       {row.name}
                     </button>
                   </th>
-                  <td className="is-num">{money(row.amount)}</td>
+                  <td className="is-num">{inScale(row.amount, tableUnit)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      ) : (
-        <div className="dmap" ref={boxRef} hidden={failed}>
+      </div>
+
+      <div className="dmap" ref={boxRef} hidden={failed || showTable}>
           <svg ref={svgRef} role="img" aria-label="Bản đồ số thu theo phường, xã" />
           <div className="dmap-tip" ref={tipRef} aria-hidden="true" />
           {/* Lăn chuột trần để cuộn trang, nên phóng to phải có nút thấy được
@@ -265,10 +289,11 @@ export function LocationMap({
               </button>
             )}
           </div>
-        </div>
-      )}
+      </div>
 
-      <div className="dmap-legend" aria-hidden="true">
+      {/* Chú giải thang màu và dòng bản quyền chỉ nói về bản đồ; khi đang xem
+          bảng thì chúng không chú thích gì cả, mà vẫn chiếm chỗ và kéo lề. */}
+      <div className="dmap-legend" aria-hidden="true" hidden={showTable}>
         <span>Thấp</span>
         {BINS.map((color) => (
           <i key={color} style={{ background: color }} />
@@ -277,7 +302,7 @@ export function LocationMap({
         <i className="is-nodata" style={{ background: NO_DATA }} />
         <span>chưa có số liệu</span>
       </div>
-      <p className="dmap-credit">© OpenStreetMap contributors (ODbL).</p>
+      <p className="dmap-credit" hidden={showTable}>© OpenStreetMap contributors (ODbL).</p>
     </Card>
   );
 }

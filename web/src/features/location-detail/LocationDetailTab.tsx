@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { LOCATIONS } from "@/domain/catalog";
 import { sumOf } from "@/data/mock/observations";
 import { useLocationDetail } from "@/data/hooks";
@@ -13,15 +13,9 @@ import {
   Change,
   Money,
   ResourceView,
-  Segmented,
-  inScale,
   moneyScale,
   pct,
 } from "@/components/primitives";
-
-const collator = new Intl.Collator("vi");
-const fold = (text: string) =>
-  text.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase();
 
 /**
  * Danh sách và bản đồ dùng CHUNG một `selected-location` state trong URL, nên
@@ -30,116 +24,30 @@ const fold = (text: string) =>
  */
 export function LocationDetailTab() {
   const { filters, location, selectLocation } = useDashboardState();
-  const [query, setQuery] = useState("");
-  const [order, setOrder] = useState<"high" | "low">("high");
   const { resource, retry } = useLocationDetail(filters, location);
 
-  const ranked = useMemo(() => {
-    const rows = LOCATIONS.map((item) => ({
-      ...item,
-      amount: sumOf(filters, { locationIds: [item.id] }),
-    }));
-    const withData = rows.filter((row) => row.amount !== null);
-    withData.sort((a, b) =>
-      order === "high" ? (b.amount ?? 0) - (a.amount ?? 0) : (a.amount ?? 0) - (b.amount ?? 0),
-    );
-    const missing = rows.filter((row) => row.amount === null).sort((a, b) => collator.compare(a.name, b.name));
-    return [...withData, ...missing];
-  }, [filters, order]);
-
-  // 126 dòng phải cùng một đơn vị, nếu không thì không so sánh được bằng mắt —
-  // đó là việc duy nhất của một danh sách xếp hạng.
-  const listUnit = useMemo(() => moneyScale(ranked.map((row) => row.amount)), [ranked]);
-
-  const visible = useMemo(() => {
-    const needle = fold(query.trim());
-    return needle ? ranked.filter((row) => fold(row.name).includes(needle)) : ranked;
-  }, [ranked, query]);
-
+  // Bản đồ nhiệt tô theo số tiền, không theo thứ hạng — nên chỉ cần số, không
+  // cần sắp xếp. Việc chọn địa bàn đã chuyển sang ô lọc "Chi tiết địa bàn" ở
+  // thanh lọc chung, nên danh sách 126 dòng kèm tìm kiếm không còn ở đây nữa.
   const mapRows = useMemo(
     () =>
-      ranked
-        .filter((row) => row.amount !== null)
-        .map((row) => ({ slug: row.slug, id: row.id, name: row.name, amount: row.amount as number })),
-    [ranked],
+      LOCATIONS.map((item) => ({ ...item, amount: sumOf(filters, { locationIds: [item.id] }) }))
+        .filter((row): row is typeof row & { amount: number } => row.amount !== null)
+        .map((row) => ({ slug: row.slug, id: row.id, name: row.name, amount: row.amount })),
+    [filters],
   );
 
-  /** Điều hướng bàn phím trong danh sách: mũi tên lên/xuống, Home/End. */
-  const onListKeyDown = (event: React.KeyboardEvent<HTMLUListElement>) => {
-    const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
-    if (!keys.includes(event.key)) return;
-    event.preventDefault();
-    const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("button"));
-    const index = buttons.indexOf(document.activeElement as HTMLButtonElement);
-    const next =
-      event.key === "Home"
-        ? 0
-        : event.key === "End"
-          ? buttons.length - 1
-          : Math.min(Math.max(index + (event.key === "ArrowDown" ? 1 : -1), 0), buttons.length - 1);
-    buttons[next]?.focus();
-  };
-
   return (
+    // Bản đồ nằm NGOÀI `ResourceView`: khi chưa chọn địa bàn nào thì phần bên
+    // trái là trạng thái chờ, và bản đồ lúc đó là lối chọn duy nhất còn lại —
+    // để nó biến mất cùng dữ liệu là khoá luôn đường vào.
     <div className="dsplit">
-      <Card
-        title="Danh sách phường, xã"
-        subtitle={`${visible.length}/${LOCATIONS.length} địa bàn`}
-        unit={listUnit}
-        className="dsplit-list"
-        actions={
-          <div className="dlist-tools">
-            <label className="dsearch">
-              <span className="sr-only">Tìm phường, xã</span>
-              <input
-                type="search"
-                value={query}
-                placeholder="Tìm phường, xã…"
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </label>
-            {/* Nút bật tắt cũ ghi trạng thái ĐANG dùng, nên không rõ bấm vào
-                thì thành gì. Dùng đúng nhóm chọn như thẻ "Top địa bàn". */}
-            <Segmented
-              label="Thứ tự danh sách"
-              value={order}
-              options={[
-                { value: "high" as const, label: "Cao nhất" },
-                { value: "low" as const, label: "Thấp nhất" },
-              ]}
-              onChange={setOrder}
-            />
-          </div>
-        }
-      >
-        <ul className="dlist" onKeyDown={onListKeyDown}>
-          {visible.map((row, index) => (
-            <li key={row.id}>
-              <button
-                type="button"
-                className={row.id === location ? "is-selected" : undefined}
-                aria-current={row.id === location ? "true" : undefined}
-                onClick={() => selectLocation(row.id)}
-              >
-                <span className="dlist-rank">{row.amount === null ? "—" : index + 1}</span>
-                <span className="dlist-name">{row.name}</span>
-                <span className="dlist-amount">
-                  {row.amount === null ? "chưa có" : inScale(row.amount, listUnit)}
-                </span>
-              </button>
-            </li>
-          ))}
-          {visible.length === 0 && <li className="dempty">Không có phường, xã nào khớp “{query}”.</li>}
-        </ul>
-      </Card>
-
-      <div className="dsplit-main">
-        <LocationMap rows={mapRows} selectedId={location} onSelect={selectLocation} />
-
+      <div className="dsplit-info">
         <ResourceView resource={resource} retry={retry} minHeight={220}>
           {(data) => <LocationBody data={data} />}
         </ResourceView>
       </div>
+      <LocationMap rows={mapRows} selectedId={location} onSelect={selectLocation} />
     </div>
   );
 }
@@ -153,10 +61,7 @@ function LocationBody({ data }: { data: LocationDetailData }) {
           `aria-label` của dải KPI, nên người dùng nhìn được nhận ÍT thông tin
           hơn người dùng trình đọc màn hình — và ở khổ hẹp, dòng đang chọn trong
           danh sách đã cuộn khuất nên không còn chỗ nào đối chiếu. */}
-      <h2 className="dsubject">
-        {data.location.name}
-        <small>Mã {data.location.id}</small>
-      </h2>
+      <h2 className="dsubject">{data.location.name}</h2>
 
       <KpiStrip label={`Chỉ số ${data.location.name}`}>
         <Kpi

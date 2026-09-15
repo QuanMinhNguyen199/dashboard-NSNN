@@ -10,8 +10,12 @@ import { nsnnApi } from "./plugins/nsnn-api";
  */
 const REPO_BASE = "/dashboard-NSNN/";
 
-export default defineConfig(({ command }) => ({
-  base: process.env.VITE_BASE ?? (command === "build" ? REPO_BASE : "/"),
+export default defineConfig(({ command, mode }) => ({
+  // `preview` phục vụ chính thư mục `dist`, nên nó phải dùng cùng base với
+  // `build`. Trước đây chỉ `build` được áp base, còn `preview` chạy ở "/" trong
+  // khi `dist/index.html` trỏ tới `/dashboard-NSNN/assets/…` — JS trả 404 và
+  // người nhận bàn giao chạy `npm run preview` chỉ thấy một trang trắng.
+  base: process.env.VITE_BASE ?? (command === "build" || mode === "production" ? REPO_BASE : "/"),
   plugins: [react(), nsnnApi()],
   // `@/` trỏ vào src. Import tuyệt đối để đổi chỗ một file không kéo theo việc
   // sửa `../../` ở khắp nơi.

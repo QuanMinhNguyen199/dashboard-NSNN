@@ -228,13 +228,28 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           // Đổi năm hoặc loại kỳ thì phải kiểm tra lại kỳ đang chọn.
           return { ...current, filters: clampPeriod(merged), panelSource: null };
         }),
+      // "Đặt lại bộ lọc" phải đưa MỌI thứ người dùng đã đổi về mặc định, kể cả
+      // địa bàn đang chọn — mặc định của nó là "Toàn thành phố". Trước đây reset
+      // chỉ chạm `filters`, nên chọn một phường xong bấm đặt lại thì không có gì
+      // xảy ra và nút trông như hỏng.
       resetFilters: () =>
         setState((current) => ({
           ...current,
           filters: { ...DEFAULT_FILTERS },
+          location: null,
+          tab: current.tab === "location-detail" ? "overview" : current.tab,
           panelSource: null,
         })),
-      setTab: (tab) => setState((current) => ({ ...current, tab, panelSource: null })),
+      // Về Tổng quan là về phạm vi toàn thành phố, nên bỏ luôn địa bàn đang chọn:
+      // ô lọc "Chi tiết địa bàn" và tab đang đứng nói về CÙNG một thứ — phạm vi
+      // đang xem — nên để chúng lệch nhau là bày ra hai câu trả lời cho một câu hỏi.
+      setTab: (tab) =>
+        setState((current) => ({
+          ...current,
+          tab,
+          location: tab === "overview" ? null : current.location,
+          panelSource: null,
+        })),
       setSection: (section) => patch({ section }),
       setView: (view) => patch({ view }),
       setGroup: (group) => patch({ group }),

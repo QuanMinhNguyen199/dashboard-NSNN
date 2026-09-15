@@ -45,6 +45,19 @@
   --lh-dense: 1.3;
   --lh-body: 1.55;
 
+  /* Màu vòng focus. Hai nơi trong stylesheet dùng `var(--focus)` nhưng token
+     này chưa từng được đặt, nên `outline: 2px solid var(--focus)` là invalid at
+     computed-value time → `outline-style` về `none`, và bốn điểm dừng Tab không
+     còn chỉ báo nào. Biến không tồn tại không báo lỗi; nó chỉ im lặng xoá luật. */
+  --focus: #1657a8;
+  /* Ba token dưới đây được DESIGN.md liệt kê nhưng chưa bao giờ khai ở đây, nên
+     mọi `var()` gọi tới chúng đều là khai báo invalid bị xoá im lặng:
+     `--tooltip-surface` làm tooltip bản đồ mất nền (chữ trắng trên nền trong
+     suốt), `--frame-stage` làm nền khung xem thử iframe mất màu, và
+     `--data-family` làm đường vế A của biểu đồ so sánh mất luôn nét vẽ. */
+  --data-family: #86b6ef;
+  --frame-stage: #888ca3;
+  --tooltip-surface: #111c2ce6;
   --control-border: #c6d2e0;
   --scrollbar-thumb: #c3cedd;
 
@@ -130,6 +143,13 @@ ul, ol { padding: 0; list-style: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 select, input { font: inherit; color: inherit; }
 svg { display: block; }
+/* `[hidden]` của trình duyệt là `display: none` ở origin USER-AGENT, nên BẤT KỲ
+   luật `display` nào của tác giả cũng thắng nó — kể cả khi độ đặc hiệu bằng nhau.
+   `.dmap-legend{display:flex}` vì thế giữ chú giải thang màu hiển thị ngay cả khi
+   React đã đặt `hidden`. Đây là một lớp lỗi, không phải một chỗ: mọi phần tử có
+   luật `display` riêng đều mất khả năng ẩn bằng thuộc tính. Khai lại ở origin
+   tác giả để `hidden` nghĩa là ẩn, ở mọi nơi. */
+[hidden] { display: none !important; }
 table { border-collapse: collapse; width: 100%; }
 
 ::selection { background: var(--blue-100); color: var(--navy); }
@@ -277,10 +297,10 @@ table { border-collapse: collapse; width: 100%; }
 /* Mặc định `min-width: auto` của grid item lấy min-content làm chiều rộng tối
    thiểu, nên một bảng rộng sẽ nong cả lưới ra và gây tràn ngang toàn trang thay
    vì cuộn bên trong thẻ. Ép về 0 ở mọi cấp lưới. */
-.dworkspace > *, .dg > *, .dstack > *, .dstack-row > *, .dsplit > *, .dsplit-main > * {
+.dworkspace > *, .dg > *, .dstack > *, .dstack-row > *, .dsplit > *, .dsplit-info > * {
   min-width: 0;
 }
-.dg, .dstack, .dstack-row, .dsplit, .dsplit-main { min-width: 0; }
+.dg, .dstack, .dstack-row, .dsplit, .dsplit-info { min-width: 0; }
 .dworkspace:focus { outline: none; }
 
 /* ─────────────────────────────── Bộ lọc ─────────────────────────────────── */
@@ -291,13 +311,19 @@ table { border-collapse: collapse; width: 100%; }
 }
 .dfilters label, .dfield { display: grid; gap: 5px; min-width: 0; }
 .dfilters span, .dfield > span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
-.dfilters select {
+/* MỘT chủ sở hữu cho kiểu ô chọn. Trước đây `.dbuilder select` là bản sao chép
+   thiếu: cùng viền, cùng bo, cùng 38px, nhưng không có `appearance: none` nên nó
+   giữ chevron mặc định của hệ điều hành. Hai ô chọn ở tab So sánh — đúng hai
+   điều khiển CHỦ ĐẠO của tab đó — trông khác năm ô còn lại trên cùng màn hình. */
+.dfilters select,
+.dbuilder select {
   min-height: 38px; max-width: 100%; padding: 6px 28px 6px 10px;
   background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M0 0h9L4.5 6z' fill='%235a6b80'/%3E%3C/svg%3E") no-repeat right 10px center;
   border: 1px solid var(--control-border); border-radius: var(--r-control);
   font-size: var(--fs-caption); appearance: none;
 }
-.dfilters select:hover { border-color: var(--blue-250); }
+.dfilters select:hover,
+.dbuilder select:hover { border-color: var(--blue-250); }
 .dfilters-summary { display: none; }
 .dfield-wide, .dfilter-indicator { flex: 1 1 280px; }
 .dfield-wide select, .dfilter-indicator select { width: 100%; }
@@ -340,7 +366,7 @@ table { border-collapse: collapse; width: 100%; }
    nó không nằm trong danh sách này: sáu ô lọc ẩn đi còn nút vẫn ở lại, lơ lửng
    dưới thanh tóm tắt, rộng 111px giữa khoảng trống 344px — và nó mời người dùng
    đặt lại một bộ lọc mà họ còn chưa mở ra xem. */
-.dfilters[data-embedded="true"][data-open="false"] > label,
+.dfilters[data-embedded="true"][data-open="false"] > label:not(.dfilter-location),
 .dfilters[data-embedded="true"][data-open="false"] > .dfilters-reset-row,
 .dfilters[data-embedded="true"][data-open="false"] > .dfield { display: none; }
 .dfilters[data-embedded="true"][data-open="true"] {
@@ -398,10 +424,15 @@ table { border-collapse: collapse; width: 100%; }
 .dapp[data-host="mobile"] .dtabs::-webkit-scrollbar { display: none; }
 .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="false"] {
   position: relative; z-index: 20;
-  display: inline-flex; align-items: center;
+  /* `wrap` để ô "Chi tiết địa bàn" xuống hàng riêng bên dưới thanh tóm tắt:
+     nằm cùng hàng nó chỉ được 189px, không đủ cho tên phường, xã dài. */
+  display: inline-flex; flex-wrap: wrap; align-items: center;
   width: 100%; max-width: 100%; padding: 9px 10px 9px 12px;
   margin-bottom: var(--s3); gap: 0;
   border-radius: var(--r-surface); box-shadow: none;
+}
+.dapp[data-host="mobile"] .dfilters[data-embedded="true"] > .dfilter-location {
+  flex: 1 1 100%; display: grid; gap: 4px; min-width: 0; margin-top: 9px;
 }
 .dapp[data-host="mobile"] .dfilters[data-embedded="true"] .dfilters-summary {
   flex: 1 1 100%; min-width: 0; width: 100%; max-width: 100%;
@@ -541,7 +572,9 @@ table { border-collapse: collapse; width: 100%; }
    `<Money>` render ở 900 còn số KPI viết thẳng trong `<strong>` render ở 700.
    Hai thẻ cạnh nhau, cùng một vai trò, hai trọng lượng khác nhau, và không ai
    chọn con số 900 đó cả. */
-.dmoney { display: inline-flex; align-items: baseline; gap: 0.28em; }
+/* `nowrap` để "1.260 tỷ" không bị tách chữ số khỏi đơn vị khi ô hẹp lại: một
+   con số rơi xuống dòng khỏi đơn vị của nó đọc ra thành hai mẩu vô nghĩa. */
+.dmoney { display: inline-flex; align-items: baseline; gap: 0.28em; white-space: nowrap; }
 .dmoney b { font-weight: inherit; }
 /* 0,6em của 23px chỉ ra 14px — nhỏ hơn cả chữ thân bài, trong khi nó là thứ nói
    con số kia nghĩa là gì. Nâng lên 0,7em và tăng trọng lượng. */
@@ -564,7 +597,7 @@ table { border-collapse: collapse; width: 100%; }
    nằm ở đầu thẻ, đúng như phần dư chiều cao thẻ nằm ở đáy. */
 .dg { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--s4); align-items: stretch; }
 /* Mọi vùng đặt nhiều thẻ cạnh nhau đều cần sàn này, không riêng lưới 12 cột. */
-.dg, .dstack-row, .dsplit { --head-min: 86px; }
+.dg, .dstack-row { --head-min: 86px; }
 .dg-cell { grid-column: span var(--span); min-width: 0; display: flex; flex-direction: column; }
 .dg-cell > * { flex: 1 1 auto; }
 
@@ -797,7 +830,12 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
 .dbudget-local h3 {
   margin-bottom: var(--s2); color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
-.dbudget-local ul { display: grid; gap: 9px; }
+/* Giữ chỗ theo trạng thái NHIỀU NHẤT, không theo trạng thái đang hiện.
+   NSTW phân rã bốn nguồn, NSĐP phân rã ba cấp — nên đổi lát donut làm thẻ cao
+   thêm 36px, thẻ bên cạnh giãn theo, và mọi thứ phía dưới trang xê dịch. Người
+   dùng chỉ bấm để xem một con số mà cả trang nhảy.
+   Bốn dòng × (17px chữ + 4px + 10px thanh) + 3 khe 9px = 151px. */
+.dbudget-local ul { display: grid; gap: 9px; align-content: start; min-height: 151px; }
 .dbudget-local li > div {
   display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3);
   margin-bottom: 4px; font-size: var(--fs-label);
@@ -833,6 +871,9 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
   stroke: var(--data-reference); stroke-width: 2; stroke-dasharray: 5 4;
 }
 .dchart-line.is-current { stroke: var(--data-primary); stroke-width: 2.5; }
+/* Vế A của một phép so sánh là một chuỗi ngang hàng, không phải mốc nền: nét
+   liền, cùng họ lam, chỉ nhạt hơn một bậc để phân biệt khỏi vế B. */
+.dchart-line.is-peer { stroke: var(--data-family); stroke-width: 2.5; }
 .dchart-dot {
   fill: var(--surface); stroke: var(--data-primary); stroke-width: 2;
   transition: r 120ms ease;
@@ -877,6 +918,7 @@ button.ddonut-float-label:hover { border-color: var(--blue-250); color: var(--br
 .dlegend span { display: flex; align-items: center; gap: 6px; }
 .dlegend i { width: 17px; border-top: 2px dashed var(--data-reference); }
 .dlegend i.solid { border-top: 2px solid var(--data-primary); }
+.dlegend i.is-peer { border-top: 2px solid var(--data-family); }
 
 .dbridge {
   display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s2) var(--s5);
@@ -918,7 +960,14 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
 }
 .dcontrib-track { position: relative; height: 10px; background: var(--data-track); border-radius: var(--r-bar); }
-.dcontrib-track::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--control-border); }
+/* Vạch mốc 0 đứng ở gốc thật của rãnh, không phải giữa rãnh: khi tập toàn dương
+   gốc nằm sát mép trái. Ẩn hẳn ở tập một chiều — một vạch 0 ở mép không phân
+   chia gì cả, nó chỉ là một nét thừa. */
+.dcontrib-track::before {
+  content: ""; position: absolute; left: var(--origin, 50%);
+  top: -3px; bottom: -3px; width: 1px; background: var(--control-border);
+}
+.dwaterfall[data-two-sided="false"] .dcontrib-track::before { display: none; }
 .dcontrib-track i { position: absolute; top: 1px; height: 8px; border-radius: var(--r-bar); }
 .dcontrib-track i.pos { background: var(--pos); }
 .dcontrib-track i.neg { background: var(--neg); }
@@ -1006,16 +1055,54 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 /* Bản đồ là hình đứng nên cột của nó hẹp hơn cột danh sách, không thì thẻ thừa
    ra một mảng trắng hai bên. Danh sách được phần rộng hơn cũng đúng: tên phường,
    xã và số tiền nằm chung một hàng. */
-.dsplit { display: grid; grid-template-columns: 5fr 7fr; gap: var(--s4); align-items: start; }
-.dsplit-list { position: sticky; top: 68px; }
-.dsplit-list .dcard-body { max-height: 70vh; overflow-y: auto; }
-.dsplit-main { display: grid; gap: var(--s4); min-width: 0; }
+/* Chi tiết địa bàn: số liệu bên trái, bản đồ nhiệt bên phải, chia đôi.
+   Bản đồ dính theo khi cuộn vì phần bên trái dài hơn nó — không dính thì cuộn
+   xuống bảng khoản thu là mất luôn bối cảnh không gian, mà đặt hai thứ cạnh
+   nhau chính là để đọc chúng cùng lúc. */
+.dsplit { display: grid; grid-template-columns: 6fr 6fr; gap: var(--s4); align-items: start; }
+.dsplit-info { display: grid; gap: var(--s4); min-width: 0; }
+.dsplit > .dmap-card { position: sticky; top: 68px; }
+
+/* Khung nhúng và Mobile giữ bố cục xếp chồng, KHÔNG chia đôi — kể cả khi khung
+   đủ rộng. Chia đôi ở đó cho hai cột hẹp cạnh nhau và bắt người đọc xử lý hai
+   luồng thông tin cùng lúc trên một màn hình vốn đã ít chỗ; xếp chồng cho mỗi
+   thứ trọn chiều ngang và đọc lần lượt. Bản đồ lên trước vì nó là lối chọn địa
+   bàn bằng mắt duy nhất còn lại. */
+.dapp[data-embedded="true"] .dsplit,
+.dapp[data-host="mobile"] .dsplit { grid-template-columns: 1fr; }
+.dapp[data-embedded="true"] .dsplit > .dmap-card,
+.dapp[data-host="mobile"] .dsplit > .dmap-card { position: static; order: 1; }
+.dapp[data-embedded="true"] .dsplit-info,
+.dapp[data-host="mobile"] .dsplit-info { order: 2; }
+/* KHÔNG ép lại số cột cho dải KPI hay cặp biểu đồ ở đây. Bề rộng quyết định
+   những thứ đó, và luật theo ngữ cảnh có độ đặc hiệu cao hơn sẽ đè chết thang
+   responsive: ép bốn cột trong khung nhúng rộng 470px cho mỗi ô 93px và nhãn
+   "Đóng góp vào thành phố" vỡ ba dòng. Ngữ cảnh chỉ quyết định CÓ chia đôi hay
+   không; còn lại để thang bề rộng lo. */
+
+/* Nửa khung chỉ tồn tại khi thật sự chia đôi: từ 1024px, và không phải khung
+   nhúng hay Mobile. Ràng buộc đủ cả ba điều kiện ngay tại đây thay vì viết luật
+   rộng rồi ép ngược lại ở nơi khác. */
+@media (min-width: 1024px) {
+  .dapp:not([data-embedded="true"]):not([data-host="mobile"]) .dsplit-info .dkpis {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dapp:not([data-embedded="true"]):not([data-host="mobile"]) .dsplit-info .dkpis > div {
+    border-top: 1px solid var(--hairline);
+  }
+  .dapp:not([data-embedded="true"]):not([data-host="mobile"]) .dsplit-info .dkpis > div:nth-child(-n + 2) {
+    border-top: 0;
+  }
+  .dapp:not([data-embedded="true"]):not([data-host="mobile"]) .dsplit-info .dkpis > div:nth-child(odd) {
+    border-left: 0;
+  }
+  /* Xu hướng và donut cạnh nhau trong nửa khung thì cả hai đều hẹp quá. */
+  .dapp:not([data-embedded="true"]):not([data-host="mobile"]) .dsplit-info .dstack-row.is-chart-pair {
+    grid-template-columns: 1fr;
+  }
+}
 /* Dải KPI của tab chi tiết nằm trong cột hẹp của bố cục danh sách + bản đồ:
    bốn ô ngang chỉ còn khoảng 150px, hẹp hơn chính con số nó phải in. Luôn 2×2. */
-.dsplit-main .dkpis { grid-template-columns: 1fr 1fr; }
-.dsplit-main .dkpis > div { border-top: 1px solid var(--hairline); }
-.dsplit-main .dkpis > div:nth-child(-n + 2) { border-top: 0; }
-.dsplit-main .dkpis > div:nth-child(odd) { border-left: 0; }
 
 .dlist { display: grid; }
 .dlist button {
@@ -1048,7 +1135,16 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dmap svg path { cursor: pointer; }
 /* Không phóng bản đồ khi chọn nên viền phải đủ đậm để tìm ra ô đang chọn giữa
    126 ô. `paint-order` giữ viền nằm trọn ngoài hình, không ăn vào màu. */
-.dmap svg path.is-selected { stroke: var(--ink); stroke-width: 2.4; paint-order: stroke fill; }
+/* Viền ô đang chọn phải thấy được trên CẢ NĂM bậc của thang màu. Không màu đơn
+   nào làm được: `#16263c` đạt 7,23:1 trên bậc nhạt nhất nhưng chỉ 1,28:1 trên
+   bậc đậm nhất — tức là chỉ báo lựa chọn biến mất đúng trên những phường thu cao
+   nhất, nơi người dùng bấm vào nhiều nhất. Viền trắng thì ngược lại (2,11:1 trên
+   bậc nhạt). Dùng viền sẫm kèm quầng trắng: bậc nhạt đọc được nhờ viền, bậc đậm
+   đọc được nhờ quầng, và không bậc nào rơi xuống dưới 7:1. */
+.dmap svg path.is-selected {
+  stroke: var(--ink); stroke-width: 2.4; paint-order: stroke fill;
+  filter: drop-shadow(0 0 1.5px var(--surface)) drop-shadow(0 0 1.5px var(--surface));
+}
 .dmap-zoom {
   position: absolute; right: 8px; top: 8px; z-index: 10;
   display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
@@ -1069,7 +1165,14 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   padding: 6px 10px; border-radius: var(--r-chip);
   background: var(--tooltip-surface); color: var(--ink-on-dark); font-size: var(--fs-label); transition: opacity 0.12s;
 }
-.dmap-table { max-height: 460px; overflow-y: auto; }
+/* Bảng thay thế chiếm trọn chiều ngang thẻ. Bản đồ bị giới hạn `--map-w` và
+   canh giữa cho khỏi méo tỉ lệ; bảng không có tỉ lệ nào để giữ, nên thừa hưởng
+   cùng lề là tự thụt vào hai bên mà không có lý do. */
+/* Dòng đang xem được đánh dấu trong bảng: bản đồ có viền đậm cho ô đang chọn,
+   bảng thay thế phải có cùng thông tin đó chứ không chỉ có thứ hạng. */
+.dmap-table tbody tr.is-selected { background: var(--blue-050); }
+.dmap-table tbody tr.is-selected th button { color: var(--brand); font-weight: var(--fw-bold); }
+.dmap-table { max-height: 460px; overflow-y: auto; max-width: 100%; margin-inline: 0; }
 .dmap-legend {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
   margin-top: var(--s3); color: var(--ink-2); font-size: var(--fs-label);
@@ -1093,11 +1196,8 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   min-width: 0; flex: 1 1 11em;
 }
 .dbuilder select { width: 100%; }
+
 .dbuilder span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
-.dbuilder select {
-  min-height: 38px; padding: 6px 10px; border: 1px solid var(--control-border);
-  border-radius: var(--r-control); background: var(--surface); font-size: var(--fs-caption);
-}
 /* impeccable-disable-next-line design-system-font-size -- glyph mũi tên một lần, không phải bậc chữ */
 .dbuilder-arrow { color: var(--ink-3); font-size: var(--fs-metric-sm); padding-bottom: 6px; }
 .dbuilder-note { flex: 1 1 100%; color: var(--ink-2); font-size: var(--fs-label); }
@@ -1195,18 +1295,22 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 @media (max-width: 1279px) {
   .dg-cell[style*="--span: 8"] { grid-column: span 7; }
   .dg-cell[style*="--span: 4"] { grid-column: span 5; }
-  .dsplit { grid-template-columns: 6fr 6fr; }
 }
 
 /* Ở dải này tab địa bàn vẫn chia đôi danh sách/bản đồ, nên card cơ cấu bên
    trong chỉ còn khoảng 200px. Đưa chú giải xuống dưới donut để không bị cắt. */
 @media (min-width: 1024px) and (max-width: 1279px) {
-  .dsplit-main .ddonut-layout { grid-template-columns: 1fr; gap: var(--s2); }
-  .dsplit-main .ddonut { width: min(100%, 150px); }
+  /* Cột trái chỉ còn ~470px: chú giải donut xuống dưới thay vì đứng cạnh. */
+  .dsplit-info .ddonut-layout { grid-template-columns: 1fr; gap: var(--s2); }
+  .dsplit-info .ddonut { width: min(100%, 150px); }
 }
 
 @media (max-width: 1179px) {
-  .dkpis { grid-template-columns: 1fr 1fr; }
+  /* Phải nhắc lại `[data-columns="3"]` (0-1-1): nó thắng `.dkpis` (0-1-0) bất kể
+     thứ tự, nên dải ba ô của tab Phân tích giữ nguyên ba cột xuống tận 320px và
+     nhãn vỡ bốn dòng. Xem *The Restate Specificity Rule*. */
+  .dkpis,
+  .dkpis[data-columns="3"] { grid-template-columns: 1fr 1fr; }
   .dkpis > div { border-top: 1px solid var(--hairline); }
   .dkpis > div:nth-child(-n + 2) { border-top: 0; }
   .dkpis > div:nth-child(odd) { border-left: 0; }
@@ -1214,13 +1318,20 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 
 @media (max-width: 1023px) {
+  /* Hết chỗ cho hai cột: xếp chồng và đưa BẢN ĐỒ lên trước. Với danh sách đã gỡ,
+     bản đồ là lối chọn địa bàn bằng mắt duy nhất còn lại, nên nó không được nằm
+     dưới một cột số liệu dài.
+     KHÔNG ép lại số cột cho dải KPI ở đây: luật 2 cột của nửa khung đã bị giới
+     hạn trong `min-width: 1024px`, nên dưới ngưỡng này thang responsive tự lo.
+     Viết thêm một luật "trả về bốn ô" (0-2-0) sẽ đè chết luật 2×2 ở 1179px
+     (0-1-0) và cho mỗi ô 92px ở khổ 390px. */
+  .dsplit { grid-template-columns: 1fr; }
+  .dsplit > .dmap-card { position: static; order: 1; }
+  .dsplit-info { order: 2; }
   .dmap-card { --map-w: min(100%, 420px, 46vh); }
   /* Bảng nhiều cột không co thêm được: cả hàng chứa nó xuống một cột thay vì
      nằm trong thẻ 5/12 rồi phải cuộn ngang. */
   .dg-cell.is-wide { grid-column: span 12; }
-  .dsplit { grid-template-columns: 1fr; }
-  .dsplit-list { position: static; }
-  .dsplit-list .dcard-body { max-height: 340px; }
   /* Thẻ chỉ còn khoảng 300–400px: tên và số không đứng chung một hàng được nữa,
      và đặt chúng cách nhau nửa thẻ thì mắt không nối được cặp giá trị. */
   .dbar-label { display: grid; gap: 1px; }
@@ -1234,10 +1345,6 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   /* Xếp chồng thì bản đồ chen giữa danh sách và chỉ số của địa bàn đang chọn,
      đẩy chỉ số xuống quá một màn hình. Cho chỉ số lên ngay dưới danh sách; dải
      KPI không có điểm dừng bàn phím nên thứ tự tab không đổi. */
-  .dsplit-main > .dnote { order: 1; }
-  .dsplit-main > .dkpis, .dsplit-main > .dstate { order: 2; }
-  .dsplit-main > .dmap-card { order: 3; }
-  .dsplit-main > .dstack { order: 4; }
 }
 
 @media (max-width: 767px) {
@@ -1258,6 +1365,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   .dfilter-year, .dfilter-cycle, .dfilter-period, .dfilter-accumulation { grid-column: span 6; }
   .dfilter-budget { grid-column: span 4; }
   .dfilter-indicator { grid-column: span 8; }
+  /* Tên phường, xã dài hơn mọi nhãn lọc khác nên cho trọn hàng thay vì ép chung.
+     Ô này hiện cả khi panel đóng, nên nó phải tự đứng được một mình. */
+  .dfilter-location { grid-column: 1 / -1; }
+  .dfilter-location select { min-height: 40px; }
   /* Khi panel chuyển sang lưới, hàng reset phải được gán cột như mọi ô khác.
      Thiếu `grid-column` thì nó rơi vào một cột trong mười hai — rộng 14px ở
      390px — và cái nút 107px tràn ra ngoài ô của chính nó. Trước đây chỉ nhánh
@@ -1295,7 +1406,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
     border: 1px solid var(--blue-250); border-radius: var(--r-control);
     background: var(--blue-050); color: var(--brand);
   }
-  .dfilters[data-open="false"] > label,
+  .dfilters[data-open="false"] > label:not(.dfilter-location),
   .dfilters[data-open="false"] > .dfilters-reset-row,
   .dfilters[data-open="false"] > .dfield { display: none; }
 
@@ -1346,11 +1457,17 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   /* Phải nhắc lại `.is-chart-pair`: luật 7fr/5fr của nó có độ đặc hiệu 0-2-0,
      cao hơn `.dstack-row` một mình, nên nếu chỉ viết `.dstack-row` thì cặp biểu
      đồ vẫn nằm cạnh nhau ở 390px với bề rộng 148px. */
-  .dstack-row, .dstack-row.is-chart-pair { grid-template-columns: 1fr; }
+  /* Phải nhắc lại đủ MỌI biến thể có độ đặc hiệu cao hơn — `.is-chart-pair`
+     (0-2-0) và `.dsplit-info .dstack-row.is-chart-pair` (0-3-0) — nếu không thì
+     luật xếp chồng này thua im lặng và cặp biểu đồ vẫn chia cột ở 320px, cho
+     thẻ donut rộng 116px. Xem *The Restate Specificity Rule* trong DESIGN.md. */
+  .dstack-row,
+  .dstack-row.is-chart-pair,
+  .dsplit-info .dstack-row.is-chart-pair { grid-template-columns: 1fr; }
   /* Gỡ sàn đúng tại mốc thẻ xếp chồng, không sớm hơn: mỗi hàng chỉ còn một thẻ
      nên không còn gì để căn, và sàn lúc này chỉ là khoảng trống phải cuộn qua.
      Gỡ ở 767px thì dải 700–767 vẫn hai cột mà mất sàn — lệch trở lại 46px. */
-  .dg, .dstack-row, .dsplit { --head-min: auto; }
+  .dg, .dstack-row { --head-min: auto; }
 }
 
 /* ─────────────────────── Vùng chạm theo loại con trỏ ────────────────────── */

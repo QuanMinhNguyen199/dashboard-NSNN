@@ -51,6 +51,7 @@ Chưa thuộc phạm vi hiện tại:
 | Kỳ | Một tháng, một quý, hoặc toàn bộ kỳ đã có số liệu của năm |
 | Cách tính | Trong kỳ hoặc lũy kế từ đầu năm |
 | Chỉ tiêu | Chỉ tiêu thu cần phân tích |
+| Chi tiết địa bàn | Đi thẳng tới một phường, xã. Điều hướng, không phải lọc |
 | Cấp ngân sách | NSNN, NSTW hoặc NSĐP |
 
 Quy tắc:
@@ -63,7 +64,9 @@ Quy tắc:
 - "Toàn bộ kỳ" cho cùng một khoảng dù đang để chu kỳ Tháng hay Quý; chu kỳ chỉ quyết định
   độ mịn của danh sách kỳ cụ thể.
 - Khi đang xem toàn bộ kỳ, `Cách tính` bị tắt và nêu lý do.
-- Địa bàn không phải filter chung của màn Tổng quan.
+- `Chi tiết địa bàn` nằm trong thanh lọc chung nhưng **không lọc lại số của tab đang
+  đứng** — nó là lối đi tắt: chọn một phường, xã sẽ điều hướng thẳng sang tab Chi tiết
+  phường/xã với đúng địa bàn đó. Mọi tab đều thấy ô này.
 - Filter riêng của một widget không được làm thay đổi KPI toàn trang.
 - Ở Web hẹp, iframe và Mobile, filter đóng thành hai nhóm dễ đọc: `Kỳ báo cáo` và
   `Chỉ tiêu`. Khi mở, các trường giữ nguyên thứ tự nghiệp vụ.
@@ -166,8 +169,14 @@ Thu nội địa phải hiển thị đủ đúng 21 khoản và cho phép tìm 
 
 ### 8.3. Chi tiết phường/xã
 
-Cho phép tìm và chọn một địa bàn từ danh sách hoặc bản đồ. Hai lối chọn dùng chung một trạng
-thái nên bấm ở đâu cũng cho cùng kết quả.
+Chọn địa bàn bằng ô lọc `Chi tiết địa bàn` ở thanh lọc chung, hoặc bấm thẳng một vùng trên
+bản đồ. Hai lối chọn dùng chung một trạng thái nên chọn ở đâu cũng cho cùng kết quả, và ô
+lọc luôn phản ánh địa bàn đang xem.
+
+Danh sách 126 dòng kèm ô tìm kiếm trước đây đã được thay bằng ô lọc: nó chiếm 5/12 chiều
+ngang thường trực để phục vụ một thao tác chỉ làm một lần mỗi phiên, trong khi bản đồ nhiệt
+— thứ cần chiều ngang nhất — phải nép vào 7/12. Thứ hạng của địa bàn vẫn xem được ở ô KPI
+`Xếp hạng` sau khi chọn, và ở thẻ `Top địa bàn` bên Tổng quan.
 
 Bản đồ giữ nguyên mức toàn thành phố làm mặc định, vì đây là bản đồ nhiệt: phóng sâu vào một
 ô là mất bối cảnh so sánh, mà so sánh mới là lý do bản đồ tồn tại. Chọn một địa bàn thì phóng

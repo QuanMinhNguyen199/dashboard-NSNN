@@ -104,7 +104,7 @@ export function validateOverview(value: unknown): OverviewData {
     value.budgetLevels,
     value.centralBudgetSources,
     value.localBudgetLevels,
-    value.kpiPeriod,
+    value.scopeTotal,
     "Overview",
   );
   validateEstimate(value.estimate, "Overview");
@@ -270,6 +270,10 @@ export function validateAdvancedComparison(value: unknown): AdvancedComparisonDa
 function assertRowsReconcile(value: Record<string, unknown>, where: string): void {
   const delta = value.delta;
   if (typeof delta !== "number" || !Number.isFinite(delta)) return;
+  // Không có phân rã là một câu trả lời hợp lệ: hai nguồn thu không có khoản
+  // chung nên không tồn tại phép chia nhỏ nào đúng. Ép nó phải cộng ra `delta`
+  // chính là thứ đã đẻ ra bảng toàn số 0 trước đây.
+  if ((value.rows as unknown[]).length === 0) return;
   let sum = 0;
   for (const row of value.rows as unknown[]) {
     if (!isRecord(row) || typeof row.delta !== "number" || !Number.isFinite(row.delta)) return;
