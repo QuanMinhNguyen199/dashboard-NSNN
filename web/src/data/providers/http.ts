@@ -6,6 +6,7 @@ import type {
   RevenueScope,
   TabId,
 } from "@/domain/types";
+import type { ManagementLevelFilter } from "@/domain/tms";
 import {
   PayloadError,
   SOURCES_ALLOWED,
@@ -17,6 +18,7 @@ import {
   validateLocationDetail,
   validateOverview,
   validateRevenueAnalysis,
+  validateTmsBreakdown,
 } from "../validate";
 
 /**
@@ -70,5 +72,20 @@ export class JsonDashboardProvider implements DashboardDataProvider {
   }
   getAdvancedComparison(filters: AdvancedComparisonFilters, signal: AbortSignal) {
     return this.post("/advanced-compare", { filters }, signal, validateAdvancedComparison);
+  }
+  getTmsBreakdown(
+    filters: DashboardFilters,
+    managementLevel: ManagementLevelFilter,
+    locationId: string | null,
+    signal: AbortSignal,
+  ) {
+    // Payload không khai `origin` thì hiểu là dữ liệu thật: nhãn mô phỏng chỉ
+    // được bật khi có ai đó nói rõ đây là số mô phỏng.
+    return this.post(
+      "/tms-breakdown",
+      { filters, managementLevel, locationId },
+      signal,
+      (raw) => validateTmsBreakdown(isRecord(raw) && raw.origin === undefined ? { ...raw, origin: "api" } : raw),
+    );
   }
 }

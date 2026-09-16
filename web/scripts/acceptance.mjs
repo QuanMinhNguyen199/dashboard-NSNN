@@ -6,6 +6,11 @@
 import puppeteer from "puppeteer-core";
 
 const BASE = process.argv[2] ?? "http://localhost:5173";
+/**
+ * Bản dựng thử mô phỏng độ trễ của backend dev, mặc định vài giây mỗi màn hình.
+ * Kiểm thử không có lý do gì phải chờ nó, nên mọi đường dẫn ở đây tắt trễ.
+ */
+const withFastMock = (url) => url + (url.includes("?") ? "&" : "?") + "latency=0";
 const CHROME =
   process.env.CHROME_PATH ?? "C:/Program Files/Google/Chrome/Application/chrome.exe";
 
@@ -54,18 +59,19 @@ const run = async () => {
     if (m.type() === "error" && !isNoise(m.text())) jsErrors.push(m.text());
   });
 
-  // 1 — Điều hướng bốn tab
-  await page.goto(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8", {
+  // 1 — Điều hướng năm tab
+  await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
   const tabs = await page.evaluate(() =>
     [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent.trim()),
   );
-  check(1, "Điều hướng bốn tab hoạt động", tabs, [
+  check(1, "Điều hướng năm tab hoạt động", tabs, [
     "Tổng quan",
     "Phân tích thu",
     "Chi tiết phường/xã",
+    "Mã hạch toán",
     "So sánh nâng cao",
   ]);
 
@@ -83,7 +89,7 @@ const run = async () => {
   // 3 — Deep link và reload khôi phục trạng thái
   const deep =
     "/?tab=revenue-analysis&section=import-export&view=ranking&year=2026&periodType=QUARTER&period=2&acc=YTD&level=NSTW&indicator=thu-nsnn";
-  await page.goto(BASE + deep, { waitUntil: "networkidle0" });
+  await page.goto(withFastMock(BASE + deep), { waitUntil: "networkidle0" });
   await wait(2400);
   const beforeReload = await page.evaluate(() => location.search);
   await page.reload({ waitUntil: "networkidle0" });
@@ -108,7 +114,7 @@ const run = async () => {
   );
 
   // 4 — Back đóng drawer và giữ filter
-  await page.goto(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8&level=NSDP", {
+  await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8&level=NSDP"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
@@ -134,7 +140,7 @@ const run = async () => {
   );
 
   // 5 — Tổng quan điều hướng sang Phân tích thu và Chi tiết địa bàn
-  await page.goto(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8", {
+  await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
@@ -147,7 +153,7 @@ const run = async () => {
   await wait(1600);
   const toAnalysis = { tab: await activeTab(page), section: await query(page, "section") };
 
-  await page.goto(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8", {
+  await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
@@ -172,7 +178,7 @@ const run = async () => {
   );
 
   // 6 — Waterfall điều hướng sang So sánh nâng cao
-  await page.goto(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8", {
+  await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
@@ -189,7 +195,7 @@ const run = async () => {
 
   // 7 — Drawer hiển thị đúng nguồn và có CTA
   await page.goto(
-    BASE + "/?tab=overview&panel=revenue-preview&source=crude-oil&year=2026&periodType=MONTH&period=8",
+    withFastMock(BASE + "/?tab=overview&panel=revenue-preview&source=crude-oil&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
   );
   await wait(2400);
@@ -219,7 +225,7 @@ const run = async () => {
 
   // 8 — Đúng 21 khoản thu nội địa
   await page.goto(
-    BASE + "/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8",
+    withFastMock(BASE + "/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
   );
   await wait(2600);
@@ -292,7 +298,7 @@ const run = async () => {
   });
 
   // 12 — Request cũ không ghi đè request mới
-  await page.goto(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8", {
+  await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
@@ -329,7 +335,7 @@ const run = async () => {
     for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
       await page.setViewport({ width, height: 900 });
       await page.goto(
-        BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`,
+        withFastMock(BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`),
         { waitUntil: "networkidle0" },
       );
       await wait(1800);
@@ -352,7 +358,7 @@ const run = async () => {
     for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
       await page.setViewport({ width, height: 900 });
       await page.goto(
-        BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`,
+        withFastMock(BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`),
         { waitUntil: "networkidle0" },
       );
       await wait(1500);
@@ -374,7 +380,7 @@ const run = async () => {
   for (const width of [768, 960, 1280, 1600]) {
     for (const tab of ["overview", "revenue-analysis", "location-detail"]) {
       await page.setViewport({ width, height: 900 });
-      await page.goto(BASE + `/?tab=${tab}&location=00004`, { waitUntil: "networkidle0" });
+      await page.goto(withFastMock(BASE + `/?tab=${tab}&location=00004`), { waitUntil: "networkidle0" });
       await wait(1500);
       const off = await page.evaluate(() => {
         const bad = [];
@@ -410,7 +416,7 @@ const run = async () => {
   for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
     await page.setViewport({ width: 1440, height: 900 });
     await page.goto(
-      BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`,
+      withFastMock(BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`),
       { waitUntil: "networkidle0" },
     );
     await wait(1500);

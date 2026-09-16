@@ -70,7 +70,7 @@ function coverageOf(filters: DashboardFilters): Coverage {
   return { covered: LOCATIONS.length - missing.length, total: LOCATIONS.length, missing };
 }
 
-function metaOf(filters: DashboardFilters, scopeLabel: string): DataMeta {
+export function metaOf(filters: DashboardFilters, scopeLabel: string): DataMeta {
   return {
     source: "mock",
     generatedAt: new Date().toISOString(),

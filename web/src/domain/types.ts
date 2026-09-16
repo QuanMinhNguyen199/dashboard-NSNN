@@ -1,8 +1,14 @@
 import type { BudgetLevel, IndicatorSlug, SourceCode } from "./catalog";
+import type { ManagementLevelFilter } from "./tms";
 
 export type PeriodType = "MONTH" | "QUARTER";
 export type AccumulationMode = "PERIOD" | "YTD";
-export type TabId = "overview" | "revenue-analysis" | "location-detail" | "advanced-compare";
+export type TabId =
+  | "overview"
+  | "revenue-analysis"
+  | "location-detail"
+  | "tms-breakdown"
+  | "advanced-compare";
 export type AdvancedComparisonMode = "period" | "revenue" | "location";
 export type RevenueScope = SourceCode;
 
@@ -16,7 +22,14 @@ export interface DashboardFilters {
   budgetLevel: BudgetLevel | "NSNN";
 }
 
-/** Quan sát gốc — mọi widget đều tổng hợp từ đây, không có nguồn số nào khác. */
+/**
+ * Quan sát gốc — mọi widget đều tổng hợp từ đây, không có nguồn số nào khác.
+ *
+ * Không đoạn mã nào tham chiếu kiểu này: lớp mock cộng thẳng qua `sumOf` thay vì
+ * dựng mảng quan sát. Nó vẫn ở đây vì là hình dạng đã cam kết của kho quan sát,
+ * được mô tả ở README gốc, `web/README.md` và tài liệu thiết kế; xoá đi là bỏ
+ * mất phần khai báo của một khái niệm mà ba tài liệu đang dựa vào.
+ */
 export interface RevenueObservation {
   year: number;
   month: number;
@@ -177,6 +190,124 @@ export interface LocationDetailData {
   topItems: AmountRow[];
 }
 
+/**
+ * Trạng thái nghiệp vụ của một dòng TMS.
+ *
+ * `needsReview` là dòng có số nhưng chưa đủ căn cứ để công bố: mã thiếu tên
+ * trong danh mục, hoặc điều kiện của khoản thu còn điểm chờ xác nhận. Đặc tả
+ * cấm quy nó về 0 hay gán `confirmed`, nên nó là một trạng thái riêng chứ không
+ * phải một giá trị đặc biệt của số tiền.
+ */
+export type TmsRowStatus = "confirmed" | "needsReview";
+
+/**
+ * Dòng TMS KHÔNG kế thừa `AmountRow` vì `amount` của nó có thể chưa tồn tại.
+ *
+ * `AmountRow.amount` là `number` — một cam kết rằng con số đã tính được. Ở tầng
+ * Chương/Mục/Tiểu mục, cam kết đó chưa giữ được: chưa có giao dịch nào được bàn
+ * giao nên không có phép tính nào cho ra số tiền của một mã. `null` ở đây nghĩa
+ * là **chưa tính được**, khác hẳn `0` nghĩa là không phát sinh; giao diện để
+ * trống chứ không thay bằng 0 hay một câu giải thích trong ô.
+ */
+export interface TmsRow {
+  id: string;
+  name: string;
+  amount: number | null;
+  previous: number | null;
+  share?: number | null;
+  meta?: string;
+  status: TmsRowStatus;
+  /** Vì sao dòng chưa được xác nhận; bỏ trống khi `status` là `confirmed`. */
+  reviewNote?: string;
+}
+
+/** Một Mục kèm các Tiểu mục có phát sinh của chính nó trong phạm vi đang lọc. */
+export interface TmsSectionRow extends TmsRow {
+  subItems: TmsRow[];
+}
+
+export interface TmsBreakdownData {
+  meta: DataMeta;
+  level: ManagementLevelFilter;
+  /**
+   * Số tiền ở tầng Chương/Mục/Tiểu mục đến từ đâu.
+   *
+   * `"mock"` là số mô phỏng dựng để demo: điều kiện báo cáo nói mã nào đủ điều
+   * kiện, không nói mã nào chiếm bao nhiêu, nên tỷ lệ giữa các mã là do lớp mô
+   * phỏng đặt ra. Giao diện phải gắn nhãn chừng nào giá trị còn là `"mock"`;
+   * provider API trả `"api"` là nhãn tự biến mất, không phải sửa giao diện.
+   * Cùng khuôn với `BudgetEstimate.origin`.
+   */
+  origin: "mock" | "api";
+  /** Địa bàn đang xem: tên phường/xã, hoặc "Toàn thành phố" khi không lọc. */
+  scopeName: string;
+  /**
+   * Tổng thu NSNN của cùng kỳ và cùng địa bàn — mẫu số của Kho bạc.
+   *
+   * Phạm vi TMS chỉ là **thu nội địa**: thu xuất nhập khẩu, dầu thô và thu khác
+   * chưa có bộ quy tắc TMS riêng. Không mang con số này theo thì màn hình trả
+   * lời "100%" cho câu hỏi tỷ trọng, và người đọc hiểu TMS là toàn bộ NSNN.
+   * `null` khi kỳ đó chưa có quan sát nào.
+   */
+  nsnnTotal: AmountRow | null;
+  /**
+   * Thu nội địa của cùng kỳ và cùng địa bàn — phạm vi mà bộ quy tắc TMS mô tả.
+   * `amount` là `null` khi kỳ/địa bàn đó chưa có quan sát nào.
+   */
+  scopeTotal: TmsRow;
+  /**
+   * Tổng của cấp đang chọn.
+   *
+   * Bằng `scopeTotal` khi xem tất cả các cấp; `amount` là `null` ở mọi cấp cụ
+   * thể, vì chia thu nội địa theo cấp quản lý của Chương là việc cần giao dịch.
+   */
+  levelTotal: TmsRow;
+  /**
+   * Tầng trên của cấp quản lý: trung ương, địa phương, và nhóm chưa xác định.
+   * Ba dòng này cộng bằng `scopeTotal` — địa phương đã gộp tỉnh, huyện và xã.
+   */
+  levels: TmsRow[];
+  /** Ba cấp bên trong địa phương; tổng của chúng bằng đúng dòng địa phương. */
+  localLevels: TmsRow[];
+  /**
+   * Đối chiếu cấp quản lý của Chương với cấp ngân sách được hưởng.
+   *
+   * Hai chiều cùng hình dạng hai bậc nên rất dễ bị đọc thành một. Chúng là hai
+   * trường khác nhau: cấp hưởng cần bảng phân bổ riêng, không suy từ Chương.
+   * `gap` là khoảng chênh đo được giữa hai cách chia cùng một tổng; `null` khi
+   * bộ lọc cấp ngân sách đang thu hẹp nên không còn vế để so.
+   */
+  correspondence: {
+    id: string;
+    management: string;
+    budget: string;
+    /** `null` khi chưa tính được phần thuộc cấp quản lý này. */
+    amount: number | null;
+    budgetAmount: number | null;
+    gap: number | null;
+  }[];
+  /** Mục có phát sinh, đã xếp giảm dần; nhóm chưa xác định Mục luôn ở cuối. */
+  sections: TmsSectionRow[];
+  /** Chương có phát sinh trong cấp đang chọn — để tra cứu, không phải bậc chọn. */
+  chapters: TmsRow[];
+  /**
+   * Cơ quan thuế quản lý chứng từ trong phạm vi.
+   *
+   * Chiều riêng, không suy từ địa bàn hay cấp quản lý của Chương, nên danh sách
+   * không đổi theo bộ lọc cấp. Số tiền theo cơ quan thuế cần giao dịch nên để
+   * `null` như mọi dòng danh mục khác.
+   */
+  taxOffices: TmsRow[];
+  quality: {
+    /** Số Tiểu mục có phát sinh nhưng chưa có tên trong danh mục 180 mã. */
+    subItemsWithoutName: number;
+    /** Số Chương có phát sinh nhưng chưa có bản ghi nên chưa xác định được cấp. */
+    chaptersWithoutLevel: number;
+    /** Khoản thu nội địa chưa có điều kiện TMS được xác nhận, nằm ngoài phạm vi. */
+    itemsWithoutRule: string[];
+  };
+}
+
 export interface ComparisonSide {
   id: string;
   label: string;
@@ -241,4 +372,18 @@ export interface DashboardDataProvider {
     filters: AdvancedComparisonFilters,
     signal: AbortSignal,
   ): Promise<DashboardResponse<AdvancedComparisonData>>;
+  /**
+   * Phân rã theo cấp quản lý của Chương, rồi theo Mục và Tiểu mục.
+   *
+   * `managementLevel` là bộ lọc, không phải bậc của một cây danh mục: máy chủ
+   * lọc giao dịch có Chương thuộc cấp đó, tra Mục của từng Tiểu mục rồi cộng
+   * theo đúng công thức của chỉ tiêu.
+   */
+  getTmsBreakdown(
+    filters: DashboardFilters,
+    managementLevel: ManagementLevelFilter,
+    /** Địa bàn đang lọc; `null` là toàn thành phố. */
+    locationId: string | null,
+    signal: AbortSignal,
+  ): Promise<DashboardResponse<TmsBreakdownData>>;
 }

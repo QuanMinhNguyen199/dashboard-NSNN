@@ -24,7 +24,7 @@ import {
  */
 export function LocationDetailTab() {
   const { filters, location, selectLocation } = useDashboardState();
-  const { resource, retry } = useLocationDetail(filters, location);
+  const { resource, retry, pending } = useLocationDetail(filters, location);
 
   // Bản đồ nhiệt tô theo số tiền, không theo thứ hạng — nên chỉ cần số, không
   // cần sắp xếp. Việc chọn địa bàn đã chuyển sang ô lọc "Chi tiết địa bàn" ở
@@ -43,7 +43,7 @@ export function LocationDetailTab() {
     // để nó biến mất cùng dữ liệu là khoá luôn đường vào.
     <div className="dsplit">
       <div className="dsplit-info">
-        <ResourceView resource={resource} retry={retry} minHeight={220}>
+        <ResourceView resource={resource} retry={retry} minHeight={220} pending={pending}>
           {(data) => <LocationBody data={data} />}
         </ResourceView>
       </div>

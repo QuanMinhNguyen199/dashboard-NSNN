@@ -325,8 +325,14 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters select:hover,
 .dbuilder select:hover { border-color: var(--blue-250); }
 .dfilters-summary { display: none; }
-.dfield-wide, .dfilter-indicator { flex: 1 1 280px; }
-.dfield-wide select, .dfilter-indicator select { width: 100%; }
+.dfield-wide { flex: 1 1 280px; }
+/* Ô cấp quản lý ngắn hơn ô chỉ tiêu cũ nhiều, nên lấy đúng phần còn lại của
+   hàng thay vì giữ nguyên 280px và để một ô sáu chữ nằm trong một hộp rộng. */
+/* Không cho giãn: ô này có nhãn ngắn nhất thanh lọc, để nó nuốt phần dư của
+   hàng thì một lựa chọn sáu chữ nằm giữa một hộp rộng 500px. Nút đặt lại giữ
+   mép phải bằng `margin-left: auto` thay vì nhờ một ô lọc đẩy hộ. */
+.dfilter-management { flex: 0 1 200px; }
+.dfield-wide select, .dfilter-management select { width: 100%; }
 
 /* Chỉ làm gọn thanh lọc khi dashboard thực sự nằm trong iframe. Trang web
    thường tiếp tục dùng nguyên bố cục và khoảng cách ở trên. */
@@ -366,7 +372,16 @@ table { border-collapse: collapse; width: 100%; }
    nó không nằm trong danh sách này: sáu ô lọc ẩn đi còn nút vẫn ở lại, lơ lửng
    dưới thanh tóm tắt, rộng 111px giữa khoảng trống 344px — và nó mời người dùng
    đặt lại một bộ lọc mà họ còn chưa mở ra xem. */
-.dfilters[data-embedded="true"][data-open="false"] > label:not(.dfilter-location),
+/* Khi panel đóng, hai ô còn lại là CẶP ĐIỀU HƯỚNG: "đang xem địa bàn nào" và
+   "đang xem cấp nào". Bề rộng của chúng đang do độ dài tên option quyết định —
+   tên phường dài nên ô địa bàn rộng gần hết hàng, còn "Tất cả cấp" ngắn nên ô
+   cấp quản lý chỉ được 200px. Hai ô cùng vai mà lệch nhau thì đọc thành một ô
+   chính và một ô phụ. Cho cả hai trọn hàng. */
+.dfilters[data-embedded="true"][data-open="false"] > .dfilter-location,
+.dfilters[data-embedded="true"][data-open="false"] > .dfilter-management { flex: 1 1 100%; }
+.dfilters[data-embedded="true"][data-open="false"] > .dfilter-management select { width: 100%; }
+
+.dfilters[data-embedded="true"][data-open="false"] > label:not(.dfilter-location):not(.dfilter-management),
 .dfilters[data-embedded="true"][data-open="false"] > .dfilters-reset-row,
 .dfilters[data-embedded="true"][data-open="false"] > .dfield { display: none; }
 .dfilters[data-embedded="true"][data-open="true"] {
@@ -378,13 +393,13 @@ table { border-collapse: collapse; width: 100%; }
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-cycle,
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-period,
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-accumulation { grid-column: span 6; }
-.dfilters[data-embedded="true"][data-open="true"] .dfilter-budget { grid-column: span 4; }
-.dfilters[data-embedded="true"][data-open="true"] .dfilter-indicator { grid-column: span 8; }
+.dfilters[data-embedded="true"][data-open="true"] .dfilter-budget,
+.dfilters[data-embedded="true"][data-open="true"] .dfilter-management { grid-column: span 6; }
 /* Desktop rộng: nút nằm gọn cuối hàng điều khiển, không chiếm trọn chiều rộng
    và không có đường kẻ phân cách — nó là một điều khiển phụ, không phải một khối
    hành động. Bản thu gọn đổi sang khối đầy đủ ở luật bên dưới. */
 .dfilters-reset-row {
-  display: flex; align-items: flex-end; flex: none;
+  display: flex; align-items: flex-end; flex: none; margin-left: auto;
 }
 .dfilters-reset {
   min-height: 36px; padding: 0 12px; white-space: nowrap;
@@ -403,7 +418,9 @@ table { border-collapse: collapse; width: 100%; }
    kỳ bề rộng nào, và panel xếp chồng dưới 768px (luật thứ hai nằm trong media
    query tương ứng). Cả hai trỏ về cùng một bộ giá trị để không trôi khỏi nhau. */
 .dfilters[data-embedded="true"] .dfilters-reset-row {
-  display: block; grid-column: 1 / -1;
+  /* Trong grid, `margin-left: auto` không đẩy sang phải mà làm ô co về đúng bề
+     rộng nội dung — nút mất luôn chiều rộng đầy đủ của vùng chạm. */
+  display: block; grid-column: 1 / -1; margin-left: 0;
   padding-top: var(--s3); border-top: 1px solid var(--hairline);
 }
 .dfilters[data-embedded="true"] .dfilters-reset { width: 100%; min-height: 44px; padding: 0 14px; }
@@ -1172,6 +1189,28 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    bảng thay thế phải có cùng thông tin đó chứ không chỉ có thứ hạng. */
 .dmap-table tbody tr.is-selected { background: var(--blue-050); }
 .dmap-table tbody tr.is-selected th button { color: var(--brand); font-weight: var(--fw-bold); }
+
+/* Cột số thứ tự: hẹp và căn trái cùng mép với tiêu đề "#". Trước đây nó mang
+   `.is-num` nên căn phải trong một cột rộng 36%, đẩy con số ra giữa bảng trong
+   khi tiêu đề vẫn nằm sát mép trái — hai thứ cùng một cột mà không cùng một lề. */
+.dmap-table .is-rank {
+  width: 3.5rem; text-align: left;
+  color: var(--ink-3); font-variant-numeric: tabular-nums;
+}
+.dmap-table th:first-child, .dmap-table td:first-child { width: 3.5rem; }
+
+/* CẢ DÒNG bấm được, không chỉ mỗi chữ. Dùng lớp phủ của chính nút thay vì gắn
+   onClick lên `<tr>`: giữ đúng một điểm dừng bàn phím, đúng một tên cho trình
+   đọc màn hình, và vùng bấm thì trải hết hàng. */
+.dmap-table tbody tr { position: relative; }
+.dmap-table tbody tr th button::after { content: ""; position: absolute; inset: 0; }
+.dmap-table tbody tr:hover { background: var(--blue-050); cursor: pointer; }
+.dmap-table tbody tr:hover th button { color: var(--brand); }
+/* Vòng focus vẽ quanh cả hàng chứ không quanh mỗi chữ, vì vùng bấm là cả hàng. */
+.dmap-table tbody tr:has(th button:focus-visible) {
+  outline: 2px solid var(--focus); outline-offset: -2px;
+}
+.dmap-table tbody tr th button:focus-visible { outline: none; }
 .dmap-table { max-height: 460px; overflow-y: auto; max-width: 100%; margin-inline: 0; }
 .dmap-legend {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
@@ -1279,6 +1318,264 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 .dnote.is-warn { background: var(--note-surface); border: 1px solid var(--note-line); color: var(--note-ink); }
 
+/* ─────────────────────── Phân rã TMS: cấp → Mục → Tiểu mục ──────────────── */
+/* Thanh chọn cấp đứng NGOÀI thẻ dữ liệu: nó đổi phạm vi của cả trang, không
+   phải một tuỳ chọn của riêng một thẻ. Đặt nó trong thẻ đầu tiên thì nó đọc như
+   thuộc về thẻ đó, và người dùng không tìm lại được sau khi cuộn. */
+.dtms-levelbar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--s3); padding: var(--s3) var(--s4);
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+  box-shadow: var(--shadow-control);
+}
+.dtms-levelbar-label { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+/* Hàng cấp con xếp DƯỚI hàng cấp cha và thụt vào: vị trí nói rằng nó nằm bên
+   trong lựa chọn phía trên, không phải một bộ lọc thứ hai ngang hàng. */
+.dtms-levelbar-controls { display: flex; flex-direction: column; align-items: flex-end; gap: var(--s2); }
+.dtms-levelbar-controls .dseg.is-sub { margin-right: var(--s3); }
+.dtms-levelbar-controls .dseg.is-sub button { font-size: var(--fs-label); color: var(--ink-2); }
+
+/* Ba cấp địa phương đo trên dòng cha, nên phải tách khỏi thang của tầng trên
+   bằng một đường kẻ và một tiêu đề, không để chúng đọc như hai dòng tiếp theo. */
+.dtms-sublevels { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--divider); }
+.dtms-sublevels h3 {
+  margin: 0 0 var(--s2); font-size: var(--fs-label); font-weight: var(--fw-label);
+  letter-spacing: .02em; text-transform: uppercase; color: var(--ink-3);
+}
+
+/* Bảng đối chiếu có hai cột tên, nên quy tắc 36% cho cột đầu không dùng được. */
+.dtms-pairs th:first-child, .dtms-pairs td:first-child { width: auto; }
+.dtms-pairs { table-layout: auto; }
+.dtms-pairs tbody th { font-weight: var(--fw-medium); }
+.dtms-levelbar-label span {
+  font-size: var(--fs-label); font-weight: var(--fw-label); letter-spacing: .02em;
+  text-transform: uppercase; color: var(--ink-2);
+}
+.dtms-levelbar-label small { font-size: var(--fs-caption); color: var(--ink-3); line-height: var(--lh-dense); }
+
+.dnotice {
+  margin: 0; padding: var(--s2) var(--s3);
+  background: var(--note-surface); border: 1px solid var(--note-line); border-radius: var(--r-control);
+  color: var(--note-ink); font-size: var(--fs-caption); line-height: var(--lh-body);
+}
+.dhint { margin: var(--s2) 0 0; color: var(--ink-3); font-size: var(--fs-caption); line-height: var(--lh-body); }
+
+/* Mỗi Mục là một `tbody` riêng để dòng Tiểu mục thuộc về đúng nhóm của nó trong
+   cây ngữ nghĩa, không chỉ về mặt thụt lề. */
+.dtms-table tbody + tbody tr:first-child th, .dtms-table tbody + tbody tr:first-child td {
+  border-top: 1px solid var(--divider);
+}
+.dtms-table tbody tr.is-open th, .dtms-table tbody tr.is-open td { background: var(--blue-050); }
+/* Nhóm chưa tra được Mục cha đứng đầu bảng nhưng KHÔNG mang dáng của một hạng
+   nhất: nền và mực cảnh báo nói rằng đây là việc còn tồn, không phải quán quân. */
+.dtms-table tbody.is-unresolved tr:first-child th, .dtms-table tbody.is-unresolved tr:first-child td {
+  background: var(--note-surface); color: var(--note-ink);
+  border-bottom: 1px solid var(--note-line);
+}
+.dtms-table tbody.is-unresolved tr:first-child .dtms-toggle em { color: inherit; opacity: .8; }
+.dtms-table tbody.is-unresolved + tbody tr:first-child th,
+.dtms-table tbody.is-unresolved + tbody tr:first-child td { border-top: 0; }
+.dtms-table tbody tr.is-child th, .dtms-table tbody tr.is-child td { background: var(--surface-sunken); }
+.dtms-table tbody tr.is-child th {
+  padding-left: var(--s5); font-weight: var(--fw-regular); color: var(--ink-2);
+}
+
+.dtms-toggle {
+  display: flex; align-items: center; gap: var(--s2); width: 100%;
+  min-height: 24px; padding: 0; text-align: left;
+  font-size: var(--fs-label); font-weight: var(--fw-medium); color: inherit;
+}
+.dtms-toggle:hover { color: var(--brand); }
+.dtms-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-chip); }
+.dtms-toggle em {
+  flex: none; margin-left: auto; font-style: normal;
+  font-size: var(--fs-label); font-weight: var(--fw-regular); color: var(--ink-3);
+}
+/* Tam giác vẽ bằng border: hướng của nó là dấu hiệu thứ hai bên cạnh
+   `aria-expanded`, nên trạng thái mở không chỉ nằm ở màu nền. */
+.dtms-caret {
+  flex: none; width: 0; height: 0;
+  border-left: 5px solid currentColor; border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  transition: transform 140ms ease;
+}
+.dtms-table tbody tr.is-open .dtms-caret { transform: rotate(90deg); }
+
+.dtms-code {
+  display: inline-block; margin-right: var(--s2); min-width: 3.1rem;
+  font-variant-numeric: tabular-nums; color: var(--ink-3);
+}
+
+.dtag {
+  display: inline-block; padding: 1px 7px; border-radius: var(--r-chip);
+  background: var(--blue-050); border: 1px solid var(--blue-100);
+  font-size: var(--fs-label); color: var(--ink-2); white-space: nowrap;
+}
+.dtag.is-review { background: var(--note-surface); border-color: var(--note-line); color: var(--note-ink); }
+
+/* Bốn phép kiểm tra, không phải ba cố định: `auto-fit` cho chúng tự xuống hàng
+   ở khổ hẹp thay vì ép bốn cột 90px. */
+.dtms-quality { display: grid; gap: var(--s3); margin: 0; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.dtms-quality > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.dtms-quality dt { font-size: var(--fs-label); color: var(--ink-3); }
+.dtms-quality dd {
+  margin: 0; font-size: var(--fs-caption); font-weight: var(--fw-medium); line-height: var(--lh-dense);
+}
+.dtms-quality dd.is-ok { color: var(--pos); }
+.dtms-quality dd.is-warn { color: var(--note-ink); }
+
+/* ───────────── Phân rã TMS ở khổ hẹp: xếp chồng thay vì cuộn ngang ───────── */
+/* Bề rộng quyết định, không phải ngữ cảnh: iframe 500px nằm trong cửa sổ 1200px
+   vẫn có viewport riêng 500px, nên cùng một media query phục vụ cả iframe, mobile
+   host và trình duyệt điện thoại thật. */
+@media (max-width: 767px) {
+  /* Thanh chọn cấp trong tab biến mất: ô "Cấp quản lý" ở thanh lọc chung đã hiện
+     sẵn ngoài panel, nên giữ cả hai là bày hai điều khiển cho cùng một state
+     trên một màn hình chỉ vừa một cột. */
+  .dtms-levelbar { display: none; }
+
+  /* Năm cột trong 390px thì ba cột cuối nằm ngoài màn hình và người dùng không
+     có dấu hiệu nào để biết chúng tồn tại. Mỗi dòng thành một khối hai tầng:
+     tên và số tiền ở trên, phần diễn giải xuống dưới. */
+  .dtms-table, .dtms-pairs { min-width: 0; }
+  .dtms-table thead, .dtms-pairs thead { display: none; }
+  .dtms-table tbody tr, .dtms-pairs tbody tr {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px var(--s3);
+    padding: 9px var(--s2); border-bottom: 1px solid var(--divider);
+  }
+  .dtms-table tbody th, .dtms-table tbody td,
+  .dtms-pairs tbody th, .dtms-pairs tbody td {
+    border: 0; padding: 0; white-space: normal;
+  }
+  .dtms-table tbody th { flex: 1 1 58%; }
+  .dtms-table tbody td[data-label="Số tiền"] { margin-left: auto; font-weight: var(--fw-medium); }
+  .dtms-table tbody td[data-label="Tỷ trọng"]::before,
+  .dtms-table tbody td[data-label="So cùng kỳ"]::before,
+  .dtms-pairs tbody td[data-label="Chênh lệch"]::before {
+    content: attr(data-label) " "; color: var(--ink-3); font-weight: var(--fw-regular);
+  }
+  /* Nền chuyển từ Ô sang DÒNG. Ở bản bảng, mỗi `td` chiếm trọn một ô của lưới
+     nên tô nền ô là tô kín dòng; ở bản xếp chồng, các ô co về đúng bề rộng nội
+     dung, nên cùng luật đó vẽ ra ba mảng màu rời rạc có khe trắng ở giữa —
+     dải "chưa xác định" đọc thành ba con chip thay vì một dòng. */
+  .dtms-table tbody tr.is-open { background: var(--blue-050); }
+  .dtms-table tbody.is-unresolved tr:first-child {
+    background: var(--note-surface); color: var(--note-ink); border-bottom-color: var(--note-line);
+  }
+  .dtms-table tbody tr.is-child { background: var(--surface-sunken); }
+  .dtms-table tbody tr > th, .dtms-table tbody tr > td { background: transparent; }
+
+  /* Dòng Tiểu mục chỉ thụt một bậc nhẹ: ở khổ này thụt sâu ăn mất bề rộng tên. */
+  .dtms-table tbody tr.is-child th { padding-left: var(--s3); }
+  .dtms-toggle em { flex: none; margin-left: 0; }
+
+  /* Bảng đối chiếu: hai vế xếp thành hai dòng nhãn-giá trị, chênh lệch xuống cuối. */
+  .dtms-pairs tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .dtms-pairs tbody td { text-align: right; }
+  .dtms-pairs tbody td[data-label="Chênh lệch"] { grid-column: 1 / -1; text-align: left; }
+
+  /* Ba cấp địa phương đã có tiêu đề riêng nên không cần thêm đường kẻ dày. */
+  .dtms-sublevels { margin-top: var(--s2); padding-top: var(--s2); }
+}
+
+/* ────────────────────────── Khung chờ có nhịp ───────────────────────────── */
+/* Bản dev trả chậm, nên trạng thái này hiện vài giây chứ không phải một chớp
+   mắt. Khung mô phỏng đúng hình dạng sắp hiện ra: dải bốn chỉ số rồi một thẻ có
+   danh sách, nên khi số về thì bố cục không nhảy. */
+.dskeleton {
+  display: grid; gap: var(--s4); align-content: start;
+}
+.dskeleton-kpis {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+}
+.dskeleton-kpis > div {
+  display: grid; gap: var(--s2); align-content: start;
+  padding: var(--s4); border-left: 1px solid var(--divider);
+}
+.dskeleton-kpis > div:first-child { border-left: 0; }
+.dskeleton-card {
+  display: grid; gap: var(--s3);
+  padding: var(--s4); background: var(--surface);
+  border: 1px solid var(--hairline); border-radius: var(--r-surface);
+}
+.dskeleton-rows { display: grid; gap: var(--s3); }
+.dskeleton-rows span { display: block; }
+/* Cột số liệu đang mọc: phần chuyển động CHÍNH của trạng thái chờ.
+   Dải sáng của khung chờ cố tình nhạt và chậm hơn để làm nền; hai nguồn chuyển
+   động cùng cường độ thì mắt không biết nhìn đâu. */
+.dloader {
+  display: flex; align-items: center; gap: var(--s3); margin: 0;
+  color: var(--ink-2); font-size: var(--fs-caption);
+}
+.dloader-bars {
+  display: flex; align-items: flex-end; gap: 3px;
+  height: 22px; flex: none;
+}
+.dloader-bars i {
+  display: block; width: 5px; height: 100%;
+  border-radius: var(--r-bar) var(--r-bar) 0 0;
+  background: var(--data-secondary);
+  transform-origin: bottom;
+  animation: dbars 1100ms ease-in-out infinite;
+}
+/* Lệch pha và lệch chiều cao để năm cột đọc như một biểu đồ đang dựng, không
+   như một hàng đèn nhấp nháy cùng nhịp. */
+.dloader-bars i:nth-child(1) { animation-delay: 0ms; }
+.dloader-bars i:nth-child(2) { animation-delay: 140ms; background: var(--data-primary); }
+.dloader-bars i:nth-child(3) { animation-delay: 280ms; }
+.dloader-bars i:nth-child(4) { animation-delay: 420ms; background: var(--data-primary); }
+.dloader-bars i:nth-child(5) { animation-delay: 560ms; }
+
+@keyframes dbars {
+  0%, 100% { transform: scaleY(.28); }
+  50% { transform: scaleY(1); }
+}
+
+/* Một khối chờ. `--data-track` là màu nền thanh dữ liệu, nên khung chờ và thanh
+   thật dùng chung một mực; dải sáng chạy qua lấy từ `--surface`. */
+.dshimmer {
+  display: block; height: 10px; border-radius: var(--r-bar);
+  background-color: var(--data-track);
+  background-image: linear-gradient(90deg, transparent 0%, var(--surface) 50%, transparent 100%);
+  background-size: 280% 100%;
+  background-repeat: no-repeat;
+  animation: dshimmer 1900ms linear infinite;
+  opacity: .8;
+}
+/* Dòng số liệu cao hơn và đậm hơn: đó là thứ mắt tìm đầu tiên khi thẻ hiện ra. */
+.dshimmer.is-lead { height: 20px; background-color: var(--blue-100); }
+
+@keyframes dshimmer {
+  from { background-position: 180% 0; }
+  to { background-position: -80% 0; }
+}
+
+/* Thẻ bọc không được tạo hộp riêng: các thẻ con phải ở nguyên vị trí cũ trong
+   lưới hoặc flex của tab. Nó chỉ tồn tại để đo chiều cao nội dung trước khi nội
+   dung nhường chỗ cho khung chờ. */
+.dresource { display: contents; }
+
+/* Tắt hiệu ứng thì các khối vẫn ở nguyên chỗ: hình dạng và ý nghĩa không mất,
+   chỉ mất phần chuyển động. Dải sáng bị gỡ hẳn vì đứng yên nó đọc thành một
+   vệt lỗi giữa khối. */
+@media (prefers-reduced-motion: reduce) {
+  .dshimmer { background-image: none; }
+  /* Cột dừng lại ở năm chiều cao khác nhau: vẫn ra hình một biểu đồ, chỉ mất
+     phần mọc lên. Dừng tất cả ở cùng một chiều cao thì thành một khối đặc. */
+  .dloader-bars i { animation: none; }
+  .dloader-bars i:nth-child(1) { transform: scaleY(.45); }
+  .dloader-bars i:nth-child(2) { transform: scaleY(.8); }
+  .dloader-bars i:nth-child(3) { transform: scaleY(.6); }
+  .dloader-bars i:nth-child(4) { transform: scaleY(1); }
+  .dloader-bars i:nth-child(5) { transform: scaleY(.55); }
+}
+
+@media (max-width: 767px) {
+  .dskeleton-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dskeleton-kpis > div:nth-child(odd) { border-left: 0; }
+  .dskeleton-kpis > div:nth-child(n + 3) { border-top: 1px solid var(--divider); }
+}
+
 /* ───────────────────────────── Responsive ───────────────────────────────── */
 
 /* Bốn ngưỡng, mỗi ngưỡng giải một việc:
@@ -1363,8 +1660,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
      để bớt một hàng chiếm chỗ phía trên nội dung. */
   .dfilters { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); padding: 12px; }
   .dfilter-year, .dfilter-cycle, .dfilter-period, .dfilter-accumulation { grid-column: span 6; }
-  .dfilter-budget { grid-column: span 4; }
-  .dfilter-indicator { grid-column: span 8; }
+  .dfilter-budget, .dfilter-management { grid-column: span 6; }
   /* Tên phường, xã dài hơn mọi nhãn lọc khác nên cho trọn hàng thay vì ép chung.
      Ô này hiện cả khi panel đóng, nên nó phải tự đứng được một mình. */
   .dfilter-location { grid-column: 1 / -1; }
@@ -1375,7 +1671,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
      `[data-embedded]` có luật này, nên `?host=mobile` thì đúng còn trình duyệt
      điện thoại thật và khổ iframe thì hỏng. */
   .dfilters-reset-row {
-    display: block; grid-column: 1 / -1;
+    display: block; grid-column: 1 / -1; margin-left: 0;
     padding-top: var(--s3); border-top: 1px solid var(--hairline);
   }
   /* 44px là vùng chạm tối thiểu; nút đặt lại ở đây là hành động kết thúc một
@@ -1406,7 +1702,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
     border: 1px solid var(--blue-250); border-radius: var(--r-control);
     background: var(--blue-050); color: var(--brand);
   }
-  .dfilters[data-open="false"] > label:not(.dfilter-location),
+  .dfilters[data-open="false"] > .dfilter-location,
+  .dfilters[data-open="false"] > .dfilter-management { grid-column: 1 / -1; }
+
+  .dfilters[data-open="false"] > label:not(.dfilter-location):not(.dfilter-management),
   .dfilters[data-open="false"] > .dfilters-reset-row,
   .dfilters[data-open="false"] > .dfield { display: none; }
 
@@ -1433,7 +1732,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 
 @media (max-width: 340px) {
-  .dfilter-budget, .dfilter-indicator { grid-column: 1 / -1; }
+  .dfilter-budget, .dfilter-management { grid-column: 1 / -1; }
 }
 
 /* Còn đủ rộng cho ba ô một hàng. Giữ nguyên lưới 12 cột và đổi nhịp span thay

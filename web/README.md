@@ -1,6 +1,7 @@
 # Dashboard Thu NSNN Hà Nội
 
-Triển khai theo `../THIET-KE-DASHBOARD-NSNN.md` v1.1: bốn workspace, URL state đầy đủ,
+Triển khai theo `../tai-lieu-luu-tru/nsnn/THIET-KE-DASHBOARD-NSNN.md` v1.1 cộng workspace Mã hạch toán
+theo `../bao-cao-outline/noi-bo/`: năm workspace, URL state đầy đủ,
 drawer xem nhanh, lớp provider API/MCP/Mock có runtime validation, và dữ liệu mô phỏng
 tất định dựng từ một kho quan sát gốc duy nhất.
 
@@ -17,8 +18,8 @@ npm run acceptance   # 17 tiêu chí nghiệm thu qua trình duyệt (cần dev 
 Từ gốc repo cũng chạy được y hệt — mọi lệnh uỷ quyền xuống `web/`.
 
 Giao thức phân biệt Web host, iframe và Mobile WebView nằm tại
-[`../HOST-INTEGRATION.md`](../HOST-INTEGRATION.md). Báo cáo BA ngắn về phần Mobile nằm tại
-[`../REPORT-MOBILE-HOST-INTEGRATION.md`](../REPORT-MOBILE-HOST-INTEGRATION.md).
+[`../HOST-INTEGRATION.md`](../tai-lieu-luu-tru/nsnn/HOST-INTEGRATION.md). Báo cáo BA ngắn về phần Mobile nằm tại
+[`../REPORT-MOBILE-HOST-INTEGRATION.md`](../tai-lieu-luu-tru/nsnn/REPORT-MOBILE-HOST-INTEGRATION.md).
 
 ## Cấu trúc thư mục
 
@@ -76,12 +77,13 @@ nhận dữ liệu qua props hoặc qua hook.
 | Tổng quan | `?tab=overview` | Tình hình thu ngân sách toàn thành phố ra sao? |
 | Phân tích thu | `?tab=revenue-analysis&section=domestic&view=overview` | Nguồn hoặc khoản thu nào tạo ra kết quả đó? |
 | Chi tiết phường/xã | `?tab=location-detail&location=00004` | Một địa bàn cụ thể đang hoạt động ra sao? |
+| Mã hạch toán | `?tab=tms-breakdown&mgmt=all` | Số thu gồm những Chương, Mục và Tiểu mục nào? |
 | So sánh nâng cao | `?tab=advanced-compare&mode=period&periodA=2025m8&periodB=2026m8` | Hai kỳ, nguồn thu hoặc địa bàn khác nhau thế nào? |
 
 Drawer xem nhanh: `?tab=overview&panel=revenue-preview&source=domestic`.
 Mở drawer dùng `pushState`; Back đóng drawer và giữ nguyên bộ lọc.
 
-Bộ lọc chung — `year`, `periodType`, `period`, `acc`, `level`, `indicator` — giữ nguyên
+Bộ lọc chung — `year`, `periodType`, `period`, `acc`, `level`, `mgmt` — giữ nguyên
 khi chuyển tab và được sở hữu bởi **một** nơi duy nhất:
 [`src/state/DashboardState.tsx`](src/state/DashboardState.tsx). Không component nào khác
 đọc hay ghi `location.search`.
@@ -142,7 +144,14 @@ nguồn cấp cao, NSTW và NSĐP.
 - Quý được cộng từ ba giá trị PERIOD tháng và mang cờ `derivedQuarter`; mock không có file
   báo cáo quý riêng.
 - Chỉ tiêu là **ba tổng khác nhau**: `thu-nsnn` bỏ nguồn VI và VII;
-  `tong-so-tru-hoan-thue` bỏ dòng hoàn GTGT `III.2.1`.
+  `tong-so-tru-hoan-thue` bỏ dòng hoàn GTGT `III.2.1`. Ô chọn chỉ tiêu đã gỡ khỏi thanh
+  lọc vì gần như không ai đổi, nhưng tham số `indicator` vẫn nằm trong state và hợp đồng
+  API, nên deep link cũ và backend không bị ảnh hưởng.
+- `level` (cấp ngân sách được hưởng) kéo theo `mgmt` (cấp quản lý của Chương):
+  `NSTW → trung-uong`, `NSDP → dia-phuong`, `NSNN → all`. Đây là giá trị khởi điểm, chọn
+  tay trong tab Mã hạch toán vẫn thắng. **Hai tham số này là hai trường khác nhau của giao
+  dịch** và không suy được ra nhau — thẻ `Cấp quản lý và cấp ngân sách` trong tab đo đúng
+  khoảng chênh giữa chúng.
 
 ## Quy tắc số liệu được thực thi
 
@@ -188,11 +197,27 @@ không phải bản rút gọn tạm bợ.
 | 767px | Web responsive; thanh lọc chuyển thành bản tóm tắt và lưới hai cột khi mở |
 | 699px | Hết chỗ cho hai cột, xếp chồng toàn bộ |
 
-Dưới 768px, thanh lọc đóng gói ngữ cảnh thành hai nhóm `Kỳ báo cáo` và `Chỉ tiêu`. Nút
-`Bộ lọc` mở sáu điều khiển theo thứ tự quen thuộc. Hai trường cuối dùng tỷ lệ 1/3 cho
-`Cấp ngân sách` và 2/3 cho `Chỉ tiêu`; dưới 340px chúng tự xuống hai hàng. Nút
-`Đặt lại bộ lọc` chiếm toàn bộ chiều rộng và đưa state về Tháng 8/2026, Trong kỳ,
-Tổng NSNN, TỔNG SỐ. Cùng cấu trúc này được dùng trong iframe ở mọi chiều rộng.
+Dưới 768px, thanh lọc đóng gói ngữ cảnh thành hai nhóm `Kỳ báo cáo` và `Phạm vi`. Nút
+`Bộ lọc` mở sáu điều khiển theo thứ tự quen thuộc. Hai trường cuối — `Cấp ngân sách` và
+`Cấp quản lý` — chia đôi hàng; dưới 340px chúng tự xuống hai hàng. Nút `Đặt lại bộ lọc`
+chiếm toàn bộ chiều rộng và đưa state về Tháng 8/2026, Trong kỳ, Tổng NSNN, toàn thành phố
+và tất cả cấp quản lý. Cùng cấu trúc này được dùng trong iframe ở mọi chiều rộng.
+
+Ô `Cấp quản lý` là lối đi tắt sang tab Mã hạch toán, cùng vai với `Chi tiết địa bàn`: chọn
+một cấp sẽ mở tab đó, còn `Tất cả cấp` chỉ bỏ lọc mà không kéo người dùng khỏi tab đang
+đứng. Ô dùng `optgroup` để giữ đúng hình dạng hai bậc — ba cấp tỉnh, huyện, xã nằm **bên
+trong** địa phương, không ngang hàng với trung ương.
+
+Hai ô này là **cặp điều hướng**, nên khi panel lọc đóng lại (iframe, mobile, web hẹp) cả
+hai vẫn hiện bên ngoài và chiếm trọn hàng bằng nhau. Đặt chúng sau một cánh cửa là sai:
+chúng đổi *thứ đang xem*, không phải tinh chỉnh *cách xem*.
+
+Dưới 768px, tab Mã hạch toán bỏ thanh chọn cấp trong tab — ô `Cấp quản lý` ở thanh lọc đã
+làm việc đó — và hai bảng năm cột chuyển sang xếp chồng: tên với số tiền một dòng, tỷ
+trọng/so cùng kỳ/trạng thái xuống dòng dưới. Nền trạng thái chuyển từ ô sang **dòng**: ở
+bản xếp chồng các ô co về bề rộng nội dung nên tô nền ô sẽ vẽ ra ba mảng màu rời rạc. Danh
+sách Chương rút còn 6 dòng; ngưỡng đọc bằng `matchMedia` đúng media query của stylesheet
+để hai bên không trôi khỏi nhau.
 
 Thẻ cùng một hàng luôn cao bằng nhau: biểu đồ nở hết phần dư, danh sách thanh nở **có
 trần** để dòng không bị kéo méo, bảng dài cuộn trong thẻ thay vì nong thẻ cao gấp đôi thẻ
@@ -246,7 +271,7 @@ npm run acceptance     # mặc định http://127.0.0.1:5173
 `scripts/acceptance.mjs` chạy 17 tiêu chí trên Chrome thật qua `puppeteer-core`; đặt
 `CHROME_PATH` nếu Chrome ở đường dẫn khác. Mỗi tiêu chí canh một cách hỏng cụ thể, không
 phải một danh sách “nên có” — lý do từng cái ở
-[`../BA-NSNN.md`](../BA-NSNN.md) §14.
+[`../BA-NSNN.md`](../tai-lieu-luu-tru/nsnn/BA-NSNN.md) §14.
 
 Ba tiêu chí về bố cục đáng chú ý vì chúng bắt những lỗi mà mắt dễ bỏ qua:
 
@@ -256,7 +281,7 @@ Ba tiêu chí về bố cục đáng chú ý vì chúng bắt những lỗi mà 
 | 11 | Không thẻ nào bị `overflow: hidden` nuốt mất nội dung — trang không tràn vẫn có thể mất chữ trong thẻ |
 | 12 | Thẻ cùng hàng cao bằng nhau ở 768, 960, 1280, 1600px |
 
-Hai workflow trong [`../.github/workflows/`](../.github/workflows/):
+Hai workflow trong [`../.github/workflows/`](../.github/workflows):
 
 | Workflow | Chạy khi | Làm gì |
 |---|---|---|
@@ -274,7 +299,7 @@ lên domain riêng ở gốc thì đặt `VITE_BASE=/`.
 - **Mock không phải số liệu nghiệp vụ, và giao diện KHÔNG nói ra điều đó.** Nhãn cảnh báo
   đã được gỡ vì bản dựng này là thiết kế bàn giao cho đội frontend — để lại thì nhãn sẽ bị
   chép vào sản phẩm thật. Hệ quả: bản chạy thử chỉ dùng để duyệt thiết kế, không dùng trong
-  cuộc họp chuyên môn. Lý do đầy đủ ở [`../BA-NSNN.md`](../BA-NSNN.md) mục 13.1.
+  cuộc họp chuyên môn. Lý do đầy đủ ở [`../BA-NSNN.md`](../tai-lieu-luu-tru/nsnn/BA-NSNN.md) mục 13.1.
   Không trộn mock với tổng chính thức trong bất kỳ phép tính nào.
 - **Xuất Excel chưa làm** — đặc tả §9 nêu ở phần bảng 21 khoản; hiện có tìm kiếm và sắp
   xếp mọi cột, chưa có nút xuất.

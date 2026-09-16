@@ -20,6 +20,7 @@ import {
   type SourceCode,
 } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
+import type { ManagementLevelFilter } from "@/domain/tms";
 import { groupFromUrl, groupUrlId, sourceFromUrl, sourceUrlId } from "@/domain/urlIds";
 import type {
   AdvancedComparisonMode,
@@ -36,7 +37,30 @@ import type {
  * Mở drawer dùng `pushState` để Back đóng drawer mà không mất bộ lọc.
  */
 
-const TABS: TabId[] = ["overview", "revenue-analysis", "location-detail", "advanced-compare"];
+const TABS: TabId[] = [
+  "overview",
+  "revenue-analysis",
+  "location-detail",
+  "tms-breakdown",
+  "advanced-compare",
+];
+const MANAGEMENT_LEVELS_URL = ["all", "trung-uong", "dia-phuong", "tinh", "huyen", "xa", "unknown"] as const;
+
+/**
+ * Cấp ngân sách kéo theo cấp quản lý của tab Mã hạch toán.
+ *
+ * Hai thứ này là hai TRƯỜNG khác nhau của giao dịch và không suy được ra nhau —
+ * thẻ "Cấp quản lý và cấp ngân sách" trong tab đo đúng khoảng chênh đó. Nhưng
+ * chúng trả lời cùng một câu hỏi phạm vi, nên để người dùng chọn NSTW ở thanh
+ * lọc chung rồi vẫn thấy tab TMS đứng ở "Tất cả cấp" là bắt họ làm hai lần cùng
+ * một việc. Đây là giá trị KHỞI ĐIỂM đi theo lựa chọn ngân sách; chọn tay trong
+ * tab vẫn thắng và không bị kéo ngược lại.
+ */
+const LEVEL_FOR_BUDGET: Record<DashboardFilters["budgetLevel"], ManagementLevelFilter> = {
+  NSNN: "all",
+  NSTW: "trung-uong",
+  NSDP: "dia-phuong",
+};
 const MODES: AdvancedComparisonMode[] = ["period", "revenue", "location"];
 const VIEWS = ["overview", "ranking", "waterfall"] as const;
 export type AnalysisView = (typeof VIEWS)[number];
@@ -50,6 +74,8 @@ export interface DashboardUrlState {
   group: DomesticGroupId;
   /** Tab Chi tiết địa bàn */
   location: string | null;
+  /** Tab Mã hạch toán — bộ lọc cấp quản lý của Chương, không phải bậc danh mục. */
+  managementLevel: ManagementLevelFilter;
   /** Drawer xem nhanh nguồn thu */
   panelSource: SourceCode | null;
   /** Tab So sánh nâng cao */
@@ -121,6 +147,7 @@ function readUrl(search: string): DashboardUrlState {
     view: one("view", VIEWS, "overview"),
     group: groupFromUrl(q.get("group"), "sxkd"),
     location: locationOf("location"),
+    managementLevel: one("mgmt", MANAGEMENT_LEVELS_URL, "all"),
     panelSource: q.get("panel") === "revenue-preview" ? sourceFromUrl(q.get("source"), "domestic") : null,
     mode: one("mode", MODES, "period"),
     periodA: q.get("periodA") ?? "2025m8",
@@ -136,8 +163,10 @@ function writeUrl(state: DashboardUrlState): string {
   const q = new URLSearchParams();
   // `host` và `platform` là ngữ cảnh tích hợp, không phải dashboard state.
   // Giữ chúng qua mọi lần đồng bộ URL để bản mobile fallback vẫn đúng khi reload.
+  // `latency` là công tắc trễ mô phỏng: cũng phải sống sót, vì chính hàm này
+  // viết lại đường dẫn trước khi lớp dữ liệu kịp đọc tham số.
   const integration = new URLSearchParams(window.location.search);
-  for (const key of ["host", "platform"] as const) {
+  for (const key of ["host", "platform", "latency"] as const) {
     const value = integration.get(key);
     if (value) q.set(key, value);
   }
@@ -154,7 +183,16 @@ function writeUrl(state: DashboardUrlState): string {
     q.set("view", state.view);
     if (state.section === "domestic") q.set("group", groupUrlId(state.group));
   }
-  if (state.tab === "location-detail" && state.location) q.set("location", state.location);
+  /**
+   * Địa bàn vào URL ở MỌI tab đọc nó, không riêng Chi tiết phường/xã.
+   *
+   * Tab Mã hạch toán cũng lọc theo địa bàn, nên bỏ tham số ở đó nghĩa là tải lại
+   * trang thì phạm vi biến mất còn thanh lọc thì vẫn vẽ ra nó — và liên kết gửi
+   * cho người khác mở ra một phạm vi khác với cái người gửi đang nhìn.
+   */
+  if (state.location && (state.tab === "location-detail" || state.tab === "tms-breakdown"))
+    q.set("location", state.location);
+  if (state.tab === "tms-breakdown") q.set("mgmt", state.managementLevel);
   if (state.tab === "advanced-compare") {
     q.set("mode", state.mode);
     if (state.mode === "period") {
@@ -183,6 +221,9 @@ interface DashboardContextValue extends DashboardUrlState {
   setView: (view: AnalysisView) => void;
   setGroup: (group: DomesticGroupId) => void;
   selectLocation: (id: string | null) => void;
+  /** Đổi phạm vi địa bàn mà KHÔNG đổi tab; dùng ở tab tự đọc được địa bàn. */
+  setLocationScope: (id: string | null) => void;
+  setManagementLevel: (level: ManagementLevelFilter) => void;
   openPreview: (source: SourceCode) => void;
   closePreview: () => void;
   setMode: (mode: AdvancedComparisonMode) => void;
@@ -226,7 +267,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         setState((current) => {
           const merged = { ...current.filters, ...next };
           // Đổi năm hoặc loại kỳ thì phải kiểm tra lại kỳ đang chọn.
-          return { ...current, filters: clampPeriod(merged), panelSource: null };
+          return {
+            ...current,
+            filters: clampPeriod(merged),
+            managementLevel:
+              next.budgetLevel !== undefined && next.budgetLevel !== current.filters.budgetLevel
+                ? LEVEL_FOR_BUDGET[next.budgetLevel]
+                : current.managementLevel,
+            panelSource: null,
+          };
         }),
       // "Đặt lại bộ lọc" phải đưa MỌI thứ người dùng đã đổi về mặc định, kể cả
       // địa bàn đang chọn — mặc định của nó là "Toàn thành phố". Trước đây reset
@@ -237,6 +286,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           ...current,
           filters: { ...DEFAULT_FILTERS },
           location: null,
+          managementLevel: "all",
           tab: current.tab === "location-detail" ? "overview" : current.tab,
           panelSource: null,
         })),
@@ -253,8 +303,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       setSection: (section) => patch({ section }),
       setView: (view) => patch({ view }),
       setGroup: (group) => patch({ group }),
+      setManagementLevel: (managementLevel) => patch({ managementLevel }),
       selectLocation: (location) =>
         setState((current) => ({ ...current, location, tab: location ? "location-detail" : current.tab })),
+      setLocationScope: (location) => patch({ location }),
       openPreview: (panelSource) => {
         pushNext.current = true;
         patch({ panelSource });
