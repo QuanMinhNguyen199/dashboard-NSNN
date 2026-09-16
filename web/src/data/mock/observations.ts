@@ -6,9 +6,8 @@ import {
   latestMonth,
   type BudgetLevel,
   type ItemDef,
-  type SourceCode,
 } from "@/domain/catalog";
-import type { DashboardFilters, RevenueObservation } from "@/domain/types";
+import type { DashboardFilters } from "@/domain/types";
 import { monthsOf } from "@/domain/metrics";
 
 /**
@@ -242,33 +241,3 @@ function computeSum(filters: DashboardFilters, options: SumOptions): number | nu
 }
 
 export const CITY_ID = CITY;
-
-/** Danh sách quan sát thô của một lát cắt — dùng cho bảng và đối chiếu. */
-export function listObservations(
-  filters: DashboardFilters,
-  options: SumOptions = {},
-): RevenueObservation[] {
-  const year = options.year ?? filters.year;
-  const months = options.months ?? monthsOf(filters);
-  const items = itemsForIndicator(filters.indicator, options.items ?? ALL_ITEMS);
-  const levels = levelsOf(filters.budgetLevel);
-  const out: RevenueObservation[] = [];
-  for (const item of items) {
-    const cityOnly = SOURCE_BY_CODE[item.source].cityOnly;
-    if (cityOnly && options.locationIds) continue;
-    const locations = cityOnly ? [CITY] : (options.locationIds ?? LOCATIONS.map((l) => l.id));
-    for (const locationId of locations)
-      for (const month of months)
-        for (const level of levels)
-          out.push({
-            year,
-            month,
-            locationId,
-            itemCode: item.code,
-            sourceCode: item.source as SourceCode,
-            budgetLevel: level,
-            amountVnd: amountOf(year, month, item.code, locationId, level),
-          });
-  }
-  return out;
-}

@@ -6,12 +6,14 @@ import type {
   DashboardResponse,
   RevenueScope,
 } from "@/domain/types";
+import type { ManagementLevelFilter } from "@/domain/tms";
 import {
   buildAdvancedComparison,
   buildLocationDetail,
   buildOverview,
   buildRevenueAnalysis,
 } from "../mock/build";
+import { buildTmsBreakdown } from "../mock/tms";
 import {
   NoDataError,
   PayloadError,
@@ -19,6 +21,7 @@ import {
   validateLocationDetail,
   validateOverview,
   validateRevenueAnalysis,
+  validateTmsBreakdown,
 } from "../validate";
 
 function envelope<T>(
@@ -38,6 +41,44 @@ function envelope<T>(
   };
 }
 
+/**
+ * Trễ mô phỏng của bản dựng thử.
+ *
+ * Backend thật của bản dev trả chậm, nên mock trả nhanh sẽ dạy người duyệt một
+ * kỳ vọng sai: bố cục nào cũng đẹp khi dữ liệu về tức thì. Mặc định vì vậy đủ
+ * dài để nhìn thấy trạng thái chờ thật sự trông thế nào, quanh mức 2 giây.
+ *
+ * Đổi bằng `?latency=` trên đường dẫn hoặc `VITE_MOCK_LATENCY`; đặt 0 khi chạy
+ * kiểm thử hoặc khi đang sửa giao diện và không muốn chờ.
+ */
+const DEFAULT_LATENCY_MS = 2000;
+
+function baseLatency(): number {
+  const fromUrl = new URLSearchParams(window.location.search).get("latency");
+  const raw = fromUrl ?? import.meta.env.VITE_MOCK_LATENCY;
+  const value = Number(raw);
+  return raw !== undefined && raw !== null && raw !== "" && Number.isFinite(value) && value >= 0
+    ? value
+    : DEFAULT_LATENCY_MS;
+}
+
+/**
+ * Mỗi màn hình một hệ số riêng, tất định.
+ *
+ * Dùng chung một con số cho mọi endpoint thì mọi lần chờ dài bằng nhau, và đó
+ * không phải thứ backend thật làm. Hệ số trải quanh 1 nên với mặc định 3 giây,
+ * thời gian chờ rơi vào khoảng 2,9 đến 4,2 giây.
+ */
+const SPREAD = {
+  overview: 1,
+  revenue: 1.15,
+  location: 0.95,
+  tms: 1.1,
+  compare: 1.2,
+} as const;
+
+const latencyFor = (screen: keyof typeof SPREAD) => Math.round(baseLatency() * SPREAD[screen]);
+
 /** Trễ giả lập, huỷ được — để kiểm chứng việc huỷ request cũ. */
 function delay(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -56,14 +97,14 @@ function delay(ms: number, signal: AbortSignal): Promise<void> {
 
 export class MockDashboardProvider implements DashboardDataProvider {
   async getOverview(filters: DashboardFilters, signal: AbortSignal) {
-    await delay(160, signal);
+    await delay(latencyFor("overview"), signal);
     const data = buildOverview(filters);
     if (!data) throw new PayloadError("Kỳ đang chọn không có trong danh mục.");
     return envelope(validateOverview(data), filters, { tab: "overview" });
   }
 
   async getRevenueAnalysis(filters: DashboardFilters, scope: RevenueScope, signal: AbortSignal) {
-    await delay(160, signal);
+    await delay(latencyFor("revenue"), signal);
     const data = buildRevenueAnalysis(filters, scope as SourceCode);
     if (!data) throw new PayloadError("Nguồn thu không nằm trong danh mục.");
     return envelope(validateRevenueAnalysis(data), filters, {
@@ -73,7 +114,7 @@ export class MockDashboardProvider implements DashboardDataProvider {
   }
 
   async getLocationDetail(filters: DashboardFilters, locationId: string, signal: AbortSignal) {
-    await delay(160, signal);
+    await delay(latencyFor("location"), signal);
     const data = buildLocationDetail(filters, locationId);
     if (!data)
       throw locationId in LOCATION_BY_ID
@@ -82,8 +123,23 @@ export class MockDashboardProvider implements DashboardDataProvider {
     return envelope(validateLocationDetail(data), filters, { tab: "location-detail" });
   }
 
+  async getTmsBreakdown(
+    filters: DashboardFilters,
+    managementLevel: ManagementLevelFilter,
+    locationId: string | null,
+    signal: AbortSignal,
+  ) {
+    await delay(latencyFor("tms"), signal);
+    const data = buildTmsBreakdown(filters, managementLevel, locationId);
+    if (!data)
+      throw new NoDataError(
+        "Kỳ đang chọn chưa có giao dịch nội địa nào để phân rã theo Chương và Tiểu mục.",
+      );
+    return envelope(validateTmsBreakdown(data), filters, { tab: "tms-breakdown" });
+  }
+
   async getAdvancedComparison(filters: AdvancedComparisonFilters, signal: AbortSignal) {
-    await delay(180, signal);
+    await delay(latencyFor("compare"), signal);
     const data = buildAdvancedComparison(filters);
     if (!data) throw new PayloadError("Hai vế so sánh không tương thích hoặc chưa đủ tham số.");
     return envelope(validateAdvancedComparison(data), filters, {

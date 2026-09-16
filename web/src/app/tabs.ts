@@ -17,5 +17,10 @@ export const TABS: TabDef[] = [
   { id: "overview", label: "Tổng quan", question: "Tình hình thu ngân sách toàn thành phố ra sao?" },
   { id: "revenue-analysis", label: "Phân tích thu", question: "Nguồn hoặc khoản thu nào tạo ra kết quả đó?" },
   { id: "location-detail", label: "Chi tiết phường/xã", question: "Một địa bàn cụ thể đang hoạt động ra sao?" },
+  {
+    id: "tms-breakdown",
+    label: "Mã hạch toán",
+    question: "Số thu gồm những Chương, Mục và Tiểu mục nào?",
+  },
   { id: "advanced-compare", label: "So sánh nâng cao", question: "Hai kỳ, nguồn thu hoặc địa bàn khác nhau thế nào?" },
 ];

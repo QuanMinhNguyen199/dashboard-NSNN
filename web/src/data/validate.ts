@@ -6,6 +6,7 @@ import type {
   OverviewData,
   RevenueAnalysisData,
   TabId,
+  TmsBreakdownData,
 } from "@/domain/types";
 import { LOCATION_BY_ID, SOURCE_BY_CODE } from "@/domain/catalog";
 
@@ -24,7 +25,14 @@ const isFinite_ = (value: unknown): value is number =>
 const isNullableNumber = (value: unknown) => value === null || isFinite_(value);
 
 export const SOURCES_ALLOWED = ["api", "mcp", "fixture", "mock"];
-export const TABS_ALLOWED: TabId[] = ["overview", "revenue-analysis", "location-detail", "advanced-compare"];
+export const TABS_ALLOWED: TabId[] = [
+  "overview",
+  "revenue-analysis",
+  "location-detail",
+  "tms-breakdown",
+  "advanced-compare",
+];
+const TMS_LEVELS_ALLOWED = ["all", "trung-uong", "dia-phuong", "tinh", "huyen", "xa", "unknown"];
 const MODES_ALLOWED: AdvancedComparisonMode[] = ["period", "revenue", "location"];
 
 export class PayloadError extends Error {}
@@ -242,6 +250,115 @@ export function validateLocationDetail(value: unknown): LocationDetailData {
   validateAmountRow(value.kpiPeriod, "Chi tiết địa bàn.kpiPeriod");
   validateTrend(value.trend, "Chi tiết địa bàn");
   return value as unknown as LocationDetailData;
+}
+
+/**
+ * Danh mục TMS: kiểm cấu trúc, và kiểm rằng KHÔNG có số bịa lọt vào.
+ *
+ * Chưa có giao dịch TMS nào được bàn giao, nên mọi dòng ở tầng Chương/Mục/Tiểu
+ * mục phải mang `amount: null`. Một con số xuất hiện ở đó chỉ có thể đến từ một
+ * phép suy diễn không có căn cứ trong tài liệu, nên ranh giới dữ liệu chặn nó
+ * lại thay vì để nó chảy ra màn hình trông như số đã đối soát.
+ */
+/** Dòng TMS: `amount` có thể chưa tồn tại, nên `null` là hợp lệ chứ không phải thiếu. */
+function validateTmsRow(value: unknown, where: string) {
+  assert(isRecord(value), `${where}: dòng không phải object.`);
+  assert(typeof value.id === "string" && typeof value.name === "string", `${where}: thiếu mã hoặc tên.`);
+  assert(isNullableNumber(value.amount), `${where}: amount phải là số hoặc null.`);
+  assert(isNullableNumber(value.previous), `${where}: previous phải là số hoặc null.`);
+}
+
+/** Cộng các dòng; `null` nếu có bất kỳ dòng nào chưa có số, vì tổng khi đó vô nghĩa. */
+function sumOrNull(rows: { amount: number | null }[]): number | null {
+  let total = 0;
+  for (const row of rows) {
+    if (row.amount === null) return null;
+    total += row.amount;
+  }
+  return total;
+}
+
+/**
+ * Ranh giới tin cậy của tab Mã hạch toán.
+ *
+ * Hợp đồng cho phép `amount` là `null` — chưa tính được — hoặc là một con số.
+ * Lớp mock hiện trả `null` ở toàn bộ tầng Chương/Mục/Tiểu mục vì chưa có giao
+ * dịch nào được bàn giao, nhưng đó là chính sách của **lớp mock**, không phải
+ * của hợp đồng: một provider API thật trả số phải đi qua được đúng validator
+ * này mà không phải sửa dòng nào.
+ *
+ * Phép đối soát vì vậy có điều kiện. Còn `null` thì không so được và bỏ qua;
+ * đủ số thì so **khớp tuyệt đối**, không cho sai số. Đây là phép chia lại cùng
+ * một tổng nên mọi đồng đều phải về đúng một nhóm, kể cả nhóm chưa xác định.
+ */
+export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
+  assert(isRecord(value), "Mã hạch toán: payload rỗng.");
+  validateMeta(value.meta, "Mã hạch toán");
+  assert(
+    TMS_LEVELS_ALLOWED.includes(String(value.level)),
+    "Mã hạch toán: cấp quản lý không nằm trong danh sách cho phép.",
+  );
+  assert(typeof value.scopeName === "string", "Mã hạch toán: thiếu tên phạm vi địa bàn.");
+  // `origin` quyết định giao diện có gắn nhãn mô phỏng hay không, nên nó phải là
+  // một trong hai giá trị đóng chứ không phải chuỗi tự do.
+  assert(
+    value.origin === "mock" || value.origin === "api",
+    "Mã hạch toán: origin phải là \"mock\" hoặc \"api\".",
+  );
+  for (const key of ["sections", "chapters", "taxOffices", "levels", "localLevels"] as const)
+    assert(Array.isArray(value[key]), `Mã hạch toán: thiếu danh sách ${key}.`);
+
+  validateTmsRow(value.scopeTotal, "Mã hạch toán.scopeTotal");
+  validateTmsRow(value.levelTotal, "Mã hạch toán.levelTotal");
+  if (value.nsnnTotal !== null && value.nsnnTotal !== undefined) {
+    validateAmountRow(value.nsnnTotal, "Mã hạch toán.nsnnTotal");
+    const scope = (value.scopeTotal as { amount: number | null }).amount;
+    // Phạm vi TMS là tập CON của NSNN: chỉ thu nội địa. Lớn hơn mẫu số nghĩa là
+    // có phần thu bị đếm hai lần hoặc mẫu số lấy sai địa bàn.
+    if (scope !== null)
+      assert(
+        scope <= (value.nsnnTotal as { amount: number }).amount,
+        "Mã hạch toán: phạm vi TMS lớn hơn tổng thu NSNN cùng kỳ, không thể là tập con.",
+      );
+  }
+
+  const sections = value.sections as { name: string; amount: number | null; subItems?: unknown[] }[];
+  for (const key of ["chapters", "taxOffices", "levels", "localLevels"] as const)
+    for (const row of value[key] as unknown[]) validateTmsRow(row, `Mã hạch toán.${key}`);
+
+  for (const section of sections) {
+    validateTmsRow(section, "Mã hạch toán.sections");
+    assert(Array.isArray(section.subItems), "Mã hạch toán: Mục thiếu danh sách Tiểu mục.");
+    const subItems = section.subItems as { amount: number | null }[];
+    for (const sub of subItems) validateTmsRow(sub, "Mã hạch toán.subItems");
+    const subSum = sumOrNull(subItems);
+    if (subSum !== null && section.amount !== null)
+      assert(
+        subSum === section.amount,
+        `Mã hạch toán: tổng Tiểu mục của Mục ${section.name} lệch ${Math.round(subSum - section.amount)} đồng.`,
+      );
+  }
+
+  const levelTotal = (value.levelTotal as { amount: number | null }).amount;
+  const sectionSum = sumOrNull(sections);
+  if (sectionSum !== null && levelTotal !== null)
+    assert(
+      sectionSum === levelTotal,
+      `Mã hạch toán: tổng theo Mục (${Math.round(sectionSum)}) không bằng tổng của cấp đang chọn (${Math.round(levelTotal)}).`,
+    );
+  const chapterSum = sumOrNull(value.chapters as { amount: number | null }[]);
+  if (chapterSum !== null && levelTotal !== null)
+    assert(
+      chapterSum === levelTotal,
+      `Mã hạch toán: tổng theo Chương (${Math.round(chapterSum)}) không bằng tổng theo Mục.`,
+    );
+
+  const localSum = sumOrNull(value.localLevels as { amount: number | null }[]);
+  const localRow = (value.levels as { id: string; amount: number | null }[]).find((r) => r.id === "dia-phuong");
+  if (localSum !== null && localRow && localRow.amount !== null)
+    assert(localSum === localRow.amount, "Mã hạch toán: tỉnh + huyện + xã không bằng dòng địa phương.");
+
+  return value as unknown as TmsBreakdownData;
 }
 
 export function validateAdvancedComparison(value: unknown): AdvancedComparisonData {

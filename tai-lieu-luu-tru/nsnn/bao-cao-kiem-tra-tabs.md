@@ -16,7 +16,7 @@ Phát hiện 5 nhóm vấn đề ưu tiên cao và 1 vấn đề responsive. Cá
 - Tái hiện tương tự ở Phúc Lợi.
 - Tác động: người đọc có thể hiểu thiếu báo cáo là mất toàn bộ nguồn thu.
 - Đề xuất: giữ trạng thái thiếu dữ liệu xuyên suốt KPI, biểu đồ và bảng; không tính chênh lệch hay tỷ lệ nếu một kỳ thiếu.
-- Bằng chứng: [ảnh so sánh](.audit/compare-ready.png), [nội dung](.audit/compare-ready.txt).
+- Bằng chứng: [ảnh so sánh](../../.audit/compare-ready.png), [nội dung](../../.audit/compare-ready.txt).
 
 ### 2. [P1] Lũy kế trên thẻ và trên biểu đồ không khớp
 
@@ -25,7 +25,7 @@ Phát hiện 5 nhóm vấn đề ưu tiên cao và 1 vấn đề responsive. Cá
 - Đường này giảm về khoảng 532 nghìn tỷ từ tháng 9, trong khi các tháng chưa có báo cáo vẫn được vẽ tiếp.
 - Chưa xác định con số nào là đúng; cần đối chiếu cách tổng hợp và phạm vi dữ liệu của hai thành phần.
 - Đề xuất: thống nhất cách tính YTD, phạm vi địa bàn và xử lý kỳ chưa có số liệu; thể hiện đính chính rõ nếu giảm do điều chỉnh.
-- Bằng chứng: [Overview tháng 8](.audit/aug-ready.png).
+- Bằng chứng: [Overview tháng 8](../../.audit/aug-ready.png).
 
 ### 3. [P1] Bảng xếp hạng phường/xã chứa mã tổng hợp Kho bạc
 
@@ -33,7 +33,7 @@ Phát hiện 5 nhóm vấn đề ưu tiên cao và 1 vấn đề responsive. Cá
 - Nội dung lại ghi 127 phường/xã; hạng nhất là “MÃ TỔNG HỢP BÁO CÁO KHO BẠC NHÀ NƯỚC KHU VỰC I - HÀ NỘI”, 33,16 nghìn tỷ, 100%.
 - Đây không phải tên một phường/xã trong bộ chọn địa bàn.
 - Đề xuất: loại bản ghi tổng hợp khỏi tập địa bàn để xếp hạng, tính mẫu số và đếm số phường.
-- Bằng chứng: [Overview](.audit/overview.png), [Overview tháng 8](.audit/aug-ready.png).
+- Bằng chứng: [Overview](../../.audit/overview.png), [Overview tháng 8](../../.audit/aug-ready.png).
 
 ### 4. [P1] Bảng xếp hạng theo tháng không phản ánh kỳ đang chọn
 
@@ -42,14 +42,14 @@ Phát hiện 5 nhóm vấn đề ưu tiên cao và 1 vấn đề responsive. Cá
 - Mâu thuẫn tồn tại sau khi các trạng thái tải đã kết thúc.
 - JS công khai của bản dev cho thấy phần xếp hạng sắp theo thuộc tính `last`; chưa xác minh backend áp dụng bộ lọc như thế nào.
 - Đề xuất: xếp hạng đúng kỳ lọc hoặc công bố rõ một kỳ riêng; không dùng kỳ tương lai thiếu dữ liệu thành số 0. Tách phạm vi sparkline lịch sử khỏi kỳ tính thứ hạng.
-- Bằng chứng: [nội dung tháng 8](.audit/aug-ready.txt).
+- Bằng chứng: [nội dung tháng 8](../../.audit/aug-ready.txt).
 
 ### 5. [P1] “Theo cấp ngân sách” trống dù thành phần khác có số liệu
 
 - Overview tháng 8/2026: “Theo cấp ngân sách” báo “Không có số liệu”; khối so sánh cơ cấu phía dưới có tỷ lệ NSTW/NSĐP từng phường.
 - Chi tiết Hoàn Kiếm cũng báo trống; chuyển sang so sánh tháng 8/2025 với tháng 8/2026 lại có NSTW, NS cấp tỉnh, NS cấp xã.
 - Đề xuất: kiểm tra truy vấn/mapping chỉ tiêu cho component này và thống nhất phạm vi tính; nếu có khác biệt nghiệp vụ phải giải thích ngay trong khối.
-- Bằng chứng: [chi tiết Hoàn Kiếm](.audit/detail-ready.png), [so sánh tháng 8](.audit/compare-aug.png).
+- Bằng chứng: [chi tiết Hoàn Kiếm](../../.audit/detail-ready.png), [so sánh tháng 8](../../.audit/compare-aug.png).
 
 ### 6. [P2] Overview tràn ngang trên điện thoại
 
@@ -57,7 +57,7 @@ Phát hiện 5 nhóm vấn đề ưu tiên cao và 1 vấn đề responsive. Cá
 - Document rộng 512px. Kiểm tra lại sau khi đưa chuột ra ngoài nội dung vẫn tái hiện.
 - Các dòng xếp hạng dùng bốn cột và sparkline rộng cố định 220px, khiến giá trị vượt mép phải.
 - Đề xuất: đổi cách xếp dòng ở màn hình hẹp, cho sparkline co giãn hoặc chuyển xuống hàng riêng.
-- Bằng chứng: [ảnh mobile](.audit/mobile-final-overview.png).
+- Bằng chứng: [ảnh mobile](../../.audit/mobile-final-overview.png).
 
 ## Những thao tác đã hoạt động
 

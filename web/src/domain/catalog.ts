@@ -1,4 +1,5 @@
 import wards from "./wards.json";
+import joins from "./tms-joins.json";
 
 /**
  * Danh mục chỉ tiêu — nguồn sự thật cho mọi widget.
@@ -187,7 +188,21 @@ export interface LocationDef {
   id: string;
   name: string;
   slug: string;
+  /**
+   * Mã địa bàn 2 cấp của TMS, tám chữ số.
+   *
+   * `id` là mã Cục Thống kê — khoá mà dashboard dùng từ đầu. TMS đánh số địa bàn
+   * theo hệ riêng, nên nối chứng từ về phường/xã cần đúng cặp mã này. Bảng nối
+   * do bên nghiệp vụ bàn giao; `undefined` nghĩa là địa bàn chưa có mã TMS, và
+   * phải giữ nguyên trạng thái đó chứ không suy từ tên.
+   */
+  tmsCode?: string;
 }
+
+/** Mã TMS theo mã Cục Thống kê, dựng một lần từ bảng nối đã bàn giao. */
+const TMS_CODE_BY_LOCATION: Record<string, string> = Object.fromEntries(
+  (joins.locations as { tmsCode: string; locationCode: string }[]).map((x) => [x.locationCode, x.tmsCode]),
+);
 
 /**
  * 126 phường/xã có thật. Dòng tổng của Kho bạc và dòng tổng thành phố KHÔNG nằm
@@ -195,11 +210,15 @@ export interface LocationDef {
  */
 export const LOCATIONS: LocationDef[] = (wards as { location_code: string; location_name: string; name_slug: string }[])
   .filter((w) => /^\d{5}$/.test(w.location_code))
-  .map((w) => ({ id: w.location_code, name: w.location_name, slug: w.name_slug }))
+  .map((w) => ({
+    id: w.location_code,
+    name: w.location_name,
+    slug: w.name_slug,
+    tmsCode: TMS_CODE_BY_LOCATION[w.location_code],
+  }))
   .sort((a, b) => new Intl.Collator("vi").compare(a.name, b.name));
 
 export const LOCATION_BY_ID = Object.fromEntries(LOCATIONS.map((l) => [l.id, l]));
-export const LOCATION_BY_SLUG = Object.fromEntries(LOCATIONS.map((l) => [l.slug, l]));
 
 export const YEARS = [2026, 2025, 2024] as const;
 

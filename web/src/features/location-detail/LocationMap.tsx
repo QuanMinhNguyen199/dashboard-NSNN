@@ -8,6 +8,11 @@ import { useReducedMotion } from "@/components/useReducedMotion";
 
 // Ranh giới Hà Nội sau phép chiếu Mercator cao hơn rộng (tỉ lệ ≈ 5:6). Khung
 // vuông cũ để thừa lề hai bên mà vẫn cao bằng đúng chiều rộng thẻ.
+/** Sắp xếp tên theo đúng thứ tự tiếng Việt, không theo mã Unicode. */
+const collator = new Intl.Collator("vi");
+
+type TableSort = { key: "name" | "amount"; desc: boolean };
+
 const W = 500;
 const H = 600;
 /** Thang đơn sắc lam: nhạt là thấp, đậm là cao. */
@@ -58,6 +63,7 @@ export function LocationMap({
   const reduced = useReducedMotion();
   const ms = (normal: number) => (reduced ? 0 : normal);
   const [failed, setFailed] = useState(false);
+  const [tableSort, setTableSort] = useState<TableSort>({ key: "amount", desc: true });
   const [showTable, setShowTable] = useState(false);
 
   useEffect(() => {
@@ -203,8 +209,37 @@ export function LocationMap({
    * theo từng giá trị nên một cột ra "67,59 tỷ · 448,6 tỷ · 1.103 tỷ" — ba mức
    * số lẻ, không so được bằng mắt.
    */
-  const tableRows = [...rows].sort((a, b) => b.amount - a.amount);
+  const tableRows = [...rows].sort((a, b) =>
+    tableSort.key === "name"
+      ? (tableSort.desc ? -1 : 1) * collator.compare(a.name, b.name)
+      : (tableSort.desc ? 1 : -1) * (a.amount - b.amount) * -1,
+  );
   const tableUnit = moneyScale(tableRows.map((row) => row.amount));
+
+  /** Cùng mẫu tiêu đề sắp xếp với bảng chi tiết ở tab Phân tích thu. */
+  const sortHeader = (key: TableSort["key"], label: string, numeric: boolean) => (
+    <th
+      scope="col"
+      className={numeric ? "is-num" : undefined}
+      aria-sort={tableSort.key === key ? (tableSort.desc ? "descending" : "ascending") : "none"}
+    >
+      <button
+        type="button"
+        onClick={() =>
+          setTableSort((current) => ({
+            key,
+            // Lần bấm đầu vào một cột chọn chiều mà người ta MUỐN thấy trước:
+            // cột tiền là lớn nhất trước, cột tên là A→Z. Mặc định giảm dần cho
+            // cả hai làm cột tên mở ra ở "Yên Nghĩa".
+            desc: current.key === key ? !current.desc : numeric,
+          }))
+        }
+      >
+        {label}
+        <span aria-hidden="true">{tableSort.key === key ? (tableSort.desc ? " ↓" : " ↑") : ""}</span>
+      </button>
+    </th>
+  );
 
   return (
     <Card
@@ -212,7 +247,15 @@ export function LocationMap({
       title={showTable ? "Số thu theo phường, xã" : "Bản đồ 126 phường, xã"}
       subtitle={
         showTable
-          ? `${tableRows.length} phường, xã · xếp từ cao xuống thấp`
+          ? `${tableRows.length} phường, xã · ${
+              tableSort.key === "amount"
+                ? tableSort.desc
+                  ? "xếp từ cao xuống thấp"
+                  : "xếp từ thấp lên cao"
+                : tableSort.desc
+                  ? "xếp theo tên Z→A"
+                  : "xếp theo tên A→Z"
+            }`
           : "Ranh giới hành chính từ 01/07/2025 · lăn chuột để phóng to, kéo để di chuyển"
       }
       unit={showTable ? tableUnit : undefined}
@@ -243,9 +286,9 @@ export function LocationMap({
             <caption className="sr-only">Số thu theo phường, xã — bảng thay thế bản đồ</caption>
             <thead>
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Phường, xã</th>
-                <th scope="col" className="is-num">Số thu</th>
+                <th scope="col" className="is-rank">#</th>
+                {sortHeader("name", "Phường, xã", false)}
+                {sortHeader("amount", "Số thu", true)}
               </tr>
             </thead>
             <tbody>
@@ -255,7 +298,7 @@ export function LocationMap({
                   aria-selected={row.id === selectedId}
                   className={row.id === selectedId ? "is-selected" : undefined}
                 >
-                  <td className="is-num">{index + 1}</td>
+                  <td className="is-rank">{index + 1}</td>
                   <th scope="row">
                     <button type="button" className="dlink" onClick={() => onSelect(row.id)}>
                       {row.name}

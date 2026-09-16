@@ -17,5 +17,12 @@ Thumbs.db
 # Cache tối ưu phụ thuộc của Vite
 .vite/
 
+# Bản nén của bộ tham chiếu: toàn bộ 259 file đã nằm sẵn ở reference-nsnn/
+# và PROMPT-CLAUDE-NSNN.md, giữ thêm bản nén là giữ hai nguồn cho một nội dung.
+/claude-nsnn-reference.zip
+
 # Lệnh ở gốc chỉ uỷ quyền xuống prototype-nsnn/, không có phụ thuộc riêng
 /package-lock.json
+
+# Bản tài liệu TMS nội bộ để đọc hoặc đăng Outline có phân quyền
+/bao-cao-outline/noi-bo/

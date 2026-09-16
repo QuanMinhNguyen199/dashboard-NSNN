@@ -1,0 +1,890 @@
+{
+ "locations": [
+  {
+   "tmsCode": "10101003",
+   "locationCode": "00004",
+   "kind": "Phường",
+   "name": "Ba Đình"
+  },
+  {
+   "tmsCode": "10101004",
+   "locationCode": "00008",
+   "kind": "Phường",
+   "name": "Ngọc Hà"
+  },
+  {
+   "tmsCode": "10101005",
+   "locationCode": "00025",
+   "kind": "Phường",
+   "name": "Giảng Võ"
+  },
+  {
+   "tmsCode": "10105001",
+   "locationCode": "00070",
+   "kind": "Phường",
+   "name": "Hoàn Kiếm"
+  },
+  {
+   "tmsCode": "10105002",
+   "locationCode": "00082",
+   "kind": "Phường",
+   "name": "Cửa Nam"
+  },
+  {
+   "tmsCode": "10103029",
+   "locationCode": "00091",
+   "kind": "Phường",
+   "name": "Phú Thượng"
+  },
+  {
+   "tmsCode": "10103014",
+   "locationCode": "00097",
+   "kind": "Phường",
+   "name": "Hồng Hà"
+  },
+  {
+   "tmsCode": "10103028",
+   "locationCode": "00103",
+   "kind": "Phường",
+   "name": "Tây Hồ"
+  },
+  {
+   "tmsCode": "10106040",
+   "locationCode": "00118",
+   "kind": "Phường",
+   "name": "Bồ Đề"
+  },
+  {
+   "tmsCode": "10106041",
+   "locationCode": "00127",
+   "kind": "Phường",
+   "name": "Việt Hưng"
+  },
+  {
+   "tmsCode": "10106042",
+   "locationCode": "00136",
+   "kind": "Phường",
+   "name": "Phúc Lợi"
+  },
+  {
+   "tmsCode": "10106039",
+   "locationCode": "00145",
+   "kind": "Phường",
+   "name": "Long Biên"
+  },
+  {
+   "tmsCode": "10113026",
+   "locationCode": "00160",
+   "kind": "Phường",
+   "name": "Nghĩa Đô"
+  },
+  {
+   "tmsCode": "10113025",
+   "locationCode": "00166",
+   "kind": "Phường",
+   "name": "Cầu Giấy"
+  },
+  {
+   "tmsCode": "10113027",
+   "locationCode": "00175",
+   "kind": "Phường",
+   "name": "Yên Hòa"
+  },
+  {
+   "tmsCode": "10109013",
+   "locationCode": "00190",
+   "kind": "Phường",
+   "name": "Ô Chợ Dừa"
+  },
+  {
+   "tmsCode": "10109012",
+   "locationCode": "00199",
+   "kind": "Phường",
+   "name": "Láng"
+  },
+  {
+   "tmsCode": "10109011",
+   "locationCode": "00226",
+   "kind": "Phường",
+   "name": "Văn Miếu - Quốc Tử Giám"
+  },
+  {
+   "tmsCode": "10109010",
+   "locationCode": "00229",
+   "kind": "Phường",
+   "name": "Kim Liên"
+  },
+  {
+   "tmsCode": "10109009",
+   "locationCode": "00235",
+   "kind": "Phường",
+   "name": "Đống Đa"
+  },
+  {
+   "tmsCode": "10107006",
+   "locationCode": "00256",
+   "kind": "Phường",
+   "name": "Hai Bà Trưng"
+  },
+  {
+   "tmsCode": "10107007",
+   "locationCode": "00283",
+   "kind": "Phường",
+   "name": "Vĩnh Tuy"
+  },
+  {
+   "tmsCode": "10107008",
+   "locationCode": "00292",
+   "kind": "Phường",
+   "name": "Bạch Mai"
+  },
+  {
+   "tmsCode": "10108017",
+   "locationCode": "00301",
+   "kind": "Phường",
+   "name": "Vĩnh Hưng"
+  },
+  {
+   "tmsCode": "10108019",
+   "locationCode": "00316",
+   "kind": "Phường",
+   "name": "Định Công"
+  },
+  {
+   "tmsCode": "10108018",
+   "locationCode": "00322",
+   "kind": "Phường",
+   "name": "Tương Mai"
+  },
+  {
+   "tmsCode": "10108015",
+   "locationCode": "00328",
+   "kind": "Phường",
+   "name": "Lĩnh Nam"
+  },
+  {
+   "tmsCode": "10108016",
+   "locationCode": "00331",
+   "kind": "Phường",
+   "name": "Hoàng Mai"
+  },
+  {
+   "tmsCode": "10108020",
+   "locationCode": "00337",
+   "kind": "Phường",
+   "name": "Hoàng Liệt"
+  },
+  {
+   "tmsCode": "10108021",
+   "locationCode": "00340",
+   "kind": "Phường",
+   "name": "Yên Sở"
+  },
+  {
+   "tmsCode": "10111024",
+   "locationCode": "00352",
+   "kind": "Phường",
+   "name": "Phương Liệt"
+  },
+  {
+   "tmsCode": "10111023",
+   "locationCode": "00364",
+   "kind": "Phường",
+   "name": "Khương Đình"
+  },
+  {
+   "tmsCode": "10111022",
+   "locationCode": "00367",
+   "kind": "Phường",
+   "name": "Thanh Xuân"
+  },
+  {
+   "tmsCode": "10115122",
+   "locationCode": "00376",
+   "kind": "Xã",
+   "name": "Sóc Sơn"
+  },
+  {
+   "tmsCode": "10115126",
+   "locationCode": "00382",
+   "kind": "Xã",
+   "name": "Kim Anh"
+  },
+  {
+   "tmsCode": "10115125",
+   "locationCode": "00385",
+   "kind": "Xã",
+   "name": "Trung Giã"
+  },
+  {
+   "tmsCode": "10115123",
+   "locationCode": "00430",
+   "kind": "Xã",
+   "name": "Đa Phúc"
+  },
+  {
+   "tmsCode": "10115124",
+   "locationCode": "00433",
+   "kind": "Xã",
+   "name": "Nội Bài"
+  },
+  {
+   "tmsCode": "10117114",
+   "locationCode": "00454",
+   "kind": "Xã",
+   "name": "Đông Anh"
+  },
+  {
+   "tmsCode": "10117115",
+   "locationCode": "00466",
+   "kind": "Xã",
+   "name": "Phúc Thịnh"
+  },
+  {
+   "tmsCode": "10117113",
+   "locationCode": "00475",
+   "kind": "Xã",
+   "name": "Thư Lâm"
+  },
+  {
+   "tmsCode": "10117116",
+   "locationCode": "00493",
+   "kind": "Xã",
+   "name": "Thiên Lộc"
+  },
+  {
+   "tmsCode": "10117117",
+   "locationCode": "00508",
+   "kind": "Xã",
+   "name": "Vĩnh Thanh"
+  },
+  {
+   "tmsCode": "10119112",
+   "locationCode": "00541",
+   "kind": "Xã",
+   "name": "Phù Đổng"
+  },
+  {
+   "tmsCode": "10119110",
+   "locationCode": "00562",
+   "kind": "Xã",
+   "name": "Thuận An"
+  },
+  {
+   "tmsCode": "10119109",
+   "locationCode": "00565",
+   "kind": "Xã",
+   "name": "Gia Lâm"
+  },
+  {
+   "tmsCode": "10119111",
+   "locationCode": "00577",
+   "kind": "Xã",
+   "name": "Bát Tràng"
+  },
+  {
+   "tmsCode": "10155035",
+   "locationCode": "00592",
+   "kind": "Phường",
+   "name": "Từ Liêm"
+  },
+  {
+   "tmsCode": "10157034",
+   "locationCode": "00598",
+   "kind": "Phường",
+   "name": "Thượng Cát"
+  },
+  {
+   "tmsCode": "10157033",
+   "locationCode": "00602",
+   "kind": "Phường",
+   "name": "Đông Ngạc"
+  },
+  {
+   "tmsCode": "10157032",
+   "locationCode": "00611",
+   "kind": "Phường",
+   "name": "Xuân Đỉnh"
+  },
+  {
+   "tmsCode": "10157030",
+   "locationCode": "00613",
+   "kind": "Phường",
+   "name": "Tây Tựu"
+  },
+  {
+   "tmsCode": "10157031",
+   "locationCode": "00619",
+   "kind": "Phường",
+   "name": "Phú Diễn"
+  },
+  {
+   "tmsCode": "10155036",
+   "locationCode": "00622",
+   "kind": "Phường",
+   "name": "Xuân Phương"
+  },
+  {
+   "tmsCode": "10155037",
+   "locationCode": "00634",
+   "kind": "Phường",
+   "name": "Tây Mỗ"
+  },
+  {
+   "tmsCode": "10155038",
+   "locationCode": "00637",
+   "kind": "Phường",
+   "name": "Đại Mỗ"
+  },
+  {
+   "tmsCode": "10123048",
+   "locationCode": "00640",
+   "kind": "Xã",
+   "name": "Thanh Trì"
+  },
+  {
+   "tmsCode": "10123052",
+   "locationCode": "00643",
+   "kind": "Phường",
+   "name": "Thanh Liệt"
+  },
+  {
+   "tmsCode": "10123049",
+   "locationCode": "00664",
+   "kind": "Xã",
+   "name": "Đại Thanh"
+  },
+  {
+   "tmsCode": "10123051",
+   "locationCode": "00679",
+   "kind": "Xã",
+   "name": "Ngọc Hồi"
+  },
+  {
+   "tmsCode": "10123050",
+   "locationCode": "00685",
+   "kind": "Xã",
+   "name": "Nam Phù"
+  },
+  {
+   "tmsCode": "10135097",
+   "locationCode": "04930",
+   "kind": "Xã",
+   "name": "Yên Xuân"
+  },
+  {
+   "tmsCode": "10125121",
+   "locationCode": "08974",
+   "kind": "Xã",
+   "name": "Quang Minh"
+  },
+  {
+   "tmsCode": "10125119",
+   "locationCode": "08980",
+   "kind": "Xã",
+   "name": "Yên Lãng"
+  },
+  {
+   "tmsCode": "10125120",
+   "locationCode": "08995",
+   "kind": "Xã",
+   "name": "Tiến Thắng"
+  },
+  {
+   "tmsCode": "10125118",
+   "locationCode": "09022",
+   "kind": "Xã",
+   "name": "Mê Linh"
+  },
+  {
+   "tmsCode": "10127047",
+   "locationCode": "09552",
+   "kind": "Phường",
+   "name": "Kiến Hưng"
+  },
+  {
+   "tmsCode": "10127043",
+   "locationCode": "09556",
+   "kind": "Phường",
+   "name": "Hà Đông"
+  },
+  {
+   "tmsCode": "10127045",
+   "locationCode": "09562",
+   "kind": "Phường",
+   "name": "Yên Nghĩa"
+  },
+  {
+   "tmsCode": "10127046",
+   "locationCode": "09568",
+   "kind": "Phường",
+   "name": "Phú Lương"
+  },
+  {
+   "tmsCode": "10129087",
+   "locationCode": "09574",
+   "kind": "Phường",
+   "name": "Sơn Tây"
+  },
+  {
+   "tmsCode": "10129088",
+   "locationCode": "09604",
+   "kind": "Phường",
+   "name": "Tùng Thiện"
+  },
+  {
+   "tmsCode": "10129089",
+   "locationCode": "09616",
+   "kind": "Xã",
+   "name": "Đoài Phương"
+  },
+  {
+   "tmsCode": "10151080",
+   "locationCode": "09619",
+   "kind": "Xã",
+   "name": "Quảng Oai"
+  },
+  {
+   "tmsCode": "10151082",
+   "locationCode": "09634",
+   "kind": "Xã",
+   "name": "Cổ Đô"
+  },
+  {
+   "tmsCode": "10151079",
+   "locationCode": "09661",
+   "kind": "Xã",
+   "name": "Minh Châu"
+  },
+  {
+   "tmsCode": "10151081",
+   "locationCode": "09664",
+   "kind": "Xã",
+   "name": "Vật Lại"
+  },
+  {
+   "tmsCode": "10151083",
+   "locationCode": "09676",
+   "kind": "Xã",
+   "name": "Bất Bạt"
+  },
+  {
+   "tmsCode": "10151084",
+   "locationCode": "09694",
+   "kind": "Xã",
+   "name": "Suối Hai"
+  },
+  {
+   "tmsCode": "10151085",
+   "locationCode": "09700",
+   "kind": "Xã",
+   "name": "Ba Vì"
+  },
+  {
+   "tmsCode": "10151086",
+   "locationCode": "09706",
+   "kind": "Xã",
+   "name": "Yên Bài"
+  },
+  {
+   "tmsCode": "10131090",
+   "locationCode": "09715",
+   "kind": "Xã",
+   "name": "Phúc Thọ"
+  },
+  {
+   "tmsCode": "10131091",
+   "locationCode": "09739",
+   "kind": "Xã",
+   "name": "Phúc Lộc"
+  },
+  {
+   "tmsCode": "10131092",
+   "locationCode": "09772",
+   "kind": "Xã",
+   "name": "Hát Môn"
+  },
+  {
+   "tmsCode": "10133106",
+   "locationCode": "09784",
+   "kind": "Xã",
+   "name": "Đan Phượng"
+  },
+  {
+   "tmsCode": "10133108",
+   "locationCode": "09787",
+   "kind": "Xã",
+   "name": "Liên Minh"
+  },
+  {
+   "tmsCode": "10133107",
+   "locationCode": "09817",
+   "kind": "Xã",
+   "name": "Ô Diên"
+  },
+  {
+   "tmsCode": "10137102",
+   "locationCode": "09832",
+   "kind": "Xã",
+   "name": "Hoài Đức"
+  },
+  {
+   "tmsCode": "10137103",
+   "locationCode": "09856",
+   "kind": "Xã",
+   "name": "Dương Hòa"
+  },
+  {
+   "tmsCode": "10137104",
+   "locationCode": "09871",
+   "kind": "Xã",
+   "name": "Sơn Đồng"
+  },
+  {
+   "tmsCode": "10137105",
+   "locationCode": "09877",
+   "kind": "Xã",
+   "name": "An Khánh"
+  },
+  {
+   "tmsCode": "10127044",
+   "locationCode": "09886",
+   "kind": "Phường",
+   "name": "Dương Nội"
+  },
+  {
+   "tmsCode": "10139098",
+   "locationCode": "09895",
+   "kind": "Xã",
+   "name": "Quốc Oai"
+  },
+  {
+   "tmsCode": "10139100",
+   "locationCode": "09910",
+   "kind": "Xã",
+   "name": "Kiều Phú"
+  },
+  {
+   "tmsCode": "10139099",
+   "locationCode": "09931",
+   "kind": "Xã",
+   "name": "Hưng Đạo"
+  },
+  {
+   "tmsCode": "10139101",
+   "locationCode": "09952",
+   "kind": "Xã",
+   "name": "Phú Cát"
+  },
+  {
+   "tmsCode": "10135093",
+   "locationCode": "09955",
+   "kind": "Xã",
+   "name": "Thạch Thất"
+  },
+  {
+   "tmsCode": "10135094",
+   "locationCode": "09982",
+   "kind": "Xã",
+   "name": "Hạ Bằng"
+  },
+  {
+   "tmsCode": "10135096",
+   "locationCode": "09988",
+   "kind": "Xã",
+   "name": "Hòa Lạc"
+  },
+  {
+   "tmsCode": "10135095",
+   "locationCode": "10003",
+   "kind": "Xã",
+   "name": "Tây Phương"
+  },
+  {
+   "tmsCode": "10153073",
+   "locationCode": "10015",
+   "kind": "Phường",
+   "name": "Chương Mỹ"
+  },
+  {
+   "tmsCode": "10153074",
+   "locationCode": "10030",
+   "kind": "Xã",
+   "name": "Phú Nghĩa"
+  },
+  {
+   "tmsCode": "10153075",
+   "locationCode": "10045",
+   "kind": "Xã",
+   "name": "Xuân Mai"
+  },
+  {
+   "tmsCode": "10153078",
+   "locationCode": "10072",
+   "kind": "Xã",
+   "name": "Quảng Bị"
+  },
+  {
+   "tmsCode": "10153076",
+   "locationCode": "10081",
+   "kind": "Xã",
+   "name": "Trần Phú"
+  },
+  {
+   "tmsCode": "10153077",
+   "locationCode": "10096",
+   "kind": "Xã",
+   "name": "Hòa Phú"
+  },
+  {
+   "tmsCode": "10141061",
+   "locationCode": "10114",
+   "kind": "Xã",
+   "name": "Thanh Oai"
+  },
+  {
+   "tmsCode": "10141062",
+   "locationCode": "10126",
+   "kind": "Xã",
+   "name": "Bình Minh"
+  },
+  {
+   "tmsCode": "10141063",
+   "locationCode": "10144",
+   "kind": "Xã",
+   "name": "Tam Hưng"
+  },
+  {
+   "tmsCode": "10141064",
+   "locationCode": "10180",
+   "kind": "Xã",
+   "name": "Dân Hòa"
+  },
+  {
+   "tmsCode": "10143054",
+   "locationCode": "10183",
+   "kind": "Xã",
+   "name": "Thường Tín"
+  },
+  {
+   "tmsCode": "10143056",
+   "locationCode": "10210",
+   "kind": "Xã",
+   "name": "Hồng Vân"
+  },
+  {
+   "tmsCode": "10143053",
+   "locationCode": "10231",
+   "kind": "Xã",
+   "name": "Thượng Phúc"
+  },
+  {
+   "tmsCode": "10143055",
+   "locationCode": "10237",
+   "kind": "Xã",
+   "name": "Chương Dương"
+  },
+  {
+   "tmsCode": "10149057",
+   "locationCode": "10273",
+   "kind": "Xã",
+   "name": "Phú Xuyên"
+  },
+  {
+   "tmsCode": "10149058",
+   "locationCode": "10279",
+   "kind": "Xã",
+   "name": "Phượng Dực"
+  },
+  {
+   "tmsCode": "10149059",
+   "locationCode": "10330",
+   "kind": "Xã",
+   "name": "Chuyên Mỹ"
+  },
+  {
+   "tmsCode": "10149060",
+   "locationCode": "10342",
+   "kind": "Xã",
+   "name": "Đại Xuyên"
+  },
+  {
+   "tmsCode": "10147065",
+   "locationCode": "10354",
+   "kind": "Xã",
+   "name": "Vân Đình"
+  },
+  {
+   "tmsCode": "10147066",
+   "locationCode": "10369",
+   "kind": "Xã",
+   "name": "Ứng Thiên"
+  },
+  {
+   "tmsCode": "10147068",
+   "locationCode": "10402",
+   "kind": "Xã",
+   "name": "Ứng Hòa"
+  },
+  {
+   "tmsCode": "10147067",
+   "locationCode": "10417",
+   "kind": "Xã",
+   "name": "Hòa Xá"
+  },
+  {
+   "tmsCode": "10145069",
+   "locationCode": "10441",
+   "kind": "Xã",
+   "name": "Mỹ Đức"
+  },
+  {
+   "tmsCode": "10145071",
+   "locationCode": "10459",
+   "kind": "Xã",
+   "name": "Phúc Sơn"
+  },
+  {
+   "tmsCode": "10145070",
+   "locationCode": "10465",
+   "kind": "Xã",
+   "name": "Hồng Sơn"
+  },
+  {
+   "tmsCode": "10145072",
+   "locationCode": "10489",
+   "kind": "Xã",
+   "name": "Hương Sơn"
+  }
+ ],
+ "taxOffices": [
+  {
+   "code": "0101",
+   "name": "Thuế TP Hà Nội"
+  },
+  {
+   "code": "0103",
+   "name": "Thuế cơ sở 2 thành phố Hà Nội"
+  },
+  {
+   "code": "0105",
+   "name": "Thuế cơ sở 7 thành phố Hà Nội"
+  },
+  {
+   "code": "0106",
+   "name": "Thuế cơ sở 1 thành phố Hà Nội"
+  },
+  {
+   "code": "0107",
+   "name": "Thuế cơ sở 11 thành phố Hà Nội"
+  },
+  {
+   "code": "0108",
+   "name": "Thuế cơ sở 3 thành phố Hà Nội"
+  },
+  {
+   "code": "0109",
+   "name": "Thuế cơ sở 13 thành phố Hà Nội"
+  },
+  {
+   "code": "0111",
+   "name": "Thuế cơ sở 4 thành phố Hà Nội"
+  },
+  {
+   "code": "0113",
+   "name": "Thuế cơ sở 6 thành phố Hà Nội"
+  },
+  {
+   "code": "0115",
+   "name": "Thuế cơ sở 5 thành phố Hà Nội"
+  },
+  {
+   "code": "0117",
+   "name": "Thuế cơ sở 18 thành phố Hà Nội"
+  },
+  {
+   "code": "0119",
+   "name": "Thuế cơ sở 10 thành phố Hà Nội"
+  },
+  {
+   "code": "0121",
+   "name": "Thuế cơ sở 12 thành phố Hà Nội"
+  },
+  {
+   "code": "0125",
+   "name": "Thuế cơ sở 14 thành phố Hà Nội"
+  },
+  {
+   "code": "0127",
+   "name": "Thuế cơ sở 18 thành phố Hà Nội"
+  },
+  {
+   "code": "0129",
+   "name": "Thuế cơ sở 15 thành phố Hà Nội"
+  },
+  {
+   "code": "0131",
+   "name": "Thuế cơ sở 16 thành phố Hà Nội"
+  },
+  {
+   "code": "0133",
+   "name": "Thuế cơ sở 25 thành phố Hà Nội"
+  },
+  {
+   "code": "0135",
+   "name": "Thuế cơ sở 24 thành phố Hà Nội"
+  },
+  {
+   "code": "0137",
+   "name": "Thuế cơ sở 22 thành phố Hà Nội"
+  },
+  {
+   "code": "0139",
+   "name": "Thuế cơ sở 23 thành phố Hà Nội"
+  },
+  {
+   "code": "0141",
+   "name": "Thuế cơ sở 22 thành phố Hà Nội"
+  },
+  {
+   "code": "0143",
+   "name": "Thuế cơ sở 21 thành phố Hà Nội"
+  },
+  {
+   "code": "0145",
+   "name": "Thuế cơ sở 19 thành phố Hà Nội"
+  },
+  {
+   "code": "0147",
+   "name": "Thuế cơ sở 20 thành phố Hà Nội"
+  },
+  {
+   "code": "0149",
+   "name": "Thuế cơ sở 20 thành phố Hà Nội"
+  },
+  {
+   "code": "0151",
+   "name": "Thuế cơ sở 19 thành phố Hà Nội"
+  },
+  {
+   "code": "0153",
+   "name": "Thuế cơ sở 17 thành phố Hà Nội"
+  },
+  {
+   "code": "0155",
+   "name": "Thuế cơ sở 21 thành phố Hà Nội"
+  },
+  {
+   "code": "0156",
+   "name": "Thuế cơ sở 8 thành phố Hà Nội"
+  },
+  {
+   "code": "0157",
+   "name": "Thuế cơ sở 9 thành phố Hà Nội"
+  },
+  {
+   "code": "9901",
+   "name": "CCT Doanh nghiệp lớn"
+  }
+ ]
+}

@@ -2,8 +2,8 @@
 
 > **Tài liệu lịch sử của giai đoạn clone website ba tab.** Không dùng prompt này để sửa
 > prototype bốn workspace hiện tại. Yêu cầu đang triển khai nằm trong
-> [`THIET-KE-DASHBOARD-NSNN.md`](THIET-KE-DASHBOARD-NSNN.md), còn nghiệp vụ nằm trong
-> [`BA-NSNN.md`](BA-NSNN.md).
+> [`THIET-KE-DASHBOARD-NSNN.md`](tai-lieu-luu-tru/nsnn/THIET-KE-DASHBOARD-NSNN.md), còn nghiệp vụ nằm trong
+> [`BA-NSNN.md`](tai-lieu-luu-tru/nsnn/BA-NSNN.md).
 
 Sao chép toàn bộ nội dung bên dưới vào Claude Code. Đặt thư mục `reference-nsnn/` cạnh prompt, hoặc cho Claude quyền đọc workspace hiện tại. Bản bổ sung này đã đối chiếu HTML và Markdown, với `dac-ta-v2.html` là đặc tả nghiệp vụ mới nhất.
 

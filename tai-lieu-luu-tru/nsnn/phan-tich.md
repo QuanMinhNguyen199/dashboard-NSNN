@@ -95,7 +95,7 @@ Ví dụ:
 
 # 3. Sơ đồ phân cấp dữ liệu
 
- ![](attachments/076e9695-30bb-440d-9881-b3d537daf3be.png " =660x1765")
+ ![](../../Attachment/076e9695-30bb-440d-9881-b3d537daf3be.png " =660x1765")
 
 
 ---
@@ -259,7 +259,7 @@ Hiển thị:
 # 7. Sơ đồ luồng tương tác Dashboard
 
 
- ![](attachments/e8e34340-43d9-401c-939c-e6377f50d082.png " =812x204")
+ ![](../../Attachment/e8e34340-43d9-401c-939c-e6377f50d082.png " =812x204")
 
 
 # 8. Hai hướng phân tích quan trọng

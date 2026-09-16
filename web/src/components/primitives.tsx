@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import type { AmountRow, ResourceState } from "@/domain/types";
 import { yoy } from "@/domain/metrics";
 
@@ -373,23 +373,108 @@ export function Bars({
 
 /* ──────────────────────────── Trạng thái dữ liệu ────────────────────────── */
 
+/**
+ * Cột số liệu đang mọc lên: phần chuyển động chính của trạng thái chờ.
+ *
+ * Loader chung chung như vòng xoay hay bánh răng thì màn hình nào cũng dùng
+ * được, và vì thế không nói gì về màn hình này. Dashboard vốn đầy thanh số liệu,
+ * nên mượn luôn hình đó: năm cột nảy lệch pha nhau, đọc ra là đang dựng số chứ
+ * không phải đang quay vòng chờ.
+ *
+ * Năm cột là năm phần tử thật vì mỗi cột có độ trễ riêng; `aria-hidden` để trình
+ * đọc màn hình chỉ nghe một câu ở khối cha thay vì năm ô trống.
+ */
+function BarsLoader({ label }: { label: string }) {
+  return (
+    <p className="dloader">
+      <span className="dloader-bars" aria-hidden="true">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <i key={i} />
+        ))}
+      </span>
+      {label}
+    </p>
+  );
+}
+
+/**
+ * Khung chờ có nhịp, thay cho một dòng chữ đứng yên.
+ *
+ * Backend của bản dev trả chậm, nên người duyệt sẽ nhìn trạng thái này vài giây
+ * chứ không phải một chớp mắt. Vài giây trước một dòng chữ bất động đọc ra là
+ * treo; cùng khoảng thời gian đó trước những khối đang chuyển động đọc ra là
+ * đang chạy. Khung mô phỏng đúng hình dạng sắp hiện ra, nên khi số về thì bố
+ * cục không nhảy.
+ *
+ * `prefers-reduced-motion` tắt phần chuyển động; các khối vẫn ở nguyên chỗ nên
+ * hình dạng và ý nghĩa không mất.
+ */
+function Skeleton({ minHeight = 160 }: { minHeight?: number }) {
+  return (
+    <div className="dskeleton" style={{ minHeight }} role="status" aria-live="polite">
+      <span className="sr-only">Đang tổng hợp số liệu, vui lòng đợi.</span>
+      <div className="dskeleton-kpis" aria-hidden="true">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i}>
+            <i className="dshimmer" style={{ width: "58%" }} />
+            <i className="dshimmer is-lead" style={{ width: "42%" }} />
+            <i className="dshimmer" style={{ width: "72%" }} />
+          </div>
+        ))}
+      </div>
+      <div className="dskeleton-card" aria-hidden="true">
+        <i className="dshimmer" style={{ width: "34%" }} />
+        <div className="dskeleton-rows">
+          {[86, 68, 74, 52, 61, 44].map((width, i) => (
+            <span key={i}>
+              <i className="dshimmer" style={{ width: `${width}%` }} />
+            </span>
+          ))}
+        </div>
+      </div>
+      <BarsLoader label="Đang tổng hợp số liệu…" />
+    </div>
+  );
+}
+
 export function ResourceView<T>({
   resource,
   retry,
   children,
   minHeight = 160,
+  pending = false,
 }: {
   resource: ResourceState<T>;
   retry?: () => void;
   children: (data: T) => ReactNode;
   minHeight?: number;
+  /** Đang chờ phản hồi cho một phạm vi khác với phạm vi đang hiển thị. */
+  pending?: boolean;
 }) {
-  if (resource.status === "loading")
-    return (
-      <div className="dstate is-loading" style={{ minHeight }} role="status" aria-live="polite">
-        <span>Đang tổng hợp số liệu…</span>
-      </div>
-    );
+  const holder = useRef<HTMLDivElement | null>(null);
+  /**
+   * Chiều cao của nội dung vừa rời màn hình.
+   *
+   * Khung chờ mượn lại con số đó nên trang không co lại rồi nở ra mỗi lần đổi
+   * bộ lọc. Đo qua hộp của các phần tử con vì thẻ bọc dùng `display: contents`
+   * và không có hộp của riêng nó.
+   */
+  const lastHeight = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    const boxes = holder.current ? [...holder.current.children].map((el) => el.getBoundingClientRect()) : [];
+    if (boxes.length) lastHeight.current = Math.round(boxes.at(-1)!.bottom - boxes[0].top);
+  });
+
+  /**
+   * Chờ số mới thì hiện khung chờ, không hiện số cũ.
+   *
+   * Bản trước giữ số cũ và làm mờ đi. Nhưng tiêu đề phạm vi cũng đến từ chính
+   * payload đó, nên màn hình tự mâu thuẫn: nút chọn ghi một cấp, dòng phạm vi và
+   * mọi con số bên dưới ghi cấp của lần trước. Làm mờ chỉ khiến con số hết hạn
+   * khó đọc hơn chứ không làm nó đúng lên.
+   */
+  if (resource.status === "loading" || pending)
+    return <Skeleton minHeight={lastHeight.current ?? minHeight} />;
   if (resource.status === "error")
     return (
       <div className="dstate is-error" style={{ minHeight }} role="alert">
@@ -416,5 +501,9 @@ export function ResourceView<T>({
         <span>{resource.reason}</span>
       </div>
     );
-  return <>{children(resource.data)}</>;
+  return (
+    <div className="dresource" ref={holder}>
+      {children(resource.data)}
+    </div>
+  );
 }

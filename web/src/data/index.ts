@@ -34,12 +34,4 @@ export function createProvider(): DashboardDataProvider {
 
 export const provider = createProvider();
 
-/** Nhãn nguồn dữ liệu hiện tại — giao diện ghi rõ khi đang chạy bằng số mô phỏng. */
-export const providerKind: "api" | "mcp" | "mock" =
-  import.meta.env.VITE_DASHBOARD_PROVIDER === "api"
-    ? "api"
-    : import.meta.env.VITE_DASHBOARD_PROVIDER === "mcp"
-      ? "mcp"
-      : "mock";
-
 export { NoDataError, sanitizeNavigation } from "./validate";
