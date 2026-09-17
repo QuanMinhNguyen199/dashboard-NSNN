@@ -40,7 +40,9 @@ jobs:
         run: npm run build
 
   acceptance:
-    name: 16 tiêu chí nghiệm thu
+    # Không gắn số vào tên job: số tiêu chí đổi theo thời gian (16 → 18 → …) và
+    # một cái tên nói sai số lượng thì đọc log CI lại phải đi kiểm chứng.
+    name: Nghiệm thu qua trình duyệt
     runs-on: ubuntu-latest
     needs: build
     # Bộ kiểm quét nhiều mốc rộng trên trình duyệt thật; chốt trần để một lần treo
