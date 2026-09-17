@@ -1,6 +1,6 @@
 import catalog from "./tms-catalog.json";
 import joins from "./tms-joins.json";
-import { DOMESTIC_ITEMS } from "./catalog";
+import { CRUDE_OIL_ITEMS, DOMESTIC_ITEMS } from "./catalog";
 
 /**
  * Danh mục và quy tắc TMS — Chương, cấp quản lý, Mục và Tiểu mục.
@@ -106,6 +106,17 @@ export interface TaxOfficeDef {
 }
 
 export const TAX_OFFICES = joins.taxOffices as TaxOfficeDef[];
+
+/**
+ * Tên cơ quan thuế theo mã.
+ *
+ * Tra theo MÃ, không theo tên: 32 mã quy về 27 tên, năm cặp mã dùng chung một
+ * tên sau khi chuyển sang mô hình Thuế cơ sở. Gộp theo tên chỉ được làm khi có
+ * bảng quy đổi đã duyệt, và phải kiểm tổng trước sau khi gộp.
+ */
+export const TAX_OFFICE_NAME: Record<string, string> = Object.fromEntries(
+  TAX_OFFICES.map((office) => [office.code, office.name]),
+);
 
 export const CHAPTERS = catalog.chapters as ChapterDef[];
 export const SECTIONS = catalog.sections as SectionDef[];
@@ -219,6 +230,22 @@ interface ItemRule {
  * khác — đặc tả cấm tự chia A.I.2.10 sang I.14 và I.15.
  */
 const ITEM_RULES: Record<string, ItemRule> = {
+  "II.1": {
+    branches: [
+      {
+        chapters: [],
+        subItems: ["3751", "3752", "3753", "3754", "3755", "3756", "3757", "3799", "4926", "4942"],
+      },
+    ],
+  },
+  "II.2": {
+    branches: [
+      {
+        chapters: [],
+        subItems: ["3951", "3952", "3953", "3954", "3955", "3956", "3957", "3999"],
+      },
+    ],
+  },
   "I.1.1": { branches: [{ chapters: CHAPTER_BRANCHES["dnnn-tw"], subItems: SECTOR_TAXES }] },
   "I.1.2": {
     branches: [{ chapters: CHAPTER_BRANCHES["dnnn-dp"], subItems: SECTOR_TAXES }],
@@ -318,10 +345,12 @@ export function branchesOfItem(itemCode: string): ItemBranch[] {
   }));
 }
 
-/** Khoản thu nội địa đã có điều kiện TMS; khoản chưa có nhánh nằm ngoài phạm vi. */
-export const TMS_ITEMS = DOMESTIC_ITEMS.filter((item) => branchesOfItem(item.code).length > 0);
+/** Các khoản của tổng A đã có điều kiện TMS, gồm nội địa, dầu thô và condensate. */
+const TMS_SCOPE_ITEMS = [...DOMESTIC_ITEMS, ...CRUDE_OIL_ITEMS];
 
-/** Khoản thu nội địa nằm ngoài phạm vi vì chưa có điều kiện được xác nhận. */
-export const TMS_ITEMS_WITHOUT_RULE = DOMESTIC_ITEMS.filter(
+export const TMS_ITEMS = TMS_SCOPE_ITEMS.filter((item) => branchesOfItem(item.code).length > 0);
+
+/** Khoản thuộc tổng A nhưng chưa có điều kiện được xác nhận. */
+export const TMS_ITEMS_WITHOUT_RULE = TMS_SCOPE_ITEMS.filter(
   (item) => branchesOfItem(item.code).length === 0,
 );

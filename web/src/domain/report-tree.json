@@ -1,0 +1,796 @@
+{
+ "note": "Cây 113 dòng báo cáo TMS, trích từ mục 7.1 của đặc tả kỹ thuật nội bộ. Không sửa tay: chạy lại script trích khi đặc tả đổi.",
+ "rows": [
+  {
+   "line": 9,
+   "id": "A",
+   "parent": null,
+   "kind": "formula",
+   "name": "TỔNG THU NỘI ĐỊA (I+II+III)"
+  },
+  {
+   "line": 10,
+   "id": "ASTAR",
+   "parent": null,
+   "kind": "formula",
+   "name": "TỔNG THU NỘI ĐỊA TRỪ DẦU (A-1)"
+  },
+  {
+   "line": 11,
+   "id": "A.I",
+   "parent": "A",
+   "kind": "formula",
+   "name": "THU DO NGÀNH THUẾ QUẢN LÝ (1+2)"
+  },
+  {
+   "line": 12,
+   "id": "A.I.1",
+   "parent": "A.I",
+   "kind": "formula",
+   "name": "THU TỪ DẦU THÔ, CONDENSATE (3751, 3752, 3753, 3754, 3755, 3756, 3757, 3799, 3951, 3952, 3953, 3954, 3955, 3956, 3957, 3999, 4926, 4942)"
+  },
+  {
+   "line": 13,
+   "id": "A.I.1.1",
+   "parent": "A.I.1",
+   "kind": "direct",
+   "name": "Thu từ dầu thô (3751, 3752, 3753, 3754, 3755, 3756, 3757, 3799, 4926, 4942)"
+  },
+  {
+   "line": 14,
+   "id": "A.I.1.2",
+   "parent": "A.I.1",
+   "kind": "direct",
+   "name": "Thu từ condensate (3951, 3952, 3953, 3954, 3955, 3956, 3957, 3999)"
+  },
+  {
+   "line": 15,
+   "id": "A.I.2",
+   "parent": "A.I",
+   "kind": "formula",
+   "name": "THU DO NGÀNH THUẾ QUẢN LÝ TRỪ DẦU (2.1+…+2.11)"
+  },
+  {
+   "line": 16,
+   "id": "A.I.2.1",
+   "parent": "A.I.2",
+   "kind": "formula",
+   "name": "Thu từ khu vực doanh nghiệp do Nhà nước giữ vai trò chủ đạo (2.1.1+2.1.2)"
+  },
+  {
+   "line": 17,
+   "id": "A.I.2.1.taxView.a",
+   "parent": "A.I.2.1",
+   "kind": "breakdown",
+   "name": "Thuế giá trị gia tăng  (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 18,
+   "id": "A.I.2.1.taxView.b",
+   "parent": "A.I.2.1",
+   "kind": "breakdown",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 19,
+   "id": "A.I.2.1.taxView.c",
+   "parent": "A.I.2.1",
+   "kind": "breakdown",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1053, 1055, 1056, 1058, 1099, 4918, 4919)"
+  },
+  {
+   "line": 20,
+   "id": "A.I.2.1.taxView.d",
+   "parent": "A.I.2.1",
+   "kind": "breakdown",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 21,
+   "id": "A.I.2.1.taxView.e",
+   "parent": "A.I.2.1",
+   "kind": "breakdown",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 22,
+   "id": "A.I.2.1.1",
+   "parent": "A.I.2.1",
+   "kind": "formula",
+   "name": "Thu từ khu vực doanh nghiệp do Nhà nước giữ vai trò chủ đạo Trung ương quản lý"
+  },
+  {
+   "line": 23,
+   "id": "A.I.2.1.1.a",
+   "parent": "A.I.2.1.1",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 24,
+   "id": "A.I.2.1.1.b",
+   "parent": "A.I.2.1.1",
+   "kind": "direct",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 25,
+   "id": "A.I.2.1.1.c",
+   "parent": "A.I.2.1.1",
+   "kind": "direct",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1053, 1055, 1056, 1058, 1099, 4918, 4919)"
+  },
+  {
+   "line": 26,
+   "id": "A.I.2.1.1.d",
+   "parent": "A.I.2.1.1",
+   "kind": "direct",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 27,
+   "id": "A.I.2.1.1.e",
+   "parent": "A.I.2.1.1",
+   "kind": "direct",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 28,
+   "id": "A.I.2.1.2",
+   "parent": "A.I.2.1",
+   "kind": "formula",
+   "name": "Thu từ khu vực doanh nghiệp do Nhà nước giữ vai trò chủ đạo địa phương quản lý"
+  },
+  {
+   "line": 29,
+   "id": "A.I.2.1.2.a",
+   "parent": "A.I.2.1.2",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 30,
+   "id": "A.I.2.1.2.b",
+   "parent": "A.I.2.1.2",
+   "kind": "direct",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 31,
+   "id": "A.I.2.1.2.c",
+   "parent": "A.I.2.1.2",
+   "kind": "direct",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1053, 1055, 1056, 1058, 1099, 1058, 4918, 4919)"
+  },
+  {
+   "line": 32,
+   "id": "A.I.2.1.2.d",
+   "parent": "A.I.2.1.2",
+   "kind": "direct",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 33,
+   "id": "A.I.2.1.2.e",
+   "parent": "A.I.2.1.2",
+   "kind": "direct",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 34,
+   "id": "A.I.2.2",
+   "parent": "A.I.2",
+   "kind": "formula",
+   "name": "Thu từ khu vực doanh nghiệp có vốn đầu tư nước ngoài"
+  },
+  {
+   "line": 35,
+   "id": "A.I.2.2.1",
+   "parent": "A.I.2.2",
+   "kind": "formula",
+   "name": "Thu từ NCCNN không có cơ sở thường trú tại Việt Nam"
+  },
+  {
+   "line": 36,
+   "id": "A.I.2.2.1.a",
+   "parent": "A.I.2.2.1",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng"
+  },
+  {
+   "line": 37,
+   "id": "A.I.2.2.1.b",
+   "parent": "A.I.2.2.1",
+   "kind": "direct",
+   "name": "Thuế TNDN"
+  },
+  {
+   "line": 38,
+   "id": "A.I.2.2.1.c",
+   "parent": "A.I.2.2.1",
+   "kind": "direct",
+   "name": "Tiền chậm nộp thuế GTGT"
+  },
+  {
+   "line": 39,
+   "id": "A.I.2.2.1.d",
+   "parent": "A.I.2.2.1",
+   "kind": "direct",
+   "name": "Tiền chậm nộp thuế TNDN"
+  },
+  {
+   "line": 40,
+   "id": "A.I.2.2.2",
+   "parent": "A.I.2.2",
+   "kind": "formula",
+   "name": "Thu từ các doanh nghiệp có vốn đầu tư nước ngoài"
+  },
+  {
+   "line": 41,
+   "id": "A.I.2.2.2.a",
+   "parent": "A.I.2.2.2",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 42,
+   "id": "A.I.2.2.2.b",
+   "parent": "A.I.2.2.2",
+   "kind": "direct",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 43,
+   "id": "A.I.2.2.2.c",
+   "parent": "A.I.2.2.2",
+   "kind": "direct",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1053, 1055, 1056, 1058, 1099, 1058, 4918, 4919)"
+  },
+  {
+   "line": 44,
+   "id": "A.I.2.2.2.d",
+   "parent": "A.I.2.2.2",
+   "kind": "direct",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 45,
+   "id": "A.I.2.2.2.e",
+   "parent": "A.I.2.2.2",
+   "kind": "direct",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 46,
+   "id": "A.I.2.3",
+   "parent": "A.I.2",
+   "kind": "formula",
+   "name": "Thu từ khu vực kinh tế ngoài quốc doanh (2.3.1+2.3.2)"
+  },
+  {
+   "line": 47,
+   "id": "A.I.2.3.taxView.a",
+   "parent": "A.I.2.3",
+   "kind": "breakdown",
+   "name": "Thuế giá trị gia tăng (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 48,
+   "id": "A.I.2.3.taxView.b",
+   "parent": "A.I.2.3",
+   "kind": "breakdown",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 49,
+   "id": "A.I.2.3.taxView.c",
+   "parent": "A.I.2.3",
+   "kind": "breakdown",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1053, 1055, 1056, 1058, 1099, 4918, 4919)"
+  },
+  {
+   "line": 50,
+   "id": "A.I.2.3.taxView.d",
+   "parent": "A.I.2.3",
+   "kind": "breakdown",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 51,
+   "id": "A.I.2.3.taxView.e",
+   "parent": "A.I.2.3",
+   "kind": "breakdown",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 52,
+   "id": "A.I.2.3.1",
+   "parent": "A.I.2.3",
+   "kind": "formula",
+   "name": "Thu từ các DN và tổ chức khu vực NQD"
+  },
+  {
+   "line": 53,
+   "id": "A.I.2.3.1.a",
+   "parent": "A.I.2.3.1",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 54,
+   "id": "A.I.2.3.1.b",
+   "parent": "A.I.2.3.1",
+   "kind": "direct",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 55,
+   "id": "A.I.2.3.1.c",
+   "parent": "A.I.2.3.1",
+   "kind": "direct",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1053, 1055, 1056, 1058, 1099, 4918, 4919)"
+  },
+  {
+   "line": 56,
+   "id": "A.I.2.3.1.d",
+   "parent": "A.I.2.3.1",
+   "kind": "direct",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 57,
+   "id": "A.I.2.3.1.e",
+   "parent": "A.I.2.3.1",
+   "kind": "direct",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 58,
+   "id": "A.I.2.3.2",
+   "parent": "A.I.2.3",
+   "kind": "formula",
+   "name": "Thu từ hộ gia đình và cá nhân kinh doanh khu vực NQD"
+  },
+  {
+   "line": 59,
+   "id": "A.I.2.3.2.a",
+   "parent": "A.I.2.3.2",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng (1701, 1704, 1749, 4929, 4931)"
+  },
+  {
+   "line": 60,
+   "id": "A.I.2.3.2.b",
+   "parent": "A.I.2.3.2",
+   "kind": "direct",
+   "name": "Thuế tiêu thụ đặc biệt (1753, 1754, 1755, 1756, 1757, 1758, 1762, 1763, 1764, 1765, 1766, 1767, 1799, 4933, 4934)"
+  },
+  {
+   "line": 61,
+   "id": "A.I.2.3.2.c",
+   "parent": "A.I.2.3.2",
+   "kind": "direct",
+   "name": "Thuế thu nhập doanh nghiệp (1052, 1099, 4918)"
+  },
+  {
+   "line": 62,
+   "id": "A.I.2.3.2.d",
+   "parent": "A.I.2.3.2",
+   "kind": "direct",
+   "name": "Thuế tài nguyên (1551, 1552, 1553, 1555, 1556, 1557, 1558, 1561, 1562, 1563, 1599, 4925, 4927)"
+  },
+  {
+   "line": 63,
+   "id": "A.I.2.3.2.e",
+   "parent": "A.I.2.3.2",
+   "kind": "direct",
+   "name": "Thu từ khí thiên nhiên, khí than theo hiệp định, hợp đồng (3801, 3802, 3803, 3804, 3805, 3806, 3807, 3849)"
+  },
+  {
+   "line": 64,
+   "id": "A.I.2.4",
+   "parent": "A.I.2",
+   "kind": "direct",
+   "name": "Thuế thu nhập cá nhân (1001, 1003, 1004, 1005, 1006, 1007, 1008, 1012, 1014, 1015, 1049, 4917)"
+  },
+  {
+   "line": 65,
+   "id": "A.I.2.5",
+   "parent": "A.I.2",
+   "kind": "direct",
+   "name": "Thuế bảo vệ môi trường (TM từ 2001 đến 2013; 2019; từ 2022 đến 2026; từ 2041 đến 2049 của M 2000; TM 2146 của mục 2100, TM 4938, 4939 của mục 4900)"
+  },
+  {
+   "line": 66,
+   "id": "A.I.2.6",
+   "parent": "A.I.2",
+   "kind": "direct",
+   "name": "Lệ phí trước bạ (TM 2801, 2802, 2803, 2804, 2824 và 2825)"
+  },
+  {
+   "line": 67,
+   "id": "A.I.2.7",
+   "parent": "A.I.2",
+   "kind": "formula",
+   "name": "Các loại phí, lệ phí (Các mục 2100 (trừ TM 2146), từ M 2150 đến M2650 (trừ TM 2663, 2666), 2700, 2750, 2800 (trừ các TM 2801, 2802, 2803, 2804, 2824, 2825), 2850, 3000 (trừ TM 3003), 3050"
+  },
+  {
+   "line": 68,
+   "id": "A.I.2.7.a",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí trong lĩnh vực khác"
+  },
+  {
+   "line": 69,
+   "id": "A.I.2.7.b",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực nông nghiệp, lâm nghiệp, thủy sản"
+  },
+  {
+   "line": 70,
+   "id": "A.I.2.7.c",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực ngoại giao"
+  },
+  {
+   "line": 71,
+   "id": "A.I.2.7.d",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực công nghiệp, thương mại, đầu tư, xây dựng"
+  },
+  {
+   "line": 72,
+   "id": "A.I.2.7.e",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực giao thông vận tải"
+  },
+  {
+   "line": 73,
+   "id": "A.I.2.7.f",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực thông tin và truyền thông"
+  },
+  {
+   "line": 74,
+   "id": "A.I.2.7.g",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực an ninh, quốc phòng"
+  },
+  {
+   "line": 75,
+   "id": "A.I.2.7.h",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực văn hóa, thể thao, du lịch"
+  },
+  {
+   "line": 76,
+   "id": "A.I.2.7.i",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực khoa học và công nghệ"
+  },
+  {
+   "line": 77,
+   "id": "A.I.2.7.j",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực y tế"
+  },
+  {
+   "line": 78,
+   "id": "A.I.2.7.k",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực tài nguyên và môi trường"
+  },
+  {
+   "line": 79,
+   "id": "A.I.2.7.l",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực tài chính, ngân hàng, bảo hiểm (Loại trừ 2666)"
+  },
+  {
+   "line": 80,
+   "id": "A.I.2.7.m",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Phí thuộc lĩnh vực tư pháp"
+  },
+  {
+   "line": 81,
+   "id": "A.I.2.7.n",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Lệ phí quản lý nhà nước liên quan đến quyền và nghĩa vụ của công dân"
+  },
+  {
+   "line": 82,
+   "id": "A.I.2.7.o",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Lệ phí quản lý nhà nước liên quan đến quyền sở hữu, quyền sử dụng tài sản (trừ tiểu mục 2801, 2802, 2803, 2804, 2824, 2825)"
+  },
+  {
+   "line": 83,
+   "id": "A.I.2.7.p",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Lệ phí quản lý nhà nước liên quan đến sản xuất, kinh doanh"
+  },
+  {
+   "line": 84,
+   "id": "A.I.2.7.q",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Lệ phí quản lý nhà nước đặc biệt về chủ quyền quốc gia (Loại trừ 3003)"
+  },
+  {
+   "line": 85,
+   "id": "A.I.2.7.r",
+   "parent": "A.I.2.7",
+   "kind": "direct",
+   "name": "Lệ phí quản lý nhà nước trong các lĩnh vực khác"
+  },
+  {
+   "line": 86,
+   "id": "A.I.2.8",
+   "parent": "A.I.2",
+   "kind": "formula",
+   "name": "Các khoản thu về nhà, đất"
+  },
+  {
+   "line": 87,
+   "id": "A.I.2.8.a",
+   "parent": "A.I.2.8",
+   "kind": "direct",
+   "name": "Thuế sử dụng đất nông nghiệp"
+  },
+  {
+   "line": 88,
+   "id": "A.I.2.8.b",
+   "parent": "A.I.2.8",
+   "kind": "direct",
+   "name": "Thuế sử dụng đất phi nông nghiệp"
+  },
+  {
+   "line": 89,
+   "id": "A.I.2.8.c",
+   "parent": "A.I.2.8",
+   "kind": "direct",
+   "name": "Thu tiền cho thuê đất, thuê mặt nước"
+  },
+  {
+   "line": 90,
+   "id": "A.I.2.8.d",
+   "parent": "A.I.2.8",
+   "kind": "direct",
+   "name": "Thu tiền sử dụng đất"
+  },
+  {
+   "line": 91,
+   "id": "A.I.2.8.e",
+   "parent": "A.I.2.8",
+   "kind": "direct",
+   "name": "Thu tiền cho thuê và bán nhà ở thuộc sở hữu nhà nước (TM 3301 và TM 3851)"
+  },
+  {
+   "line": 92,
+   "id": "A.I.2.9",
+   "parent": "A.I.2",
+   "kind": "direct",
+   "name": "Thu từ hoạt động xổ số (TM 1705, 1057, 1153, 1761, 4913, 4941)"
+  },
+  {
+   "line": 93,
+   "id": "A.I.2.10",
+   "parent": "A.I.2",
+   "kind": "direct",
+   "name": "Thu tiền cấp quyền khai thác khoáng sản, vùng trời, vùng biển (Mục 1250, TM 4921, 4922, 4923, 4924)"
+  },
+  {
+   "line": 94,
+   "id": "A.I.2.11",
+   "parent": "A.I.2",
+   "kind": "formula",
+   "name": "Thu hồi vốn, lợi nhuận, lợi nhuận sau thuế, chênh lệch thu chi của NHNN"
+  },
+  {
+   "line": 95,
+   "id": "A.I.2.11.a",
+   "parent": "A.I.2.11",
+   "kind": "direct",
+   "name": "Thu hồi vốn của Nhà nước (TM 3653, TM 3655, TM 3656)"
+  },
+  {
+   "line": 96,
+   "id": "A.I.2.11.b",
+   "parent": "A.I.2.11",
+   "kind": "direct",
+   "name": "Thu nhập từ cổ tức được chia từ phần vốn nhà nước đầu tư tại doanh nghiệp  (TM 1154)"
+  },
+  {
+   "line": 97,
+   "id": "A.I.2.11.c",
+   "parent": "A.I.2.11",
+   "kind": "direct",
+   "name": "Thu từ lợi nhuận được chia từ phần vốn nhà nước đầu tư tại doanh nghiệp (TM 1155)"
+  },
+  {
+   "line": 98,
+   "id": "A.I.2.11.d",
+   "parent": "A.I.2.11",
+   "kind": "direct",
+   "name": "Lợi nhuận sau thuế còn lại sau khi trích lập các quỹ (TM 1151, 1199)"
+  },
+  {
+   "line": 99,
+   "id": "A.I.2.11.e",
+   "parent": "A.I.2.11",
+   "kind": "direct",
+   "name": "Chênh lệch thu, chi của Ngân hàng Nhà nước (TM 4053)"
+  },
+  {
+   "line": 100,
+   "id": "A.II",
+   "parent": "A",
+   "kind": "formula",
+   "name": "Thu khác ngân sách (1+2+…+8)"
+  },
+  {
+   "line": 101,
+   "id": "A.II.1",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu chênh lệch tỷ giá ngoại tệ của ngân sách (TM 4901)"
+  },
+  {
+   "line": 102,
+   "id": "A.II.2",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu tiền phạt (M 4250 trừ TM 4253, 4265, 4273, 4275)"
+  },
+  {
+   "line": 103,
+   "id": "A.II.2.detail.traffic",
+   "parent": "A.II.2",
+   "kind": "ofWhich",
+   "name": "Trong đó:-  - Phạt vi phạm hành chính trong lĩnh vực giao thông (TM 4252)"
+  },
+  {
+   "line": 104,
+   "id": "A.II.2.detail.tax",
+   "parent": "A.II.2",
+   "kind": "ofWhich",
+   "name": "- Phạt vi phạm hành chính do ngành thuế thực hiện ( TM 4254, 4264, 4268, 4272, 4274)"
+  },
+  {
+   "line": 105,
+   "id": "A.II.3",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu tịch thu (M 4300 trừ TM 4303, 4304, 4316, 4317, 4318, 4321 )"
+  },
+  {
+   "line": 106,
+   "id": "A.II.3.detail.smuggling",
+   "parent": "A.II.3",
+   "kind": "ofWhich",
+   "name": "Tr.đó: Tịch thu chống lậu (TM 4301, 4312)"
+  },
+  {
+   "line": 107,
+   "id": "A.II.4",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu hồi các khoản chi năm trước (TM 4902)"
+  },
+  {
+   "line": 108,
+   "id": "A.II.5",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu tiền bán hàng hoá, vật tư dự trữ Quốc gia"
+  },
+  {
+   "line": 109,
+   "id": "A.II.6",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu tiền cho thuê, bán tài sản khác M3300 (loại trừ TM 3301) + M3350 + M3400 + M3450 + M 3650 (loại trừ 3653) + M 3850 ( trừ TM 3851)"
+  },
+  {
+   "line": 110,
+   "id": "A.II.7",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Lãi thu được từ các khoản tham gia góp vốn của Nhà nước (TM 4104)"
+  },
+  {
+   "line": 111,
+   "id": "A.II.8",
+   "parent": "A.II",
+   "kind": "direct",
+   "name": "Thu khác còn lại (TM 4904, 4906, 4907, 4908, 4914, 4943, 4944, 4946, 4947, 4949)"
+  },
+  {
+   "line": 112,
+   "id": "A.III",
+   "parent": "A",
+   "kind": "direct",
+   "name": "Thu từ quỹ đất công ích và thu hoa lợi công sản khác"
+  },
+  {
+   "line": 113,
+   "id": "A.III.detail.landSupport",
+   "parent": "A.III",
+   "kind": "ofWhich",
+   "name": "Trong đó: Thu hỗ trợ khi nhà nước thu hồi đất theo chế độ quy định (TM 3903)"
+  },
+  {
+   "line": 114,
+   "id": "B",
+   "parent": null,
+   "kind": "heading",
+   "name": "HOÀN THUẾ"
+  },
+  {
+   "line": 115,
+   "id": "B.1",
+   "parent": "B",
+   "kind": "direct",
+   "name": "Hoàn thuế GTGT khấu trừ"
+  },
+  {
+   "line": 116,
+   "id": "B.2",
+   "parent": "B",
+   "kind": "direct",
+   "name": "Hoàn nộp thừa"
+  },
+  {
+   "line": 117,
+   "id": "B.3",
+   "parent": "B",
+   "kind": "direct",
+   "name": "Hoàn thuế tiêu thụ đặc biệt mặt hàng xăng khoáng nguyên liệu dùng để sản xuất, pha chế xăng sinh học theo Luật thuế tiêu thụ đặc biệt (TM 7553)"
+  },
+  {
+   "line": 118,
+   "id": "C",
+   "parent": null,
+   "kind": "direct",
+   "name": "TRẢ LÃI CHO NNT"
+  },
+  {
+   "line": 119,
+   "id": "D",
+   "parent": null,
+   "kind": "heading",
+   "name": "THU HỒI HOÀN THUẾ"
+  },
+  {
+   "line": 120,
+   "id": "D.1",
+   "parent": "D",
+   "kind": "direct",
+   "name": "Thuế giá trị gia tăng"
+  },
+  {
+   "line": 121,
+   "id": "D.2",
+   "parent": "D",
+   "kind": "direct",
+   "name": "Thuế tiêu thụ đặc biệt mặt hàng xăng khoáng nguyên liệu dùng để sản xuất, pha chế xăng sinh học theo Luật thuế tiêu thụ đặc biệt (TM 7553)"
+  }
+ ]
+}

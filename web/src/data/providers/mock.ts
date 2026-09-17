@@ -7,6 +7,7 @@ import type {
   RevenueScope,
 } from "@/domain/types";
 import type { ManagementLevelFilter } from "@/domain/tms";
+import type { ReportDimension } from "@/domain/report";
 import {
   buildAdvancedComparison,
   buildLocationDetail,
@@ -14,6 +15,7 @@ import {
   buildRevenueAnalysis,
 } from "../mock/build";
 import { buildTmsBreakdown } from "../mock/tms";
+import { buildReportGrid } from "../mock/report";
 import {
   NoDataError,
   PayloadError,
@@ -22,6 +24,7 @@ import {
   validateOverview,
   validateRevenueAnalysis,
   validateTmsBreakdown,
+  validateReportGrid,
 } from "../validate";
 
 function envelope<T>(
@@ -46,12 +49,12 @@ function envelope<T>(
  *
  * Backend thật của bản dev trả chậm, nên mock trả nhanh sẽ dạy người duyệt một
  * kỳ vọng sai: bố cục nào cũng đẹp khi dữ liệu về tức thì. Mặc định vì vậy đủ
- * dài để nhìn thấy trạng thái chờ thật sự trông thế nào, quanh mức 2 giây.
+ * dài để nhìn thấy trạng thái chờ thật sự trông thế nào, quanh mức 1 giây.
  *
  * Đổi bằng `?latency=` trên đường dẫn hoặc `VITE_MOCK_LATENCY`; đặt 0 khi chạy
  * kiểm thử hoặc khi đang sửa giao diện và không muốn chờ.
  */
-const DEFAULT_LATENCY_MS = 2000;
+const DEFAULT_LATENCY_MS = 1000;
 
 function baseLatency(): number {
   const fromUrl = new URLSearchParams(window.location.search).get("latency");
@@ -66,8 +69,8 @@ function baseLatency(): number {
  * Mỗi màn hình một hệ số riêng, tất định.
  *
  * Dùng chung một con số cho mọi endpoint thì mọi lần chờ dài bằng nhau, và đó
- * không phải thứ backend thật làm. Hệ số trải quanh 1 nên với mặc định 3 giây,
- * thời gian chờ rơi vào khoảng 2,9 đến 4,2 giây.
+ * không phải thứ backend thật làm. Hệ số trải quanh 1 nên với mặc định 1 giây,
+ * thời gian chờ rơi vào khoảng 0,9 đến 1,2 giây.
  */
 const SPREAD = {
   overview: 1,
@@ -75,6 +78,8 @@ const SPREAD = {
   location: 0.95,
   tms: 1.1,
   compare: 1.2,
+  report: 1.3,
+  reconciliation: 0.9,
 } as const;
 
 const latencyFor = (screen: keyof typeof SPREAD) => Math.round(baseLatency() * SPREAD[screen]);
@@ -127,15 +132,38 @@ export class MockDashboardProvider implements DashboardDataProvider {
     filters: DashboardFilters,
     managementLevel: ManagementLevelFilter,
     locationId: string | null,
+    taxOfficeCode: string | null,
     signal: AbortSignal,
   ) {
     await delay(latencyFor("tms"), signal);
-    const data = buildTmsBreakdown(filters, managementLevel, locationId);
+    const data = buildTmsBreakdown(filters, managementLevel, locationId, taxOfficeCode);
     if (!data)
       throw new NoDataError(
         "Kỳ đang chọn chưa có giao dịch nội địa nào để phân rã theo Chương và Tiểu mục.",
       );
     return envelope(validateTmsBreakdown(data), filters, { tab: "tms-breakdown" });
+  }
+
+  async getReportGrid(
+    filters: DashboardFilters,
+    options: {
+      groupBy: ReportDimension;
+      subGroupBy: ReportDimension | null;
+      columnOffset: number;
+      columnLimit: number;
+    },
+    signal: AbortSignal,
+  ) {
+    await delay(latencyFor("report"), signal);
+    const data = buildReportGrid(filters, options);
+    if (!data)
+      throw new PayloadError(
+        "Cặp chiều không hợp lệ: chiều chi tiết phải khác chiều chính.",
+      );
+    return envelope(validateReportGrid(data), filters, {
+      tab: "report",
+      section: `${options.groupBy}/${options.subGroupBy ?? "-"}`,
+    });
   }
 
   async getAdvancedComparison(filters: AdvancedComparisonFilters, signal: AbortSignal) {

@@ -7,6 +7,7 @@ import type {
   TabId,
 } from "@/domain/types";
 import type { ManagementLevelFilter } from "@/domain/tms";
+import type { ReportDimension } from "@/domain/report";
 import {
   PayloadError,
   SOURCES_ALLOWED,
@@ -19,6 +20,7 @@ import {
   validateOverview,
   validateRevenueAnalysis,
   validateTmsBreakdown,
+  validateReportGrid,
 } from "../validate";
 
 /**
@@ -77,15 +79,30 @@ export class JsonDashboardProvider implements DashboardDataProvider {
     filters: DashboardFilters,
     managementLevel: ManagementLevelFilter,
     locationId: string | null,
+    taxOfficeCode: string | null,
     signal: AbortSignal,
   ) {
     // Payload không khai `origin` thì hiểu là dữ liệu thật: nhãn mô phỏng chỉ
     // được bật khi có ai đó nói rõ đây là số mô phỏng.
     return this.post(
       "/tms-breakdown",
-      { filters, managementLevel, locationId },
+      { filters, managementLevel, locationId, taxOfficeCode },
       signal,
       (raw) => validateTmsBreakdown(isRecord(raw) && raw.origin === undefined ? { ...raw, origin: "api" } : raw),
+    );
+  }
+  getReportGrid(
+    filters: DashboardFilters,
+    options: {
+      groupBy: ReportDimension;
+      subGroupBy: ReportDimension | null;
+      columnOffset: number;
+      columnLimit: number;
+    },
+    signal: AbortSignal,
+  ) {
+    return this.post("/report", { filters, ...options }, signal, (raw) =>
+      validateReportGrid(isRecord(raw) && raw.origin === undefined ? { ...raw, origin: "api" } : raw),
     );
   }
 }

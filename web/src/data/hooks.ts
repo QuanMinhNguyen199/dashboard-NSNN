@@ -8,11 +8,13 @@ import type {
   LocationDetailData,
   OverviewData,
   ResourceState,
+  ReportGridData,
   RevenueAnalysisData,
   RevenueScope,
   TmsBreakdownData,
 } from "@/domain/types";
 import type { ManagementLevelFilter } from "@/domain/tms";
+import type { ReportDimension } from "@/domain/report";
 
 /**
  * Hook tài nguyên dùng chung.
@@ -136,14 +138,35 @@ export function useTmsBreakdown(
   filters: DashboardFilters,
   level: ManagementLevelFilter,
   locationId: string | null,
+  taxOfficeCode: string | null,
 ) {
   return useAsyncResource<TmsBreakdownData>(
-    `tms|${level}|${locationId ?? "city"}|${filterKey(filters)}`,
-    (signal) => provider.getTmsBreakdown(filters, level, locationId, signal),
+    `tms|${level}|${locationId ?? "city"}|${taxOfficeCode ?? "all-offices"}|${filterKey(filters)}`,
+    (signal) => provider.getTmsBreakdown(filters, level, locationId, taxOfficeCode, signal),
     true,
     undefined,
     // Đổi cấp quản lý là đổi lát cắt của cùng một bảng, không phải mở màn hình
     // khác. Giữ số cũ trong lúc tải để bảng không co lại rồi nở ra mỗi lần bấm.
+    true,
+  );
+}
+
+export function useReportGrid(
+  filters: DashboardFilters,
+  options: {
+    groupBy: ReportDimension;
+    subGroupBy: ReportDimension | null;
+    columnOffset: number;
+    columnLimit: number;
+  },
+) {
+  return useAsyncResource<ReportGridData>(
+    `report|${options.groupBy}|${options.subGroupBy ?? "-"}|${options.columnOffset}|${options.columnLimit}|${filterKey(filters)}`,
+    (signal) => provider.getReportGrid(filters, options, signal),
+    true,
+    undefined,
+    // Đổi chiều hoặc lật trang cột là đổi lát cắt của cùng một bảng. Giữ nội
+    // dung cũ trong lúc tải để bảng không co lại rồi nở ra sau mỗi lần bấm.
     true,
   );
 }

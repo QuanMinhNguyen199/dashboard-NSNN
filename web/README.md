@@ -1,7 +1,7 @@
-# Dashboard Thu NSNN Hà Nội
+# Dashboard Thu Ngân sách TP Hà Nội
 
 Triển khai theo `../tai-lieu-luu-tru/nsnn/THIET-KE-DASHBOARD-NSNN.md` v1.1 cộng workspace Mã hạch toán
-theo `../bao-cao-outline/noi-bo/`: năm workspace, URL state đầy đủ,
+theo `../bao-cao-outline/noi-bo/`: sáu workspace, URL state đầy đủ,
 drawer xem nhanh, lớp provider API/MCP/Mock có runtime validation, và dữ liệu mô phỏng
 tất định dựng từ một kho quan sát gốc duy nhất.
 
@@ -12,7 +12,7 @@ npm install
 npm run dev          # http://localhost:5173
 npm run build        # tsc -b && vite build
 npm run preview
-npm run acceptance   # 17 tiêu chí nghiệm thu qua trình duyệt (cần dev server đang chạy)
+npm run acceptance   # 20 tiêu chí nghiệm thu qua trình duyệt (cần dev server đang chạy)
 ```
 
 Từ gốc repo cũng chạy được y hệt — mọi lệnh uỷ quyền xuống `web/`.
@@ -70,11 +70,12 @@ nhận dữ liệu qua props hoặc qua hook.
 `acceptance` dùng `puppeteer-core` với Chrome cài sẵn; đặt `CHROME_PATH` nếu Chrome ở
 đường dẫn khác.
 
-## Bốn workspace
+## Sáu workspace
 
 | Tab | URL | Câu hỏi chính |
 |---|---|---|
 | Tổng quan | `?tab=overview` | Tình hình thu ngân sách toàn thành phố ra sao? |
+| Báo cáo | `?tab=report` | Số thu chia theo địa bàn, cơ quan thuế hoặc ngành nghề thế nào? |
 | Phân tích thu | `?tab=revenue-analysis&section=domestic&view=overview` | Nguồn hoặc khoản thu nào tạo ra kết quả đó? |
 | Chi tiết phường/xã | `?tab=location-detail&location=00004` | Một địa bàn cụ thể đang hoạt động ra sao? |
 | Mã hạch toán | `?tab=tms-breakdown&mgmt=all` | Số thu gồm những Chương, Mục và Tiểu mục nào? |
@@ -178,7 +179,7 @@ Ví dụ đang chạy: chọn `Cấp ngân sách = NSTW` làm widget “Theo c�
 bị loại khỏi lưới, “Tăng trưởng địa bàn” bên cạnh nở ra đủ 12 cột.
 
 Ở phạm vi `NSNN`, người dùng chọn trực tiếp lát hoặc chú giải NSTW/NSĐP để đổi phần phân rã.
-NSTW được phân theo bốn nguồn thu; NSĐP được phân theo cấp tỉnh, huyện, xã. Widget đối soát
+NSTW được phân theo bốn nguồn thu; NSĐP được phân theo cấp tỉnh, huyện, xã. Widget kiểm tra tổng
 `NSNN = NSTW + NSĐP`, `NSTW = tổng bốn nguồn` và `NSĐP = cấp tỉnh + cấp huyện + cấp xã`
 trước khi vẽ. Prototype đang dùng phân rã NSĐP mock tất định vì kho quan sát chưa có ba cấp con;
 adapter API/MCP phải trả `centralBudgetSources` và `localBudgetLevels`. Số 0 và số âm là giá trị
@@ -268,7 +269,7 @@ npm run dev &          # nghiệm thu cần một dev server đang chạy
 npm run acceptance     # mặc định http://127.0.0.1:5173
 ```
 
-`scripts/acceptance.mjs` chạy 17 tiêu chí trên Chrome thật qua `puppeteer-core`; đặt
+`scripts/acceptance.mjs` chạy 20 tiêu chí trên Chrome thật qua `puppeteer-core`; đặt
 `CHROME_PATH` nếu Chrome ở đường dẫn khác. Mỗi tiêu chí canh một cách hỏng cụ thể, không
 phải một danh sách “nên có” — lý do từng cái ở
 [`../BA-NSNN.md`](../tai-lieu-luu-tru/nsnn/BA-NSNN.md) §14.
@@ -285,7 +286,7 @@ Hai workflow trong [`../.github/workflows/`](../.github/workflows):
 
 | Workflow | Chạy khi | Làm gì |
 |---|---|---|
-| `ci.yml` | push **mọi nhánh** và pull request | typecheck → build → 17 tiêu chí trên Chrome |
+| `ci.yml` | push **mọi nhánh** và pull request | typecheck → build → 20 tiêu chí trên Chrome |
 | `deploy-pages.yml` | push `main` | build với `VITE_BASE` theo tên repo → phát hành GitHub Pages |
 
 Base của bản build lấy từ tên repo nên đổi tên repo không làm hỏng đường dẫn asset. Deploy

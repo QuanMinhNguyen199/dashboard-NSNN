@@ -1,15 +1,17 @@
 ---
 name: Tổng quan Thu ngân sách Nhà nước Hà Nội
 description: Hệ thống giao diện vận hành số liệu ngân sách công, dày thông tin nhưng điềm tĩnh và dễ quét.
-updated: 2026-09-14
+updated: 2026-09-17
 colors:
   institutional-navy: "#0e2a47"
   brand-blue: "#1657a8"
   data-secondary: "#3987e5"
   data-family: "#86b6ef"
-  data-reference: "#8c9bae"
+  data-reference: "#75869b"
   data-track: "#e7edf5"
+  donut-4: "#6f93c4"
   blue-050: "#eef4fc"
+  blue-100: "#dbe8f8"
   blue-250: "#86b6ef"
   blue-350: "#5598e7"
   blue-450: "#2a78d6"
@@ -23,15 +25,20 @@ colors:
   ink-3: "#63707f"
   hairline: "#dbe3ed"
   divider: "#eaeff6"
-  nodata: "#e5eaf1"
+  map-nodata: "#e5eaf1"
+  chart-unclassified: "#646c77"
   positive: "#187044"
   negative: "#b3352f"
   note-ink: "#7a5a12"
   note-surface: "#fdf5dd"
   note-line: "#eeddad"
+  star-on: "#9a6b00"
+  star-surface: "#fdf7e8"
+  star-surface-hover: "#fbf1d9"
   control-border: "#c6d2e0"
   scrollbar-thumb: "#c3cedd"
   ink-on-dark: "#ffffff"
+  navy-ink: "#d3e1f0"
   on-dark-fill: "#ffffff14"
   on-dark-fill-hover: "#ffffff26"
   on-dark-line: "#ffffff3d"
@@ -118,8 +125,8 @@ components:
     textColor: "{colors.surface}"
     typography: "{typography.label}"
     rounded: "{rounded.control}"
-    padding: "6px 13px"
-    height: "36px"
+    padding: "8px 14px"
+    height: "38px"
   segmented-selected:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.brand-blue}"
@@ -142,6 +149,18 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.surface}"
     padding: "15px 16px"
+  pin-on:
+    textColor: "{colors.star-on}"
+    rounded: "{rounded.control}"
+    size: "26px"
+  pin-row:
+    backgroundColor: "{colors.star-surface}"
+    textColor: "{colors.ink}"
+  entity-card:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.control}"
+    padding: "10px 12px"
   comparison-chip:
     backgroundColor: "{colors.blue-050}"
     textColor: "{colors.brand-blue}"
@@ -188,11 +207,23 @@ liền kề, đầu nhạt đạt 2,11:1 trên nền trắng, độ lệch sắc
   chính, kỳ hiện tại, kỳ B trong tab So sánh.
 - **Xanh phụ** `#3987e5` — thanh trong danh sách xếp hạng, lát thứ hai của donut.
 - **Cùng họ** `#86b6ef` — chuỗi cùng nhóm số liệu: lũy kế YTD, NSĐP, kỳ A.
-- **Mốc tham chiếu** `#8c9bae` — đường cùng kỳ năm trước trên biểu đồ Tổng quan.
+- **Mốc tham chiếu** `#75869b` — đường cùng kỳ năm trước trên biểu đồ Tổng quan.
   Cố ý phi sắc: đây là mốc nền, không phải một chuỗi ngang hàng, và luôn đi kèm
-  nét đứt cùng nhãn trực tiếp.
+  nét đứt cùng nhãn trực tiếp. Bậc này đạt **3,72:1** trên nền trắng. Giá trị cũ
+  `#8c9bae` chỉ đạt 2,83:1 — dưới ngưỡng WCAG 1.4.11 cho đồ hoạ mang thông tin,
+  mà một đường kỳ trước thì mang thông tin.
 - **Thang bản đồ** — 5 bậc `#86b6ef → #0d366b`, nhạt là thấp, đậm là cao. Bậc
-  "chưa có số liệu" là xám trung tính `#e5eaf1`, tách khỏi thang.
+  "chưa có số liệu" là xám rất nhạt `#e5eaf1` (`map-nodata`), tách khỏi thang.
+- **Nhóm chưa xác định trên biểu đồ** `#646c77` (`chart-unclassified`) — lát
+  donut và ô chú giải của nhóm chưa tra được mã. Đạt 5,31:1 trên nền trắng và
+  cách mỗi bậc xanh ít nhất 1,33:1 về độ sáng, nên còn phân biệt được khi in đen
+  trắng. **Đây là một màu khác hẳn `map-nodata`** dù cùng nghĩa "chưa có": nền
+  bản đồ là một vùng lớn nên phải nhạt, còn lát donut nhỏ và bấm được nên phải
+  đủ đậm để đọc ra là một phần tử mang thông tin.
+- **Ghim của người dùng** `#9a6b00` (`star-on`) trên nền `#fdf7e8`
+  (`star-surface`) — ngôi sao đã ghim và cả khối dòng đã ghim. 4,69:1 trên nền
+  trắng. Tách khỏi họ `note-*` (vốn nghĩa "cần xem lại") vì ghim là một **hành
+  động của người dùng**, không phải một cảnh báo của hệ thống.
 - **Mực phụ** — hai bậc chữ phụ chốt theo **độ tương phản đo được trên nền
   trắng**, không chốt theo cảm giác "nhạt vừa đủ": `ink-2` đạt 7,50:1 (AAA) và
   `ink-3` đạt 5,05:1 (AA). Bản cũ dùng `#8496aa` cho `ink-3` chỉ đạt 3,03:1 —
@@ -321,6 +352,40 @@ Không có chỗ nào dùng `toFixed()` trực tiếp cho số hiển thị.
 chữ số bằng nhau, dấu phẩy thẳng hàng giữa các dòng và cột không nhảy khi giá trị
 đổi. Căn phải khi nằm ở cuối hàng.
 
+### Độ dài dòng và giãn chữ
+
+Đoạn văn giải thích giới hạn ở **72 ký tự một dòng** (`--measure: 72ch`), áp cho
+`.dhint`, `.dnote`, `.dnotice` và phụ đề thẻ. Đặt bằng `max-width` nên đoạn ngắn
+không bị ảnh hưởng.
+
+72ch chứ không phải 65ch vì hai lý do cụ thể: tiếng Việt có dấu nên từ trông dài
+hơn tiếng Anh cùng số ký tự, và đây là bề mặt Operate dày thông tin — thắt chặt
+hơn sẽ đẩy các thẻ cao lên và giảm số dòng nhìn được cùng lúc.
+
+Giãn chữ là token, không viết tay, và tên theo **vai trò** chứ không theo số:
+
+| Token | Giá trị | Dùng cho |
+|---|---|---|
+| `--ls-display` | −0,03em | 32px |
+| `--ls-metric` | −0,025em | 23px |
+| `--ls-tight` | −0,02em | 19–20px |
+| `--ls-title` | −0,01em | 15–16px |
+| `--ls-label` | 0,01em | nhãn 12px |
+| `--ls-code` | 0,02em | mã số, chữ in hoa nhỏ |
+
+Chữ càng lớn thì khoảng cách giữa các chữ cái trông càng rộng, nên bậc lớn siết
+lại; chữ nhỏ và mã số thì nới ra cho dễ tách ký tự. Sàn là −0,04em.
+
+**The Measured Line Rule.** Không đoạn văn nào vượt 72ch ở bất kỳ khổ màn hình
+nào. Phép kiểm: đo bề rộng đoạn chia cho bề rộng chữ "0" của chính phông và cỡ
+đó. Trước khi có luật này, các đoạn mang lập luận nghiệp vụ dài **177 ký tự một
+dòng** ở khổ 1440px — hơn gấp đôi ngưỡng, và ở độ dài đó mắt mất dòng khi quét
+ngược về đầu dòng sau.
+
+**The Balanced Heading Rule.** Tiêu đề dùng `text-wrap: balance`, đoạn văn dùng
+`text-wrap: pretty`. Với tiếng Việt điều này đáng giá hơn tiếng Anh: từ ngắn và
+nhiều nên dòng cuối rất hay rơi lại đúng một chữ.
+
 ## Layout
 
 Khung ứng dụng rộng tối đa 1600px, căn giữa, lề ngang co giãn `clamp(14px, 2.5vw, 36px)`.
@@ -381,6 +446,13 @@ mảng thì thứ tự dữ liệu quyết định độ đậm, và biểu đ�
 nó đang mã hoá — donut ba nhóm nội địa từng cho lát 18,3% màu đậm hơn lát 30,2%.
 Thứ tự *lát* vẫn theo danh mục nghiệp vụ; chỉ bậc màu được xếp lại.
 
+**The Unknown Is Not A Step Rule.** Nhóm "chưa xác định" không bao giờ nhận một
+bậc của thang xanh. Thang xanh mã hoá ĐỘ LỚN; nhóm chưa xác định nói rằng chưa
+biết xếp phần tiền đó vào đâu. Ở màn Mã hạch toán nhóm này giữ tới 46,3% số
+tiền, nên nếu nó nhận bậc đậm nhất thì hình vẽ tuyên bố nó là hạng mục quan
+trọng nhất. Màu trung tính tách nó ra, và giải phóng bậc xanh đó cho một hạng
+mục thật.
+
 **The Peer Not Reference Rule.** Nét đứt phi sắc `--data-reference` chỉ dành cho
 **mốc tham chiếu** — nó cố ý nhạt để không tranh chấp với chuỗi chính. Hai vế của
 một phép so sánh là hai chuỗi **ngang hàng**: vế A dùng `--data-family`, nét liền.
@@ -410,7 +482,8 @@ Bốn vai trò, bốn token, không có bậc thứ năm: `--shadow-control`,
 
 - **Control nổi** (`--shadow-control`, `0 1px 2px #19334e18`): nút segmented đang chọn và nút phóng bản đồ. Đủ để tách khỏi rãnh chứa nó, không hơn.
 - **Overlay** (`--shadow-overlay`, `-18px 0 42px #0e2a4722`): drawer chi tiết, bóng ngang rộng vì nó đến từ cạnh phải.
-- **Khung xem thử** (`--shadow-frame`): iframe trên nền tối — vòng 1px thay viền, bóng đổ tạo khoảng cách với nền.
+- **Khung xem thử** (`--shadow-frame`, `0 0 0 1px #00000040, 0 10px 34px #0000004d`): iframe trên nền tối — vòng 1px thay viền, bóng đổ tạo khoảng cách với nền.
+- **Tooltip và thẻ nổi** (`--shadow-tip`, `0 4px 14px #19334e18`): tooltip biểu đồ, và trạng thái trỏ vào của thẻ cơ quan thuế — bóng nhấc thẻ lên một bậc để nói nó bấm được.
 - **Sticky header bảng** (`inset 0 -1px 0 var(--hairline)`): đường kẻ dưới `thead` phải là inset shadow, **không** phải `border-bottom` — ở chế độ `border-collapse` thì viền của ô sticky không dính theo ô và dòng phía sau lộ ra một vệt.
 
 **The Flat Workspace Rule.** Không thêm bóng cho widget thường; viền và tông nền đã mang đủ cấu trúc.
@@ -446,13 +519,50 @@ phần tử con không được cong hơn khung chứa nó.
 ### Filters and segmented controls
 
 - **Container:** surface trắng, viền 1px, radius 12px; dải ngữ cảnh nằm dưới với divider và nền trung tính nhạt.
-- **Select:** cao tối thiểu 38px, viền `control-border`, radius 6px; nhãn 12px/650.
+- **Select:** cao 38px, viền `control-border`, radius 6px, `appearance: none`.
+  Mũi tên là **nét vẽ** 1,6px bo đầu, không phải tam giác đặc — ở cạnh chữ 13px
+  một tam giác đặc nặng hơn cả chữ và là thứ đầu tiên mắt nhìn thấy trong mỗi ô.
+  Mũi tên chuyển sang màu thương hiệu khi trỏ vào.
+- **Nhãn điều khiển:** 12px/650 `ink-2`, **viết thường**. Tiếng Việt viết hoa
+  toàn bộ ở cỡ 11–12px thì dấu chen chúc; "CƠ QUAN ĐANG XEM" khó đọc hơn hẳn
+  "Cơ quan đang xem".
+- **Chiều cao chung:** select, nút và thanh phân đoạn đều 38px. Lệch 2px không ai
+  gọi được tên nhưng cả hàng trông như xếp ẩu.
 - **Segmented:** nền `divider`, padding 3px, radius 6px. Mục chọn chuyển sang trắng, chữ xanh và bóng `0 1px 2px #19334e18`.
 - **Responsive:** desktop rộng dùng điều khiển trực tiếp. Web hẹp, iframe và Mobile dùng
   hai nhóm tóm tắt. Khi mở, hai hàng đầu chia đôi; hàng cuối dành 1/3 cho `Cấp ngân sách`
   và 2/3 cho `Chỉ tiêu`. Dưới 340px, hai trường cuối xếp chồng.
 - **Reset:** nút secondary toàn chiều rộng ở cuối panel; bị vô hiệu khi state đã là mặc định.
 - **Behavior:** thay đổi loại kỳ phải kẹp giá trị kỳ về phạm vi hợp lệ; ngữ cảnh luôn nêu phạm vi và đơn vị.
+
+**The One Control Owner Rule.** Kiểu của một loại điều khiển được khai đúng MỘT
+chỗ, và chọn theo **element** chứ không theo danh sách panel cha. Luật cũ viết
+`.dfilters select, .dbuilder select` — mỗi panel mới phải nhớ tự thêm mình vào
+danh sách, và không ai nhớ: `.dbuilder` quên một lần, rồi `.dtax-picker` quên
+lần nữa và cho ra một `<select>` thô của trình duyệt rộng 1.530px giữa một màn
+hình đã style kỹ. Chỗ nào cần khác thì ghi đè bằng selector cụ thể hơn.
+
+### Ghim của người dùng
+
+Ngôi sao ghim là **điều khiển duy nhất trong hệ do người dùng sở hữu**: nó không
+lọc, không điều hướng, chỉ đánh dấu.
+
+- **Chưa ghim:** nét sao rỗng, `ink-2`. Từng dùng `ink-3` và biến thành hạt bụi
+  giữa một bảng đầy chữ — nó là lời **mời bấm**, nên phải nhìn thấy được trước
+  khi bấm.
+- **Đã ghim:** sao đặc, `star-on` (`#9a6b00`). Đổi **hẳn màu**, không phải một
+  sắc độ đậm hơn của cùng màu xám — trạng thái bật/tắt phải khác nhau về màu để
+  bảng in đen trắng và mắt kém màu vẫn phân biệt được.
+- **Khối đã ghim:** nền `star-surface`, dải trái 3px `star-on`. Đây là chỗ **duy
+  nhất** trong hệ dùng dải màu ở cạnh, vì đây là nhóm do người dùng tạo ra chứ
+  không phải một hạng mục nghiệp vụ.
+- **Vùng chạm:** 26×26px ở con trỏ chuột, **44×44px** dưới `pointer: coarse`. Ô
+  chứa rộng 48px (64px khi coarse) vì ô là `border-box` với đệm 10px mỗi bên.
+
+**The Pin Never Reorders Rule.** Ghim đẩy dòng sang một khối riêng ở đầu bảng,
+**không** trộn nó lên đầu danh sách xếp hạng. Bảng xếp theo số tiền giảm dần nên
+vị trí mang nghĩa "lớn thứ mấy"; đẩy một mã nhỏ lên đầu chỉ vì nó được ghim là
+làm vị trí mất nghĩa.
 
 ### KPI strip
 
@@ -481,9 +591,22 @@ tỷ lệ cố định áp lên bốn tập nội dung khác nhau thì đúng đ
 - **Content:** danh sách dùng divider rất nhạt; biểu đồ dùng xanh hiện tại, xám dashed cho năm trước và khoảng trống thật cho dữ liệu chưa có.
 - **Interaction:** hàng có drill-down là button đầy đủ; hàng chỉ hiển thị bị disabled và không giả vờ có tương tác.
 
+**Thẻ thực thể** (`entity-card`) — thẻ cơ quan thuế ở màn Mã hạch toán, và mọi
+thẻ "một thực thể kèm một con số" sau này. Nền trắng kèm `--shadow-control` để
+đọc ra là bấm được thay vì một ô xám nằm trên nền trắng của thẻ cha; trỏ vào thì
+nhấc lên `--shadow-tip`. Thứ bậc bên trong: **số tiền là chữ lớn nhất**
+(14px/650 `ink`), mã là nhãn nhỏ đều chân số (12px/650 `ink-2`), tên là dòng phụ
+(12px `ink-3`).
+
+**The Figure Leads Rule.** Trong một thẻ mang một con số, con số là chữ lớn nhất.
+Bản đầu của thẻ cơ quan thuế làm ngược — mã 13px, số tiền 12px — nên mắt dừng ở
+mã trước rồi mới đi tìm thứ mình cần.
+
 ### Buttons and chips
 
-- **Primary:** xanh dữ liệu, chữ trắng, cao tối thiểu 36px, radius 7px, padding 6px 13px.
+- **Primary:** xanh dữ liệu, chữ trắng, cao **38px**, radius 6px, padding 8px 14px.
+  Nhãn nút **không bao giờ xuống dòng** — "Bỏ chọn" vỡ thành "Bỏ / chọn" ở khổ
+  390px làm nút cao gấp đôi ô chọn bên cạnh.
 - **Text action:** chữ xanh 12px/650, gạch chân có offset 3px.
 - **Comparison chip:** nền xanh nhạt, chữ xanh đậm, radius 6px; dấu × nằm sau nhãn.
 - **State:** focus-visible luôn dùng outline chuẩn. Chuyển màu nền/chữ/viền trong 120ms để thao tác có xác nhận; không animation trang trí.
@@ -591,6 +714,9 @@ thêm mới đều phải đi qua hook đó.
 - **Do** hiển thị nguồn, phạm vi, kỳ, cấp ngân sách và độ phủ gần số liệu mà chúng mô tả.
 - **Do** giữ mọi trạng thái tương tác có focus-visible rõ, nhãn ARIA phù hợp và hành vi reduced-motion.
 - **Do** đưa nguồn API/MCP/mock qua hợp đồng typed và validation runtime trước khi render.
+- **Do** giới hạn mọi đoạn văn ở 72ch và đo lại bằng bề rộng chữ "0" của chính phông đó.
+- **Do** khai kiểu điều khiển theo element, một chỗ duy nhất, rồi ghi đè bằng selector cụ thể hơn khi cần.
+- **Do** để bộ lọc và tiêu đề phạm vi NGOÀI vùng tải lại; chỉ phần số bên dưới mới đợi mạng.
 
 ### Don't:
 
@@ -600,6 +726,11 @@ thêm mới đều phải đi qua hook đó.
 - **Don't** làm widget thành các tile nổi rời rạc; cấu trúc đến từ grid, viền và nhịp đều.
 - **Don't** giấu nguồn mô phỏng, kỳ tổng hợp hoặc độ phủ chưa đầy đủ.
 - **Don't** thêm tương tác vào hàng không có drill-down, hoặc dùng affordance button cho nội dung chỉ đọc.
+- **Don't** cho nhóm "chưa xác định" một bậc của thang xanh; nó không mã hoá độ lớn.
+- **Don't** lặp đơn vị tiền ở từng ô bảng — đơn vị thuộc về đầu cột.
+- **Don't** viết hoa toàn bộ nhãn điều khiển; ở cỡ 11–12px dấu tiếng Việt chen chúc.
+- **Don't** giữ số của phạm vi cũ trong lúc chờ số mới. Giấu số đi, giữ thứ tự lại.
+- **Don't** ghim chiều rộng cột bằng `nth-child` khi nhiều bảng dùng chung một class.
 - **Don't** dùng bậc "nghìn tỷ" hay mã ISO `VND`; thang tiền dừng ở "tỷ đồng".
 - **Don't** để hai đơn vị tiền khác nhau trong cùng một cột số.
 - **Don't** đặt `transition-duration: 0.01ms` cho toàn bộ dưới reduced-motion; chặn theo thuộc tính di chuyển và giữ phản hồi màu.

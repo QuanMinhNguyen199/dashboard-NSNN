@@ -26,3 +26,10 @@ Thumbs.db
 
 # Bản tài liệu TMS nội bộ để đọc hoặc đăng Outline có phân quyền
 /bao-cao-outline/noi-bo/
+
+# Nguồn Excel bên Thuế: danh bạ 473 nghìn người nộp thuế và các bảng nối gốc.
+# Đây là dữ liệu mật, không đưa lên remote. Tài liệu tham chiếu chúng bằng mã
+# (TMS-SPEC, MAP-BC, MAP-6334, DANHBA, MLNS), không bằng tên file.
+/TMS/*.xls
+/TMS/*.xlsx
+/TMS/*.XLSX

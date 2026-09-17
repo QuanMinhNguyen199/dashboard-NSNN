@@ -31,7 +31,7 @@ import { metaOf } from "./build";
  *
  * Trong ràng buộc đó, lớp này vẫn giữ ba tính chất để bản demo không dạy sai:
  *
- * · **Không sinh tiền mới.** Mỗi khoản thu nội địa đã có tổng trong kho quan sát
+ * · **Không sinh tiền mới.** Mỗi khoản thuộc tổng A đã có tổng trong kho quan sát
  *   gốc; ở đây chỉ **chia lại** tổng đó xuống các cặp (Chương, Tiểu mục) thuộc
  *   điều kiện của chính khoản đó. Tổng theo Chương, theo Tiểu mục và theo chỉ
  *   tiêu vì vậy bằng nhau tới từng đồng, đúng phép kiểm của đặc tả mục 4.
@@ -146,6 +146,19 @@ interface PairAmount extends MockPair {
   amount: number;
   previous: number | null;
   itemCode: string;
+  taxOfficeCode: string;
+}
+
+/**
+ * Gán mỗi lát mô phỏng vào đúng một cơ quan thuế.
+ *
+ * Đây chỉ là khóa phân vùng tất định để demo bộ lọc: không mô tả quan hệ quản
+ * lý thật. Một lát chỉ vào một cơ quan nên tổng các cơ quan luôn khớp tuyệt đối
+ * với tổng phạm vi, và cùng bộ lọc luôn cho cùng kết quả.
+ */
+function taxOfficeOf(itemCode: string, chapterCode: string, subItemCode: string): string {
+  const index = Math.floor(hash("tax-office", itemCode, chapterCode, subItemCode) * TAX_OFFICES.length);
+  return TAX_OFFICES[Math.min(index, TAX_OFFICES.length - 1)].code;
 }
 
 /** Chia tổng của từng khoản thu xuống các cặp của chính nó. */
@@ -165,6 +178,7 @@ function pairAmounts(filters: DashboardFilters, locationIds?: string[]): PairAmo
         amount: amounts[index],
         previous: previous ? previous[index] : null,
         itemCode: item.code,
+        taxOfficeCode: taxOfficeOf(item.code, pair.chapterCode, pair.subItemCode),
       });
   }
   return out;
@@ -211,11 +225,55 @@ export function buildTmsBreakdown(
   filters: DashboardFilters,
   level: ManagementLevelFilter,
   locationId: string | null = null,
+  taxOfficeCode: string | null = null,
 ): TmsBreakdownData | null {
   // Địa bàn là chiều độc lập với cấp quản lý (ca TMS24), nhưng vẫn là bộ lọc thật.
   const locationIds = locationId ? [locationId] : undefined;
-  const pairs = pairAmounts(filters, locationIds);
+  const allPairs = pairAmounts(filters, locationIds);
+  if (!allPairs.length) return null;
+  if (taxOfficeCode && !TAX_OFFICES.some((office) => office.code === taxOfficeCode)) return null;
+  const pairs = taxOfficeCode
+    ? allPairs.filter((pair) => pair.taxOfficeCode === taxOfficeCode)
+    : allPairs;
   if (!pairs.length) return null;
+
+  const scopeName = locationId ? (LOCATION_BY_ID[locationId]?.name ?? locationId) : "Toàn thành phố";
+  const officeBuckets = new Map<string, { amount: number; previous: number | null }>();
+  // Số trên bộ chọn phải cùng cấp quản lý với KPI ngay bên dưới. Danh mục CQT
+  // không đổi theo cấp, nhưng đóng góp hiển thị là lát cắt của cấp đang xem.
+  const officeScopePairs = allPairs.filter((pair) =>
+    matchesLevel(level, levelOfChapter(pair.chapterCode)),
+  );
+  for (const pair of officeScopePairs) {
+    const bucket = officeBuckets.get(pair.taxOfficeCode) ?? { amount: 0, previous: null };
+    bucket.amount += pair.amount;
+    bucket.previous = addPrevious(bucket.previous, pair.previous);
+    officeBuckets.set(pair.taxOfficeCode, bucket);
+  }
+  const periodLabel =
+    filters.periodType === "MONTH"
+      ? `${filters.year}-${String(filters.period).padStart(2, "0")}`
+      : `${filters.year}-Q${filters.period}`;
+  const taxOfficeScopes: NonNullable<TmsBreakdownData["taxOfficeScopes"]> = {
+    origin: "mock",
+    period: periodLabel,
+    offices: TAX_OFFICES.map((office) => {
+      const bucket = officeBuckets.get(office.code) ?? { amount: 0, previous: null };
+      return {
+        code: office.code,
+        name: office.name,
+        amount: String(bucket.amount),
+        // Chỉ là quy mô minh họa, không được đọc như số chứng từ đã nhập.
+        txCount: bucket.amount === 0 ? 0 : Math.max(1, Math.round(Math.abs(bucket.amount) / 250_000_000)),
+        locations: locationId
+          ? [{ id: locationId, name: scopeName, amount: String(bucket.amount) }]
+          : [],
+      };
+    }).sort((a, b) => Number(b.amount) - Number(a.amount)),
+    sharedLocations: 0,
+    totalLocations: locationId ? 1 : 0,
+    sharedShare: null,
+  };
 
   // Phân bố theo cấp tính trên TOÀN phạm vi, không theo cấp đang lọc: đó là mẫu
   // số để đọc "cấp này chiếm bao nhiêu", nên lọc rồi mới cộng là tự tính 100%.
@@ -367,24 +425,52 @@ export function buildTmsBreakdown(
    * hiện khoảng chênh là cách duy nhất trả lời dứt điểm câu "hai cái này có phải
    * một không"; con số chênh chính là bằng chứng rằng không.
    */
-  const budgetTotalOf = (budgetLevel: "NSTW" | "NSDP") =>
-    filters.budgetLevel !== "NSNN" && filters.budgetLevel !== budgetLevel
-      ? null
-      : sumOf({ ...filters, budgetLevel }, { items: TMS_ITEMS, locationIds });
+  const budgetWeights = (["NSTW", "NSDP"] as const).map(
+    (budgetLevel) => sumOf({ ...filters, budgetLevel }, { items: TMS_ITEMS, locationIds }) ?? 0,
+  );
+  const budgetParts =
+    filters.budgetLevel === "NSNN"
+      ? allocate(scopeAmount, budgetWeights)
+      : filters.budgetLevel === "NSTW"
+        ? [scopeAmount, 0]
+        : [0, scopeAmount];
+  const budgetTotalOf = (budgetLevel: "NSTW" | "NSDP") => {
+    if (filters.budgetLevel !== "NSNN" && filters.budgetLevel !== budgetLevel) return null;
+    return budgetParts[budgetLevel === "NSTW" ? 0 : 1];
+  };
 
   const correspondence = [
     { id: "trung-uong", management: "Trung ương", budget: "NSTW", amount: centralTotals.amount, budgetAmount: budgetTotalOf("NSTW") },
     { id: "dia-phuong", management: "Địa phương", budget: "NSĐP", amount: localTotals.amount, budgetAmount: budgetTotalOf("NSDP") },
+    /**
+     * Dòng thứ ba phải có mặt, dù vế ngân sách của nó trống.
+     *
+     * Chương chưa có trong danh mục thì chưa tra được cấp quản lý, nhưng giao
+     * dịch vẫn mang một cấp ngân sách và số tiền vẫn nằm trong tổng. Bỏ dòng này
+     * đi thì cột trái cộng thiếu đúng phần đó, và bảng hiện ra hai con số không
+     * bằng nhau mà không nói vì sao — người đọc hiểu thành số bị lệch, trong khi
+     * cả hai cột đều là cách chia đúng của cùng một tổng.
+     */
+    ...(levelBuckets.has(UNKNOWN_LEVEL)
+      ? [
+          {
+            id: UNKNOWN_LEVEL,
+            management: "Chưa xác định cấp",
+            budget: "",
+            amount: unknownTotals.amount,
+            budgetAmount: null,
+          },
+        ]
+      : []),
   ].map((row) => ({ ...row, gap: row.budgetAmount === null ? null : row.amount - row.budgetAmount }));
 
   const nsnnAmount = sumOf(filters, { locationIds });
   const nsnnPrevious = sumOf(filters, { locationIds, year: filters.year - 1 });
-  const scopeName = locationId ? (LOCATION_BY_ID[locationId]?.name ?? locationId) : "Toàn thành phố";
-
   return {
     meta: metaOf(filters, `${levelLabel(level)} · ${scopeName}`),
     level,
     origin: "mock",
+    taxOfficeCode,
     scopeName,
     nsnnTotal:
       nsnnAmount === null
@@ -392,10 +478,23 @@ export function buildTmsBreakdown(
         : { id: "nsnn", name: "Tổng thu NSNN cùng kỳ và cùng địa bàn", amount: nsnnAmount, previous: nsnnPrevious },
     scopeTotal: {
       id: "scope",
-      name: "Thu nội địa trong phạm vi TMS",
+      name: "Tổng thu nội địa A theo TMS",
       amount: scopeAmount,
       previous: scopePrevious,
       status: "confirmed",
+    },
+    /**
+     * Vế Kho bạc để `null`, không để 0 và cũng không để bằng vế TMS.
+     *
+     * Ở đây chỉ có một kho quan sát: số "TMS" và số "Kho bạc" nếu cùng lấy từ nó
+     * thì luôn bằng nhau, và một chênh lệch bằng 0 đọc thành "đã đối soát, khớp"
+     * trong khi chưa có phép đối soát nào diễn ra. Bịa ra một chênh lệch nhỏ cho
+     * giống thật còn tệ hơn. Ô trống nói đúng tình trạng: chưa có vế thứ hai.
+     */
+    reconciliation: {
+      treasuryAmount: null,
+      tmsUpdatedAt: null,
+      treasuryUpdatedAt: null,
     },
     levelTotal: {
       id: "level",
@@ -410,13 +509,16 @@ export function buildTmsBreakdown(
     correspondence,
     sections,
     chapters: chapterRows,
-    // Danh sách không lọc theo cấp quản lý: hai chiều độc lập với nhau.
-    taxOffices: TAX_OFFICES.map((office) => ({
+    // Danh sách luôn giữ toàn bộ cơ quan để người dùng đổi bộ lọc mà không mất
+    // ngữ cảnh. Số được chia từ cùng các lát mock nên cộng khớp phạm vi tuyệt đối.
+    taxOfficeScopes,
+    taxOffices: taxOfficeScopes.offices.map((office) => ({
       id: office.code,
       name: `${office.code} · ${office.name}`,
-      amount: null,
-      previous: null,
-      status: "confirmed" as const,
+      amount: Number(office.amount),
+      previous: officeBuckets.get(office.code)?.previous ?? null,
+      status: "needsReview" as const,
+      reviewNote: "Số mô phỏng để kiểm tra luồng lọc; chưa có chứng từ TMS.",
     })),
     quality: {
       subItemsWithoutName: [...subItemBuckets.keys()].filter((code) => !SUB_ITEM_BY_CODE[code]).length,

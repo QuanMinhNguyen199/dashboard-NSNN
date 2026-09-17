@@ -18,11 +18,30 @@ import {
 } from "@/components/primitives";
 
 /** Sub-navigation của workspace phân tích thu. */
+/**
+ * BA phần, đúng đặc tả nguồn — không phải bốn.
+ *
+ * `dac-ta-v2` §1: "Tab 2 · Phân tích thu · ① Thu nội địa · ② Thu XNK · ③ Thu
+ * khác", và §3.3 ghi thẳng: "Panel Thu dầu thô (KHÔNG có phần riêng ở Tab 2)".
+ * Dầu thô xem tại chỗ bằng drawer ở Tổng quan.
+ *
+ * Lý do của đặc tả đứng vững: dầu thô chỉ có 2 khoản, `cityOnly`, thu điều tiết
+ * trung ương không phân bổ theo phường xã. Mở nó thành một phần đầy đủ nghĩa là
+ * dựng "Bảng chi tiết 21 khoản", "Đóng góp theo địa bàn 10 phường xã" và
+ * "Biến động trong nhóm" cho một nguồn hai dòng, không có địa bàn — phần lớn
+ * widget sẽ rỗng hoặc vô nghĩa.
+ *
+ * Dầu thô vẫn nằm trong `SOURCES`: thẻ Cơ cấu nguồn thu ở Tổng quan phải đủ
+ * BỐN dòng theo §3.3, và tab So sánh nâng cao vẫn so được nó.
+ */
 const SECTIONS: { id: SourceCode; label: string }[] = [
   { id: "domestic", label: "Thu nội địa không kể dầu thô" },
   { id: "import-export", label: "Thu xuất nhập khẩu" },
   { id: "other", label: "Thu khác" },
 ];
+
+/** Nguồn có phần riêng ở tab này — một nguồn sự thật cho cả drawer ở Tổng quan. */
+export const ANALYSIS_SOURCES: SourceCode[] = SECTIONS.map((s) => s.id);
 
 export function RevenueAnalysisTab() {
   const { filters, section, setSection } = useDashboardState();

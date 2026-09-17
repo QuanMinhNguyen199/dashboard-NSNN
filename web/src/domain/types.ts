@@ -1,10 +1,12 @@
 import type { BudgetLevel, IndicatorSlug, SourceCode } from "./catalog";
 import type { ManagementLevelFilter } from "./tms";
+import type { ReportDimension, ReportRowKind } from "./report";
 
 export type PeriodType = "MONTH" | "QUARTER";
 export type AccumulationMode = "PERIOD" | "YTD";
 export type TabId =
   | "overview"
+  | "report"
   | "revenue-analysis"
   | "location-detail"
   | "tms-breakdown"
@@ -125,6 +127,8 @@ export interface OverviewData {
   locations: AmountRow[];
   /** Hai phần không giao nhau của NSNN: NSTW và NSĐP. */
   budgetLevels: AmountRow[];
+  /** NSNN trừ NSTW và NSĐP; không được ép vào một trong hai cấp để làm tròn cơ cấu. */
+  unclassifiedBudget: AmountRow | null;
   /** Phân rã NSTW theo bốn nguồn thu, phục vụ chi tiết khi chọn lát NSTW. */
   centralBudgetSources: AmountRow[];
   /** Phân rã NSĐP; tổng ba dòng phải khớp đúng dòng NSĐP phía trên. */
@@ -239,27 +243,49 @@ export interface TmsBreakdownData {
    * Cùng khuôn với `BudgetEstimate.origin`.
    */
   origin: "mock" | "api";
+  /** Cơ quan thuế đang lọc; `null` là toàn bộ danh sách trong phạm vi. */
+  taxOfficeCode: string | null;
   /** Địa bàn đang xem: tên phường/xã, hoặc "Toàn thành phố" khi không lọc. */
   scopeName: string;
   /**
    * Tổng thu NSNN của cùng kỳ và cùng địa bàn — mẫu số của Kho bạc.
    *
-   * Phạm vi TMS chỉ là **thu nội địa**: thu xuất nhập khẩu, dầu thô và thu khác
-   * chưa có bộ quy tắc TMS riêng. Không mang con số này theo thì màn hình trả
+   * Phạm vi TMS là tổng A: thu nội địa gồm dầu thô và condensate; không gồm thu
+   * xuất nhập khẩu. Không mang con số này theo thì màn hình trả
    * lời "100%" cho câu hỏi tỷ trọng, và người đọc hiểu TMS là toàn bộ NSNN.
    * `null` khi kỳ đó chưa có quan sát nào.
    */
   nsnnTotal: AmountRow | null;
   /**
-   * Thu nội địa của cùng kỳ và cùng địa bàn — phạm vi mà bộ quy tắc TMS mô tả.
+   * Tổng A của cùng kỳ và cùng địa bàn — phạm vi mà bộ quy tắc TMS mô tả.
    * `amount` là `null` khi kỳ/địa bàn đó chưa có quan sát nào.
    */
   scopeTotal: TmsRow;
   /**
-   * Tổng của cấp đang chọn.
+   * Đối soát số chi tiết TMS với số tổng hợp Kho bạc trên CÙNG một phạm vi.
    *
-   * Bằng `scopeTotal` khi xem tất cả các cấp; `amount` là `null` ở mọi cấp cụ
-   * thể, vì chia thu nội địa theo cấp quản lý của Chương là việc cần giao dịch.
+   * TMS là nguồn chi tiết, Kho bạc là nguồn đối soát. Hai hệ thống chốt số ở hai
+   * thời điểm khác nhau nên số của chúng lệch nhau, có lúc TMS nhỉnh hơn. Vế TMS
+   * chính là `scopeTotal`; trường này mang vế còn lại cùng mốc chốt số của hai
+   * bên, vì so hai con số mà không biết chúng chốt lúc nào thì phép so vô nghĩa.
+   *
+   * Không có ngưỡng nào ở đây, và cũng không được thêm vào: mọi chênh lệch đều
+   * phải giải thích được bằng kỳ, phạm vi và mốc dữ liệu. Tuyên bố một mức chênh
+   * là chấp nhận được không thuộc thẩm quyền của lớp dữ liệu hay giao diện.
+   *
+   * `treasuryAmount` là `null` khi nguồn chưa cung cấp số Kho bạc cùng phạm vi.
+   * Lớp mô phỏng luôn trả `null`: nó chỉ có một nguồn số, nên một chênh lệch
+   * bằng 0 ở đó là lời khẳng định đã đối soát trong khi chưa hề đối soát.
+   */
+  reconciliation: {
+    treasuryAmount: number | null;
+    /** Mốc chốt số dạng ISO; `null` khi nguồn không cho biết. */
+    tmsUpdatedAt: string | null;
+    treasuryUpdatedAt: string | null;
+  } | null;
+  /**
+   * Tổng của cấp đang chọn: phần của `scopeTotal` thuộc các Chương trong dải cấp
+   * đó. Bằng đúng `scopeTotal` khi xem tất cả các cấp.
    */
   levelTotal: TmsRow;
   /**
@@ -298,12 +324,52 @@ export interface TmsBreakdownData {
    * `null` như mọi dòng danh mục khác.
    */
   taxOffices: TmsRow[];
+  /**
+   * Quan hệ cơ quan thuế với địa bàn, **suy từ giao dịch của kỳ**, không phải
+   * từ một bảng danh mục.
+   *
+   * Không bảng nối nào trong bộ tài liệu cho quan hệ này, và đo trên chứng từ
+   * thật thì biết vì sao: nó không phải quan hệ cha con. Tháng 7/2025 có 35 trên
+   * 127 địa bàn nằm dưới từ hai cơ quan thuế trở lên, và phần đó giữ hơn một nửa
+   * số tiền. Nguyên nhân là Thuế TP Hà Nội quản người nộp thuế lớn trên khắp địa
+   * bàn, chồng lên các Thuế cơ sở.
+   *
+   * Vì vậy trường này là **kết quả quan sát của một kỳ**, không phải sơ đồ tổ
+   * chức: kỳ khác có thể ra tập khác, và một địa bàn xuất hiện dưới nhiều cơ
+   * quan là chuyện bình thường chứ không phải lỗi nối.
+   *
+   * `null` khi kỳ đang lọc chưa có chứng từ được nhập.
+   */
+  taxOfficeScopes: {
+    /**
+     * `"tms"` là số chứng từ thật. `"mock"` là số phân bổ giả tất định để kiểm
+     * tra luồng lọc; giao diện phải gắn nhãn chừng nào giá trị còn là `"mock"`.
+     */
+    origin: "tms" | "mock";
+    /** Kỳ hạch toán của số thật, hoặc kỳ báo cáo đang được mô phỏng. */
+    period: string;
+    offices: {
+      code: string;
+      name: string;
+      /** Decimal đồng. */
+      amount: string;
+      txCount: number;
+      /** Địa bàn CÓ PHÁT SINH dưới cơ quan này trong kỳ, xếp giảm dần. */
+      locations: { id: string; name: string; amount: string }[];
+    }[];
+    /** Số địa bàn nằm dưới từ hai cơ quan thuế trở lên trong kỳ. */
+    sharedLocations: number;
+    /** Tổng số địa bàn có phát sinh trong kỳ. */
+    totalLocations: number;
+    /** Phần tiền thuộc các địa bàn dùng chung, 0..100. */
+    sharedShare: number | null;
+  } | null;
   quality: {
     /** Số Tiểu mục có phát sinh nhưng chưa có tên trong danh mục 180 mã. */
     subItemsWithoutName: number;
     /** Số Chương có phát sinh nhưng chưa có bản ghi nên chưa xác định được cấp. */
     chaptersWithoutLevel: number;
-    /** Khoản thu nội địa chưa có điều kiện TMS được xác nhận, nằm ngoài phạm vi. */
+    /** Khoản thuộc tổng A chưa có điều kiện TMS được xác nhận, nằm ngoài phạm vi. */
     itemsWithoutRule: string[];
   };
 }
@@ -336,6 +402,75 @@ export interface AdvancedComparisonFilters extends DashboardFilters {
   item?: string;
   locationA?: string;
   locationB?: string;
+}
+
+/**
+ * Trạng thái của một ô báo cáo.
+ *
+ * `notApplicable` dành cho tiêu đề B và D: chúng không phát sinh tổng, nên một
+ * ô trống ở đó là kết quả đúng chứ không phải thiếu dữ liệu. `needsReview` là ô
+ * có số nhưng chưa đủ căn cứ công bố. Ba trạng thái này không được quy về nhau.
+ */
+export type CellStatus = "confirmed" | "needsReview" | "notApplicable";
+
+/** Một cột của báo cáo; `parentId` khác null khi báo cáo có chiều chi tiết. */
+export interface ReportColumn {
+  id: string;
+  name: string;
+  parentId: string | null;
+}
+
+export interface ReportCell {
+  rowId: string;
+  columnId: string;
+  /**
+   * Chuỗi decimal, đơn vị đồng. `null` là chưa tính được và khác 0.
+   *
+   * Chuỗi chứ không phải số: xem `domain/money.ts`. Giao diện cộng bằng `bigint`
+   * và chỉ đổi sang `number` ở bước định dạng.
+   */
+  value: string | null;
+  status: CellStatus;
+  /** Khóa mở chi tiết do máy chủ cấp; `null` khi ô không mở xuống được. */
+  drillToken: string | null;
+}
+
+export interface ReportRow {
+  id: string;
+  parent: string | null;
+  kind: ReportRowKind;
+  name: string;
+  /** Độ sâu trong cây, dùng để thụt dòng; gốc là 0. */
+  depth: number;
+  /** Tổng của cả hàng trên toàn bộ các cột, kể cả cột ngoài trang đang xem. */
+  total: string | null;
+  status: CellStatus;
+}
+
+/**
+ * Lưới báo cáo: hàng là cây chỉ tiêu, cột là chiều được chọn.
+ *
+ * Một trang cột chứ không phải toàn bộ: mẫu ngành theo địa bàn là 13 nhân 126
+ * bằng 1.638 cột, và đặc tả cấm bày hết. `columnPage.total` cho biết còn bao
+ * nhiêu cột nữa để giao diện nói thật về phạm vi đang hiện.
+ */
+export interface ReportGridData {
+  meta: DataMeta;
+  origin: "mock" | "api";
+  /** Số hiệu trong tám mẫu; `null` khi cặp chiều không thuộc tám mẫu. */
+  templateNo: number | null;
+  groupBy: ReportDimension;
+  subGroupBy: ReportDimension | null;
+  rows: ReportRow[];
+  columns: ReportColumn[];
+  columnPage: { offset: number; limit: number; total: number };
+  cells: ReportCell[];
+  quality: {
+    /** Số ô chưa đủ căn cứ công bố trong trang đang xem. */
+    cellsNeedingReview: number;
+    /** Phần tiền chưa nối được chiều đang nhóm, dạng decimal đồng. */
+    unclassified: string | null;
+  };
 }
 
 /** Ý định điều hướng MCP được phép trả về — danh sách đóng. */
@@ -384,6 +519,24 @@ export interface DashboardDataProvider {
     managementLevel: ManagementLevelFilter,
     /** Địa bàn đang lọc; `null` là toàn thành phố. */
     locationId: string | null,
+    /** Cơ quan thuế đang lọc; `null` là tất cả cơ quan. */
+    taxOfficeCode: string | null,
     signal: AbortSignal,
   ): Promise<DashboardResponse<TmsBreakdownData>>;
+  /**
+   * Lưới báo cáo theo một trong tám mẫu.
+   *
+   * `groupBy` và `subGroupBy` quyết định cột; hàng luôn là cây 113 chỉ tiêu.
+   * Đổi thứ tự hai chiều trên cùng tập dữ liệu phải giữ nguyên tổng của mỗi hàng.
+   */
+  getReportGrid(
+    filters: DashboardFilters,
+    options: {
+      groupBy: ReportDimension;
+      subGroupBy: ReportDimension | null;
+      columnOffset: number;
+      columnLimit: number;
+    },
+    signal: AbortSignal,
+  ): Promise<DashboardResponse<ReportGridData>>;
 }

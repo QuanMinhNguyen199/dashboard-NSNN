@@ -4,7 +4,7 @@ import { useId, useState, type CSSProperties } from "react";
 export { TrendChart };
 
 import type { AmountRow, TrendPoint, Waterfall } from "@/domain/types";
-import { inScale, money, moneyScale, pct } from "@/components/primitives";
+import { inScale, LiveNotice, money, moneyScale, pct } from "@/components/primitives";
 
 /**
  * Bốn bậc màu của biểu đồ tròn, tham chiếu qua token chứ không viết cứng mã hex:
@@ -13,6 +13,21 @@ import { inScale, money, moneyScale, pct } from "@/components/primitives";
  */
 const DONUT_TOKENS = ["--donut-1", "--donut-2", "--donut-3", "--donut-4"];
 const donutColor = (index: number) => `var(${DONUT_TOKENS[index % DONUT_TOKENS.length]})`;
+
+/**
+ * Nhóm "chưa xác định" không phải một bậc của thang.
+ *
+ * Thang xanh đơn sắc mã hoá ĐỘ LỚN: đậm hơn nghĩa là nhiều hơn. Nhóm chưa xác
+ * định không nói về độ lớn mà nói rằng chưa biết xếp phần tiền đó vào đâu —
+ * cho nó một bậc xanh là dùng thang để nói một điều thang không nói được, và
+ * người quét nhanh đọc nó thành một hạng mục nghiệp vụ ngang hàng các hạng mục
+ * kia. Màu trung tính tách nó ra khỏi thang, và cũng giải phóng bậc xanh đó cho
+ * một hạng mục thật.
+ *
+ * Nhận diện bằng `id` vì đó là tín hiệu lớp dữ liệu đang phát ra: mọi nhóm chưa
+ * xác định đều mang tiền tố `chua-xac-dinh` (`chua-xac-dinh`, `-muc`, `-cap`).
+ */
+const isUnclassified = (id: string) => id === "chua-xac-dinh" || id.startsWith("chua-xac-dinh-");
 
 /** Biểu đồ cơ cấu nhỏ gọn, có bảng chú giải đọc được bằng bàn phím. */
 export function DonutChart({
@@ -52,9 +67,13 @@ export function DonutChart({
    */
   const rankByAmount = new Map(
     [...positiveRows]
+      .filter((row) => !isUnclassified(row.id))
       .sort((a, b) => b.amount - a.amount)
       .map((row, rank) => [row.id, rank]),
   );
+  /** Trả về màu lát: bậc thang cho hạng mục thật, màu trung tính cho nhóm chưa xác định. */
+  const sliceColor = (row: AmountRow, index: number) =>
+    isUnclassified(row.id) ? "var(--nodata)" : donutColor(rankByAmount.get(row.id) ?? index);
 
   let runningOffset = 0;
   const slices = positiveRows.map((row, index) => {
@@ -96,7 +115,7 @@ export function DonutChart({
                 cx={centerX}
                 cy={centerY}
                 r={radius}
-                style={{ stroke: donutColor(rankByAmount.get(row.id) ?? index) }}
+                style={{ stroke: sliceColor(row, index) }}
                 strokeDasharray={`${length} ${circumference - length}`}
                 strokeDashoffset={-offset}
                 transform={`rotate(-90 ${centerX} ${centerY})`}
@@ -148,7 +167,7 @@ export function DonutChart({
               const position = calloutPositions.get(row.id)!;
               const content = (
                 <>
-                  <i style={{ background: donutColor(rankByAmount.get(row.id) ?? index) }} />
+                  <i style={{ background: sliceColor(row, index) }} />
                   <span>{getCalloutLabel(row)}</span>
                   <strong>{pct((row.amount / total) * 100)}</strong>
                 </>
@@ -172,7 +191,7 @@ export function DonutChart({
           const tooltipId = `${chartId}-${row.id}`;
           const content = (
             <>
-              <i style={{ background: donutColor(rankByAmount.get(row.id) ?? index) }} />
+              <i style={{ background: sliceColor(row, index) }} />
               <span>{row.name}</span>
               <strong>{pct((row.amount / total) * 100)}</strong>
             </>
@@ -336,12 +355,11 @@ export function WaterfallChart({
         })}
       </ul>
 
-      {!data.reconciled && (
-        <p className="dnote is-warn" role="status">
-          Tổng các bước lệch {money(Math.abs(data.drift))} so với chênh lệch chung — cần đối chiếu
-          lại nguồn trước khi dùng số này.
-        </p>
-      )}
+      <LiveNotice className="dnote is-warn">
+        {data.reconciled
+          ? null
+          : `Tổng các bước lệch ${money(Math.abs(data.drift))} so với chênh lệch chung — cần đối chiếu lại nguồn trước khi dùng số này.`}
+      </LiveNotice>
     </div>
   );
 }

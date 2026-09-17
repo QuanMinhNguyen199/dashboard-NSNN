@@ -13,7 +13,7 @@ import { readFileSync } from "node:fs";
 const ROOT = new URL("../../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, ROOT), "utf8");
 
-const BA = "bao-cao-outline/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md";
+const BA = "bao-cao-outline/noi-bo/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md";
 const problems = [];
 
 /** Nhãn tab lấy thẳng từ nguồn, không chép tay sang đây. */

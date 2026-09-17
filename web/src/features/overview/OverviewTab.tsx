@@ -248,6 +248,12 @@ function OverviewBody({
                     selectedId={selectedBudgetLevel}
                     onSelect={(id) => setSelectedBudgetLevel(id as "NSTW" | "NSDP")}
                   />
+                  {data.unclassifiedBudget && data.unclassifiedBudget.amount !== 0 && (
+                    <p className="dhint">
+                      Chênh chưa giải thích: <strong><Money value={data.unclassifiedBudget.amount} /></strong>. Phần này
+                      vẫn nằm trong tổng NSNN và không được phân bổ lại vào NSTW hoặc NSĐP.
+                    </p>
+                  )}
                   <section
                     className="dbudget-local"
                     aria-live="polite"

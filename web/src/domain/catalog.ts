@@ -220,6 +220,17 @@ export const LOCATIONS: LocationDef[] = (wards as { location_code: string; locat
 
 export const LOCATION_BY_ID = Object.fromEntries(LOCATIONS.map((l) => [l.id, l]));
 
+/**
+ * Tra ngược từ mã địa bàn hai cấp của TMS về địa bàn.
+ *
+ * Chứng từ mang mã TMS tám chữ số; dashboard khoá theo mã Cục Thống kê năm chữ
+ * số. Nhập số thật mà không có chiều này thì mọi giao dịch đều thành chưa xác
+ * định địa bàn.
+ */
+export const LOCATION_BY_TMS_CODE = Object.fromEntries(
+  LOCATIONS.filter((l) => l.tmsCode).map((l) => [l.tmsCode as string, l]),
+);
+
 export const YEARS = [2026, 2025, 2024] as const;
 
 /** Tháng cuối cùng thực sự có dữ liệu. Tháng sau đó là null, không phải 0. */

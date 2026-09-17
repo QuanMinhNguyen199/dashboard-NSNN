@@ -1,6 +1,6 @@
 # dashboard-NSNN
 
-Prototype dashboard **Thu ngân sách nhà nước — Thành phố Hà Nội**: năm workspace phân tích,
+Prototype dashboard **Thu Ngân sách TP Hà Nội**: bảy workspace phân tích,
 URL state đầy đủ, lớp provider API/MCP/Mock có runtime validation, và dữ liệu mô phỏng tất
 định dựng từ một kho quan sát gốc duy nhất.
 
@@ -17,7 +17,7 @@ Bản chạy thử: <https://quanminhnguyen199.github.io/dashboard-NSNN/>
 npm install          # uỷ quyền xuống web/
 npm run dev          # http://localhost:5173
 npm run build
-npm run acceptance   # 17 tiêu chí trên Chrome thật (cần dev server đang chạy)
+npm run acceptance   # 20 tiêu chí trên Chrome thật (cần dev server đang chạy)
 ```
 
 Lệnh ở gốc repo chỉ uỷ quyền xuống [`web/`](web); chạy trực tiếp trong `web/` cũng như
@@ -45,7 +45,7 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 
 | Workflow | Chạy khi | Làm gì |
 |---|---|---|
-| [`ci.yml`](.github/workflows/ci.yml) | push **mọi nhánh** và pull request | typecheck → build → 17 tiêu chí nghiệm thu trên Chrome |
+| [`ci.yml`](.github/workflows/ci.yml) | push **mọi nhánh** và pull request | typecheck → build → 20 tiêu chí nghiệm thu trên Chrome |
 | [`deploy-pages.yml`](.github/workflows/deploy-pages.yml) | push `main` | build → phát hành GitHub Pages |
 
 ## Nội dung repo
@@ -57,20 +57,21 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 | [`reference-nsnn/`](reference-nsnn) | Bộ khảo sát website tham chiếu: 143 phản hồi API đã lưu, 40 trạng thái giao diện, CSS/bundle gốc, GeoJSON ranh giới 126 phường/xã và 30 quận/huyện trước 01/07/2025. |
 | [`verification/`](verification) | Ảnh và text đối chiếu của giai đoạn clone. |
 | [`Attachment/`](Attachment) | Ảnh đính kèm của tài liệu đặc tả. |
-| [`bao-cao-outline/`](bao-cao-outline) | **TMS và tích hợp dashboard.** Bốn tài liệu nghiệp vụ và kỹ thuật, gồm nhóm nội bộ. Mục lục và thứ tự đăng ở [`bao-cao-outline/README.md`](bao-cao-outline/README.md). |
+| `TMS/` | **Nguồn nghiệp vụ bên Thuế.** Tài liệu và bảng nối dùng để rà soát cục bộ; dữ liệu riêng được loại khỏi Git. Tài liệu công khai không nêu tên tệp nguồn. |
+| [`bao-cao-outline/noi-bo/`](bao-cao-outline/noi-bo) | **TMS và tích hợp dashboard.** Bốn tài liệu nghiệp vụ và kỹ thuật dùng trong phạm vi được phân quyền. |
 
 ## Tài liệu TMS và tích hợp dashboard
 
-Bắt đầu tại [mục lục TMS](bao-cao-outline/README.md). Bộ đọc hiện tại có bốn tài liệu:
+Bắt đầu tại [Báo cáo BA TMS](bao-cao-outline/noi-bo/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md). Bộ đọc hiện tại có bốn tài liệu:
 
 | Tài liệu | Vai trò |
 |---|---|
-| [Báo cáo BA TMS](bao-cao-outline/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md) | Nghiệp vụ, cách tổ chức dashboard, dữ liệu còn thiếu và quyết định cần chốt. |
-| Phụ lục nghiệp vụ TMS nội bộ | Bản đọc cục bộ ở `bao-cao-outline/noi-bo/`, tóm tắt cấp quản lý, Mục/Tiểu mục, cách lấy số và các điểm cần xác nhận. |
-| [Đặc tả tích hợp dashboard](bao-cao-outline/SPEC-KY-THUAT-DASHBOARD-NSNN.md) | API/MCP, giao diện, trạng thái dữ liệu và tiêu chí nghiệm thu. |
-| Đặc tả kỹ thuật TMS nội bộ | Bản đọc cục bộ ở `bao-cao-outline/noi-bo/`, gồm mô hình dữ liệu, quy tắc 113 dòng, danh mục mã đầy đủ và bảng quy đổi. |
+| [Báo cáo BA TMS](bao-cao-outline/noi-bo/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md) | Nghiệp vụ, cách tổ chức dashboard, dữ liệu còn thiếu và quyết định cần chốt. |
+| [Nghiệp vụ TMS nội bộ](bao-cao-outline/noi-bo/NGHIEP-VU-TMS-NOI-BO.md) | Ba chiều phân tích đích, sáu bước lấy số, đối soát với Kho bạc, hiệu lực văn bản và việc cần chốt. |
+| [Đặc tả tích hợp dashboard](bao-cao-outline/noi-bo/SPEC-KY-THUAT-DASHBOARD-NSNN.md) | API/MCP, giao diện, trạng thái dữ liệu và tiêu chí nghiệm thu. |
+| [Đặc tả kỹ thuật TMS nội bộ](bao-cao-outline/noi-bo/SPEC-KY-THUAT-TMS-NOI-BO.md) | Mô hình dữ liệu, quy tắc 113 dòng, danh mục mã đầy đủ và bảng quy đổi. |
 
-Tài liệu NSNN, prototype, mobile/host và khảo sát cũ được giữ tại [thư mục lưu trữ](tai-lieu-luu-tru/nsnn/README.md). Hai tài liệu nội bộ không được đưa vào Git.
+Tài liệu NSNN, prototype, mobile/host và khảo sát cũ được giữ tại [thư mục lưu trữ](tai-lieu-luu-tru/nsnn/README.md). Bộ TMS nội bộ chỉ dùng trong phạm vi được phân quyền.
 
 ## Tài liệu ở repo
 
