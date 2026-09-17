@@ -13,6 +13,27 @@ import { readFileSync } from "node:fs";
 const ROOT = new URL("../../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, ROOT), "utf8");
 
+/**
+ * Đọc file có thể VẮNG MẶT một cách hợp lệ.
+ *
+ * `bao-cao-outline/noi-bo/` bị `.gitignore` loại khỏi repo có chủ ý — đó là tài
+ * liệu nội bộ mô tả bộ số liệu mật. Nên trên máy lập trình viên thì thư mục đó
+ * có, còn trên CI thì không bao giờ có. Trước đây `read()` ném ENOENT giữa
+ * `npm run build`, và vì `check:docs` nằm trong chuỗi build nên **cả CI lẫn
+ * deploy GitHub Pages đều chết** bằng một stack trace của `node:fs`, ở một bước
+ * chẳng liên quan gì tới việc dịch mã.
+ *
+ * Một cổng kiểm tra không được đòi thứ mà chính sách của kho mã cấm nó có.
+ */
+const readOptional = (p) => {
+  try {
+    return read(p);
+  } catch (error) {
+    if (error.code === "ENOENT") return null;
+    throw error;
+  }
+};
+
 const BA = "bao-cao-outline/noi-bo/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md";
 const problems = [];
 
@@ -24,7 +45,25 @@ const filters = [...filterBar.matchAll(/<span>([^<{]+)<\/span>/g)]
   .map((m) => m[1].trim())
   .filter((x) => !["Kỳ báo cáo", "Phạm vi"].includes(x));
 
-const ba = read(BA);
+const ba = readOptional(BA);
+
+/**
+ * Không có tài liệu thì bỏ qua, và nói rõ là đã bỏ qua.
+ *
+ * Im lặng thoát 0 còn tệ hơn: một lần CI xanh sẽ ngầm bảo rằng tài liệu đã được
+ * đối chiếu, trong khi thật ra chưa hề. Câu dưới đây nói đúng cái đã làm và cái
+ * chưa làm, để người đọc log không tự suy ra điều sai.
+ */
+if (ba === null) {
+  console.log(
+    [
+      `⊘ Bỏ qua đối chiếu tài liệu: không có ${BA}.`,
+      "  Thư mục tài liệu nội bộ nằm ngoài kho mã theo .gitignore, nên phép kiểm này",
+      "  chỉ chạy được trên máy có bộ tài liệu. Giao diện KHÔNG được đối chiếu lần này.",
+    ].join("\n"),
+  );
+  process.exit(0);
+}
 
 for (const tab of tabs)
   if (!ba.includes(tab)) problems.push(`Tab "${tab}" có trong giao diện nhưng không có trong ${BA}`);
