@@ -340,6 +340,9 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     domesticItems,
     locations,
     budgetLevels,
+    // Kho mô phỏng phân bổ đủ hai cấp. Provider thật phải trả phần chênh ở
+    // trường này thay vì ép NSTW + NSĐP bằng NSNN.
+    unclassifiedBudget: null,
     centralBudgetSources,
     localBudgetLevels,
     estimate: estimateOf(filters),

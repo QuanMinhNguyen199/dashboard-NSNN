@@ -3,13 +3,16 @@ import { useTmsBreakdown } from "@/data/hooks";
 import type { ManagementLevelFilter } from "@/domain/tms";
 import type { TmsBreakdownData, TmsRow } from "@/domain/types";
 import { useDashboardState } from "@/state/DashboardState";
+import { LOCATION_BY_ID } from "@/domain/catalog";
+import { levelLabel } from "@/domain/tms";
 import { Kpi, KpiStrip } from "@/components/Kpi";
-import { Bars, Card, Change, ResourceView, moneyScale, pct } from "@/components/primitives";
+import { Bars, Card, Change, LiveNotice, Money, moneyScale, pct, ResourceView } from "@/components/primitives";
 import { DonutChart } from "@/components/charts";
 import { useNarrow } from "@/components/useNarrow";
+import { usePinned } from "@/components/usePinned";
 import { LevelFilter } from "./LevelFilter";
-import { Amount, CodeTable, SectionTable, UNKNOWN_SECTION } from "./TmsTables";
-import { CorrespondencePanel, QualityPanel } from "./TmsPanels";
+import { CodeTable, SectionTable, UNKNOWN_SECTION } from "./TmsTables";
+import { CorrespondencePanel, QualityPanel, TaxOfficePanel } from "./TmsPanels";
 
 /**
  * Tab Mã hạch toán: Cấp quản lý → Mục → Tiểu mục.
@@ -25,13 +28,53 @@ import { CorrespondencePanel, QualityPanel } from "./TmsPanels";
  */
 export function TmsBreakdownTab() {
   const { filters, location, managementLevel, setManagementLevel } = useDashboardState();
+  const [taxOfficeCode, setTaxOfficeCode] = useState<string | null>(null);
   // Địa bàn là chiều độc lập với cấp quản lý, nhưng vẫn là một bộ lọc thật: bỏ
   // qua nó thì thanh lọc nói một phường còn bảng trả số toàn thành phố.
-  const { resource, retry, pending } = useTmsBreakdown(filters, managementLevel, location);
+  const { resource, retry, pending } = useTmsBreakdown(
+    filters,
+    managementLevel,
+    location,
+    taxOfficeCode,
+  );
+
+  /**
+   * Tiêu đề phạm vi suy từ BỘ LỌC, không từ payload.
+   *
+   * Trước đây nó đọc `data.scopeName` và `data.levelTotal.name`, nên nó phải
+   * nằm trong vùng tải — và mỗi lần đổi cấp thì biến mất cùng cả trang. Nhưng
+   * hai giá trị đó chỉ là nhãn của chính hai bộ lọc người dùng vừa đặt: nguồn
+   * sự thật là bộ lọc, không phải phản hồi mạng. Suy từ bộ lọc thì tiêu đề
+   * không bao giờ nói sai, và không có lý do gì phải đợi.
+   */
+  const scopeName = location ? (LOCATION_BY_ID[location]?.name ?? location) : "Toàn thành phố";
+  const levelName = levelLabel(managementLevel);
+  /**
+   * Số của lần tải gần nhất, để thẻ Cơ quan thuế giữ được thứ tự trong lúc chờ.
+   * `keepPreviousData` giữ trạng thái ở `ready`, nên đây là số của phạm vi trước.
+   */
+  const lastData =
+    resource.status === "ready" || resource.status === "partial" ? resource.data : null;
 
   return (
     <div className="dstack">
       <LevelFilter value={managementLevel} onChange={setManagementLevel} />
+
+      <h2 className="dsubject">
+        {scopeName}
+        <small>{levelName} · tổng thu nội địa A theo TMS</small>
+      </h2>
+
+      {/* Hai bộ lọc và tiêu đề đứng ngoài `ResourceView`: đổi cấp hay đổi cơ
+          quan thuế thì chỉ phần số bên dưới tải lại, chỗ đứng để bấm tiếp vẫn
+          còn nguyên. */}
+      <TaxOfficePanel
+        data={lastData}
+        pending={pending}
+        selectedCode={taxOfficeCode}
+        onSelect={setTaxOfficeCode}
+      />
+
       <ResourceView resource={resource} retry={retry} minHeight={320} pending={pending}>
         {(data) => <TmsBody data={data} level={managementLevel} />}
       </ResourceView>
@@ -55,6 +98,8 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
   const [open, setOpen] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [dropped, setDropped] = useState<number>(0);
+  const [showAllChapters, setShowAllChapters] = useState(false);
+  const pinnedChapters = usePinned("chuong");
   const previousLevel = useRef(level);
 
   const sectionIds = useMemo(() => new Set(data.sections.map((row) => row.id)), [data.sections]);
@@ -80,6 +125,22 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
 
   const subItemCount = data.sections.reduce((total, row) => total + row.subItems.length, 0);
 
+  const filteredChapters = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (needle)
+      return data.chapters.filter(
+        (row) => row.id.includes(needle) || row.name.toLowerCase().includes(needle),
+      );
+    // Mục đã ghim luôn nằm trong tập hiển thị, kể cả khi chưa mở hết danh sách:
+    // ghim một mã rồi thu gọn lại mà nó biến mất thì nút ghim thành vô nghĩa.
+    if (showAllChapters) return data.chapters;
+    const head = data.chapters.slice(0, narrow ? 6 : 12);
+    const extra = data.chapters.filter(
+      (row) => pinnedChapters.has(row.id) && !head.includes(row),
+    );
+    return [...head, ...extra];
+  }, [data.chapters, narrow, query, showAllChapters, pinnedChapters]);
+
   // Donut chỉ dùng khi tổng dương và mọi thành phần không âm; số âm thì một lát
   // trong hình tròn không có nghĩa hình học nào.
   const donutRows = useMemo(() => {
@@ -94,35 +155,18 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
       : top;
   }, [data.levelTotal.amount, data.sections]);
 
-  const filteredChapters = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    if (!needle) return data.chapters.slice(0, narrow ? 6 : 12);
-    return data.chapters.filter(
-      (row) => row.id.includes(needle) || row.name.toLowerCase().includes(needle),
-    );
-  }, [data.chapters, narrow, query]);
+  /** Mã đã ghim nhưng không còn trong điều kiện của kỳ và cấp đang xem. */
+  const staleChapters = useMemo(() => {
+    const present = new Set(data.chapters.map((row) => row.id));
+    return pinnedChapters.ids.filter((id) => !present.has(id));
+  }, [data.chapters, pinnedChapters.ids]);
 
   return (
     <>
-      {/* Ở khổ hẹp thanh chọn cấp trong tab bị ẩn, nên dòng này là chỗ duy nhất
-          nói người dùng đang đứng ở cấp nào. Giữ nguyên ở mọi khổ để hai bản
-          không kể hai câu chuyện khác nhau về cùng một phạm vi. */}
-      <h2 className="dsubject">
-        {data.scopeName}
-        <small>{data.levelTotal.name} · thu nội địa</small>
-        {/* Nhãn theo dữ liệu, không theo trạng thái hôm nay: provider trả
-            `origin: "api"` là nó tự biến mất. */}
-        {data.origin === "mock" && (
-          <span className="dtag is-review" title="Tỷ lệ giữa các Chương, Mục và Tiểu mục do lớp mô phỏng đặt ra; chưa có giao dịch TMS để tính.">
-            Số mô phỏng
-          </span>
-        )}
-      </h2>
-
       <KpiStrip label={`Mã hạch toán · ${data.levelTotal.name} · ${data.scopeName}`}>
-        {/* Ô này chỉ có số khi xem tất cả các cấp. Chọn một cấp cụ thể thì nó
-            trống, vì chia thu nội địa theo cấp quản lý của Chương là việc cần
-            giao dịch — và chỗ trống nói điều đó rõ hơn bất kỳ câu nào. */}
+        {/* Tổng của cấp đang lọc: cộng đúng các cặp (Chương, Tiểu mục) có Chương
+            thuộc cấp đó. Là một phần của cùng một tổng nên chọn cấp nào thì số
+            này nhỏ hơn dòng phạm vi, và bốn cấp cộng lại bằng đúng dòng đó. */}
         <Kpi
           label={`Thu trong ${data.levelTotal.name.toLowerCase()}`}
           note={
@@ -133,7 +177,8 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
             )
           }
         >
-          <Amount value={data.levelTotal.amount} />
+          {/* KPI là giá trị đứng một mình, không có đầu cột nào ghi hộ đơn vị. */}
+          <Money value={data.levelTotal.amount} />
         </Kpi>
         <Kpi
           label="Tỷ trọng trên tổng thu NSNN"
@@ -157,42 +202,31 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
         </Kpi>
       </KpiStrip>
 
-      {dropped > 0 && (
-        <p className="dnotice" role="status">
-          Đã đóng {dropped} Mục không còn trong điều kiện của {data.levelTotal.name.toLowerCase()}. Kỳ, chỉ tiêu và
-          địa bàn giữ nguyên.
-        </p>
-      )}
+      <LiveNotice>
+        {dropped > 0
+          ? `Đã đóng ${dropped} Mục không còn trong điều kiện của ${data.levelTotal.name.toLowerCase()}. Kỳ, chỉ tiêu và địa bàn giữ nguyên.`
+          : null}
+      </LiveNotice>
 
-      <div className="dstack-row is-chart-pair">
-        <Card
-          title="Phân bố theo cấp quản lý"
-          subtitle="Tỷ trọng tính trên toàn phạm vi TMS, không đổi theo cấp đang lọc"
-          unit={moneyScale(data.levels.map((row) => row.amount ?? 0))}
-        >
-          <Bars rows={asAmountRows(data.levels)} scale="share" />
-          {data.localLevels.length > 0 && (
-            <div className="dtms-sublevels">
-              <h3>Trong địa phương</h3>
-              {/* Mẫu số là dòng địa phương, không phải toàn phạm vi: nếu không thì
-                  ba cấp con và dòng cha cùng nằm trên một thang và cộng quá 100%. */}
-              <Bars rows={asAmountRows(data.localLevels)} scale="share" />
-            </div>
-          )}
-        </Card>
-        <Card
-          title="Cơ cấu theo Mục"
-          subtitle={donutRows ? "5 Mục lớn nhất và phần còn lại" : "Có thành phần âm nên dùng bảng bên dưới"}
-        >
-          {donutRows ? (
-            <DonutChart rows={donutRows} centerLabel="Mục" />
-          ) : (
-            <p className="dempty">
-              Cơ cấu có thành phần âm nên không biểu diễn được bằng hình tròn. Bảng bên dưới giữ nguyên dấu.
-            </p>
-          )}
-        </Card>
-      </div>
+      {/* Thẻ này đứng ngay dưới thanh chọn cấp vì nó là NGỮ CẢNH của chính thanh
+          đó: nó nói mỗi cấp nắm bao nhiêu, tức là chọn cấp nào thì đang bỏ lại
+          bao nhiêu. Ở vị trí cũ — sau ba bảng — người đọc đã chọn xong cấp từ
+          lâu, nên con số đến quá muộn để đổi được quyết định nào. */}
+      <Card
+        title="Phân bố theo cấp quản lý"
+        subtitle="Tỷ trọng tính trên toàn phạm vi TMS, không đổi theo cấp đang lọc"
+        unit={moneyScale(data.levels.map((row) => row.amount ?? 0))}
+      >
+        <Bars rows={asAmountRows(data.levels)} scale="share" />
+        {data.localLevels.length > 0 && (
+          <div className="dtms-sublevels">
+            <h3>Trong địa phương</h3>
+            {/* Mẫu số là dòng địa phương, không phải toàn phạm vi: nếu không thì
+                ba cấp con và dòng cha cùng nằm trên một thang và cộng quá 100%. */}
+            <Bars rows={asAmountRows(data.localLevels)} scale="share" />
+          </div>
+        )}
+      </Card>
 
       <Card
         title="Mục và Tiểu mục"
@@ -201,10 +235,29 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
         <SectionTable sections={data.sections} open={open} onToggle={toggle} total={data.levelTotal.amount} />
       </Card>
 
+      {/* Đứng ngay dưới bảng Mục vì nó tóm tắt đúng bảng đó: hình cho biết Mục
+          nào chiếm phần lớn, bảng cho biết chính xác bao nhiêu. Tách hai thứ ra
+          xa nhau thì phải nhớ để so. */}
+      <Card
+        title="Cơ cấu theo Mục"
+        subtitle={donutRows ? "5 Mục lớn nhất và phần còn lại" : "Có thành phần âm nên dùng bảng bên trên"}
+      >
+        {donutRows ? (
+          <DonutChart rows={donutRows} centerLabel="Mục" />
+        ) : (
+          <p className="dempty">
+            Cơ cấu có thành phần âm nên không biểu diễn được bằng hình tròn. Bảng bên trên giữ nguyên dấu.
+          </p>
+        )}
+      </Card>
+
       <Card
         title="Chương trong điều kiện"
         subtitle="Để tra cứu và lọc nâng cao; theo cấp quản lý, không đổi theo địa bàn"
-        actions={
+      >
+        {/* Ô lọc đứng ngay trên bảng nó lọc, không nằm ở tiêu đề thẻ: bảng này
+            dài 105 dòng và ô lọc thuộc về bảng chứ không thuộc về cái thẻ. */}
+        <div className="dlist-tools">
           <span className="dsearch">
             <input
               type="search"
@@ -214,37 +267,27 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
               onChange={(event) => setQuery(event.target.value)}
             />
           </span>
-        }
-      >
+        </div>
         <CodeTable
           rows={filteredChapters}
           lastHeader="Cấp quản lý"
           caption="Chương trong điều kiện báo cáo"
           emptyText="Không có Chương nào khớp từ khoá."
+          pinned={pinnedChapters}
+          staleRows={query ? [] : staleChapters}
         />
-        {!query && data.chapters.length > filteredChapters.length && (
+        {!query && (
           <p className="dhint">
-            Đang hiện {filteredChapters.length} trên {data.chapters.length} Chương trong điều kiện. Dùng ô tìm kiếm
-            để mở phần còn lại.
+            Đang hiện {filteredChapters.length} trên {data.chapters.length} Chương trong điều kiện.{" "}
+            <button
+              type="button"
+              className="dlink"
+              onClick={() => setShowAllChapters((value) => !value)}
+            >
+              {showAllChapters ? "Thu gọn" : `Xem tất cả ${data.chapters.length} Chương`}
+            </button>
           </p>
         )}
-      </Card>
-
-      <Card
-        title="Cơ quan thuế"
-        subtitle="Chiều riêng, không suy từ địa bàn hay cấp quản lý của Chương nên danh sách không đổi theo bộ lọc cấp"
-      >
-        <CodeTable
-          rows={data.taxOffices}
-          lastHeader=""
-          caption="Cơ quan thuế quản lý chứng từ trong phạm vi"
-          showAmount={false}
-        />
-        <p className="dhint">
-          Bảng này là danh mục, không có cột số tiền: điều kiện báo cáo không nhắc tới cơ quan thuế, nên
-          không có căn cứ nào để chia số theo chiều này, kể cả để mô phỏng. Nhóm cột theo cơ quan thuế là bốn
-          trong tám mẫu báo cáo và cần giao dịch mang mã cơ quan thuế.
-        </p>
       </Card>
 
       <CorrespondencePanel data={data} />

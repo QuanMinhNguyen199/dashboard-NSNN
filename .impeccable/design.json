@@ -1,0 +1,1090 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-17T00:00:00Z",
+  "title": "Design System: Tổng quan Thu ngân sách Nhà nước Hà Nội",
+  "extensions": {
+    "colorMeta": {
+      "institutional-navy": {
+        "role": "primary",
+        "displayName": "Navy thể chế",
+        "canonical": "#0e2a47",
+        "tonalRamp": [
+          "#0d2640",
+          "#164371",
+          "#205fa1",
+          "#297cd2",
+          "#589ade",
+          "#88b7e8",
+          "#b9d5f1",
+          "#eaf2fb"
+        ]
+      },
+      "brand-blue": {
+        "role": "primary",
+        "displayName": "Xanh thương hiệu",
+        "canonical": "#1657a8",
+        "tonalRamp": [
+          "#092344",
+          "#103e77",
+          "#1658ab",
+          "#1d73de",
+          "#4e92e8",
+          "#81b2ef",
+          "#b5d2f5",
+          "#e8f1fc"
+        ]
+      },
+      "data-secondary": {
+        "role": "secondary",
+        "displayName": "Xanh dữ liệu phụ",
+        "canonical": "#3987e5",
+        "tonalRamp": [
+          "#092444",
+          "#103f77",
+          "#165aab",
+          "#1d75de",
+          "#4e94e8",
+          "#81b3ef",
+          "#b5d2f5",
+          "#e8f1fc"
+        ]
+      },
+      "data-family": {
+        "role": "neutral",
+        "displayName": "Xanh cùng họ",
+        "canonical": "#86b6ef",
+        "tonalRamp": [
+          "#092444",
+          "#103f77",
+          "#175aab",
+          "#1d75de",
+          "#4e94e8",
+          "#82b3ee",
+          "#b5d2f5",
+          "#e8f1fc"
+        ]
+      },
+      "data-reference": {
+        "role": "neutral",
+        "displayName": "Xám mốc tham chiếu",
+        "canonical": "#75869b",
+        "tonalRamp": [
+          "#20262c",
+          "#39424e",
+          "#515f70",
+          "#6a7c92",
+          "#8b99ab",
+          "#adb7c3",
+          "#ced4dc",
+          "#f0f2f4"
+        ]
+      },
+      "data-track": {
+        "role": "neutral",
+        "displayName": "Rãnh nền biểu đồ",
+        "canonical": "#e7edf5",
+        "tonalRamp": [
+          "#162436",
+          "#283f5f",
+          "#395b88",
+          "#4a76b1",
+          "#7295c4",
+          "#9bb4d5",
+          "#c4d3e6",
+          "#edf2f7"
+        ]
+      },
+      "donut-4": {
+        "role": "neutral",
+        "displayName": "Bậc donut thứ tư",
+        "canonical": "#6f93c4",
+        "tonalRamp": [
+          "#162436",
+          "#273f60",
+          "#385a89",
+          "#4976b2",
+          "#7194c5",
+          "#9ab3d6",
+          "#c4d2e7",
+          "#edf1f8"
+        ]
+      },
+      "blue-050": {
+        "role": "neutral",
+        "displayName": "blue-050",
+        "canonical": "#eef4fc",
+        "tonalRamp": [
+          "#0b2241",
+          "#143d73",
+          "#1d57a4",
+          "#2671d6",
+          "#5591e1",
+          "#86b1ea",
+          "#b8d1f2",
+          "#e9f1fb"
+        ]
+      },
+      "blue-100": {
+        "role": "neutral",
+        "displayName": "blue-100",
+        "canonical": "#dbe8f8",
+        "tonalRamp": [
+          "#0c2440",
+          "#163f71",
+          "#1f5aa2",
+          "#2975d2",
+          "#5794de",
+          "#88b3e8",
+          "#b9d2f1",
+          "#eaf1fb"
+        ]
+      },
+      "blue-250": {
+        "role": "neutral",
+        "displayName": "blue-250",
+        "canonical": "#86b6ef",
+        "tonalRamp": [
+          "#092444",
+          "#103f77",
+          "#175aab",
+          "#1d75de",
+          "#4e94e8",
+          "#82b3ee",
+          "#b5d2f5",
+          "#e8f1fc"
+        ]
+      },
+      "blue-350": {
+        "role": "neutral",
+        "displayName": "blue-350",
+        "canonical": "#5598e7",
+        "tonalRamp": [
+          "#092443",
+          "#113f76",
+          "#185ba9",
+          "#1f76dc",
+          "#4f95e6",
+          "#83b4ed",
+          "#b6d3f5",
+          "#e9f1fc"
+        ]
+      },
+      "blue-450": {
+        "role": "neutral",
+        "displayName": "blue-450",
+        "canonical": "#2a78d6",
+        "tonalRamp": [
+          "#0c2440",
+          "#163f71",
+          "#1f5aa2",
+          "#2976d3",
+          "#5795df",
+          "#88b3e8",
+          "#b9d2f1",
+          "#eaf1fb"
+        ]
+      },
+      "blue-550": {
+        "role": "neutral",
+        "displayName": "blue-550",
+        "canonical": "#1c5cab",
+        "tonalRamp": [
+          "#0b2342",
+          "#133e74",
+          "#1b59a6",
+          "#2374d8",
+          "#5393e3",
+          "#85b3eb",
+          "#b7d2f3",
+          "#e9f1fb"
+        ]
+      },
+      "blue-700": {
+        "role": "neutral",
+        "displayName": "blue-700",
+        "canonical": "#0d366b",
+        "tonalRamp": [
+          "#082244",
+          "#0f3d78",
+          "#1557ac",
+          "#1b71e0",
+          "#4c91e9",
+          "#80b1f0",
+          "#b4d1f6",
+          "#e8f1fc"
+        ]
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Nền làm việc",
+        "canonical": "#f2f5f9",
+        "tonalRamp": [
+          "#182434",
+          "#2b405c",
+          "#3d5b84",
+          "#4f77ac",
+          "#7696c0",
+          "#9eb4d2",
+          "#c6d3e5",
+          "#eef2f7"
+        ]
+      },
+      "surface-sunken": {
+        "role": "neutral",
+        "displayName": "Bề mặt chìm",
+        "canonical": "#f7f9fc",
+        "tonalRamp": [
+          "#152338",
+          "#253d62",
+          "#35588c",
+          "#4572b7",
+          "#6d92c8",
+          "#98b2d8",
+          "#c2d1e8",
+          "#ecf1f8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Mực chính",
+        "canonical": "#16263c",
+        "tonalRamp": [
+          "#152338",
+          "#243e63",
+          "#34598d",
+          "#4374b8",
+          "#6c93c9",
+          "#97b3d9",
+          "#c2d2e9",
+          "#ecf1f8"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Mực phụ AAA",
+        "canonical": "#485666",
+        "tonalRamp": [
+          "#20262d",
+          "#38434f",
+          "#505f71",
+          "#687c93",
+          "#8a9aac",
+          "#acb7c4",
+          "#ced5dc",
+          "#f0f2f4"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Mực phụ AA",
+        "canonical": "#63707f",
+        "tonalRamp": [
+          "#22262b",
+          "#3b434c",
+          "#55606c",
+          "#6e7d8d",
+          "#8e9aa7",
+          "#afb7c1",
+          "#d0d5da",
+          "#f1f2f4"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Viền sợi tóc",
+        "canonical": "#dbe3ed",
+        "tonalRamp": [
+          "#192533",
+          "#2d415a",
+          "#405d81",
+          "#5479a8",
+          "#7997bc",
+          "#a0b5d0",
+          "#c7d4e3",
+          "#eef2f6"
+        ]
+      },
+      "divider": {
+        "role": "neutral",
+        "displayName": "Đường chia",
+        "canonical": "#eaeff6",
+        "tonalRamp": [
+          "#172436",
+          "#283f5e",
+          "#3a5a87",
+          "#4b75b0",
+          "#7394c3",
+          "#9cb3d4",
+          "#c4d2e6",
+          "#edf1f7"
+        ]
+      },
+      "map-nodata": {
+        "role": "neutral",
+        "displayName": "Xám bản đồ chưa có số",
+        "canonical": "#e5eaf1",
+        "tonalRamp": [
+          "#1b2432",
+          "#2f4058",
+          "#445c7d",
+          "#5877a3",
+          "#7d96b9",
+          "#a3b4cd",
+          "#c9d3e2",
+          "#eef2f6"
+        ]
+      },
+      "chart-unclassified": {
+        "role": "neutral",
+        "displayName": "Xám nhóm chưa xác định",
+        "canonical": "#646c77",
+        "tonalRamp": [
+          "#23262a",
+          "#3e4249",
+          "#585f69",
+          "#737c89",
+          "#9299a4",
+          "#b2b7be",
+          "#d1d5d9",
+          "#f1f2f3"
+        ]
+      },
+      "positive": {
+        "role": "tertiary",
+        "displayName": "Xanh tăng",
+        "canonical": "#187044",
+        "tonalRamp": [
+          "#0e3f26",
+          "#186f43",
+          "#229f61",
+          "#2ccf7e",
+          "#5adc9b",
+          "#8ae6b8",
+          "#baf0d5",
+          "#eafbf2"
+        ]
+      },
+      "negative": {
+        "role": "tertiary",
+        "displayName": "Đỏ giảm",
+        "canonical": "#b3352f",
+        "tonalRamp": [
+          "#3d1210",
+          "#6b201c",
+          "#992d28",
+          "#c73b34",
+          "#d56660",
+          "#e1928e",
+          "#eebfbd",
+          "#faebeb"
+        ]
+      },
+      "note-ink": {
+        "role": "tertiary",
+        "displayName": "Mực ghi chú",
+        "canonical": "#7a5a12",
+        "tonalRamp": [
+          "#43310a",
+          "#755711",
+          "#a87c19",
+          "#dba220",
+          "#e5b750",
+          "#edcc83",
+          "#f4e1b6",
+          "#fcf6e9"
+        ]
+      },
+      "note-surface": {
+        "role": "neutral",
+        "displayName": "Nền ghi chú",
+        "canonical": "#fdf5dd",
+        "tonalRamp": [
+          "#483704",
+          "#7f6107",
+          "#b68b0b",
+          "#edb60e",
+          "#f4c742",
+          "#f7d879",
+          "#fae8b0",
+          "#fef8e7"
+        ]
+      },
+      "note-line": {
+        "role": "neutral",
+        "displayName": "Viền ghi chú",
+        "canonical": "#eeddad",
+        "tonalRamp": [
+          "#3f320d",
+          "#705817",
+          "#a07f21",
+          "#d0a52b",
+          "#ddba59",
+          "#e7ce89",
+          "#f1e2ba",
+          "#fbf6ea"
+        ]
+      },
+      "star-on": {
+        "role": "tertiary",
+        "displayName": "Vàng hổ phách đã ghim",
+        "canonical": "#9a6b00",
+        "tonalRamp": [
+          "#4c3500",
+          "#875e00",
+          "#c18600",
+          "#fbaf00",
+          "#ffc237",
+          "#ffd471",
+          "#ffe5ab",
+          "#fff7e5"
+        ]
+      },
+      "star-surface": {
+        "role": "neutral",
+        "displayName": "Nền dòng đã ghim",
+        "canonical": "#fdf7e8",
+        "tonalRamp": [
+          "#463406",
+          "#7c5c0b",
+          "#b2830f",
+          "#e7ab14",
+          "#efbf47",
+          "#f4d27c",
+          "#f8e4b2",
+          "#fdf7e8"
+        ]
+      },
+      "star-surface-hover": {
+        "role": "neutral",
+        "displayName": "Nền dòng đã ghim khi trỏ",
+        "canonical": "#fbf1d9",
+        "tonalRamp": [
+          "#453307",
+          "#7a5a0d",
+          "#af8112",
+          "#e3a818",
+          "#ecbc4a",
+          "#f1d07e",
+          "#f7e3b3",
+          "#fdf6e8"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Viền điều khiển",
+        "canonical": "#c6d2e0",
+        "tonalRamp": [
+          "#1b2532",
+          "#2f4257",
+          "#445e7d",
+          "#597ba3",
+          "#7d99b8",
+          "#a3b6cd",
+          "#c9d4e1",
+          "#eef2f6"
+        ]
+      },
+      "scrollbar-thumb": {
+        "role": "neutral",
+        "displayName": "Con trượt",
+        "canonical": "#c3cedd",
+        "tonalRamp": [
+          "#1c2531",
+          "#314156",
+          "#465c7b",
+          "#5b78a0",
+          "#7f97b7",
+          "#a4b5cc",
+          "#cad3e1",
+          "#eff2f6"
+        ]
+      },
+      "ink-on-dark": {
+        "role": "neutral",
+        "displayName": "Mực trên nền tối",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "navy-ink": {
+        "role": "neutral",
+        "displayName": "Mực phụ trên navy",
+        "canonical": "#d3e1f0",
+        "tonalRamp": [
+          "#132639",
+          "#224265",
+          "#315f90",
+          "#407cbb",
+          "#6a99cc",
+          "#95b7db",
+          "#c1d4ea",
+          "#ecf2f9"
+        ]
+      },
+      "on-dark-fill": {
+        "role": "neutral",
+        "displayName": "on-dark-fill",
+        "canonical": "#ffffff14",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "on-dark-fill-hover": {
+        "role": "neutral",
+        "displayName": "on-dark-fill-hover",
+        "canonical": "#ffffff26",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "on-dark-line": {
+        "role": "neutral",
+        "displayName": "on-dark-line",
+        "canonical": "#ffffff3d",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "on-dark-line-hover": {
+        "role": "neutral",
+        "displayName": "on-dark-line-hover",
+        "canonical": "#ffffff66",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "on-dark-hairline": {
+        "role": "neutral",
+        "displayName": "on-dark-hairline",
+        "canonical": "#ffffff12",
+        "tonalRamp": [
+          "#262626",
+          "#434343",
+          "#616161",
+          "#7e7e7e",
+          "#9b9b9b",
+          "#b8b8b8",
+          "#d5d5d5",
+          "#f2f2f2"
+        ]
+      },
+      "scrim": {
+        "role": "neutral",
+        "displayName": "scrim",
+        "canonical": "#0e2a4780",
+        "tonalRamp": [
+          "#0d2640",
+          "#164371",
+          "#205fa1",
+          "#297cd2",
+          "#589ade",
+          "#88b7e8",
+          "#b9d5f1",
+          "#eaf2fb"
+        ]
+      },
+      "frame-stage": {
+        "role": "neutral",
+        "displayName": "frame-stage",
+        "canonical": "#888ca3",
+        "tonalRamp": [
+          "#21232b",
+          "#3b3d4c",
+          "#54586d",
+          "#6e728e",
+          "#8e92a8",
+          "#afb2c1",
+          "#d0d1da",
+          "#f1f1f4"
+        ]
+      },
+      "tooltip-surface": {
+        "role": "neutral",
+        "displayName": "tooltip-surface",
+        "canonical": "#111c2ce6",
+        "tonalRamp": [
+          "#152337",
+          "#263e61",
+          "#36598b",
+          "#4673b5",
+          "#6e93c7",
+          "#99b2d7",
+          "#c3d2e8",
+          "#edf1f8"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Chỉ dùng cho số lớn trong drawer xem nhanh. Không có vai trò display trang trí."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Giá trị KPI. Tabular numerals, giãn chữ siết −0,025em."
+      },
+      "metric-compact": {
+        "displayName": "Metric compact",
+        "purpose": "Số KPI ở mobile và hai đầu cầu nối waterfall. Token CSS là --fs-metric-sm."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Tên sản phẩm ở header, và dòng chủ thể phạm vi."
+      },
+      "insight": {
+        "displayName": "Insight",
+        "purpose": "Câu nhận định trong ô KPI mở rộng."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Tiêu đề thẻ."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Chữ thân bài. Giới hạn 72ch."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Chữ trong bảng và đoạn giải thích."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nhãn điều khiển, chip, dòng phụ. Viết thường, 650."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-control",
+        "value": "0 1px 2px #19334e18",
+        "purpose": "Nút segmented đang chọn, nút phóng bản đồ, thẻ thực thể ở trạng thái nghỉ."
+      },
+      {
+        "name": "shadow-overlay",
+        "value": "-18px 0 42px #0e2a4722",
+        "purpose": "Drawer chi tiết. Bóng ngang rộng vì nó đến từ cạnh phải."
+      },
+      {
+        "name": "shadow-frame",
+        "value": "0 0 0 1px #00000040, 0 10px 34px #0000004d",
+        "purpose": "Khung xem thử iframe trên nền tối."
+      },
+      {
+        "name": "shadow-tip",
+        "value": "0 4px 14px #19334e18",
+        "purpose": "Tooltip biểu đồ, và thẻ thực thể khi trỏ vào."
+      },
+      {
+        "name": "table-head-rule",
+        "value": "inset 0 -1px 0 var(--hairline)",
+        "purpose": "Đường kẻ dưới thead sticky. Phải là inset shadow, không phải border-bottom."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-feedback",
+        "value": "120ms ease",
+        "purpose": "Đổi nền/chữ/viền của điều khiển. Đủ để thao tác có xác nhận, chưa đủ để thấy chậm."
+      },
+      {
+        "name": "pin-pop",
+        "value": "260ms ease",
+        "purpose": "Ngôi sao đổi trạng thái. Tắt khi prefers-reduced-motion."
+      },
+      {
+        "name": "pin-flash",
+        "value": "700ms ease",
+        "purpose": "Nhịp sáng ở vị trí mới sau khi ghim. GIỮ khi reduced-motion vì nó chỉ đổi màu, không di chuyển."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "narrow",
+        "value": "767px"
+      },
+      {
+        "name": "tablet",
+        "value": "768px"
+      },
+      {
+        "name": "desktop",
+        "value": "1024px"
+      },
+      {
+        "name": "wide",
+        "value": "1440px"
+      }
+    ],
+    "measure": {
+      "value": "72ch",
+      "purpose": "Trần độ dài dòng cho mọi đoạn văn giải thích."
+    },
+    "letterSpacing": [
+      {
+        "name": "ls-display",
+        "value": "-0.03em",
+        "purpose": "32px"
+      },
+      {
+        "name": "ls-metric",
+        "value": "-0.025em",
+        "purpose": "23px"
+      },
+      {
+        "name": "ls-tight",
+        "value": "-0.02em",
+        "purpose": "19-20px"
+      },
+      {
+        "name": "ls-title",
+        "value": "-0.01em",
+        "purpose": "15-16px"
+      },
+      {
+        "name": "ls-label",
+        "value": "0.01em",
+        "purpose": "nhãn 12px"
+      },
+      {
+        "name": "ls-code",
+        "value": "0.02em",
+        "purpose": "mã số, chữ in hoa nhỏ"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Select",
+      "kind": "input",
+      "refersTo": "select",
+      "description": "Ô chọn của mọi bộ lọc. Mũi tên là nét vẽ, không phải tam giác đặc.",
+      "html": "<label class=\"ds-field\"><span>Cơ quan đang xem</span><select class=\"ds-select\"><option>Tất cả cơ quan thuế</option></select></label>",
+      "css": ".ds-field{display:grid;gap:5px}.ds-field>span{color:var(--ink-2);font-size:12px;font-weight:650}.ds-select{min-height:38px;width:320px;padding:6px 30px 6px 11px;appearance:none;cursor:pointer;background:#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1.5 5 5.5 9 1.5' fill='none' stroke='%2363707f' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\") no-repeat right 11px center;border:1px solid var(--control-border);border-radius:6px;font:13px system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink)}.ds-select:hover{border-color:var(--blue-250);background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1.5 5 5.5 9 1.5' fill='none' stroke='%231657a8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")}.ds-select:focus-visible{outline:2px solid var(--brand);outline-offset:2px}"
+    },
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "action-primary",
+      "description": "Hành động chính. Cao 38px để thẳng hàng với select. Nhãn không xuống dòng.",
+      "html": "<button class=\"ds-btn-primary\">Xem phân tích đầy đủ</button>",
+      "css": ".ds-btn-primary{min-height:38px;padding:8px 14px;white-space:nowrap;background:var(--brand);color:#fff;border:1px solid var(--brand);border-radius:6px;font:650 13px system-ui,-apple-system,'Segoe UI',sans-serif;cursor:pointer;transition:background-color 120ms ease,border-color 120ms ease}.ds-btn-primary:hover{background:var(--blue-550);border-color:var(--blue-550)}.ds-btn-primary:focus-visible{outline:2px solid var(--brand);outline-offset:2px}"
+    },
+    {
+      "name": "Segmented control",
+      "kind": "chip",
+      "refersTo": "segmented-selected",
+      "description": "Chọn một trong vài giá trị ngắn. Mục đang chọn nổi lên nền trắng.",
+      "html": "<div class=\"ds-seg\"><button class=\"is-active\">Tháng</button><button>Quý</button></div>",
+      "css": ".ds-seg{display:inline-flex;gap:2px;padding:3px;min-height:38px;background:var(--divider);border-radius:6px}.ds-seg button{min-height:30px;padding:3px 11px;border:0;background:none;border-radius:4px;color:var(--ink-2);font:650 12px system-ui,-apple-system,'Segoe UI',sans-serif;cursor:pointer;transition:background-color 120ms ease,color 120ms ease}.ds-seg button.is-active{background:#fff;color:var(--brand);box-shadow:0 1px 2px #19334e18}.ds-seg button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}"
+    },
+    {
+      "name": "Entity card",
+      "kind": "card",
+      "refersTo": "entity-card",
+      "description": "Một thực thể kèm một con số. Con số là chữ lớn nhất trong thẻ.",
+      "html": "<button class=\"ds-entity\"><span><b>0156</b>Thuế cơ sở 8 thành phố Hà Nội</span><strong>2.848 <i>tỷ</i></strong></button>",
+      "css": ".ds-entity{display:flex;align-items:center;justify-content:space-between;gap:12px;width:300px;padding:10px 12px;text-align:left;background:#fff;border:1px solid var(--hairline);border-radius:6px;cursor:pointer;box-shadow:0 1px 2px #19334e18;transition:border-color 120ms ease,box-shadow 120ms ease,background-color 120ms ease}.ds-entity:hover{border-color:var(--blue-250);background:var(--blue-050);box-shadow:0 4px 14px #19334e18}.ds-entity:focus-visible{outline:2px solid var(--brand);outline-offset:2px}.ds-entity>span{display:flex;flex-direction:column;gap:1px;min-width:0;color:var(--ink-3);font:12px/1.3 system-ui,-apple-system,'Segoe UI',sans-serif}.ds-entity b{font-weight:650;color:var(--ink-2);font-variant-numeric:tabular-nums;letter-spacing:.02em}.ds-entity strong{flex:none;color:var(--ink);font:650 14px system-ui,-apple-system,'Segoe UI',sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}.ds-entity i{font-style:normal;font-size:.7em;color:var(--ink-3)}"
+    },
+    {
+      "name": "Pin star",
+      "kind": "custom",
+      "refersTo": "pin-on",
+      "description": "Điều khiển duy nhất do người dùng sở hữu. Bật/tắt khác nhau về MÀU, không chỉ độ đậm.",
+      "html": "<div class=\"ds-pins\"><button class=\"ds-pin is-on\" aria-pressed=\"true\" aria-label=\"Bỏ ghim\"><svg viewBox='0 0 16 16' width='14' height='14' aria-hidden='true'><path d='M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z' fill='currentColor' stroke='currentColor' stroke-width='1.3' stroke-linejoin='round'/></svg></button><button class=\"ds-pin\" aria-pressed=\"false\" aria-label=\"Ghim\"><svg viewBox='0 0 16 16' width='14' height='14' aria-hidden='true'><path d='M8 1.6l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.4l-3.8 2 .7-4.3-3.1-3 4.3-.6z' fill='none' stroke='currentColor' stroke-width='1.3' stroke-linejoin='round'/></svg></button></div>",
+      "css": ".ds-pins{display:flex;gap:8px}.ds-pin{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:transparent;color:var(--ink-2);border-radius:6px;cursor:pointer}.ds-pin.is-on{color:var(--star-on)}.ds-pin:hover,.ds-pin:focus-visible{background:var(--star-surface);color:var(--star-on)}.ds-pin:focus-visible{outline:2px solid var(--brand);outline-offset:1px}.ds-pin svg{transition:transform .18s ease}.ds-pin:hover svg{transform:scale(1.12)}@media (pointer:coarse){.ds-pin{min-width:44px;width:44px;height:44px}}"
+    },
+    {
+      "name": "Pinned row group",
+      "kind": "custom",
+      "refersTo": "pin-row",
+      "description": "Khối dòng do người dùng đánh dấu. Chỗ duy nhất trong hệ dùng dải màu ở cạnh.",
+      "html": "<table class=\"ds-pinned\"><tbody><tr><th>009 · Bộ Công an</th><td>2.192</td></tr><tr><th>169 · Tổng công ty XNK xây dựng</th><td>1.515</td></tr></tbody></table>",
+      "css": ".ds-pinned{width:420px;border-collapse:collapse;font:13px system-ui,-apple-system,'Segoe UI',sans-serif}.ds-pinned tbody{background:var(--star-surface);box-shadow:inset 3px 0 0 var(--star-on)}.ds-pinned th{padding:10px 12px;text-align:left;font-weight:500;color:var(--ink)}.ds-pinned td{padding:10px 12px;text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}.ds-pinned tr:hover{background:var(--star-surface-hover)}"
+    },
+    {
+      "name": "Status chip",
+      "kind": "chip",
+      "refersTo": "comparison-chip",
+      "description": "Trạng thái của một mã. Chip trong ô bảng được phép xuống dòng vì nó mang cả câu.",
+      "html": "<div class=\"ds-chips\"><span class=\"ds-tag\">Đã có hướng dẫn</span><span class=\"ds-tag is-review\">Cần xác nhận</span></div>",
+      "css": ".ds-chips{display:flex;gap:8px;flex-wrap:wrap}.ds-tag{display:inline-block;padding:1px 7px;border-radius:4px;background:var(--blue-050);border:1px solid var(--blue-100);font:12px system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink-2)}.ds-tag.is-review{background:var(--note-surface);border-color:var(--note-line);color:var(--note-ink)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Bàn điều hành ngân sách",
+    "overview": "**Creative North Star: “Bàn điều hành ngân sách”** Đây là giao diện Operate dành cho người đọc và đối chiếu số liệu ngân sách công. Cảm giác chủ đạo là thể chế, chắc chắn và yên tĩnh: đầu trang xanh navy xác lập thẩm quyền; phần làm việc dùng nền trung tính sáng, bề mặt trắng có viền mảnh và một giọng xanh dữ liệu nhất quán. Mật độ thông tin cao nhưng mỗi lớp có trật tự rõ ràng, ưu tiên quét nhanh hơn biểu đạt trang trí. Hệ thống dùng tiếng Việt làm ngôn ngữ sản phẩm, số theo định dạng `vi-VN`, **một** đơn vị tiền duy nhất là “tỷ đồng” và chữ số dạng tabular để các cột số ổn định khi thay đổi. Giao diện phải diễn đạt trung thực nguồn, kỳ, phạm vi, độ phủ và khoảng trống dữ liệu. API, MCP, fixture và mock đi qua cùng một hợp đồng dữ liệu có kiểu; trạng thái nguồn phải hiện rõ trong giao diện.",
+    "keyCharacteristics": [
+      "Đầu trang navy mang tính thể chế, nội dung phân tích nằm trên nền xám xanh rất nhạt.",
+      "Tab chính bám dính phía trên; bộ lọc ngữ cảnh nằm ngay dưới tab trong luồng nội dung.",
+      "KPI là một dải bốn ô gọn, còn widget dùng lưới 12 cột với bề mặt trắng và viền mảnh.",
+      "Màu xanh dành cho điều hướng, thao tác và dữ liệu; xanh lá/đỏ chỉ biểu đạt chiều biến động.",
+      "Khoảng trống, trạng thái thiếu dữ liệu và nguồn mô phỏng luôn được nói rõ, không được ngụy trang thành số 0.",
+      "Một đơn vị tiền cho cả ứng dụng; đơn vị ghi ở đầu cột chứ không bám từng giá trị.",
+      "Chuyển động chỉ phục vụ phản hồi và tính liên tục; giảm chuyển động vẫn giữ phản hồi."
+    ],
+    "rules": [
+      {
+        "name": "The Named Overlay Rule",
+        "body": "Độ mờ trên một nền cụ thể vẫn là một quyết định thiết kế và vẫn phải có tên. Alpha viết thẳng trong quy tắc là chỗ mà ba giá trị gần giống nhau sinh ra cho cùng một việc.",
+        "section": "general"
+      },
+      {
+        "name": "The Measured Ink Rule",
+        "body": "Bậc mực phụ chỉ được đổi khi đã tính lại tỷ lệ tương phản trên nền nó sẽ nằm lên. \"Nhạt hơn một chút\" không phải một quyết định.",
+        "section": "general"
+      },
+      {
+        "name": "The One Data Hue Rule",
+        "body": "Đại lượng liên tục không bao giờ được mã hoá bằng nhiều sắc. Thang cầu vồng đỏ→cam→vàng→lá cho một đại lượng magnitude là lỗi: nó biến \"thấp\" thành cảnh báo và phá thứ tự đọc.",
+        "section": "general"
+      },
+      {
+        "name": "The Semantic Color Rule",
+        "body": "Đỏ và xanh lá chỉ nói lên chiều tăng/giảm, không bao giờ dùng làm màu chuỗi. Chúng luôn đi kèm tam giác chỉ hướng hoặc dấu +/−.",
+        "section": "general"
+      },
+      {
+        "name": "The Encoding Match Rule",
+        "body": "Thanh phải mã hoá đúng đại lượng đang dùng để sắp xếp. Danh sách sắp theo %YoY thì thanh vẽ theo %YoY, phân kỳ quanh mốc 0 — và chỉ dành nửa rãnh cho phía âm khi tập đang xem thật sự có cả hai dấu.",
+        "section": "general"
+      },
+      {
+        "name": "The Shared Scale Rule",
+        "body": "Không đặt hai đại lượng lệch bậc lên cùng một thang. Biểu đồ đóng góp tách hai tổng thành một dòng cầu nối bằng chữ, còn các delta được vẽ trên thang riêng của chúng.",
+        "section": "general"
+      },
+      {
+        "name": "The No Contextual Weight Rule",
+        "body": "Không dùng `bolder` hay `lighter` — chúng giải theo trọng lượng của cha nên cùng một vai trò ra hai kết quả ở hai chỗ. Mặc định của `<b>` chính là `bolder`, và trong ngữ cảnh 700 nó ra **900**: số KPI dựng bằng `<Money>` từng render ở 900 trong khi số KPI viết thẳng trong `<strong>` render ở 700 — hai thẻ cạnh nhau, cùng vai trò, hai trọng lượng, không ai chọn con số đó. `.dmoney b` vì thế khai báo `font-weight: inherit`.",
+        "section": "general"
+      },
+      {
+        "name": "The One Job Per Step Rule",
+        "body": "Một bậc cỡ chỉ gánh số vai trò mà mắt còn phân biệt được. Trước lượt đồng bộ, bậc `12px` mang **mười lăm** tổ hợp đậm/nhịp-dòng khác nhau và chiếm 57% toàn bộ khai báo cỡ chữ — nên hai thứ khác việc lại trông y hệt nhau. Khi một bậc bắt đầu cần thêm biến thể, hãy tách bằng **màu** hoặc **khoảng trắng** trước khi tách bằng một tổ hợp chữ mới.",
+        "section": "general"
+      },
+      {
+        "name": "The Two-Step Secondary Rule",
+        "body": "Tầng chữ phụ chỉ có **hai** bậc: 12px cho nhãn và metadata, 13px cho câu trạng thái. Trước đây có năm cỡ trong khoảng 2px (11 / 11,5 / 12 / 12,5 / 13) — mắt không phân biệt được nên chúng không tạo phân cấp nào, chỉ tạo lệch. Năm bậc cách nhau nửa pixel là trôi dạt, không phải thang.",
+        "section": "general"
+      },
+      {
+        "name": "The Compact Label Rule",
+        "body": "Nhãn nhỏ phải dùng mực phụ và trọng lượng 650; không bù kích thước nhỏ bằng chữ hoa toàn bộ ngoài dữ liệu đã được định danh như NSNN, NSTW và NSĐP.",
+        "section": "general"
+      },
+      {
+        "name": "The Column Unit Rule",
+        "body": "Một cột, một đơn vị, một số lẻ, ghi đơn vị đúng một lần ở đầu. Không hậu tố nào lặp lại ở từng dòng, và không bậc nào trên \"tỷ\".",
+        "section": "general"
+      },
+      {
+        "name": "The Numeric Alignment Rule",
+        "body": "Mọi số liệu dùng tabular numerals nên chiều rộng chữ số bằng nhau, dấu phẩy thẳng hàng giữa các dòng và cột không nhảy khi giá trị đổi. Căn phải khi nằm ở cuối hàng.",
+        "section": "general"
+      },
+      {
+        "name": "The Measured Line Rule",
+        "body": "Không đoạn văn nào vượt 72ch ở bất kỳ khổ màn hình nào. Phép kiểm: đo bề rộng đoạn chia cho bề rộng chữ \"0\" của chính phông và cỡ đó. Trước khi có luật này, các đoạn mang lập luận nghiệp vụ dài **177 ký tự một dòng** ở khổ 1440px — hơn gấp đôi ngưỡng, và ở độ dài đó mắt mất dòng khi quét ngược về đầu dòng sau.",
+        "section": "general"
+      },
+      {
+        "name": "The Balanced Heading Rule",
+        "body": "Tiêu đề dùng `text-wrap: balance`, đoạn văn dùng `text-wrap: pretty`. Với tiếng Việt điều này đáng giá hơn tiếng Anh: từ ngắn và nhiều nên dòng cuối rất hay rơi lại đúng một chữ.",
+        "section": "general"
+      },
+      {
+        "name": "The Pairs Before Stacking Rule",
+        "body": "Dưới 1280px, cặp widget **nới tỷ lệ** trước, xếp chồng sau. Xếp chồng sớm cho thẻ rộng 912px chứa danh sách năm dòng — thừa chiều ngang mà trang dài gấp đôi.",
+        "section": "general"
+      },
+      {
+        "name": "The Scope Costs Height Rule",
+        "body": "Dưới 768px, sáu ô lọc luôn mở chiếm quá nhiều chiều cao. Thanh lọc đóng thành hai nhóm `Kỳ báo cáo` và `Chỉ tiêu`; mở ra khi người dùng cần. Iframe dùng cùng mẫu ở mọi chiều rộng để giao diện nhúng không tạo thêm một cách lọc khác.",
+        "section": "general"
+      },
+      {
+        "name": "The Equal Row Height Rule",
+        "body": "Thẻ cùng một hàng luôn cao bằng nhau. Biểu đồ nở hết phần dư; danh sách thanh nở **có trần** để dòng không bị kéo méo; bảng dài cuộn trong thẻ thay vì nong thẻ cao gấp đôi thẻ bên cạnh.",
+        "section": "general"
+      },
+      {
+        "name": "The Head Floor Rule",
+        "body": "Trong vùng đặt nhiều thẻ cạnh nhau, đầu thẻ có sàn 86px. Chiều cao đầu thẻ vốn phụ thuộc nội dung — phụ đề một hay hai dòng, chỗ điều khiển là liên kết chữ hay nhóm nút — nên hai thẻ cạnh nhau có thân bắt đầu lệch nhau và mọi dòng bên dưới lệch theo. Sàn này là hệ quả của *The Equal Row Height Rule* áp cho mép trên. Sàn được gỡ đúng tại 699px — mốc thẻ thật sự xếp chồng, không phải 767px: lúc đó nó chỉ còn là khoảng trống phải cuộn qua. Ngoại lệ còn lại là thẻ có nhóm điều khiển rộng hơn 150px — nó buộc phải xuống dòng ở thẻ hẹp, và mọi cách ép nó thẳng hàng đều tốn nhiều chiều cao hơn phần lệch nó gây ra.",
+        "section": "general"
+      },
+      {
+        "name": "The Restate Specificity Rule",
+        "body": "Luật ở breakpoint phải nhắc lại mọi biến thể có độ đặc hiệu cao hơn. `.dstack-row.is-chart-pair` (0-2-0) thắng `.dstack-row` (0-1-0) bất kể thứ tự, nên luật xếp chồng ở 699px viết thiếu biến thể sẽ im lặng không áp dụng — cặp biểu đồ từng nằm cạnh nhau ở 390px với bề rộng 148px.",
+        "section": "general"
+      },
+      {
+        "name": "The Declared Token Rule",
+        "body": "Mọi `var(--x)` phải có một nơi đặt `--x`. Biến CSS không tồn tại **không báo lỗi**: khai báo chứa nó thành invalid at computed-value time và bị xoá im lặng — không console, không build warning, không khác gì một luật viết đúng nhưng bị đè. Trong một lượt rà soát, bốn biến kiểu này đã lần lượt xoá mất vòng focus của hai điều khiển, nền tooltip bản đồ, nền khung xem thử, và nét vẽ của một chuỗi dữ liệu. Ba trong bốn được DESIGN.md liệt kê sẵn ở phần màu — tức là tài liệu mô tả một hệ token mà stylesheet chưa hề có. `npm run build` chạy `scripts/check-tokens.mjs` trước `tsc` để chặn cả lớp lỗi này.",
+        "section": "general"
+      },
+      {
+        "name": "The Rank Not Order Rule",
+        "body": "Bậc màu của thang đơn sắc đi theo **độ lớn**, không theo thứ tự mảng. Thang đơn sắc tồn tại để \"đậm = nhiều\"; gán màu theo chỉ số mảng thì thứ tự dữ liệu quyết định độ đậm, và biểu đồ nói ngược lại chính con số nó đang mã hoá — donut ba nhóm nội địa từng cho lát 18,3% màu đậm hơn lát 30,2%. Thứ tự *lát* vẫn theo danh mục nghiệp vụ; chỉ bậc màu được xếp lại.",
+        "section": "general"
+      },
+      {
+        "name": "The Unknown Is Not A Step Rule",
+        "body": "Nhóm \"chưa xác định\" không bao giờ nhận một bậc của thang xanh. Thang xanh mã hoá ĐỘ LỚN; nhóm chưa xác định nói rằng chưa biết xếp phần tiền đó vào đâu. Ở màn Mã hạch toán nhóm này giữ tới 46,3% số tiền, nên nếu nó nhận bậc đậm nhất thì hình vẽ tuyên bố nó là hạng mục quan trọng nhất. Màu trung tính tách nó ra, và giải phóng bậc xanh đó cho một hạng mục thật.",
+        "section": "general"
+      },
+      {
+        "name": "The Peer Not Reference Rule",
+        "body": "Nét đứt phi sắc `--data-reference` chỉ dành cho **mốc tham chiếu** — nó cố ý nhạt để không tranh chấp với chuỗi chính. Hai vế của một phép so sánh là hai chuỗi **ngang hàng**: vế A dùng `--data-family`, nét liền. Mượn slot \"kỳ trước\" để vẽ vế A làm người đã học \"đứt xám = năm trước\" ở ba tab đọc sai tab thứ tư.",
+        "section": "general"
+      },
+      {
+        "name": "The Alternative Carries The Answer Rule",
+        "body": "Bảng thay thế một biểu đồ phải trả lời **đúng câu hỏi** mà biểu đồ trả lời, không chỉ chứa cùng dữ liệu. Bảng thay bản đồ nhiệt từng sắp theo vần A-B-C: thứ tự đó không mang tin nào, nên người không dùng được bản đồ mất hẳn thông tin thứ hạng — nó chỉ còn tồn tại dưới dạng màu. Nay sắp giảm dần theo giá trị, một thang tiền cho cả cột, và đánh dấu dòng đang xem như bản đồ đánh dấu ô đang chọn.",
+        "section": "general"
+      },
+      {
+        "name": "The Twelve-Column Rule",
+        "body": "Widget chỉ dùng các nhịp 4, 6, 8 hoặc 12 cột đã có trong API component; chọn độ rộng theo lượng thông tin chứ không theo trang trí.",
+        "section": "general"
+      },
+      {
+        "name": "The Context Before Metrics Rule",
+        "body": "Tab, bộ lọc, phạm vi/đơn vị và nguồn dữ liệu phải xuất hiện trước KPI và biểu đồ trong thứ tự đọc.",
+        "section": "general"
+      },
+      {
+        "name": "The Flat Workspace Rule",
+        "body": "Không thêm bóng cho widget thường; viền và tông nền đã mang đủ cấu trúc.",
+        "section": "general"
+      },
+      {
+        "name": "The Overlay Earns Depth Rule",
+        "body": "Bóng lớn chỉ dành cho bề mặt phủ lên luồng chính như drawer chi tiết.",
+        "section": "general"
+      },
+      {
+        "name": "The Nested Radius Rule",
+        "body": "Bán kính giảm theo cấp độ, không bao giờ tăng: một phần tử con không được cong hơn khung chứa nó.",
+        "section": "general"
+      },
+      {
+        "name": "The One Control Owner Rule",
+        "body": "Kiểu của một loại điều khiển được khai đúng MỘT chỗ, và chọn theo **element** chứ không theo danh sách panel cha. Luật cũ viết `.dfilters select, .dbuilder select` — mỗi panel mới phải nhớ tự thêm mình vào danh sách, và không ai nhớ: `.dbuilder` quên một lần, rồi `.dtax-picker` quên lần nữa và cho ra một `<select>` thô của trình duyệt rộng 1.530px giữa một màn hình đã style kỹ. Chỗ nào cần khác thì ghi đè bằng selector cụ thể hơn.",
+        "section": "general"
+      },
+      {
+        "name": "The Pin Never Reorders Rule",
+        "body": "Ghim đẩy dòng sang một khối riêng ở đầu bảng, **không** trộn nó lên đầu danh sách xếp hạng. Bảng xếp theo số tiền giảm dần nên vị trí mang nghĩa \"lớn thứ mấy\"; đẩy một mã nhỏ lên đầu chỉ vì nó được ghim là làm vị trí mất nghĩa.",
+        "section": "general"
+      },
+      {
+        "name": "The Three Tier Rule",
+        "body": "Ô chỉ số có đúng ba vai trò và phải đọc ra đủ ba khi làm mờ: nhãn, giá trị, lời chú. Hai vai trò dùng chung cả cỡ lẫn màu là hai vai trò đã nhập làm một.",
+        "section": "general"
+      },
+      {
+        "name": "The Even Cell Rule",
+        "body": "Bốn ô rộng bằng nhau. Tỷ lệ `1 1 0.8 1.3` trước đây được chỉnh theo nội dung tab Tổng quan, nên ở tab Phân tích nó cho ô \"Số khoản trong nhóm\" (giá trị: \"21\") rộng 433px còn ô \"Đóng góp vào biến động\" chỉ 267px. Một tỷ lệ cố định áp lên bốn tập nội dung khác nhau thì đúng được một tập.",
+        "section": "general"
+      },
+      {
+        "name": "The Figure Leads Rule",
+        "body": "Trong một thẻ mang một con số, con số là chữ lớn nhất. Bản đầu của thẻ cơ quan thuế làm ngược — mã 13px, số tiền 12px — nên mắt dừng ở mã trước rồi mới đi tìm thứ mình cần.",
+        "section": "general"
+      },
+      {
+        "name": "The Scope Bar Rule",
+        "body": "Thanh phạm vi có mặt trên cả bốn tab, ở đúng một vị trí, và luôn có lối quay lại. Một bộ lọc không được phép im lặng vô hiệu.",
+        "section": "general"
+      },
+      {
+        "name": "The Pointer Not Width Rule",
+        "body": "Kích thước đích chạm chốt theo loại con trỏ. Mọi quy tắc chạm gắn vào `max-width` đều sai ở cả hai chiều.",
+        "section": "general"
+      },
+      {
+        "name": "The Role Not Class Rule",
+        "body": "Quy tắc hệ thống chọn theo vai trò ngữ nghĩa. Danh sách tên class là thứ sẽ lọt phần tử tiếp theo ai đó thêm vào.",
+        "section": "general"
+      },
+      {
+        "name": "The Reduced Motion Keeps Feedback Rule",
+        "body": "Giảm chuyển động nghĩa là **bớt** chuyển động, không phải **tắt** phản hồi. Chặn theo *thuộc tính*: các thuộc tính di chuyển trong không gian bị loại khỏi danh sách được phép chuyển tiếp, còn màu, độ mờ và viền vẫn chuyển tiếp ở 120ms. Đặt mọi thứ về `0.01ms` là giết luôn tín hiệu xác nhận thao tác — đúng thứ người bật cờ cần giữ nhất.",
+        "section": "general"
+      },
+      {
+        "name": "The JS Motion Reads The Flag Rule",
+        "body": "Media query trong CSS **không** với tới hoạt ảnh do JavaScript điều khiển. d3 và Recharts là vòng lặp `requestAnimationFrame` thuần; chúng nhận cờ qua `useReducedMotion()` phía TypeScript. Mọi hoạt ảnh JS thêm mới đều phải đi qua hook đó.",
+        "section": "general"
+      }
+    ],
+    "dos": [
+      "Do giữ thứ tự header → tab sticky → filter ngữ cảnh → nguồn → KPI → lưới widget.",
+      "Do dùng surface trắng có viền trên canvas trung tính và nhịp 14–16px để duy trì mật độ hiện tại.",
+      "Do dùng đúng lưới 12 cột và kiểm tra ở 390px, 1024px và 1440px.",
+      "Do định dạng số theo `vi-VN`, dùng tabular numerals và chọn một đơn vị cho cả cột, ghi ở đầu cột.",
+      "Do chốt kích thước đích chạm theo `pointer: coarse` và chọn theo vai trò ngữ nghĩa, không theo tên class.",
+      "Do cho mọi hoạt ảnh JavaScript đọc `useReducedMotion()`; media query CSS không với tới chúng.",
+      "Do tính lại tỷ lệ tương phản khi đổi bất kỳ bậc mực nào.",
+      "Do hiển thị nguồn, phạm vi, kỳ, cấp ngân sách và độ phủ gần số liệu mà chúng mô tả.",
+      "Do giữ mọi trạng thái tương tác có focus-visible rõ, nhãn ARIA phù hợp và hành vi reduced-motion.",
+      "Do đưa nguồn API/MCP/mock qua hợp đồng typed và validation runtime trước khi render.",
+      "Do giới hạn mọi đoạn văn ở 72ch và đo lại bằng bề rộng chữ \"0\" của chính phông đó.",
+      "Do khai kiểu điều khiển theo element, một chỗ duy nhất, rồi ghi đè bằng selector cụ thể hơn khi cần.",
+      "Do để bộ lọc và tiêu đề phạm vi NGOÀI vùng tải lại; chỉ phần số bên dưới mới đợi mạng."
+    ],
+    "donts": [
+      "Don't thêm gradient, glassmorphism, bóng thẻ đậm hoặc màu nhấn trang trí vào workspace phân tích.",
+      "Don't dùng đỏ hoặc xanh lá cho điều hướng, selection hay trang trí; chúng chỉ mang nghĩa tăng/giảm.",
+      "Don't biến dữ liệu thiếu thành 0, nối đường biểu đồ qua khoảng trống hoặc tính phần trăm khi mẫu so sánh không hợp lệ.",
+      "Don't làm widget thành các tile nổi rời rạc; cấu trúc đến từ grid, viền và nhịp đều.",
+      "Don't giấu nguồn mô phỏng, kỳ tổng hợp hoặc độ phủ chưa đầy đủ.",
+      "Don't thêm tương tác vào hàng không có drill-down, hoặc dùng affordance button cho nội dung chỉ đọc.",
+      "Don't cho nhóm \"chưa xác định\" một bậc của thang xanh; nó không mã hoá độ lớn.",
+      "Don't lặp đơn vị tiền ở từng ô bảng — đơn vị thuộc về đầu cột.",
+      "Don't viết hoa toàn bộ nhãn điều khiển; ở cỡ 11–12px dấu tiếng Việt chen chúc.",
+      "Don't giữ số của phạm vi cũ trong lúc chờ số mới. Giấu số đi, giữ thứ tự lại.",
+      "Don't ghim chiều rộng cột bằng `nth-child` khi nhiều bảng dùng chung một class.",
+      "Don't dùng bậc \"nghìn tỷ\" hay mã ISO `VND`; thang tiền dừng ở \"tỷ đồng\".",
+      "Don't để hai đơn vị tiền khác nhau trong cùng một cột số.",
+      "Don't đặt `transition-duration: 0.01ms` cho toàn bộ dưới reduced-motion; chặn theo thuộc tính di chuyển và giữ phản hồi màu.",
+      "Don't gắn quy tắc vùng chạm vào `max-width`; bề rộng màn hình không nói được thiết bị nhập liệu."
+    ]
+  }
+}

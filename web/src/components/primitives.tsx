@@ -125,8 +125,55 @@ export function Money({
   );
 }
 
+/**
+ * Thông báo vừa nhìn thấy được vừa nghe thấy được.
+ *
+ * Một vùng `role="status"` chỉ được gắn vào DOM CÙNG LÚC với nội dung của nó
+ * thì không thông báo gì cả: trình đọc màn hình theo dõi thay đổi bên trong một
+ * vùng đã có sẵn, chứ không theo dõi việc một vùng mới xuất hiện. Viết
+ * `{message && <p role="status">…}` là mẫu sai phổ biến nhất của phần này — nó
+ * trông đúng, kiểm tra tĩnh cũng không bắt được, và người dùng trình đọc màn
+ * hình không bao giờ nghe thấy câu thông báo.
+ *
+ * Nên vùng sống luôn có mặt, rỗng khi chưa có gì; `position: absolute` của
+ * `.sr-only` giữ nó ngoài luồng nên không sinh thêm khoảng cách lưới. Đoạn nhìn
+ * thấy được mang cùng nội dung nhưng `aria-hidden` để câu đó không bị đọc hai
+ * lần — bản sr-only đứng đúng vị trí trong thứ tự tài liệu nên người duyệt
+ * bằng bàn phím vẫn gặp nó ở chỗ cần gặp.
+ */
+export function LiveNotice({
+  className = "dnotice",
+  children,
+}: {
+  className?: string;
+  children?: ReactNode;
+}) {
+  const empty = children === null || children === undefined || children === false;
+  return (
+    <>
+      <p className="sr-only" role="status">
+        {empty ? "" : children}
+      </p>
+      {!empty && (
+        <p className={className} aria-hidden="true">
+          {children}
+        </p>
+      )}
+    </>
+  );
+}
+
 /** Nhãn đơn vị dùng ở phụ đề thẻ hoặc đầu cột. */
 export const unitLabel = (scale: MoneyScale) => `Đơn vị: ${scale.unit}`;
+
+/**
+ * Đầu cột tiền: tên cột kèm đơn vị trong ngoặc.
+ *
+ * Đây là nơi DUY NHẤT đơn vị được ghi trong một bảng. Lặp nó ở từng ô làm cột
+ * dài ra, đẩy chữ số ra xa nhau và bắt mắt đọc lại cùng một chữ ở mọi dòng —
+ * đúng thứ mà bảng số liệu tài chính tránh.
+ */
+export const columnLabel = (name: string, scale: MoneyScale) => `${name} (${scale.unit})`;
 
 /** Phần trăm một số lẻ theo vi-VN; không bao giờ in NaN hay Infinity. */
 export function pct(value: number | null | undefined, withSign = false): string {

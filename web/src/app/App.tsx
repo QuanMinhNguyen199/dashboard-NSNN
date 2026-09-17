@@ -9,6 +9,7 @@ import { LocationDetailTab } from "@/features/location-detail/LocationDetailTab"
 import { OverviewTab } from "@/features/overview/OverviewTab";
 import { RevenueAnalysisTab } from "@/features/revenue-analysis/RevenueAnalysisTab";
 import { TmsBreakdownTab } from "@/features/tms-breakdown/TmsBreakdownTab";
+import { ReportTab } from "@/features/report/ReportTab";
 import { FilterBar } from "@/components/FilterBar";
 import { RevenuePreviewDrawer } from "@/features/revenue-preview/RevenuePreviewDrawer";
 
@@ -81,7 +82,7 @@ export function App() {
 
   // Tiêu đề trang đi theo workspace để lịch sử trình duyệt đọc được.
   useEffect(() => {
-    document.title = `${active.label} · Thu NSNN Hà Nội`;
+    document.title = `${active.label} · Thu Ngân sách TP Hà Nội`;
   }, [active.label]);
 
   // Lệnh từ host đi qua cùng API state như thao tác tại chỗ, nên URL, dữ liệu và
@@ -157,7 +158,7 @@ export function App() {
       {mobileHost ? (
         <header className="dmobile-header">
           <div>
-            <h1>Thu NSNN Hà Nội</h1>
+            <h1>Thu Ngân sách TP Hà Nội</h1>
             <p>{active.label}</p>
           </div>
         </header>
@@ -166,38 +167,9 @@ export function App() {
           <div className="dheader-mark">
             <i aria-hidden="true">HN</i>
             <div>
-              <h1>Thu ngân sách Nhà nước</h1>
+              <h1>Thu Ngân sách TP Hà Nội</h1>
               <p>Kho bạc Nhà nước khu vực I · Thành phố Hà Nội</p>
             </div>
-          </div>
-          <div className="dheader-tools">
-            <button
-              type="button"
-              className="dheader-frame"
-              onClick={() => {
-                const query = new URLSearchParams(window.location.search);
-                query.set("frame", "500");
-                window.location.search = query.toString();
-              }}
-              title="Mở dashboard trong một iframe thật để xem bố cục ở khổ hẹp"
-            >
-              Xem thử iframe
-            </button>
-            <button
-              type="button"
-              className="dheader-frame"
-              onClick={() => {
-                const query = new URLSearchParams(window.location.search);
-                query.set("frame", "390");
-                query.set("host", "mobile");
-                query.set("platform", "ios");
-                query.set("device", "iphone-14");
-                window.location.search = query.toString();
-              }}
-              title="Mở bản báo cáo dành cho Mobile WebView"
-            >
-              Xem thử mobile
-            </button>
           </div>
         </header>
       )}
@@ -246,6 +218,7 @@ export function App() {
           tabIndex={-1}
         >
           {tab === "overview" && <OverviewTab />}
+          {tab === "report" && <ReportTab />}
           {tab === "revenue-analysis" && <RevenueAnalysisTab />}
           {tab === "location-detail" && <LocationDetailTab />}
           {tab === "tms-breakdown" && <TmsBreakdownTab />}

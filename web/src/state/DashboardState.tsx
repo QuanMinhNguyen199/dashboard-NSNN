@@ -39,6 +39,7 @@ import type {
 
 const TABS: TabId[] = [
   "overview",
+  "report",
   "revenue-analysis",
   "location-detail",
   "tms-breakdown",
@@ -46,21 +47,6 @@ const TABS: TabId[] = [
 ];
 const MANAGEMENT_LEVELS_URL = ["all", "trung-uong", "dia-phuong", "tinh", "huyen", "xa", "unknown"] as const;
 
-/**
- * Cấp ngân sách kéo theo cấp quản lý của tab Mã hạch toán.
- *
- * Hai thứ này là hai TRƯỜNG khác nhau của giao dịch và không suy được ra nhau —
- * thẻ "Cấp quản lý và cấp ngân sách" trong tab đo đúng khoảng chênh đó. Nhưng
- * chúng trả lời cùng một câu hỏi phạm vi, nên để người dùng chọn NSTW ở thanh
- * lọc chung rồi vẫn thấy tab TMS đứng ở "Tất cả cấp" là bắt họ làm hai lần cùng
- * một việc. Đây là giá trị KHỞI ĐIỂM đi theo lựa chọn ngân sách; chọn tay trong
- * tab vẫn thắng và không bị kéo ngược lại.
- */
-const LEVEL_FOR_BUDGET: Record<DashboardFilters["budgetLevel"], ManagementLevelFilter> = {
-  NSNN: "all",
-  NSTW: "trung-uong",
-  NSDP: "dia-phuong",
-};
 const MODES: AdvancedComparisonMode[] = ["period", "revenue", "location"];
 const VIEWS = ["overview", "ranking", "waterfall"] as const;
 export type AnalysisView = (typeof VIEWS)[number];
@@ -270,10 +256,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           return {
             ...current,
             filters: clampPeriod(merged),
-            managementLevel:
-              next.budgetLevel !== undefined && next.budgetLevel !== current.filters.budgetLevel
-                ? LEVEL_FOR_BUDGET[next.budgetLevel]
-                : current.managementLevel,
+            // Cấp ngân sách hưởng và cấp quản lý của Chương là hai chiều độc
+            // lập. Đổi NSTW/NSĐP không được tự đổi bộ lọc Chương.
+            managementLevel: current.managementLevel,
             panelSource: null,
           };
         }),

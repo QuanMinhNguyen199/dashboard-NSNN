@@ -104,7 +104,7 @@ export function FramePreview({ initialWidth }: { initialWidth: number }) {
   };
 
   useEffect(() => {
-    document.title = `${requestedHost === "mobile" ? "Xem thử mobile" : "Xem thử iframe"} · Thu NSNN Hà Nội`;
+    document.title = `${requestedHost === "mobile" ? "Xem thử mobile" : "Xem thử iframe"} · Thu Ngân sách TP Hà Nội`;
   }, [requestedHost]);
 
   useEffect(() => {

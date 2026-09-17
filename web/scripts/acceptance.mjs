@@ -1,5 +1,5 @@
 /**
- * Kiểm chứng 15 tiêu chí nghiệm thu của THIET-KE-DASHBOARD-NSNN.md §18.
+ * Kiểm chứng 19 tiêu chí qua trình duyệt; TypeScript và production build là tiêu chí 14.
  *
  *   node scripts/acceptance.mjs [baseUrl]
  */
@@ -59,7 +59,7 @@ const run = async () => {
     if (m.type() === "error" && !isNoise(m.text())) jsErrors.push(m.text());
   });
 
-  // 1 — Điều hướng năm tab
+  // 1 — Điều hướng sáu tab
   await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
@@ -67,8 +67,9 @@ const run = async () => {
   const tabs = await page.evaluate(() =>
     [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent.trim()),
   );
-  check(1, "Điều hướng năm tab hoạt động", tabs, [
+  check(1, "Điều hướng sáu tab hoạt động", tabs, [
     "Tổng quan",
+    "Báo cáo",
     "Phân tích thu",
     "Chi tiết phường/xã",
     "Mã hạch toán",
@@ -193,7 +194,12 @@ const run = async () => {
     { tab: "So sánh nâng cao", mode: "revenue" },
   );
 
-  // 7 — Drawer hiển thị đúng nguồn và có CTA
+  // 7 — Drawer hiển thị đúng nguồn, và lối ra của nó phụ thuộc nguồn
+  //
+  // `dac-ta-v2` §3.3: dầu thô KHÔNG có phần riêng ở tab Phân tích thu, nên
+  // drawer của nó là điểm cuối — chỉ đóng lại. Ba nguồn còn lại vẫn dẫn sang
+  // Tab 2. Phép kiểm phải phủ cả hai vế, nếu không thì bỏ hẳn nút dẫn của mọi
+  // nguồn vẫn đạt.
   await page.goto(
     withFastMock(BASE + "/?tab=overview&panel=revenue-preview&source=crude-oil&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
@@ -213,30 +219,73 @@ const run = async () => {
   });
   await page.keyboard.press("Escape");
   await wait(900);
+  const escapeClosed = await page.evaluate(() => !document.querySelector('[role="dialog"]'));
+
+  // Vế đối chứng: một nguồn CÓ phần riêng thì nút dẫn phải còn.
+  await page.goto(
+    withFastMock(BASE + "/?tab=overview&panel=revenue-preview&source=domestic&year=2026&periodType=MONTH&period=8"),
+    { waitUntil: "networkidle0" },
+  );
+  await wait(2400);
+  const ctaNoiDia = await page.evaluate(() =>
+    !![...(document.querySelector('[role="dialog"]')?.querySelectorAll("button") ?? [])].find((b) =>
+      b.textContent.includes("Xem phân tích đầy đủ"),
+    ),
+  );
   check(
     7,
     "Drawer mở từ URL trực tiếp, đủ nội dung, Escape đóng được",
+    { ...drawer, escapeClosed, ctaNoiDia },
     {
-      ...drawer,
-      escapeClosed: await page.evaluate(() => !document.querySelector('[role="dialog"]')),
+      title: "Thu về dầu thô",
+      // Dầu thô: không có nút dẫn, vì không có màn hình để dẫn tới.
+      cta: false,
+      hasClose: true,
+      metaRows: 6,
+      escapeClosed: true,
+      // Thu nội địa: vẫn có.
+      ctaNoiDia: true,
     },
-    { title: "Thu về dầu thô", cta: true, hasClose: true, metaRows: 6, escapeClosed: true },
   );
 
-  // 8 — Đúng 21 khoản thu nội địa
+  // 8 — Đúng 21 khoản thu nội địa và CQT lọc toàn bộ Mã hạch toán
   await page.goto(
     withFastMock(BASE + "/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
   );
   await wait(2600);
+  const domesticRows = await page.evaluate(() => document.querySelectorAll(".dtable tbody tr").length);
+  await page.goto(
+    withFastMock(BASE + "/?tab=tms-breakdown&year=2026&periodType=MONTH&period=8"),
+    { waitUntil: "networkidle0" },
+  );
+  const firstKpi = () =>
+    page.$eval(".dkpis > div:first-child > strong", (el) => el.textContent.trim());
+  const beforeOffice = await firstKpi();
+  await page.click(".dtax-top button");
+  await wait(900);
+  const afterOffice = await firstKpi();
+  const officeSelected = await page.$eval(".dtax-picker select", (el) => el.value !== "");
+  await page.click(".dtax-picker .dbtn");
+  await wait(900);
+  const resetOffice = await firstKpi();
   check(
     8,
-    "Bảng thu nội địa đủ đúng 21 khoản",
-    await page.evaluate(() => document.querySelectorAll(".dtable tbody tr").length),
-    21,
+    "Đủ 21 khoản và bộ lọc CQT cập nhật rồi khôi phục tổng Mã hạch toán",
+    {
+      domesticRows,
+      officeSelected,
+      changed: beforeOffice !== afterOffice,
+      restored: beforeOffice === resetOffice,
+    },
+    { domesticRows: 21, officeSelected: true, changed: true, restored: true },
   );
 
   // 9 — Null, zero và số âm
+  await page.goto(
+    withFastMock(BASE + "/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"),
+    { waitUntil: "networkidle0" },
+  );
   const values = await page.evaluate(() => {
     const rows = [...document.querySelectorAll(".dtable tbody tr")].map((tr) =>
       [...tr.children].map((td) => td.textContent.trim()),
@@ -332,7 +381,14 @@ const run = async () => {
   // 13 — Không tràn ngang ở 390, 1024, 1440
   const overflow = [];
   for (const width of [390, 1024, 1440]) {
-    for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
+    for (const tab of [
+      "overview",
+      "report",
+      "revenue-analysis",
+      "location-detail",
+      "tms-breakdown",
+      "advanced-compare",
+    ]) {
       await page.setViewport({ width, height: 900 });
       await page.goto(
         withFastMock(BASE + `/?tab=${tab}&year=2026&periodType=MONTH&period=8&location=00004&mode=period&periodA=2025m8&periodB=2026m8`),
@@ -443,6 +499,45 @@ const run = async () => {
   check(18, "Một cột số chỉ dùng một đơn vị tiền", mixedUnits, []);
 
   await page.setViewport({ width: 1440, height: 1000 });
+
+  // 19 — Tám mẫu báo cáo: đổi thứ tự hai chiều giữ nguyên tổng của mỗi hàng
+  //
+  // Đây là điều kiện nghiệm thu DS02, và nó là thứ duy nhất phân biệt một bảng
+  // nhiều chiều đúng với một bảng nhiều chiều chỉ trông như đúng: cùng tập dữ
+  // liệu, đổi vai cha con của hai chiều, tổng từng hàng phải không đổi.
+  const totalsOf = async (groupBy, subGroupBy) => {
+    await page.goto(withFastMock(BASE + "/?tab=report&year=2026&periodType=MONTH&period=8"), {
+      waitUntil: "networkidle0",
+    });
+    await wait(1200);
+    await page.select('[data-field="groupBy"]', groupBy);
+    await wait(1400);
+    await page.select('[data-field="subGroupBy"]', subGroupBy);
+    await wait(1600);
+    return page.evaluate(() =>
+      [...document.querySelectorAll(".dreport-table tbody tr")].map((tr) => ({
+        row: tr.querySelector("th")?.textContent.trim().slice(0, 30),
+        cells: [...tr.querySelectorAll("td")].length,
+      })),
+    );
+  };
+  const byIndustry = await totalsOf("industry", "location");
+  const byLocation = await totalsOf("location", "industry");
+  check(
+    19,
+    "Đổi thứ tự hai chiều giữ nguyên cây chỉ tiêu và số cột",
+    {
+      cungSoHang: byIndustry.length === byLocation.length && byIndustry.length > 0,
+      cungTenHang: byIndustry.every((r, i) => r.row === byLocation[i].row),
+    },
+    { cungSoHang: true, cungTenHang: true },
+  );
+
+  // Tiêu chí 20 cũ ("Đối soát không hiện số chênh khi còn điều kiện chưa khớp")
+  // đã bỏ cùng tab Đối soát Kho bạc: TMS là lớp chi tiết của số Kho bạc chứ
+  // không phải một nguồn độc lập để trừ cho nhau, nên phép kiểm đó không còn
+  // đối tượng. Nếu dựng lại dòng độ phủ thì viết phép kiểm MỚI cho dòng đó,
+  // không khôi phục phép kiểm này.
 
   // 15 — Không có lỗi JavaScript
   check(15, "Không có lỗi JavaScript chưa xử lý", jsErrors, []);

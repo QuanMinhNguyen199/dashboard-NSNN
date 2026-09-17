@@ -1,0 +1,10 @@
+# Update thông tin bên thuế
+
+| Ngày | Nội dung confirm | Link |
+|------|------------------|------|
+| **8/9** | * Số liệu toàn TP không bị ảnh hưởng từ trước 01/7/2025;* Dữ liệu trước 7/2025 theo địa bàn bị ảnh hưởng và không chính xác. |      |
+| **10/9** | * Số thu cần được so sánh với **dự toán pháp lệnh (DTPL)** và **cùng kỳ**.*  Dự toán pháp lệnh 2026 được lấy từ **02 file đính kèm**. | [Sổ thu 2015-2025.xlsx](/doc/ef00021a-f046-40a0-9efd-6ed16b57f05e)[Dự toán thu NSNN 2026 cho 126 xã, phường](/doc/d824591c-c634-4866-9797-30eed6d52b96) |
+| **11/9** | Xây dựng đề án phục vụ **02 nhóm nhu cầu**:* Lãnh đạo TP: cần theo dõi bức tranh tổng quan về thu ngân sách toàn TP, bao gồm thuế, hải quan, tài chính, viện trợ. <br> * Lãnh đạo Thuế: cần phân tích chi tiết hơn về thuế nội địa và dầu, là 02 nhóm nguồn thu do cơ quan Thuế quản lý.**Đối tượng phục vụ chính: Lãnh đạo Thành phố.** |      |
+| **14/9** | **Đối với dữ liệu TMS:*** 1. Từ **07/2025 đến nay:** sử dụng dữ liệu theo **126 phường/xã mới**. <br> * 2. Từ **06/2025 trở về trước:** dữ liệu theo **30 quận/huyện cũ**.**Mục tiêu phân tích TMS:** tập trung phân tích chuyên sâu theo ngành nghề kinh doanh (NNKD), người nộp thuế (NNT), khu vực kinh tế, không tập trung vào tổng thể số thu trên địa bàn vì phần tổng thể đã được cung cấp trên CSDLTC. |      |
+| **15/9** | * Đổi tên báo cáo thành: **Thu Ngân sách TP Hà Nội**. <br> * Cập nhật file **“Sổ thu 2015 - 2025”**, thay đổi/bổ sung **cột Dự toán pháp lệnh 2026,** đọc file dữ liệu v2 | [Sổ thu 2015-2025](/doc/ef00021a-f046-40a0-9efd-6ed16b57f05e) |
+|      | * Dữ liệu TMS: Đối với dữ liệu từ tháng 6/2025 trở về trước, thông tin tại cột ĐBHC 2 cấp được coi là không có dữ liệu và không sử dụng <br> * Trường hợp cần xác định MST thuộc địa bàn nào, thực hiện đối chiếu theo file danh bạ MAP | [MAP danh bạ theo ngành nghề kinh doanh](/doc/7798dbcb-2802-4c58-ba68-932d242bae3a) |

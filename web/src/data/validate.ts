@@ -4,6 +4,7 @@ import type {
   DashboardNavigationAction,
   LocationDetailData,
   OverviewData,
+  ReportGridData,
   RevenueAnalysisData,
   TabId,
   TmsBreakdownData,
@@ -27,6 +28,7 @@ const isNullableNumber = (value: unknown) => value === null || isFinite_(value);
 export const SOURCES_ALLOWED = ["api", "mcp", "fixture", "mock"];
 export const TABS_ALLOWED: TabId[] = [
   "overview",
+  "report",
   "revenue-analysis",
   "location-detail",
   "tms-breakdown",
@@ -110,6 +112,7 @@ export function validateOverview(value: unknown): OverviewData {
   );
   validateBudgetLevels(
     value.budgetLevels,
+    value.unclassifiedBudget,
     value.centralBudgetSources,
     value.localBudgetLevels,
     value.scopeTotal,
@@ -127,6 +130,7 @@ export function validateOverview(value: unknown): OverviewData {
  */
 function validateBudgetLevels(
   topValue: unknown,
+  unclassifiedValue: unknown,
   centralValue: unknown,
   localValue: unknown,
   totalValue: unknown,
@@ -138,12 +142,14 @@ function validateBudgetLevels(
   );
   assert(isRecord(totalValue) && isFinite_(totalValue.amount), `${where}: thiếu tổng NSNN để đối soát.`);
   const top = topValue as { id: string; amount: number }[];
+  if (unclassifiedValue !== null) validateAmountRow(unclassifiedValue, `${where}.unclassifiedBudget`);
+  const unclassified = unclassifiedValue as { amount: number } | null;
   const central = centralValue as { id: string; amount: number }[];
   const local = localValue as { id: string; amount: number }[];
 
   if (!top.length) {
     assert(
-      !central.length && !local.length,
+      !central.length && !local.length && unclassified === null,
       `${where}: không có cơ cấu NSTW/NSĐP thì không được có dữ liệu phân rã.`,
     );
     return;
@@ -162,23 +168,23 @@ function validateBudgetLevels(
     `${where}: NSTW phải được phân rã đủ bốn nguồn thu.`,
   );
 
-  const topSum = top.reduce((sum, row) => sum + row.amount, 0);
+  const topSum = top.reduce((sum, row) => sum + row.amount, 0) + (unclassified?.amount ?? 0);
   assert(
-    Math.abs(topSum - (totalValue.amount as number)) < 1000,
-    `${where}: NSTW + NSĐP lệch quá 1.000 đồng so với tổng NSNN.`,
+    Math.abs(topSum - (totalValue.amount as number)) < 0.5,
+    `${where}: NSTW + NSĐP + chênh chưa giải thích phải khớp tổng NSNN đến từng đồng.`,
   );
 
   const nsdp = top.find((row) => row.id === "NSDP")!.amount;
   const nstw = top.find((row) => row.id === "NSTW")!.amount;
   const centralSum = central.reduce((sum, row) => sum + row.amount, 0);
   assert(
-    Math.abs(centralSum - nstw) < 1000,
-    `${where}: tổng bốn nguồn thu lệch quá 1.000 đồng so với NSTW.`,
+    Math.abs(centralSum - nstw) < 0.5,
+    `${where}: tổng bốn nguồn thu phải khớp NSTW đến từng đồng.`,
   );
   const localSum = local.reduce((sum, row) => sum + row.amount, 0);
   assert(
-    Math.abs(localSum - nsdp) < 1000,
-    `${where}: tổng tỉnh + huyện + xã lệch quá 1.000 đồng so với NSĐP.`,
+    Math.abs(localSum - nsdp) < 0.5,
+    `${where}: tổng tỉnh + huyện + xã phải khớp NSĐP đến từng đồng.`,
   );
 }
 
@@ -299,6 +305,10 @@ export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
     "Mã hạch toán: cấp quản lý không nằm trong danh sách cho phép.",
   );
   assert(typeof value.scopeName === "string", "Mã hạch toán: thiếu tên phạm vi địa bàn.");
+  assert(
+    value.taxOfficeCode === null || typeof value.taxOfficeCode === "string",
+    "Mã hạch toán: mã cơ quan thuế phải là chuỗi hoặc null.",
+  );
   // `origin` quyết định giao diện có gắn nhãn mô phỏng hay không, nên nó phải là
   // một trong hai giá trị đóng chứ không phải chuỗi tự do.
   assert(
@@ -310,15 +320,65 @@ export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
 
   validateTmsRow(value.scopeTotal, "Mã hạch toán.scopeTotal");
   validateTmsRow(value.levelTotal, "Mã hạch toán.levelTotal");
-  if (value.nsnnTotal !== null && value.nsnnTotal !== undefined) {
+  /**
+   * Quan hệ giữa số TMS và số Kho bạc KHÔNG phải điều kiện hợp lệ của payload.
+   *
+   * Trước đây chỗ này chặn "TMS không được lớn hơn NSNN cùng kỳ". Đúng về mặt
+   * định nghĩa phạm vi, sai về mặt vận hành: hai hệ thống chốt số ở hai thời
+   * điểm khác nhau nên TMS có lúc nhỉnh hơn, và ở cấp phường biên độ chỉ khoảng
+   * 0,2% nên payload thật sẽ bị từ chối, tab hiện lỗi thay vì hiện số.
+   *
+   * Lời giải KHÔNG phải là nới thành một ngưỡng phần trăm. Đặt ngưỡng tức là
+   * tuyên bố có một mức chênh được phép bỏ qua, mà thẩm quyền tuyên bố điều đó
+   * không nằm ở tầng validator, và phụ lục nghiệp vụ yêu cầu **giải thích được**
+   * chênh lệch chứ không cho phép bỏ qua nó. Vì vậy phép so chuyển hẳn sang
+   * bảng đối soát trên giao diện: chênh lệch luôn hiện ra bằng con số thật,
+   * không kèm phán quyết đạt hay không đạt.
+   */
+  if (value.nsnnTotal !== null && value.nsnnTotal !== undefined)
     validateAmountRow(value.nsnnTotal, "Mã hạch toán.nsnnTotal");
-    const scope = (value.scopeTotal as { amount: number | null }).amount;
-    // Phạm vi TMS là tập CON của NSNN: chỉ thu nội địa. Lớn hơn mẫu số nghĩa là
-    // có phần thu bị đếm hai lần hoặc mẫu số lấy sai địa bàn.
-    if (scope !== null)
+
+  /**
+   * Quan hệ cơ quan thuế với địa bàn là KẾT QUẢ QUAN SÁT, không phải danh mục.
+   *
+   * Vì vậy không có phép kiểm nào ép mỗi địa bàn chỉ thuộc một cơ quan. Ngược
+   * lại: `sharedLocations` được phép lớn, và trên dữ liệu thật nó đúng là lớn.
+   * Chỉ kiểm hình dạng và kiểm rằng phần trăm nằm trong khoảng hợp lệ.
+   */
+  if (value.taxOfficeScopes !== null && value.taxOfficeScopes !== undefined) {
+    const scopes = value.taxOfficeScopes;
+    assert(isRecord(scopes), "Mã hạch toán: taxOfficeScopes phải là một đối tượng.");
+    assert(typeof scopes.period === "string", "Mã hạch toán: taxOfficeScopes thiếu kỳ.");
+    assert(Array.isArray(scopes.offices), "Mã hạch toán: taxOfficeScopes thiếu danh sách cơ quan.");
+    for (const raw of scopes.offices as unknown[]) {
+      assert(isRecord(raw), "Mã hạch toán: dòng cơ quan thuế không phải đối tượng.");
       assert(
-        scope <= (value.nsnnTotal as { amount: number }).amount,
-        "Mã hạch toán: phạm vi TMS lớn hơn tổng thu NSNN cùng kỳ, không thể là tập con.",
+        typeof raw.amount === "string" && /^-?\d+$/.test(raw.amount),
+        "Mã hạch toán: số tiền của cơ quan thuế phải là decimal.",
+      );
+      assert(Array.isArray(raw.locations), "Mã hạch toán: cơ quan thuế thiếu danh sách địa bàn.");
+    }
+    assert(
+      scopes.sharedShare === null ||
+        (isFinite_(scopes.sharedShare) && scopes.sharedShare >= 0 && scopes.sharedShare <= 100),
+      "Mã hạch toán: tỷ lệ địa bàn dùng chung phải nằm trong 0..100 hoặc null.",
+    );
+  }
+
+  // Kiểm hình dạng, không kiểm độ lớn: xem ghi chú ngay trên.
+  if (value.reconciliation !== null && value.reconciliation !== undefined) {
+    const recon = value.reconciliation;
+    assert(isRecord(recon), "Mã hạch toán: reconciliation phải là một đối tượng.");
+    assert(
+      recon.treasuryAmount === null ||
+        (typeof recon.treasuryAmount === "number" && Number.isFinite(recon.treasuryAmount)),
+      "Mã hạch toán: số Kho bạc phải là số hoặc null.",
+    );
+    for (const key of ["tmsUpdatedAt", "treasuryUpdatedAt"] as const)
+      assert(
+        recon[key] === null ||
+          (typeof recon[key] === "string" && !Number.isNaN(Date.parse(recon[key] as string))),
+        `Mã hạch toán: ${key} phải là mốc thời gian hợp lệ hoặc null.`,
       );
   }
 
@@ -340,6 +400,26 @@ export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
   }
 
   const levelTotal = (value.levelTotal as { amount: number | null }).amount;
+  if (value.taxOfficeScopes !== null && value.taxOfficeScopes !== undefined && levelTotal !== null) {
+    const scopes = value.taxOfficeScopes as { offices: { code: string; amount: string }[] };
+    const officeSum = scopes.offices.reduce(
+      (sum, office) => sum + Number(office.amount),
+      0,
+    );
+    if (value.taxOfficeCode === null)
+      assert(
+        officeSum === levelTotal,
+        `Mã hạch toán: tổng theo cơ quan thuế (${Math.round(officeSum)}) không bằng tổng của cấp đang chọn (${Math.round(levelTotal)}).`,
+      );
+    else {
+      const selected = scopes.offices.find((office) => office.code === value.taxOfficeCode);
+      assert(selected !== undefined, "Mã hạch toán: cơ quan thuế đang lọc không có trong danh sách.");
+      assert(
+        Number(selected.amount) === levelTotal,
+        "Mã hạch toán: số của cơ quan thuế đang lọc không bằng tổng KPI.",
+      );
+    }
+  }
   const sectionSum = sumOrNull(sections);
   if (sectionSum !== null && levelTotal !== null)
     assert(
@@ -358,6 +438,40 @@ export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
   if (localSum !== null && localRow && localRow.amount !== null)
     assert(localSum === localRow.amount, "Mã hạch toán: tỉnh + huyện + xã không bằng dòng địa phương.");
 
+  /**
+   * Mọi cách chia theo cấp phải cộng lại bằng đúng phạm vi, kể cả nhóm chưa tra
+   * được cấp.
+   *
+   * Đây là lỗi không hiện ra như lỗi: bảng vẫn đủ dòng, số vẫn đẹp, chỉ là một
+   * nhóm bị rơi khỏi danh sách nên cột cộng thiếu. Người đọc thấy hai con số
+   * khác nhau cho cùng một tổng và kết luận là số bị lệch, trong khi thứ hỏng là
+   * bảng chứ không phải số. Điều kiện `!== null` giữ chỗ cho provider API trả
+   * phần chia chưa đầy đủ, nhưng đã trả số thì phải cộng đúng.
+   */
+  const scopeAmount = (value.scopeTotal as { amount: number | null }).amount;
+  const levelSum = sumOrNull(value.levels as { amount: number | null }[]);
+  if (levelSum !== null && scopeAmount !== null)
+    assert(
+      levelSum === scopeAmount,
+      `Mã hạch toán: tổng theo cấp quản lý (${Math.round(levelSum)}) không bằng phạm vi TMS (${Math.round(scopeAmount)}).`,
+    );
+
+  if (Array.isArray(value.correspondence)) {
+    const pairs = value.correspondence as { amount: number | null; budgetAmount: number | null }[];
+    const managementSum = sumOrNull(pairs);
+    if (managementSum !== null && scopeAmount !== null)
+      assert(
+        managementSum === scopeAmount,
+        `Mã hạch toán: cột cấp quản lý trong bảng đối chiếu cộng ra ${Math.round(managementSum)}, không bằng phạm vi TMS ${Math.round(scopeAmount)}.`,
+      );
+    const budgetSum = sumOrNull(pairs.map((row) => ({ amount: row.budgetAmount })));
+    if (budgetSum !== null && scopeAmount !== null)
+      assert(
+        budgetSum === scopeAmount,
+        `Mã hạch toán: cột cấp ngân sách trong bảng đối chiếu cộng ra ${Math.round(budgetSum)}, không bằng phạm vi TMS ${Math.round(scopeAmount)}.`,
+      );
+  }
+
   return value as unknown as TmsBreakdownData;
 }
 
@@ -371,6 +485,89 @@ export function validateAdvancedComparison(value: unknown): AdvancedComparisonDa
   if (value.waterfall !== null && value.waterfall !== undefined)
     validateWaterfall(value.waterfall, "So sánh");
   return value as unknown as AdvancedComparisonData;
+}
+
+
+/* ───────────────────────────── Lưới báo cáo ─────────────────────────────── */
+
+const CELL_STATUS = ["confirmed", "needsReview", "notApplicable"];
+const DIMENSIONS_ALLOWED = ["location", "taxOffice", "industry"];
+
+/** Chuỗi decimal nguyên có dấu, hoặc `null`. Số lẻ bị từ chối chứ không làm tròn. */
+const isDecimalOrNull = (value: unknown) =>
+  value === null || (typeof value === "string" && /^-?\d+$/.test(value));
+
+export function validateReportGrid(value: unknown): ReportGridData {
+  assert(isRecord(value), "Báo cáo: payload rỗng.");
+  validateMeta(value.meta, "Báo cáo");
+  assert(value.origin === "mock" || value.origin === "api", "Báo cáo: origin không hợp lệ.");
+  assert(
+    DIMENSIONS_ALLOWED.includes(String(value.groupBy)),
+    "Báo cáo: chiều chính không nằm trong danh sách cho phép.",
+  );
+  assert(
+    value.subGroupBy === null || DIMENSIONS_ALLOWED.includes(String(value.subGroupBy)),
+    "Báo cáo: chiều chi tiết không nằm trong danh sách cho phép.",
+  );
+  assert(
+    value.subGroupBy !== value.groupBy,
+    "Báo cáo: chiều chi tiết trùng chiều chính nên không tạo thành mẫu nào.",
+  );
+  for (const key of ["rows", "columns", "cells"] as const)
+    assert(Array.isArray(value[key]), `Báo cáo: thiếu danh sách ${key}.`);
+
+  const rows = value.rows as { id: string; total: unknown; status: unknown; parent: string | null }[];
+  const ids = new Set<string>();
+  for (const row of rows) {
+    assert(typeof row.id === "string" && row.id.length > 0, "Báo cáo: dòng thiếu id.");
+    assert(!ids.has(row.id), `Báo cáo: id dòng bị trùng (${row.id}).`);
+    ids.add(row.id);
+    assert(isDecimalOrNull(row.total), `Báo cáo: tổng của dòng ${row.id} không phải decimal hợp lệ.`);
+    assert(CELL_STATUS.includes(String(row.status)), `Báo cáo: trạng thái dòng ${row.id} không hợp lệ.`);
+  }
+  for (const row of rows)
+    assert(
+      row.parent === null || ids.has(row.parent),
+      `Báo cáo: dòng ${row.id} trỏ tới cha không có trong bảng.`,
+    );
+
+  const page = value.columnPage as { offset: number; limit: number; total: number };
+  assert(isRecord(page) && isFinite_(page.total) && isFinite_(page.offset), "Báo cáo: thiếu columnPage.");
+  assert(
+    (value.columns as unknown[]).length <= page.total + (value.subGroupBy ? page.limit : 0),
+    "Báo cáo: số cột trả về vượt tổng số cột đã khai báo.",
+  );
+
+  /**
+   * Tổng theo cột của một hàng phải bằng đúng tổng của hàng đó.
+   *
+   * Chỉ kiểm được khi trang đang xem là toàn bộ các cột. Đây là phép kiểm bắt
+   * đúng loại lỗi tệ nhất của bảng nhiều chiều: bảng vẫn đủ dòng, số vẫn đẹp,
+   * chỉ là phần tiền của một nhóm rơi mất mà không ai thấy.
+   */
+  const cells = value.cells as { rowId: string; columnId: string; value: unknown; status: unknown }[];
+  for (const cell of cells) {
+    assert(isDecimalOrNull(cell.value), `Báo cáo: ô ${cell.rowId}/${cell.columnId} không phải decimal hợp lệ.`);
+    assert(CELL_STATUS.includes(String(cell.status)), `Báo cáo: trạng thái ô ${cell.rowId} không hợp lệ.`);
+    assert(ids.has(cell.rowId), `Báo cáo: ô trỏ tới dòng ${cell.rowId} không có trong bảng.`);
+  }
+  if (page.offset === 0 && page.limit >= page.total) {
+    const byRow = new Map<string, bigint>();
+    const seen = new Set<string>();
+    for (const cell of cells) {
+      if (cell.value === null) continue;
+      byRow.set(cell.rowId, (byRow.get(cell.rowId) ?? 0n) + BigInt(cell.value as string));
+      seen.add(cell.rowId);
+    }
+    for (const row of rows) {
+      if (row.total === null || !seen.has(row.id)) continue;
+      assert(
+        byRow.get(row.id) === BigInt(row.total as string),
+        `Báo cáo: tổng theo cột của dòng ${row.id} không bằng tổng của dòng.`,
+      );
+    }
+  }
+  return value as unknown as ReportGridData;
 }
 
 /**

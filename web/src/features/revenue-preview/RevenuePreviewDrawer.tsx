@@ -6,6 +6,7 @@ import { trendOf } from "@/data/mock/build";
 import { useDashboardState } from "@/state/DashboardState";
 import { TrendChart } from "@/components/charts";
 import { Change, money, pct } from "@/components/primitives";
+import { ANALYSIS_SOURCES } from "@/features/revenue-analysis/RevenueAnalysisTab";
 
 /**
  * Drawer xem nhanh một nguồn thu.
@@ -58,6 +59,15 @@ export function RevenuePreviewDrawer() {
   if (!panelSource) return null;
   const source = SOURCE_BY_CODE[panelSource];
   const items = itemsOfSource(panelSource);
+  /**
+   * Nguồn nào có phần riêng ở tab Phân tích thu.
+   *
+   * Danh sách lấy từ chính tab đó (`SECTIONS` → `ANALYSIS_SOURCES`) chứ không
+   * chép lại ở đây: hai nơi cùng giữ một danh sách thì sớm muộn chúng lệch
+   * nhau, và khi lệch thì nút này dẫn tới một mục không tồn tại rồi bị đưa về
+   * mặc định — người dùng bấm "xem dầu thô" và nhận được thu nội địa.
+   */
+  const hasFullAnalysis = ANALYSIS_SOURCES.includes(panelSource);
   const amount = sumOf(filters, { items });
   const previous = sumOf(filters, { items, year: filters.year - 1 });
   const cityTotal = sumOf(filters);
@@ -138,15 +148,25 @@ export function RevenuePreviewDrawer() {
           <TrendChart points={trend} year={filters.year} height={180} />
         </div>
 
-        <button
-          type="button"
-          className="dbtn dbtn-primary ddrawer-cta"
-          onClick={() =>
-            dispatchIntent({ type: "OPEN_REVENUE_ANALYSIS", sourceId: panelSource, view: "overview" })
-          }
-        >
-          Xem phân tích đầy đủ
-        </button>
+        {/* Dầu thô KHÔNG có phần riêng ở tab Phân tích thu (`dac-ta-v2` §3.3),
+            nên drawer của nó là điểm cuối: xem xong thì đóng lại. Ba nguồn kia
+            vẫn dẫn sang Tab 2 ①②③ đúng như sơ đồ điều hướng của đặc tả.
+            Một nút dẫn tới màn hình không tồn tại còn tệ hơn là không có nút. */}
+        {hasFullAnalysis ? (
+          <button
+            type="button"
+            className="dbtn dbtn-primary ddrawer-cta"
+            onClick={() =>
+              dispatchIntent({ type: "OPEN_REVENUE_ANALYSIS", sourceId: panelSource, view: "overview" })
+            }
+          >
+            Xem phân tích đầy đủ
+          </button>
+        ) : (
+          <button type="button" className="dbtn ddrawer-cta" onClick={closePreview}>
+            Đóng
+          </button>
+        )}
       </div>
     </div>
   );
