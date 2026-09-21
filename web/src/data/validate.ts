@@ -9,6 +9,12 @@ import type {
   TabId,
   TmsBreakdownData,
 } from "@/domain/types";
+import type {
+  BudgetForecastData,
+  EnterpriseManagementData,
+  InspectionData,
+  ReportSummaryData,
+} from "@/domain/workspaces";
 import { LOCATION_BY_ID, SOURCE_BY_CODE } from "@/domain/catalog";
 
 /**
@@ -639,4 +645,194 @@ export function sanitizeNavigation(value: unknown): DashboardNavigationAction[] 
     }
   }
   return out;
+}
+
+/* ═══════════ Validators cho ba workspace mở theo biên bản 18/09/2026 ═════ */
+
+/**
+ * `freshness` là chỗ dễ nói dối nhất trong toàn bộ payload.
+ *
+ * `dataAsOf` được phép `null` — nguồn chưa cho biết thì nói là chưa biết. Nhưng
+ * nếu có thì phải parse được, vì một chuỗi rác ở đây sẽ hiện nguyên lên màn hình
+ * như một mốc chốt số có thật.
+ */
+const FRESHNESS_STATUS = ["official", "provisional", "mock"];
+const DATA_SOURCES = ["TMS", "TTR", "TREASURY", "MANUAL_PLAN"];
+
+function validateFreshness(value: unknown, where: string) {
+  assert(isRecord(value), `${where}: thiếu khối freshness.`);
+  assert(
+    value.dataAsOf === null ||
+      (typeof value.dataAsOf === "string" && !Number.isNaN(Date.parse(value.dataAsOf))),
+    `${where}: dataAsOf phải là null hoặc một mốc thời gian hợp lệ.`,
+  );
+  assert(
+    typeof value.generatedAt === "string" && !Number.isNaN(Date.parse(value.generatedAt)),
+    `${where}: generatedAt không hợp lệ.`,
+  );
+  assert(
+    FRESHNESS_STATUS.includes(String(value.status)),
+    `${where}: status phải là official, provisional hoặc mock.`,
+  );
+  assert(Array.isArray(value.sources), `${where}: sources phải là mảng.`);
+  for (const s of value.sources as unknown[])
+    assert(
+      DATA_SOURCES.includes(String(s)),
+      `${where}: nguồn "${String(s)}" không nằm trong danh sách cho phép.`,
+    );
+}
+
+/** Tổng phải bằng tổng các dòng. Đây là lời hứa chính của mọi bảng ngân sách. */
+function assertSums(rows: number[], total: number, where: string, what: string) {
+  const sum = rows.reduce((a, b) => a + b, 0);
+  assert(
+    Math.abs(sum - total) < 1,
+    `${where}: ${what} của các dòng cộng lại là ${sum} nhưng tổng ghi ${total}.`,
+  );
+}
+
+export function validateBudgetForecast(value: unknown): BudgetForecastData {
+  assert(isRecord(value), "Dự toán: payload rỗng.");
+  validateMeta(value.meta, "Dự toán");
+  validateFreshness(value.freshness, "Dự toán");
+  assert(
+    value.viewBy === "location" || value.viewBy === "revenueItem",
+    "Dự toán: viewBy không hợp lệ.",
+  );
+  assert(Array.isArray(value.rows) && value.rows.length > 0, "Dự toán: thiếu danh sách dòng.");
+  assert(isRecord(value.totals), "Dự toán: thiếu khối tổng.");
+
+  const rows = value.rows as Record<string, unknown>[];
+  for (const row of rows) {
+    assert(
+      typeof row.id === "string" && typeof row.name === "string",
+      "Dự toán: dòng thiếu id hoặc tên.",
+    );
+    assert(isFinite_(row.plan) && isFinite_(row.actual), "Dự toán: plan và actual phải là số hữu hạn.");
+    assert(isNullableNumber(row.previous), "Dự toán: previous phải là số hoặc null.");
+    // Tỷ lệ hoàn thành `null` nghĩa là CHƯA TÍNH ĐƯỢC (dự toán bằng 0), không
+    // phải 0%. Quy nó về 0 là nói đơn vị đó chưa thu được đồng nào.
+    assert(isNullableNumber(row.completionRate), "Dự toán: completionRate phải là số hoặc null.");
+    assert(isNullableNumber(row.forecast), "Dự toán: forecast phải là số hoặc null.");
+    assert(isNullableNumber(row.forecastError), "Dự toán: forecastError phải là số hoặc null.");
+    assert(
+      row.forecastError === null || (row.forecast !== null && row.actual !== null),
+      "Dự toán: có sai số dự báo nhưng thiếu forecast hoặc actual để tính ra nó.",
+    );
+  }
+  const totals = value.totals as Record<string, unknown>;
+  assertSums(
+    rows.map((r) => Number(r.plan)),
+    Number(totals.plan),
+    "Dự toán",
+    "dự toán",
+  );
+  assertSums(
+    rows.map((r) => Number(r.actual)),
+    Number(totals.actual),
+    "Dự toán",
+    "thực hiện",
+  );
+  return value as unknown as BudgetForecastData;
+}
+
+export function validateEnterpriseManagement(value: unknown): EnterpriseManagementData {
+  assert(isRecord(value), "Doanh nghiệp: payload rỗng.");
+  validateMeta(value.meta, "Doanh nghiệp");
+  validateFreshness(value.freshness, "Doanh nghiệp");
+  assert(
+    ["industry", "taxOffice", "location"].includes(String(value.groupBy)),
+    "Doanh nghiệp: groupBy không hợp lệ.",
+  );
+  assert(Array.isArray(value.groups) && value.groups.length > 0, "Doanh nghiệp: thiếu nhóm.");
+  assert(isRecord(value.totals), "Doanh nghiệp: thiếu khối tổng.");
+  const groups = value.groups as Record<string, unknown>[];
+  const totals = value.totals as Record<string, unknown>;
+  assertSums(
+    groups.map((g) => Number(g.amount)),
+    Number(totals.amount),
+    "Doanh nghiệp",
+    "số thu",
+  );
+  assert(
+    groups.some((g) => g.unclassified === true),
+    "Doanh nghiệp: thiếu nhóm chưa xác định. Nhóm này phải còn trong tổng, không được loại bỏ.",
+  );
+  // Mã doanh nghiệp không được mang hình dạng mã số thuế thật.
+  for (const list of Object.values((value.enterprises ?? {}) as Record<string, unknown>)) {
+    for (const row of (list as Record<string, unknown>[]) ?? []) {
+      assert(
+        !/^\d{10}(-\d{3})?$/.test(String(row.token)),
+        "Doanh nghiệp: token trùng hình dạng mã số thuế. Mock không được mang dữ liệu người nộp thuế.",
+      );
+    }
+  }
+  return value as unknown as EnterpriseManagementData;
+}
+
+export function validateInspection(value: unknown): InspectionData {
+  assert(isRecord(value), "Kiểm tra: payload rỗng.");
+  validateMeta(value.meta, "Kiểm tra");
+  validateFreshness(value.freshness, "Kiểm tra");
+  assert(
+    value.cycle === "week" || value.cycle === "month",
+    "Kiểm tra: chu kỳ phải là week hoặc month.",
+  );
+  assert(isRecord(value.summary), "Kiểm tra: thiếu khối tổng hợp.");
+  assert(Array.isArray(value.units) && value.units.length > 0, "Kiểm tra: thiếu bảng đơn vị.");
+  const units = value.units as Record<string, unknown>[];
+  const summary = value.summary as Record<string, unknown>;
+  // KPI phải cộng đúng bằng bảng bên dưới, nếu không thì lãnh đạo và cán bộ đọc
+  // hai con số khác nhau về cùng một kỳ.
+  assertSums(
+    units.map((u) => Number(u.totalCases)),
+    Number(summary.totalCases),
+    "Kiểm tra",
+    "số cuộc",
+  );
+  assertSums(
+    units.map((u) => Number(u.completedCases)),
+    Number(summary.completedCases),
+    "Kiểm tra",
+    "số cuộc hoàn thành",
+  );
+  assertSums(
+    units.map((u) => Number(u.processedAmount)),
+    Number(summary.processedAmount),
+    "Kiểm tra",
+    "số tiền xử lý",
+  );
+  assertSums(
+    units.map((u) => Number(u.paidAmount)),
+    Number(summary.paidAmount),
+    "Kiểm tra",
+    "số đã nộp",
+  );
+  assert(
+    Number(summary.paidAmount) <= Number(summary.processedAmount) + 1,
+    "Kiểm tra: số đã nộp lớn hơn số tiền xử lý.",
+  );
+  return value as unknown as InspectionData;
+}
+
+export function validateReportSummary(value: unknown): ReportSummaryData {
+  assert(isRecord(value), "Tóm tắt báo cáo: payload rỗng.");
+  validateMeta(value.meta, "Tóm tắt báo cáo");
+  validateFreshness(value.freshness, "Tóm tắt báo cáo");
+  assert(
+    ["location", "taxOffice", "industry"].includes(String(value.dimension)),
+    "Tóm tắt báo cáo: chiều không hợp lệ.",
+  );
+  assert(isFinite_(value.total), "Tóm tắt báo cáo: tổng phải là số hữu hạn.");
+  assert(
+    isFinite_(value.classifiedAmount) && isFinite_(value.unclassifiedAmount),
+    "Tóm tắt báo cáo: thiếu phần đã xác định hoặc chưa xác định.",
+  );
+  assert(
+    Math.abs(
+      Number(value.classifiedAmount) + Number(value.unclassifiedAmount) - Number(value.total),
+    ) < 1,
+    "Tóm tắt báo cáo: phần đã xác định cộng phần chưa xác định không bằng tổng.",
+  );
+  return value as unknown as ReportSummaryData;
 }

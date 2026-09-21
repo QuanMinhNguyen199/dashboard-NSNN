@@ -75,7 +75,7 @@ nhận dữ liệu qua props hoặc qua hook.
 | Tab | URL | Câu hỏi chính |
 |---|---|---|
 | Tổng quan | `?tab=overview` | Tình hình thu ngân sách toàn thành phố ra sao? |
-| Báo cáo | `?tab=report` | Số thu chia theo địa bàn, cơ quan thuế hoặc ngành nghề thế nào? |
+| Báo cáo | `?tab=report&report=nsnn` | Số thu chia theo địa bàn, cơ quan thuế hoặc ngành nghề thế nào? |
 | Phân tích thu | `?tab=revenue-analysis&section=domestic&view=overview` | Nguồn hoặc khoản thu nào tạo ra kết quả đó? |
 | Chi tiết phường/xã | `?tab=location-detail&location=00004` | Một địa bàn cụ thể đang hoạt động ra sao? |
 | Mã hạch toán | `?tab=tms-breakdown&mgmt=all` | Số thu gồm những Chương, Mục và Tiểu mục nào? |
@@ -94,6 +94,110 @@ mười hai tháng thì là `Cả năm`, năm đang chạy thì là `Từ đầu
 tám tháng là cả năm. Khoảng này không phụ thuộc `periodType`: chu kỳ Tháng hay Quý đều cho
 cùng một con số, chu kỳ chỉ quyết định độ mịn của danh sách kỳ cụ thể. Khi đó `acc` mất
 tác dụng nên điều khiển `Cách tính` bị tắt kèm lý do.
+
+## Bốn loại báo cáo trong tab Báo cáo
+
+Ba mảng mở theo biên bản 18/09/2026 là **chế độ bên trong tab Báo cáo**, không
+phải tab cấp cao. Thanh điều hướng giữ đúng sáu tab: thêm tab thứ bảy, tám,
+chín là đẩy chi phí quét sang mọi người dùng, kể cả người không bao giờ mở ba
+mảng đó.
+
+| Chế độ | URL | Nội dung |
+|---|---|---|
+| Thu NSNN | `?tab=report&report=nsnn` | Tóm tắt + bảng chéo 113 chỉ tiêu (mặc định) |
+| Dự toán & dự báo | `?tab=report&report=budget` | Thực hiện so dự toán, xếp hạng, dự báo, sai số |
+| Quản lý thu | `?tab=report&report=taxpayer` | Số thu theo ngành nghề, cơ quan thuế hoặc địa bàn |
+| Kết quả kiểm tra | `?tab=report&report=inspection` | Số cuộc, số tiền xử lý, số đã nộp theo đơn vị |
+
+Giá trị `report` ngoài bốn giá trị trên trở về `nsnn`.
+
+Ba URL tạm của lượt trước chuyển hướng, không màn hình trắng và không vòng lặp Back:
+
+```text
+?tab=budget-forecast  ->  ?tab=report&report=budget
+?tab=enterprise       ->  ?tab=report&report=taxpayer
+?tab=inspection       ->  ?tab=report&report=inspection
+```
+
+Bộ chọn loại báo cáo render **một** control ở mỗi khổ màn hình: thanh phân đoạn
+ở khổ rộng, `select` full width ở khổ hẹp. Không có hai control cùng điều khiển
+một state rồi ẩn một cái bằng CSS.
+
+## Ba mảng mở theo biên bản 18/09/2026
+
+Ba mảng vẫn dùng **số mô phỏng tất định** cho phần chưa có giao dịch/API. Riêng
+khối Dự toán và Quản lý thu đã nhận dữ liệu tổng hợp từ bộ bàn giao 18-09; số
+nguồn và số mô phỏng được đặt thành hai khối riêng, không cộng hoặc tính tỷ lệ
+chéo giữa hai nguồn.
+
+| Mảng | Đã có | Chưa có |
+|---|---|---|
+| Dự toán & dự báo | Mốc điều hành 2026, ước tháng 7–12, dự toán đủ 126 phường xã; khối tiến độ mô phỏng có drill-down và xuất CSV | Thực hiện chi tiết theo địa bàn/khoản thu; công thức sai số đã duyệt |
+| Quản lý thu | Số lượng 473.618 bản ghi danh bạ đã tổng hợp theo ngành/CQT/địa bàn; số thu và danh sách chi tiết dùng token mô phỏng | Nối chứng từ TMS với danh bạ để tính số thu thật theo nhóm |
+| Kiểm tra | Sáu KPI, diễn biến theo tuần hoặc tháng, bảng đơn vị có dòng Cộng, biến động chính sách | Nguồn TTR; ý nghĩa chính xác của chỉ tiêu "tiền chi thu" |
+
+### Ba bảo đảm của lớp mock
+
+1. **Tất định** — cùng bộ lọc luôn ra cùng số. Không `Math.random`, không
+   `Date.now()` trong phần sinh số.
+2. **Cộng khớp** — tổng tính TỪ các dòng, không tính song song. Chỗ phải chia
+   ngược từ tổng xuống dùng phần dư lớn nhất nên không rơi mất đồng nào.
+   `validate.ts` chặn ở runtime nếu lệch quá 1 đồng.
+3. **Không dữ liệu người nộp thuế** — doanh nghiệp mang token `DN-xxxxx`, cố ý
+   không giống mã số thuế 10 hoặc 13 chữ số. Validator từ chối payload có token
+   trùng hình dạng MST.
+
+### Dữ liệu tổng hợp từ bộ 18-09
+
+[`scripts/import-18-09.py`](scripts/import-18-09.py) tạo
+[`official-18-09.json`](src/data/official-18-09.json). File kết quả chỉ chứa:
+
+- các mốc dự toán, thực hiện và ước thực hiện năm 2026;
+- dự toán 126 phường, xã và cơ cấu khoản thu;
+- số lượng bản ghi danh bạ theo ngành nghề, cơ quan thuế và địa bàn.
+
+Tên và mã số thuế không được xuất vào repository. Chạy lại script khi bộ nguồn
+được cập nhật; script kiểm đủ 126 địa bàn và dừng nếu có tên không nối được.
+
+### Sai số dự báo
+
+Cơ quan thuế nêu mục tiêu ≤ 3% nhưng **chưa chốt** công thức, phạm vi tính, kỳ
+đánh giá và cách xử lý khoản thu đột biến. Bản này dùng sai số tuyệt đối phần
+trăm, tách thành hàm riêng
+([`absolutePercentageError`](src/domain/workspaces.ts)) để thay công thức mà
+không phải sửa component.
+
+Giao diện **không bao giờ** ghi "Đạt" trên số mô phỏng:
+`meetsForecastTarget` trả `null` khi `status === "mock"`, và `null` nghĩa là
+chưa kết luận được.
+
+### Trạng thái dữ liệu
+
+Mỗi workspace mới hiện một dải `DataFreshness` ngay dưới bộ lọc, đúng một lần:
+
+```ts
+interface DataFreshness {
+  dataAsOf: string | null;      // lúc NGUỒN chốt số
+  generatedAt: string;          // lúc hệ thống dựng báo cáo
+  status: "official" | "provisional" | "mock";
+  sources: Array<"TMS" | "TTR" | "TREASURY" | "MANUAL_PLAN">;
+}
+```
+
+`dataAsOf` là `null` ở lớp mock và ô tương ứng để trống. Lấy `generatedAt` lấp
+vào chỗ đó là nói rằng số vừa được cập nhật, trong khi thật ra chỉ là người dùng
+vừa tải lại trang.
+
+### Xuất CSV
+
+[`ReportExportButton`](src/components/ReportExportButton.tsx) nhận một
+`ExportRequest` thay vì nhận sẵn mảng dòng, nên bảng có phân trang vẫn xuất
+**toàn bộ** tập được phép chứ không xuất trang đang xem. File có BOM UTF-8 để
+Excel trên Windows đọc đúng dấu tiếng Việt, và mở đầu bằng bảy dòng metadata:
+kỳ, phạm vi, đơn vị, nguồn, mốc chốt số, lúc dựng báo cáo, trạng thái.
+
+Thêm XLSX hoặc PDF sau này chỉ cần thêm một hàm serialize, không phải sửa từng
+workspace.
 
 ## Chế độ dữ liệu
 

@@ -338,6 +338,15 @@ export function Bars({
   const unit = moneyUnit ?? moneyScale(rows.map((row) => row.amount));
 
   const changes = rows.map((row) => yoy(row.amount, row.previous));
+  /**
+   * Không dòng nào có kỳ trước thì BỎ HẲN cột biến động.
+   *
+   * Trước đây mỗi dòng in "Chưa có kỳ trước", nên một danh sách sáu dòng có sáu
+   * lần cùng một câu — một cột chữ không mang tin nào, đứng cạnh chính con số
+   * mà người đọc đang cần. Câu đó chỉ có nghĩa khi nó phân biệt dòng này với
+   * dòng khác; khi cả bảng đều thế thì nó là nhiễu.
+   */
+  const anyPrevious = rows.some((row) => row.previous !== null && row.previous !== undefined);
   const maxAmount = Math.max(...rows.map((row) => Math.abs(row.amount)), 1);
   const maxChange = Math.max(...changes.map((c) => Math.abs(c ?? 0)), 1);
   const twoSided =
@@ -367,7 +376,7 @@ export function Bars({
                     bảng, và người quét ba giây đọc ngược hoàn toàn. */}
                 <span className="dbar-value">
                   {scale === "change" ? (
-                    <Change current={row.amount} previous={row.previous} label="" />
+                    anyPrevious ? <Change current={row.amount} previous={row.previous} label="" /> : null
                   ) : (
                     <>
                       {inScale(row.amount, unit)}
@@ -397,9 +406,9 @@ export function Bars({
                 {inScale(row.amount, unit)}
                 {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
               </span>
-            ) : (
+            ) : anyPrevious ? (
               <Change current={row.amount} previous={row.previous} />
-            )}
+            ) : null}
           </>
         );
         return (

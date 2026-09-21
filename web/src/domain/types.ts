@@ -1,5 +1,14 @@
 import type { BudgetLevel, IndicatorSlug, SourceCode } from "./catalog";
 import type { ManagementLevelFilter } from "./tms";
+import type {
+  BudgetForecastData,
+  BudgetViewBy,
+  EnterpriseGroupBy,
+  EnterpriseManagementData,
+  InspectionCycle,
+  InspectionData,
+  ReportSummaryData,
+} from "./workspaces";
 import type { ReportDimension, ReportRowKind } from "./report";
 
 export type PeriodType = "MONTH" | "QUARTER";
@@ -11,6 +20,15 @@ export type TabId =
   | "location-detail"
   | "tms-breakdown"
   | "advanced-compare";
+
+/**
+ * Bốn loại báo cáo bên trong tab `Báo cáo`.
+ *
+ * Ba mảng mở theo biên bản 18/09 là CHẾ ĐỘ của một tab, không phải tab cấp cao.
+ * Thanh điều hướng giữ đúng sáu tab; thêm tab thứ bảy, tám, chín là đẩy chi phí
+ * quét sang mọi người dùng kể cả người không bao giờ mở ba mảng đó.
+ */
+export type ReportMode = "nsnn" | "budget" | "taxpayer" | "inspection";
 export type AdvancedComparisonMode = "period" | "revenue" | "location";
 export type RevenueScope = SourceCode;
 
@@ -539,4 +557,38 @@ export interface DashboardDataProvider {
     },
     signal: AbortSignal,
   ): Promise<DashboardResponse<ReportGridData>>;
+
+  /**
+   * Tóm tắt của lưới báo cáo, tính TRÊN TOÀN BỘ chiều chứ không trên trang cột.
+   *
+   * Tách khỏi `getReportGrid` có chủ ý: lưới phân trang cột, nên nếu giao diện
+   * tự cộng lại từ những ô đang hiện thì "tổng thu" đổi mỗi lần lật trang. Số
+   * tóm tắt phải nói về kỳ báo cáo, không nói về khung nhìn.
+   */
+  getReportSummary(
+    filters: DashboardFilters,
+    dimension: ReportDimension,
+    signal: AbortSignal,
+  ): Promise<DashboardResponse<ReportSummaryData>>;
+
+  /** Dự toán, thực hiện và dự báo — xếp hạng theo địa bàn hoặc theo khoản thu. */
+  getBudgetForecast(
+    filters: DashboardFilters,
+    viewBy: BudgetViewBy,
+    signal: AbortSignal,
+  ): Promise<DashboardResponse<BudgetForecastData>>;
+
+  /** Số thu theo ngành nghề, cơ quan thuế hoặc địa bàn, kèm doanh nghiệp mô phỏng. */
+  getEnterpriseManagement(
+    filters: DashboardFilters,
+    groupBy: EnterpriseGroupBy,
+    signal: AbortSignal,
+  ): Promise<DashboardResponse<EnterpriseManagementData>>;
+
+  /** Kết quả kiểm tra theo tuần hoặc tháng, tổng hợp từ TMS và TTR. */
+  getInspection(
+    filters: DashboardFilters,
+    cycle: InspectionCycle,
+    signal: AbortSignal,
+  ): Promise<DashboardResponse<InspectionData>>;
 }

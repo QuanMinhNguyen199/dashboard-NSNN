@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useReportGrid } from "@/data/hooks";
+import { provider } from "@/data";
 import { useDashboardState } from "@/state/DashboardState";
 import {
   DIMENSIONS,
@@ -10,9 +11,22 @@ import {
 } from "@/domain/report";
 import { toDisplayNumber } from "@/domain/money";
 import { locationDimensionAvailable, locationDimensionNote } from "@/domain/periods";
-import type { ReportCell, ReportGridData, ReportRow } from "@/domain/types";
+import type { DashboardFilters, ReportCell, ReportGridData, ReportRow } from "@/domain/types";
 import { Card, inScale, LiveNotice, moneyScale, ResourceView } from "@/components/primitives";
+import { ReportSummary } from "./ReportSummary";
+import { ReportModePicker } from "./ReportModePicker";
+import { ReportExportButton } from "@/components/ReportExportButton";
 import { useNarrow } from "@/components/useNarrow";
+
+const BudgetForecastView = lazy(() =>
+  import("@/features/budget-forecast/BudgetForecastView").then((module) => ({ default: module.BudgetForecastView })),
+);
+const EnterpriseManagementView = lazy(() =>
+  import("@/features/enterprise-management/EnterpriseManagementView").then((module) => ({ default: module.EnterpriseManagementView })),
+);
+const InspectionReportView = lazy(() =>
+  import("@/features/inspection/InspectionReportView").then((module) => ({ default: module.InspectionReportView })),
+);
 
 /**
  * Màn hình Báo cáo: tám mẫu, hai ô chọn.
@@ -26,12 +40,44 @@ import { useNarrow } from "@/components/useNarrow";
  * liệu phải giữ nguyên tổng của mỗi hàng, và điều đó chỉ kiểm được khi cả hai
  * lần đều do máy chủ cộng.
  */
+/**
+ * Vỏ chung của bốn loại báo cáo.
+ *
+ * Nó sở hữu bộ chọn loại, đọc/ghi tham số `report` trong URL rồi render đúng
+ * view. Ba mảng mở theo biên bản 18/09 là CHẾ ĐỘ ở đây, không phải tab cấp cao:
+ * thanh điều hướng giữ đúng sáu tab, và người không dùng ba mảng đó không phải
+ * quét thêm ba nhãn mỗi lần tìm đường.
+ */
 export function ReportTab() {
+  const { reportMode, setReportMode } = useDashboardState();
+  return (
+    <div className="dstack">
+      <div className="dreport-modebar">
+        <ReportModePicker value={reportMode} onChange={setReportMode} />
+      </div>
+
+      <Suspense fallback={<div className="dloading" role="status">Đang mở báo cáo…</div>}>
+        {reportMode === "nsnn" && <NsnnReportView />}
+        {reportMode === "budget" && <BudgetForecastView />}
+        {reportMode === "taxpayer" && <EnterpriseManagementView />}
+        {reportMode === "inspection" && <InspectionReportView />}
+      </Suspense>
+    </div>
+  );
+}
+
+function NsnnReportView() {
   const { filters } = useDashboardState();
   const narrow = useNarrow();
   const [groupBy, setGroupBy] = useState<ReportDimension>("location");
   const [subGroupBy, setSubGroupBy] = useState<ReportDimension | null>(null);
   const [offset, setOffset] = useState(0);
+  const [mobileSection, setMobileSection] = useState<"summary" | "table">("summary");
+  const [mobileDimensionsOpen, setMobileDimensionsOpen] = useState(false);
+  const openMobileTable = () => {
+    setMobileSection("table");
+    window.requestAnimationFrame(() => document.getElementById("nsnn-report-table-title")?.focus());
+  };
 
   /**
    * Chiều địa bàn khoá lại ở kỳ chưa có dữ liệu địa bàn.
@@ -76,8 +122,25 @@ export function ReportTab() {
   };
 
   return (
-    <div className="dstack">
-      <div className="dreport-bar">
+    <>
+      <button
+        type="button"
+        className="dreport-settings-toggle"
+        aria-expanded={mobileDimensionsOpen}
+        aria-controls="report-dimension-controls"
+        onClick={() => setMobileDimensionsOpen((open) => !open)}
+      >
+        <span>Thiết lập mẫu</span>
+        <strong>
+          {DIMENSION_BY_ID[groupBy].name}
+          {subGroupBy ? ` · ${DIMENSION_BY_ID[subGroupBy].name}` : " · Không chi tiết"}
+        </strong>
+      </button>
+      <div
+        className="dreport-bar"
+        id="report-dimension-controls"
+        data-mobile-open={mobileDimensionsOpen}
+      >
         <label>
           <span>Xem theo</span>
           <select
@@ -116,26 +179,62 @@ export function ReportTab() {
             ))}
           </select>
         </label>
-        <p className="dhint">
-          Tám mẫu báo cáo là tám cặp chiều. Hàng luôn là cây 113 chỉ tiêu; Chương và Tiểu mục là điều kiện
-          lấy số nên không xuất hiện thành cột.
-        </p>
+        <details className="dreport-dimension-help">
+          <summary>Cách lập mẫu báo cáo</summary>
+          <p>
+            Tám mẫu báo cáo là tám cặp chiều. Hàng luôn là cây 113 chỉ tiêu; Chương và Tiểu mục là điều kiện
+            lấy số nên không xuất hiện thành cột.
+          </p>
+        </details>
       </div>
 
       <LiveNotice>
         {locationNote ? `${switched ? "Đã chuyển sang nhóm theo Cơ quan thuế. " : ""}${locationNote}` : null}
       </LiveNotice>
 
-      <ResourceView resource={resource} retry={retry} minHeight={420} pending={pending}>
-        {(data) => (
-          <ReportBody
-            data={data}
-            limit={limit}
-            onPage={(next) => setOffset(next)}
-          />
-        )}
-      </ResourceView>
-    </div>
+      <div className="dreport-mobile-switch" role="group" aria-label="Nội dung báo cáo đang xem">
+        <button
+          type="button"
+          className={mobileSection === "summary" ? "is-active" : undefined}
+          aria-pressed={mobileSection === "summary"}
+          onClick={() => setMobileSection("summary")}
+        >
+          Tóm tắt
+        </button>
+        <button
+          type="button"
+          className={mobileSection === "table" ? "is-active" : undefined}
+          aria-pressed={mobileSection === "table"}
+          onClick={openMobileTable}
+        >
+          Bảng báo cáo
+        </button>
+      </div>
+
+      {/* Lớp tóm tắt đứng TRƯỚC bảng chéo: người đọc trả lời được bốn câu hỏi
+          chính mà không phải tự quét hàng trăm ô. Nó gọi provider riêng nên số
+          không đổi theo trang cột đang xem. */}
+      <div className="dreport-summary-pane" data-mobile-active={mobileSection === "summary"}>
+        <ReportSummary
+          filters={filters}
+          dimension={groupBy}
+          onOpenTable={openMobileTable}
+        />
+      </div>
+
+      <div className="dreport-table-pane" data-mobile-active={mobileSection === "table"}>
+        <ResourceView resource={resource} retry={retry} minHeight={420} pending={pending}>
+          {(data) => (
+            <ReportBody
+              data={data}
+              filters={filters}
+              limit={limit}
+              onPage={(next) => setOffset(next)}
+            />
+          )}
+        </ResourceView>
+      </div>
+    </>
   );
 }
 
@@ -162,10 +261,12 @@ const KIND_LABEL: Record<string, string> = {
 
 function ReportBody({
   data,
+  filters,
   limit,
   onPage,
 }: {
   data: ReportGridData;
+  filters: DashboardFilters;
   limit: number;
   onPage: (offset: number) => void;
 }) {
@@ -214,7 +315,7 @@ function ReportBody({
 
   return (
     <>
-      <h2 className="dsubject">
+      <h2 className="dsubject" id="nsnn-report-table-title" tabIndex={-1}>
         {data.templateNo ? `Mẫu ${data.templateNo}` : "Cặp chiều ngoài tám mẫu"}
         <small>
           {DIMENSION_BY_ID[data.groupBy].name}
@@ -227,17 +328,38 @@ function ReportBody({
         title="Bảng báo cáo"
         subtitle={`${DIMENSION_BY_ID[data.groupBy].source}. Ô theo ${scale.unit}, cột tổng theo ${totalScale.unit}.`}
         actions={
-          <span className="dreport-page">
-            <button type="button" className="dbtn" disabled={offset === 0} onClick={() => onPage(Math.max(0, offset - limit))}>
-              Cột trước
-            </button>
-            <em>
-              {offset + 1}–{last} trên {total} cột
-            </em>
-            <button type="button" className="dbtn" disabled={last >= total} onClick={() => onPage(offset + limit)}>
-              Cột sau
-            </button>
-          </span>
+          <div className="dreport-actions">
+            <ReportExportButton
+              label="Xuất toàn bộ CSV"
+              request={{
+                fileName: `bao-cao-thu-nsnn-${data.groupBy}${data.subGroupBy ? `-${data.subGroupBy}` : ""}`,
+                rows: () => [],
+                prepare: () => prepareWideReportExport(filters, data.groupBy, data.subGroupBy),
+                meta: {
+                  periodLabel: data.meta.periodLabel,
+                  scopeLabel: data.meta.scopeLabel,
+                  unit: "đồng",
+                  freshness: {
+                    dataAsOf: null,
+                    generatedAt: data.meta.generatedAt,
+                    status: data.origin === "mock" ? "mock" : "provisional",
+                    sources: ["TREASURY"],
+                  },
+                },
+              }}
+            />
+            <span className="dreport-page">
+              <button type="button" className="dbtn" disabled={offset === 0} onClick={() => onPage(Math.max(0, offset - limit))}>
+                Cột trước
+              </button>
+              <em role="status" aria-live="polite" aria-atomic="true">
+                {offset + 1}–{last} trên {total} cột
+              </em>
+              <button type="button" className="dbtn" disabled={last >= total} onClick={() => onPage(offset + limit)}>
+                Cột sau
+              </button>
+            </span>
+          </div>
         }
       >
         <div className="dtable-wrap">
@@ -329,6 +451,78 @@ function ReportBody({
       </Card>
     </>
   );
+}
+
+type WideReportExportRow = {
+  row: ReportRow;
+  values: Map<string, string | null>;
+};
+
+/**
+ * Tải toàn bộ các trang cột rồi dựng CSV dạng ma trận giống bảng báo cáo.
+ * Mỗi chỉ tiêu là một dòng; mỗi topic của cặp chiều là một cột. Không dùng dữ
+ * liệu của trang đang nhìn vì trang mobile chỉ có ba cột và desktop chỉ tám.
+ */
+async function prepareWideReportExport(
+  filters: DashboardFilters,
+  groupBy: ReportDimension,
+  subGroupBy: ReportDimension | null,
+) {
+  const controller = new AbortController();
+  const pageSize = 250;
+  let offset = 0;
+  let total = Number.POSITIVE_INFINITY;
+  let reportRows: ReportRow[] = [];
+  const leafColumns: { id: string; header: string }[] = [];
+  const valuesByRow = new Map<string, Map<string, string | null>>();
+
+  while (offset < total) {
+    const response = await provider.getReportGrid(
+      filters,
+      { groupBy, subGroupBy, columnOffset: offset, columnLimit: pageSize },
+      controller.signal,
+    );
+    const page = response.data;
+    reportRows = page.rows;
+    total = page.columnPage.total;
+    const parents = new Map(
+      page.columns.filter((column) => column.parentId === null).map((column) => [column.id, column.name]),
+    );
+    const pageLeaves = page.columns.filter((column) => subGroupBy === null || column.parentId !== null);
+    if (!pageLeaves.length) break;
+
+    for (const column of pageLeaves) {
+      leafColumns.push({
+        id: column.id,
+        header: column.parentId ? `${parents.get(column.parentId) ?? column.parentId} · ${column.name}` : column.name,
+      });
+    }
+    for (const cell of page.cells) {
+      const rowValues = valuesByRow.get(cell.rowId) ?? new Map<string, string | null>();
+      rowValues.set(cell.columnId, cell.value);
+      valuesByRow.set(cell.rowId, rowValues);
+    }
+    offset += pageLeaves.length;
+  }
+
+  const rows: WideReportExportRow[] = reportRows.map((row) => ({
+    row,
+    values: valuesByRow.get(row.id) ?? new Map(),
+  }));
+  return {
+    rows,
+    columns: [
+      { header: "Mã chỉ tiêu", value: (item: WideReportExportRow) => item.row.id },
+      { header: "Chỉ tiêu", value: (item: WideReportExportRow) => item.row.name },
+      { header: "Cấp", value: (item: WideReportExportRow) => item.row.depth },
+      { header: "Loại dòng", value: (item: WideReportExportRow) => KIND_LABEL[item.row.kind] ?? item.row.kind },
+      { header: "Tổng (đồng)", value: (item: WideReportExportRow) => item.row.total },
+      ...leafColumns.map((column) => ({
+        header: `${column.header} (đồng)`,
+        value: (item: WideReportExportRow) => item.values.get(column.id) ?? null,
+      })),
+    ],
+  };
 }
 
 /** Danh sách tám mẫu, để đối chiếu nhanh khi nghiệm thu. */

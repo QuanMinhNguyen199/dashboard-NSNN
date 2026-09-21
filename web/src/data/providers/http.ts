@@ -6,6 +6,11 @@ import type {
   RevenueScope,
   TabId,
 } from "@/domain/types";
+import type {
+  BudgetViewBy,
+  EnterpriseGroupBy,
+  InspectionCycle,
+} from "@/domain/workspaces";
 import type { ManagementLevelFilter } from "@/domain/tms";
 import type { ReportDimension } from "@/domain/report";
 import {
@@ -21,6 +26,10 @@ import {
   validateRevenueAnalysis,
   validateTmsBreakdown,
   validateReportGrid,
+  validateBudgetForecast,
+  validateEnterpriseManagement,
+  validateInspection,
+  validateReportSummary,
 } from "../validate";
 
 /**
@@ -104,5 +113,33 @@ export class JsonDashboardProvider implements DashboardDataProvider {
     return this.post("/report", { filters, ...options }, signal, (raw) =>
       validateReportGrid(isRecord(raw) && raw.origin === undefined ? { ...raw, origin: "api" } : raw),
     );
+  }
+
+  /**
+   * Bốn endpoint của các workspace mở.
+   *
+   * Máy chủ chưa có chúng, và đó chính là lý do phải khai báo tường minh: nếu
+   * để lớp này im lặng rơi về mock thì ứng dụng đang ở chế độ API sẽ hiện số mô
+   * phỏng mà không ai biết. `post` ném `PayloadError` khi máy chủ trả 404, nên
+   * giao diện hiện đúng trạng thái lỗi thay vì một bảng số giả.
+   */
+  getReportSummary(filters: DashboardFilters, dimension: ReportDimension, signal: AbortSignal) {
+    return this.post("/report-summary", { filters, dimension }, signal, validateReportSummary);
+  }
+
+  getBudgetForecast(filters: DashboardFilters, viewBy: BudgetViewBy, signal: AbortSignal) {
+    return this.post("/budget-forecast", { filters, viewBy }, signal, validateBudgetForecast);
+  }
+
+  getEnterpriseManagement(
+    filters: DashboardFilters,
+    groupBy: EnterpriseGroupBy,
+    signal: AbortSignal,
+  ) {
+    return this.post("/enterprise", { filters, groupBy }, signal, validateEnterpriseManagement);
+  }
+
+  getInspection(filters: DashboardFilters, cycle: InspectionCycle, signal: AbortSignal) {
+    return this.post("/inspection", { filters, cycle }, signal, validateInspection);
   }
 }

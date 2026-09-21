@@ -342,6 +342,7 @@ table { border-collapse: collapse; width: 100%; }
 /* ─────────────────────────────── Bộ lọc ─────────────────────────────────── */
 .dfilters {
   display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s3) var(--s4);
+  position: relative; z-index: 25;
   padding: 13px 15px; margin-bottom: var(--s4);
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
@@ -355,7 +356,6 @@ table { border-collapse: collapse; width: 100%; }
  * hoa ở cỡ 11px thì dấu bị chen chúc: "CƠ QUAN ĐANG XEM" khó đọc hơn hẳn. */
 .dfilters span,
 .dfield > span,
-.dtax-picker label > span,
 .dreport-bar label > span,
 .dtms-levelbar-label span {
   color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
@@ -365,8 +365,9 @@ table { border-collapse: collapse; width: 100%; }
  *
  * Bản cũ liệt kê `.dfilters select, .dbuilder select`, tức là mỗi panel mới phải
  * nhớ tự thêm mình vào danh sách. Không ai nhớ. Chú thích cũ kể chuyện
- * `.dbuilder` đã quên một lần; rồi `.dtax-picker` quên lần nữa và cho ra một ô
- * chọn thô của trình duyệt, rộng 1.530px, nằm giữa một màn hình đã style kỹ.
+ * `.dbuilder` đã quên một lần; rồi bộ chọn cơ quan thuế quên lần nữa và cho ra
+ * một ô chọn thô của trình duyệt, rộng 1.530px, giữa một màn hình đã style kỹ
+ * (ô chọn đó nay đã bỏ hẳn, nhưng luật này vẫn là lý do nó không tái diễn).
  * Chọn theo ELEMENT thì không panel nào quên được nữa; chỗ nào cần khác thì ghi
  * đè bằng selector cụ thể hơn, như `.dframe-device select` phía dưới.
  *
@@ -395,7 +396,37 @@ select:hover {
    hàng thì một lựa chọn sáu chữ nằm giữa một hộp rộng 500px. Nút đặt lại giữ
    mép phải bằng `margin-left: auto` thay vì nhờ một ô lọc đẩy hộ. */
 .dfilter-management { flex: 0 1 200px; }
-.dfield-wide select, .dfilter-management select { width: 100%; }
+.dfilter-tax-office { flex: 0 1 300px; }
+.dfilter-location { flex: 0 1 230px; }
+.dfield-wide select, .dfilter-management select, .dfilter-tax-office select { width: 100%; }
+.dautocomplete { position: relative; display: grid; gap: 5px; min-width: 0; }
+.dautocomplete > label { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
+.dautocomplete-control { position: relative; min-width: 0; }
+.dautocomplete-control input {
+  width: 100%; min-width: 0; min-height: 38px; padding: 6px 34px 6px 11px;
+  border: 1px solid var(--control-border); border-radius: var(--r-control);
+  background: var(--surface); color: var(--ink); font: inherit; font-size: var(--fs-caption);
+}
+.dautocomplete-control input::placeholder { color: var(--ink-3); }
+.dautocomplete-control svg {
+  position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+  pointer-events: none; color: var(--ink-3);
+}
+.dautocomplete-list {
+  position: absolute; z-index: 35; top: calc(100% + 4px); left: 0; right: 0;
+  max-height: min(300px, 50vh); overflow-y: auto;
+  padding: 4px; background: var(--surface); border: 1px solid var(--control-border);
+  border-radius: var(--r-control); box-shadow: var(--shadow-tip);
+}
+.dautocomplete-list button {
+  display: block; width: 100%; min-height: 36px; padding: 7px 9px;
+  border: 0; border-radius: var(--r-chip); background: none;
+  color: var(--ink-2); text-align: left; font: inherit; font-size: var(--fs-caption);
+  cursor: pointer;
+}
+.dautocomplete-list button:hover, .dautocomplete-list button.is-active { background: var(--blue-050); color: var(--brand); }
+.dautocomplete-list button[aria-selected="true"] { font-weight: var(--fw-label); }
+.dautocomplete-list p { margin: 0; padding: 9px; color: var(--ink-3); font-size: var(--fs-caption); }
 
 /* Chỉ làm gọn thanh lọc khi dashboard thực sự nằm trong iframe. Trang web
    thường tiếp tục dùng nguyên bố cục và khoảng cách ở trên. */
@@ -444,7 +475,8 @@ select:hover {
 .dfilters[data-embedded="true"][data-open="false"] > .dfilter-management { flex: 1 1 100%; }
 .dfilters[data-embedded="true"][data-open="false"] > .dfilter-management select { width: 100%; }
 
-.dfilters[data-embedded="true"][data-open="false"] > label:not(.dfilter-location):not(.dfilter-management),
+.dfilters[data-embedded="true"][data-open="false"] > label:not(.dfilter-management),
+.dfilters[data-embedded="true"][data-open="false"] > .dfilter-tax-office,
 .dfilters[data-embedded="true"][data-open="false"] > .dfilters-reset-row,
 .dfilters[data-embedded="true"][data-open="false"] > .dfield { display: none; }
 .dfilters[data-embedded="true"][data-open="true"] {
@@ -458,6 +490,7 @@ select:hover {
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-accumulation { grid-column: span 6; }
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-budget,
 .dfilters[data-embedded="true"][data-open="true"] .dfilter-management { grid-column: span 6; }
+.dfilters[data-embedded="true"][data-open="true"] .dfilter-tax-office { grid-column: 1 / -1; }
 /* Desktop rộng: nút nằm gọn cuối hàng điều khiển, không chiếm trọn chiều rộng
    và không có đường kẻ phân cách — nó là một điều khiển phụ, không phải một khối
    hành động. Bản thu gọn đổi sang khối đầy đủ ở luật bên dưới. */
@@ -602,6 +635,13 @@ select:hover {
   border-radius: var(--r-surface); overflow: hidden;
 }
 .dkpis[data-columns="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Năm và sáu ô: số cột phải CHIA HẾT số ô, nếu không hàng cuối để hở và dải
+   trông như bị cắt dở giữa chừng. Sáu ô xếp 3×2; năm ô xếp một hàng. */
+.dkpis[data-columns="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.dkpis[data-columns="6"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Ô ở đầu mỗi hàng không có viền trái, kể cả khi hàng đó không phải hàng đầu. */
+.dkpis[data-columns="6"] > div:nth-child(3n + 1) { border-left: 0; }
+.dkpis[data-columns="6"] > div:nth-child(n + 4) { border-top: 1px solid var(--hairline); }
 /* Nhịp có chủ ý thay vì một khoảng lặp lại: nhãn dính sát giá trị vì hai thứ đó
    là MỘT đơn vị — tên của số và chính con số; dòng phụ tách xa hơn vì nó là lời
    chú, không phải một phần của phép đo. Trước đây cả hai khe đều 2px nên ba dòng
@@ -659,7 +699,7 @@ select:hover {
 /* 0,6em của 23px chỉ ra 14px — nhỏ hơn cả chữ thân bài, trong khi nó là thứ nói
    con số kia nghĩa là gì. Nâng lên 0,7em và tăng trọng lượng. */
 .dmoney i {
-  font-size: 0.7em; font-weight: var(--fw-label); font-style: normal;
+  font-size: max(0.7em, var(--fs-label)); font-weight: var(--fw-label); font-style: normal;
   color: var(--ink-2); letter-spacing: var(--ls-label);
 }
 
@@ -1463,65 +1503,28 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   letter-spacing: var(--ls-code); text-transform: uppercase; color: var(--ink-3);
 }
 
-/* CQT là bộ lọc cục bộ của màn Tra cứu mã. Top 5 cho một lối vào nhanh; danh
-   sách đủ được mở theo nhu cầu để không đẩy nội dung Mục/Tiểu mục xuống quá xa. */
-.dtax-picker {
-  display: flex; align-items: flex-end; gap: var(--s2); margin-bottom: var(--s3);
+.dtax-scope {
+  padding: var(--s4); background: var(--surface);
+  border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
-/* `flex: 1 1` cho ô này nuốt trọn chiều ngang thẻ — ra một ô chọn rộng 1.530px
-   với đúng một dòng chữ trong đó, và nút "Bỏ chọn" bị đẩy ra tận mép phải. Ghim
-   chiều rộng theo nội dung dài nhất thực tế (mã + tên cơ quan). */
-.dtax-picker label { display: flex; flex: 0 1 420px; flex-direction: column; gap: 4px; min-width: 0; }
-.dtax-picker select { width: 100%; }
-.dtax-top {
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--s2);
+.dtax-scope-head { display: grid; gap: 2px; }
+.dtax-scope-titleline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+.dtax-scope-head h3 { margin: 0; color: var(--ink); font-size: var(--fs-title); font-weight: var(--fw-bold); }
+.dtax-scope-head p { margin: 0; color: var(--ink-3); font-size: var(--fs-caption); }
+.dtax-locations {
+  width: 100%; margin-top: var(--s3); border-collapse: collapse; table-layout: fixed;
+  color: var(--ink-2); font-size: var(--fs-body);
 }
-/* Thẻ cơ quan thuế: con SỐ là thứ người ta quét, nên nó phải là chữ lớn nhất
-   trong thẻ. Bản cũ ngược hẳn — mã cơ quan 13px, số tiền 12px — nên mắt dừng ở
-   mã trước rồi mới tìm ra số. Nền trắng kèm bóng nhẹ để thẻ đọc ra là bấm được
-   thay vì một ô xám nằm trên nền trắng của thẻ cha. */
-.dtax-top button, .dtax-all li button {
-  display: flex; align-items: center; justify-content: space-between; gap: var(--s3);
-  min-width: 0; padding: 10px 12px; text-align: left;
-  color: var(--ink); background: var(--surface);
-  border: 1px solid var(--hairline); border-radius: var(--r-control); cursor: pointer;
-  box-shadow: var(--shadow-control);
-  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+.dtax-locations th, .dtax-locations td {
+  padding: 10px var(--s2); border-bottom: 1px solid var(--divider); text-align: left;
 }
-.dtax-top button:hover, .dtax-all li button:hover {
-  border-color: var(--blue-250); background: var(--blue-050); box-shadow: var(--shadow-tip);
-}
-.dtax-top button.is-active, .dtax-all li button.is-active {
-  color: var(--brand); border-color: var(--brand); background: var(--blue-050);
-  box-shadow: inset 0 0 0 1px var(--brand);
-}
-.dtax-top button > span, .dtax-all li button > span {
-  display: flex; flex-direction: column; gap: 1px; min-width: 0; color: var(--ink-3);
-  font-size: var(--fs-label); line-height: var(--lh-dense);
-}
-/* Mã cơ quan là định danh, không phải tiêu đề: nhỏ, đều chân số, và nhạt hơn số
-   tiền. Nó vẫn đứng trước vì người dùng tra theo mã. */
-.dtax-top button b, .dtax-all li button b {
-  font-size: var(--fs-label); font-weight: var(--fw-label); color: var(--ink-2);
-  font-variant-numeric: tabular-nums; letter-spacing: var(--ls-code);
-}
-.dtax-top button > span, .dtax-all li button > span { overflow-wrap: anywhere; }
-.dtax-top button strong, .dtax-all li button strong {
-  flex: none; font-size: var(--fs-body); font-weight: var(--fw-label);
-  color: var(--ink); white-space: nowrap;
-}
-.dtax-more {
-  display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); margin-top: var(--s2);
-}
-.dtax-more .dhint { margin: 0; }
-.dtax-all { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--divider); }
-.dtax-all .dsearch { display: block; max-width: 360px; margin-bottom: var(--s2); }
-.dtax-all .dsearch input { width: 100%; }
-.dtax-all ul {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s2);
-  margin: 0; padding: 0; list-style: none;
-}
-.dtax-all li button { width: 100%; height: 100%; background: var(--surface); }
+.dtax-locations th:first-child, .dtax-locations td:first-child { width: 54px; padding-left: 0; }
+.dtax-locations th:last-child, .dtax-locations td:last-child { width: 160px; padding-right: 0; text-align: right; }
+.dtax-locations th { color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-label); }
+.dtax-locations .dtax-rank { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.dtax-locations .dtax-name { overflow-wrap: anywhere; }
+.dtax-locations .dtax-amount { color: var(--ink); font-weight: var(--fw-label); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dtax-locations tbody tr:hover td { background: var(--surface-sunken); }
 
 /* ───────────────────────── Màn hình Báo cáo tám mẫu ──────────────────────── */
 
@@ -1535,6 +1538,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 .dreport-bar label { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .dreport-bar .dhint { flex: 1 1 260px; margin: 0; }
+.dreport-settings-toggle { display: none; }
+.dreport-dimension-help { flex: 1 1 260px; align-self: center; color: var(--ink-3); font-size: var(--fs-caption); }
+.dreport-dimension-help summary { cursor: pointer; color: var(--brand); font-weight: var(--fw-label); }
+.dreport-dimension-help p { margin: var(--s2) 0 0; line-height: var(--lh-body); }
 
 .dreport-page { display: flex; align-items: center; gap: var(--s2); white-space: nowrap; }
 .dreport-page em { font-style: normal; font-size: var(--fs-label); color: var(--ink-3); }
@@ -1749,26 +1756,75 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
    vẫn có viewport riêng 500px, nên cùng một media query phục vụ cả iframe, mobile
    host và trình duyệt điện thoại thật. */
 @media (max-width: 767px) {
-  /* Thanh chọn cấp trong tab biến mất: ô "Cấp quản lý" ở thanh lọc chung đã hiện
-     sẵn ngoài panel, nên giữ cả hai là bày hai điều khiển cho cùng một state
-     trên một màn hình chỉ vừa một cột. */
-  .dtms-levelbar { display: none; }
+  .dtms-levelbar { align-items: stretch; }
+  .dtms-levelbar-controls { width: 100%; align-items: stretch; }
+  .dtms-levelbar-controls .dseg { width: 100%; }
+  .dtms-levelbar-controls .dseg button { flex: 1 1 auto; }
+  .dtms-levelbar-controls .dseg.is-sub { margin-right: 0; }
 
-  .dtax-picker { align-items: stretch; }
-  .dtax-picker .dbtn { align-self: flex-end; }
-  .dtax-top { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .dtax-all ul { grid-template-columns: 1fr; }
-  .dtax-more { align-items: flex-start; }
-
-  /* Năm cột trong 390px thì ba cột cuối nằm ngoài màn hình và người dùng không
-     có dấu hiệu nào để biết chúng tồn tại. Mỗi dòng thành một khối hai tầng:
-     tên và số tiền ở trên, phần diễn giải xuống dưới. */
+  .dtax-locations th:first-child, .dtax-locations td:first-child { width: 42px; }
+  .dtax-locations th:last-child, .dtax-locations td:last-child { width: 116px; }
   /* 260px nép bên phải ở khổ hẹp để lại một khoảng trống vô nghĩa bên trái;
      ô lọc trải hết bề rộng thì vùng gõ rộng hơn và không thừa chỗ. */
   .dcard-body > .dlist-tools .dsearch { flex: 1 1 100%; }
 
+  /* Bốn bảng mới dùng LẠI luật xếp chồng này thay vì có kiểu riêng: ở 390px,
+     bảy cột nghĩa là năm cột cuối nằm ngoài màn hình và không có dấu hiệu nào
+     cho biết chúng tồn tại. Thêm một bảng thì thêm tên vào đây, không viết một
+     bản xếp chồng thứ hai. */
+  .dtms-table, .dtms-pairs,
+  .dbudget-table, .dent-table, .dent-list, .dinspect-table { min-width: 0; }
+  .dtms-table thead, .dtms-pairs thead,
+  .dbudget-table thead, .dent-table thead, .dent-list thead, .dinspect-table thead,
+  .dreport-table thead, .drecon-table thead {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+  }
+  .dbudget-table tbody tr, .dent-table tbody tr, .dent-table tfoot tr, .dent-list tbody tr,
+  .dinspect-table tbody tr, .dinspect-table tfoot tr {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px var(--s3);
+    padding: 9px var(--s2); border-bottom: 1px solid var(--divider);
+  }
+  .dbudget-table tbody th, .dbudget-table tbody td,
+  .dent-table tbody th, .dent-table tbody td,
+  .dent-table tfoot th, .dent-table tfoot td,
+  .dent-list tbody th, .dent-list tbody td,
+  .dinspect-table tbody th, .dinspect-table tbody td,
+  .dinspect-table tfoot th, .dinspect-table tfoot td {
+    border: 0; padding: 0; white-space: normal;
+  }
+  .dbudget-table tbody th, .dent-table tbody th, .dent-table tfoot th,
+  .dent-list tbody th, .dinspect-table tbody th,
+  .dinspect-table tfoot th { flex: 1 1 100%; font-weight: var(--fw-label); }
+  /* Mọi ô tự giới thiệu: `thead` đã ẩn nên không còn đầu cột nào giải thích. */
+  .dbudget-table tbody td[data-label]::before,
+  .dent-table tbody td[data-label]::before,
+  .dent-table tfoot td[data-label]::before,
+  .dent-list tbody td[data-label]::before,
+  .dinspect-table tbody td[data-label]::before,
+  .dinspect-table tfoot td[data-label]::before {
+    content: attr(data-label) " "; color: var(--ink-3); font-weight: var(--fw-regular);
+  }
+  .dbudget-table tbody tr.is-child, .dent-table tbody tr.is-active {
+    background: var(--surface-sunken);
+  }
+  .dbudget-table tbody tr > th, .dbudget-table tbody tr > td,
+  .dent-table tbody tr > th, .dent-table tbody tr > td,
+  .dent-table tfoot tr > th, .dent-table tfoot tr > td { background: transparent; }
+  /* Trên mobile, đưa ba thông tin ra quyết định lên trước; các số đối chiếu vẫn
+     giữ đủ phía sau và được tách bằng một đường mảnh. */
+  .dbudget-table tbody td[data-label="Trạng thái"] { order: 1; }
+  .dbudget-table tbody td[data-label="Hoàn thành"] { order: 2; font-weight: var(--fw-label); }
+  .dbudget-table tbody td[data-label="Còn thiếu"] { order: 3; font-weight: var(--fw-label); }
+  .dbudget-table tbody td[data-label="Thực hiện"] {
+    order: 4; flex-basis: 100%; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--divider);
+  }
+  .dbudget-table tbody td[data-label="Dự toán"] { order: 5; }
+  .dbudget-table tbody td[data-label="So cùng kỳ"] { order: 6; }
+  .dbudget-table tbody tr.is-child td:last-child:empty { display: none; }
+
   .dtms-table, .dtms-pairs { min-width: 0; }
-  .dtms-table thead, .dtms-pairs thead { display: none; }
   .dtms-table tbody tr, .dtms-pairs tbody tr, .dtms-pairs tfoot tr {
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px var(--s3);
     padding: 9px var(--s2); border-bottom: 1px solid var(--divider);
@@ -1806,7 +1862,6 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   /* Hai bảng mới dùng lại luật xếp chồng của bảng TMS: ở 390px, năm cột nghĩa là
      ba cột cuối nằm ngoài màn hình và không có dấu hiệu nào cho biết chúng tồn tại. */
   .dreport-table, .drecon-table { min-width: 0; }
-  .dreport-table thead, .drecon-table thead { display: none; }
   .dreport-table tbody tr, .drecon-table tbody tr {
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px var(--s3);
     padding: 9px var(--s2); border-bottom: 1px solid var(--divider);
@@ -1829,9 +1884,20 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dreport-table tbody tr[data-depth="4"] th { padding-left: calc(var(--s6) + var(--s3)); }
   /* Xếp dọc thì `flex-basis` của dòng chú thích tính theo CHIỀU CAO, nên
      `flex: 1 1 260px` ở bản rộng biến thành một khối trống cao 260px. */
-  .dreport-bar { flex-direction: column; align-items: stretch; }
+  .dreport-bar { display: grid; grid-template-columns: 1fr 1fr; align-items: end; }
   .dreport-bar .dhint { flex: 0 0 auto; }
   .dreport-bar label > select { width: 100%; }
+  .dreport-dimension-help { grid-column: 1 / -1; }
+  .dreport-settings-toggle {
+    display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: space-between; gap: var(--s3);
+    padding: 9px 12px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+    color: var(--ink-2); font: inherit; cursor: pointer; box-shadow: var(--shadow-control);
+  }
+  .dreport-settings-toggle span { font-size: var(--fs-label); font-weight: var(--fw-label); }
+  .dreport-settings-toggle strong { color: var(--brand); font-size: var(--fs-caption); text-align: right; }
+  .dreport-settings-toggle::after { content: "▾"; color: var(--ink-3); }
+  .dreport-settings-toggle[aria-expanded="true"]::after { transform: rotate(180deg); }
+  .dreport-bar[data-mobile-open="false"] { display: none; }
   .dreport-page { flex-wrap: wrap; }
 
   .dtms-pairs tbody tr, .dtms-pairs tfoot tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
@@ -1975,10 +2041,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
      thứ tự, nên dải ba ô của tab Phân tích giữ nguyên ba cột xuống tận 320px và
      nhãn vỡ bốn dòng. Xem *The Restate Specificity Rule*. */
   .dkpis,
-  .dkpis[data-columns="3"] { grid-template-columns: 1fr 1fr; }
+  .dkpis[data-columns="3"],
+  .dkpis[data-columns="5"] { grid-template-columns: 1fr 1fr; }
   .dkpis > div { border-top: 1px solid var(--hairline); }
   .dkpis > div:nth-child(-n + 2) { border-top: 0; }
   .dkpis > div:nth-child(odd) { border-left: 0; }
+  .dkpis[data-columns="5"] > div:last-child { grid-column: 1 / -1; }
   .dkpis > div { padding: 11px 15px; }
 }
 
@@ -2022,17 +2090,22 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dheader h1 { font-size: var(--fs-insight); }
   .dheader p { display: none; }
   .dshell { padding: 0 10px 32px; }
-  .dtabs { gap: var(--s4); }
+  .dtabs {
+    gap: var(--s4); padding-right: var(--s6);
+    -webkit-mask-image: linear-gradient(to right, var(--ink) 0, var(--ink) calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(to right, var(--ink) 0, var(--ink) calc(100% - 28px), transparent 100%);
+  }
   .dtabs button { font-size: var(--fs-caption); min-height: 48px; }
   /* Sáu bộ lọc trên lưới cố định: hai cột ở điện thoại, ba cột khi còn đủ rộng
      để bớt một hàng chiếm chỗ phía trên nội dung. */
   .dfilters { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); padding: 12px; }
   .dfilter-year, .dfilter-cycle, .dfilter-period, .dfilter-accumulation { grid-column: span 6; }
   .dfilter-budget, .dfilter-management { grid-column: span 6; }
+  .dfilter-tax-office { grid-column: 1 / -1; }
   /* Tên phường, xã dài hơn mọi nhãn lọc khác nên cho trọn hàng thay vì ép chung.
      Ô này hiện cả khi panel đóng, nên nó phải tự đứng được một mình. */
   .dfilter-location { grid-column: 1 / -1; }
-  .dfilter-location select { min-height: 40px; }
+  .dfilter-location input { min-height: 40px; }
   /* Khi panel chuyển sang lưới, hàng reset phải được gán cột như mọi ô khác.
      Thiếu `grid-column` thì nó rơi vào một cột trong mười hai — rộng 14px ở
      390px — và cái nút 107px tràn ra ngoài ô của chính nó. Trước đây chỉ nhánh
@@ -2073,7 +2146,8 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dfilters[data-open="false"] > .dfilter-location,
   .dfilters[data-open="false"] > .dfilter-management { grid-column: 1 / -1; }
 
-  .dfilters[data-open="false"] > label:not(.dfilter-location):not(.dfilter-management),
+  .dfilters[data-open="false"] > label:not(.dfilter-management),
+  .dfilters[data-open="false"] > .dfilter-tax-office,
   .dfilters[data-open="false"] > .dfilters-reset-row,
   .dfilters[data-open="false"] > .dfield { display: none; }
 
@@ -2100,7 +2174,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 }
 
 @media (max-width: 340px) {
-  .dfilter-budget, .dfilter-management { grid-column: 1 / -1; }
+  .dfilter-budget, .dfilter-management, .dfilter-tax-office { grid-column: 1 / -1; }
 }
 
 /* Còn đủ rộng cho ba ô một hàng. Giữ nguyên lưới 12 cột và đổi nhịp span thay
@@ -2134,7 +2208,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   /* Gỡ sàn đúng tại mốc thẻ xếp chồng, không sớm hơn: mỗi hàng chỉ còn một thẻ
      nên không còn gì để căn, và sàn lúc này chỉ là khoảng trống phải cuộn qua.
      Gỡ ở 767px thì dải 700–767 vẫn hai cột mà mất sàn — lệch trở lại 46px. */
-  .dg, .dstack-row { --head-min: auto; }
+  .dg, .dstack-row, .dreport-master-detail { --head-min: auto; }
 }
 
 /* ─────────────────────── Vùng chạm theo loại con trỏ ────────────────────── */
@@ -2176,7 +2250,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dtable th.is-num button, .dtable thead th.is-num button { text-align: right; }
 
   /* Liên kết trong nội dung: nở vùng chạm bằng đệm, không đẩy dòng chữ ra xa. */
-  .dlink { display: inline-flex; align-items: center; min-height: 44px; padding: 4px 6px; }
+  .dlink { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 4px 6px; }
 
   /* Nhóm chọn: cả nhóm 48px để nút bên trong đủ 44px sau lớp đệm 2px. */
   .dseg { min-height: 48px; padding: 2px; }
@@ -2247,4 +2321,329 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
      đổi chỗ. WCAG 2.3.3 chỉ yêu cầu tắt chuyển động, không yêu cầu tắt màu.
      `dpin-pop` (scale + xoay) thì vẫn tắt, và đó là đúng. */
   .dtms-table tbody tr.is-flash { animation-duration: .7s !important; }
+}
+
+/* ═════════ Ba workspace mở theo biên bản 18/09/2026 ═══════════════════════ */
+
+/* Bộ chọn loại báo cáo. Đứng riêng một dải phía trên thanh lọc của từng chế độ,
+   vì nó quyết định CHẾ ĐỘ chứ không phải một tham số của chế độ đang xem. */
+.dreport-modebar {
+  padding: 13px 15px;
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+}
+.dreport-mode { display: grid; gap: 5px; min-width: 0; }
+.dreport-mode > span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
+.dreport-mobile-switch, .dreport-table-jump { display: none; }
+.dreport-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--s2); }
+@media (max-width: 767px) {
+  .dreport-modebar { padding: 11px 12px; }
+  .dreport-mode select { width: 100%; }
+  .dreport-mobile-switch {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px;
+    background: var(--surface-sunken); border: 1px solid var(--hairline); border-radius: var(--r-control);
+  }
+  .dreport-mobile-switch button {
+    min-height: 44px; padding: 0 var(--s3); border: 0; border-radius: var(--r-control);
+    background: transparent; color: var(--ink-2); font: inherit; font-weight: var(--fw-label); cursor: pointer;
+  }
+  .dreport-mobile-switch button.is-active { background: var(--surface); color: var(--brand); box-shadow: var(--shadow-control); }
+  .dreport-summary-pane[data-mobile-active="false"],
+  .dreport-table-pane[data-mobile-active="false"] { display: none; }
+  .dreport-table-pane .dtable-wrap { max-height: none; overflow: visible; }
+  .dreport-table-jump { display: inline-flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; }
+  .dreport-actions { width: 100%; justify-content: stretch; }
+  .dreport-actions .dexport, .dreport-actions .dexport .dbtn { width: 100%; }
+  .dreport-actions .dexport .dbtn { justify-content: center; }
+}
+
+/* Thanh lọc cục bộ của workspace. Cùng hình dạng với `.dtms-levelbar` để người
+   dùng nhận ra ngay đây là bộ lọc của riêng màn hình, không phải bộ lọc chung. */
+.dlocalbar {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s3) var(--s4);
+  padding: 13px 15px;
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+}
+.dlocalbar .dfield { display: grid; gap: 5px; min-width: 0; }
+.dlocal-context {
+  align-self: center; margin: 0 0 1px; color: var(--ink-3);
+  font-size: var(--fs-caption); line-height: var(--lh-body);
+}
+
+/* Nguồn và thời điểm chốt số. Một dải mảnh, không phải một thẻ — nó là siêu dữ
+   liệu của cả trang, không phải một widget ngang hàng với các widget khác. */
+.dfresh {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s3) var(--s4);
+  width: fit-content; max-width: 100%; padding: 6px 10px;
+  background: var(--surface-sunken); border: 1px solid var(--hairline); border-radius: var(--r-control);
+}
+.dfresh dl { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); margin: 0; }
+.dfresh dl > div { display: flex; align-items: baseline; gap: var(--s2); min-width: 0; }
+.dfresh dt { color: var(--ink-3); font-size: var(--fs-label); }
+.dfresh dd {
+  margin: 0; color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
+  font-variant-numeric: tabular-nums;
+}
+/* Ô trống là câu trả lời đúng khi nguồn chưa cho biết mốc chốt số; nó phải có
+   chiều cao để hàng không sụp, nhưng không được có ký hiệu thay chỗ. */
+.dfresh dd:empty { min-width: 1ch; }
+.dfresh-note {
+  padding-left: var(--s4); border-left: 1px solid var(--divider);
+  color: var(--ink-3); font-size: var(--fs-caption); line-height: var(--lh-body);
+}
+
+/* Số liệu đã bàn giao là tài liệu tham chiếu của góc nhìn địa bàn, không phải
+   kết quả của nút đổi cách xem. Thu gọn mặc định để bảng đang được điều khiển
+   luôn xuất hiện trước và phản hồi ngay tại chỗ. */
+.dofficial-snapshot {
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+}
+.dofficial-snapshot > summary {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s4);
+  padding: 11px 15px; cursor: pointer; color: var(--brand);
+  font-size: var(--fs-label); font-weight: var(--fw-label);
+}
+.dofficial-snapshot > summary small {
+  color: var(--ink-3); font-size: var(--fs-caption); font-weight: var(--fw-regular);
+}
+.dofficial-snapshot[open] > summary { border-bottom: 1px solid var(--divider); }
+.dofficial-snapshot > .dstack { padding: var(--s4); }
+
+.dreport-search { display: block; width: min(280px, 34vw); }
+.dreport-search input { width: 100%; }
+
+/* Tóm tắt động và mốc tham chiếu chung cùng nằm trong một vùng nhìn. Tỷ lệ 2/3
+   dành phần lớn không gian cho số chịu tác động của bộ chọn; bảng chi tiết phía
+   dưới vẫn toàn chiều ngang. */
+.dbudget-summary-split {
+  display: grid; grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: var(--s4); align-items: stretch; min-width: 0;
+}
+.dbudget-summary-split > * { min-width: 0; }
+.dofficial-reference { height: 100%; }
+.dofficial-reference-list {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0; border-top: 1px solid var(--divider);
+}
+.dofficial-reference-list > div { min-width: 0; padding: 9px 10px; border-bottom: 1px solid var(--divider); }
+.dofficial-reference-list > div:nth-child(odd) { border-right: 1px solid var(--divider); }
+.dofficial-reference-list > div:last-child:nth-child(odd) { grid-column: 1 / -1; border-right: 0; }
+.dofficial-reference-list dt { color: var(--ink-3); font-size: var(--fs-label); }
+.dofficial-reference-list dd {
+  margin: 3px 0 0; color: var(--ink); font-size: var(--fs-body); font-weight: var(--fw-label);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1199px) {
+  .dbudget-summary-split { grid-template-columns: 1fr; }
+  .dofficial-reference-list { grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); }
+  .dofficial-reference-list > div:nth-child(odd) { border-right: 0; }
+  .dofficial-reference-list > div + div { border-left: 1px solid var(--divider); }
+}
+
+@media (max-width: 479px) {
+  .dofficial-reference-list { grid-template-columns: 1fr; }
+  .dofficial-reference-list > div,
+  .dofficial-reference-list > div + div { border-left: 0; border-right: 0; }
+}
+
+/* Nút xuất báo cáo cùng thông báo trạng thái của nó. */
+.dexport { display: inline-flex; align-items: center; gap: var(--s2); }
+.dexport small { color: var(--ink-3); font-size: var(--fs-label); }
+.dexport small.is-error { color: var(--neg); }
+
+/* Danh sách việc cần chú ý ở tab Kiểm tra. */
+.dattention { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
+.dattention li {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2);
+  color: var(--ink-2); font-size: var(--fs-caption);
+}
+
+/* Tiêu đề phụ bên trong thẻ, khi một thẻ chứa hai khối số liệu. */
+.dsubhead {
+  margin: 0 0 var(--s2); font-size: var(--fs-label); font-weight: var(--fw-label);
+  color: var(--ink-3);
+}
+
+/* Phân trang bảng doanh nghiệp.
+   `margin-top: auto` đẩy thanh xuống đáy thẻ khi thẻ bị kéo cao bằng thẻ bên
+   cạnh: trang cuối thường ngắn hơn, và để thanh trôi lên giữa vùng trắng thì
+   người dùng không biết bảng kết thúc ở đâu. */
+.dpager {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--s3); margin-top: auto; padding-top: var(--s3);
+}
+.dpager .dhint { margin: 0; }
+/* Không dòng nào ở đây tự co giãn; vùng co giãn là bảng phía trên. */
+.dpager .dbtn { flex: none; }
+
+/* ───────────────────────── Biểu đồ dự báo ─────────────────────────────── */
+
+.dforecast { display: grid; gap: var(--s3); }
+.dforecast svg { width: 100%; height: auto; }
+.dforecast-axis { stroke: var(--hairline); stroke-width: 1; }
+.dforecast-cross { stroke: var(--control-border); stroke-width: 1; stroke-dasharray: 3 3; }
+.dforecast-tick { fill: var(--ink-3); font-size: var(--fs-label); }
+/* Chú giải nhắc lại KIỂU NÉT chứ không chỉ màu: ba đường phải phân biệt được
+   khi in đen trắng và với người không phân biệt được sắc. */
+.dforecast-legend {
+  display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4);
+  margin: 0; padding: 0; list-style: none;
+  color: var(--ink-2); font-size: var(--fs-label);
+}
+.dforecast-legend li { display: flex; align-items: center; gap: var(--s2); }
+.dforecast summary { cursor: pointer; color: var(--brand); font-size: var(--fs-label); font-weight: var(--fw-label); }
+
+/* ───────────────────── Nhịp cột của bảng mới ───────────────────────────── */
+
+@media (min-width: 768px) {
+  .dbudget-table th:first-child, .dbudget-table td:first-child,
+  .dent-table th:first-child, .dent-table td:first-child,
+  .dent-list th:first-child, .dent-list td:first-child,
+  .dinspect-table th:first-child, .dinspect-table td:first-child { width: auto; }
+  /* Bảy cột, trong đó ba cột tiền đã chiếm 504px và ba cột tỷ lệ/trạng thái
+     chiếm 366px. 940px chỉ còn 70px cho cột tên — tên phường xã bị cắt ngay.
+     1.180px cho cột tên khoảng 280px, và khung bảng cuộn ngang ở khổ hẹp đúng
+     như các bảng khác của hệ. */
+  .dbudget-table { min-width: 1180px; }
+  .dent-table { min-width: 760px; }
+  .dent-list { min-width: 580px; }
+  .dinspect-table { min-width: 880px; }
+}
+
+/* Ô mang CÂU chứ không mang một giá trị thì được xuống dòng.
+   `.dtable td` mặc định `nowrap` — đúng cho số và nhãn ngắn, nhưng "Khoản thu
+   tài nguyên, phí bảo vệ môi trường" là một câu và bị cắt mất chữ. */
+.dtable td.dcol-meta, .dtable td[data-label="Phạm vi ảnh hưởng"] { white-space: normal; }
+
+/* Dòng nhóm đang mở ở bảng doanh nghiệp. */
+.dent-table tbody tr.is-active { background: var(--blue-050); box-shadow: inset 3px 0 0 var(--brand); }
+/* Phần chưa xác định ghim ở `tfoot`: nó luôn hiện dù đang xem trang nào, nên
+   phải nhìn ra ngay rằng đây KHÔNG phải một dòng của trang hiện tại. Đường kẻ
+   đậm tách nó khỏi bảng xếp hạng, đúng cách đọc một dòng còn-lại-của-tổng. */
+.dent-table tfoot tr.is-unresolved th, .dent-table tfoot tr.is-unresolved td {
+  border-top: 1px solid var(--ink-3); color: var(--ink-2);
+}
+.dent-table tfoot tr.is-unresolved th { font-weight: var(--fw-label); }
+/* Dòng tổng là mực chính: nó là thứ người đối soát đối chiếu. */
+.dent-table tfoot tr.is-total th, .dent-table tfoot tr.is-total td {
+  border-top: 1px solid var(--ink-3); font-weight: var(--fw-label); color: var(--ink);
+}
+
+/* Hai khối báo cáo có quan hệ trực tiếp dùng cùng một hàng ở màn hình rộng.
+   `align-items: start` giữ mỗi thẻ đúng chiều cao nội dung, tránh kéo thẻ ngắn
+   thành một mảng trắng chỉ để bằng chiều cao với thẻ còn lại. Bố cục
+   master–detail là ngoại lệ, xem `.dreport-master-detail` bên dưới. */
+.dreport-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s4);
+  align-items: start;
+  min-width: 0;
+}
+.dreport-split > * { min-width: 0; }
+.dinspection-column { display: grid; gap: var(--s4); align-content: start; min-width: 0; }
+.dinspection-column > div { width: 100%; min-width: 0; }
+/* Split báo cáo dùng chiều cao của trang để chứa đủ dữ liệu, không tạo thêm
+   một vùng cuộn dọc lồng bên trong. */
+.dreport-split .dtable-wrap { max-height: none; }
+
+/* Các bảng trong split phải hiện toàn bộ dòng, không tạo một trang cuộn thứ hai
+   bên trong dashboard. Chỉ áp dụng khi thực sự đang chia đôi; ở khổ hẹp các
+   bảng quay lại quy tắc responsive chung. */
+@media (min-width: 1360px) {
+  .dreport-split .dtable-wrap { max-height: none; overflow: visible; }
+  .dreport-split .dent-table,
+  .dreport-split .dent-list,
+  .dreport-split .dinspect-table,
+  .dreport-split .dtable.is-compact { min-width: 0; }
+  .dreport-split .dtable th,
+  .dreport-split .dtable td { padding-left: 7px; padding-right: 7px; }
+  .dreport-split .dinspect-table td,
+  .dreport-split .dent-table td,
+  .dreport-split .dent-list td { white-space: normal; text-overflow: clip; }
+  /* Bảng kiểm tra có bảy cột. Kích thước vai trò mặc định được tính cho bảng
+     toàn chiều ngang; thu lại trong nửa trang để đủ bảy cột mà không sinh thanh
+     cuộn ngang. Đầu cột được phép xuống hai dòng, các con số vẫn đọc trọn. */
+  .dinspection-split .dinspect-table .dcol-money { width: 112px; }
+  .dinspection-split .dinspect-table .dcol-pct { width: 68px; }
+  .dinspection-split .dinspect-table .dcol-status { width: 88px; }
+}
+
+/* Master–detail: hai thẻ là HAI MẶT của cùng một phép chọn — bảng bên trái
+   quyết định nội dung bên phải — nên chúng phải đọc như một khối, không phải
+   hai thẻ rời cao thấp khác nhau.
+
+   Chiều cao bằng nhau được dựng bằng hai thứ cùng lúc, thiếu một thì hỏng:
+
+     · Số dòng mỗi trang giống nhau (`PAGE_ROWS`) đưa hai bảng về xấp xỉ cùng
+       chiều cao, phần dư sang trang sau. Chỉ riêng nó thì chưa đủ: dòng bên
+       phải mang cả mã lẫn tên nên có thể xuống hai dòng, và trang cuối bao giờ
+       cũng ngắn hơn.
+     · `stretch` xoá nốt phần lệch còn lại. Vì hai bên đã gần bằng nhau, khoảng
+       trắng nó phải bù là vài chục pixel chứ không phải nửa thẻ — đó là lý do
+       ngoại lệ này chấp nhận được còn `.dreport-split` chung thì không. */
+.dreport-master-detail { align-items: stretch; --head-min: 66px; }
+.dreport-master-detail > * { display: flex; }
+.dreport-master-detail .dcard { flex: 1 1 auto; }
+/* Bảng nhận phần cao dôi ra, để thanh phân trang nằm đúng đáy thẻ. */
+.dreport-master-detail .dtable-wrap { flex: 1 1 auto; }
+
+/* `key` theo nhóm làm hiệu ứng chạy lại khi người dùng chọn dòng khác; chuyển
+   động nằm ngang nhẹ để diễn tả nội dung ở cột kế bên, không kéo trang. */
+@keyframes dreport-detail-in {
+  from { opacity: .18; transform: translateX(8px); clip-path: inset(0 0 0 8px); }
+  to { opacity: 1; transform: translateY(0); clip-path: inset(0); }
+}
+.dreport-detail {
+  animation: dreport-detail-in 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 1359px) {
+  .dreport-split { grid-template-columns: 1fr; }
+  /* Hai cột độc lập ở desktop được trải lại theo thứ tự đọc trên màn hình hẹp:
+     diễn biến → kết quả → cảnh báo → chính sách. */
+  .dinspection-split { display: flex; flex-direction: column; }
+  .dinspection-column { display: contents; }
+  .dinspection-trend { order: 1; }
+  .dinspection-results { order: 2; }
+  .dinspection-attention { order: 3; }
+  .dinspection-policy { order: 4; }
+}
+
+@media (max-width: 767px) {
+  /* Hai bảng phụ chỉ có bốn cột được đổi thành các dòng tự mô tả. Nhờ vậy bảng
+     số liệu mở rộng và bảng chính sách đều đọc hết mà không phải kéo ngang. */
+  .dtable.dinspection-mini-table { min-width: 0; }
+  .dinspection-mini-table thead {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+  }
+  .dinspection-mini-table tbody tr {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px var(--s3);
+    padding: 9px var(--s2); border-bottom: 1px solid var(--divider);
+  }
+  .dinspection-mini-table tbody th,
+  .dinspection-mini-table tbody td {
+    border: 0; padding: 0; white-space: normal;
+  }
+  .dinspection-mini-table tbody th { flex: 1 1 100%; font-weight: var(--fw-label); }
+  .dinspection-mini-table tbody td[data-label]::before {
+    content: attr(data-label) " "; color: var(--ink-3); font-weight: var(--fw-regular);
+  }
+}
+
+@media (max-width: 767px) {
+  .dlocalbar { padding: 11px 12px; }
+  .dlocalbar .dfield, .dlocalbar .dseg { width: 100%; }
+  .dlocalbar .dseg button { flex: 1 1 0; }
+  .dfresh { padding: 10px 12px; }
+  .dfresh-note {
+    flex-basis: 100%; padding: 7px 0 0; border-left: 0; border-top: 1px solid var(--divider);
+  }
+  .dreport-detail .dcard-head { display: grid; grid-template-columns: 1fr; }
+  .dreport-detail .dcard-actions { width: 100%; }
+  .dreport-search { width: 100%; }
+  .dpager { flex-direction: column; align-items: stretch; }
+  .dpager .dbtn { width: 100%; }
 }

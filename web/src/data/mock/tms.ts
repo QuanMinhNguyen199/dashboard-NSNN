@@ -6,6 +6,7 @@ import {
   SECTION_BY_CODE,
   SUB_ITEM_BY_CODE,
   TAX_OFFICES,
+  taxOfficeLocationIds,
   TMS_ITEMS,
   TMS_ITEMS_WITHOUT_RULE,
   branchesOfItem,
@@ -254,24 +255,41 @@ export function buildTmsBreakdown(
     filters.periodType === "MONTH"
       ? `${filters.year}-${String(filters.period).padStart(2, "0")}`
       : `${filters.year}-Q${filters.period}`;
+  const officeScopeRows = TAX_OFFICES.map((office) => {
+    const bucket = officeBuckets.get(office.code) ?? { amount: 0, previous: null };
+    const assignedIds = taxOfficeLocationIds(office.code);
+    const candidates = locationId
+      ? assignedIds.includes(locationId)
+        ? [LOCATION_BY_ID[locationId]].filter(Boolean)
+        : []
+      : assignedIds.map((id) => LOCATION_BY_ID[id]).filter(Boolean);
+    const locationAmounts = allocate(
+      bucket.amount,
+      candidates.map((item) => 0.2 + hash("office-location-weight", office.code, item.id) * 1.8),
+    );
+    return {
+      code: office.code,
+      name: office.name,
+      amount: String(bucket.amount),
+      // Chỉ là quy mô minh họa, không được đọc như số chứng từ đã nhập.
+      txCount: bucket.amount === 0 ? 0 : Math.max(1, Math.round(Math.abs(bucket.amount) / 250_000_000)),
+      locations: candidates.map((item, index) => ({
+        id: item.id,
+        name: item.name,
+        amount: String(locationAmounts[index] ?? 0),
+      })),
+    };
+  }).sort((a, b) => Number(b.amount) - Number(a.amount));
+  const officesPerLocation = new Map<string, number>();
+  for (const office of officeScopeRows)
+    for (const item of office.locations)
+      officesPerLocation.set(item.id, (officesPerLocation.get(item.id) ?? 0) + 1);
   const taxOfficeScopes: NonNullable<TmsBreakdownData["taxOfficeScopes"]> = {
     origin: "mock",
     period: periodLabel,
-    offices: TAX_OFFICES.map((office) => {
-      const bucket = officeBuckets.get(office.code) ?? { amount: 0, previous: null };
-      return {
-        code: office.code,
-        name: office.name,
-        amount: String(bucket.amount),
-        // Chỉ là quy mô minh họa, không được đọc như số chứng từ đã nhập.
-        txCount: bucket.amount === 0 ? 0 : Math.max(1, Math.round(Math.abs(bucket.amount) / 250_000_000)),
-        locations: locationId
-          ? [{ id: locationId, name: scopeName, amount: String(bucket.amount) }]
-          : [],
-      };
-    }).sort((a, b) => Number(b.amount) - Number(a.amount)),
-    sharedLocations: 0,
-    totalLocations: locationId ? 1 : 0,
+    offices: officeScopeRows,
+    sharedLocations: [...officesPerLocation.values()].filter((count) => count > 1).length,
+    totalLocations: officesPerLocation.size,
     sharedShare: null,
   };
 

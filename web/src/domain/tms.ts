@@ -108,6 +108,64 @@ export interface TaxOfficeDef {
 export const TAX_OFFICES = joins.taxOffices as TaxOfficeDef[];
 
 /**
+ * Phạm vi địa bàn của 25 Thuế cơ sở Hà Nội từ 01/07/2025.
+ *
+ * Chỉ giữ quan hệ CQT → phường/xã; địa chỉ và số điện thoại không thuộc nhu
+ * cầu báo cáo nên không đi vào domain. Tên địa bàn được đối chiếu với bảng nối
+ * 126 phường/xã đang dùng trong dashboard. Các mã Thuế TP Hà Nội và CCT Doanh
+ * nghiệp lớn không có phạm vi địa bàn cố định trong danh sách 25 cơ sở.
+ *
+ * Tham chiếu nghiệp vụ:
+ * https://tuvanketoanaz.com/cap-nhat-danh-sach-25-co-quan-thue-co-so-tai-thanh-pho-ha-noi-tu-01-07-2025/
+ */
+const TAX_OFFICE_AREA_NAMES: Record<number, string[]> = {
+  1: ["Phường Hoàn Kiếm", "Phường Cửa Nam"],
+  2: ["Phường Ba Đình", "Phường Ngọc Hà", "Phường Giảng Võ"],
+  3: ["Phường Hai Bà Trưng", "Phường Bạch Mai", "Phường Vĩnh Tuy"],
+  4: ["Phường Đống Đa", "Phường Kim Liên", "Phường Văn Miếu - Quốc Tử Giám", "Phường Láng", "Phường Ô Chợ Dừa"],
+  5: ["Phường Cầu Giấy", "Phường Nghĩa Đô", "Phường Yên Hòa"],
+  6: ["Phường Thanh Xuân", "Phường Khương Đình", "Phường Phương Liệt"],
+  7: ["Phường Tây Hồ", "Phường Phú Thượng", "Phường Hồng Hà"],
+  8: ["Phường Từ Liêm", "Phường Xuân Phương", "Phường Tây Mỗ", "Phường Đại Mỗ"],
+  9: ["Phường Tây Tựu", "Phường Phú Diễn", "Phường Xuân Đỉnh", "Phường Đông Ngạc", "Phường Thượng Cát"],
+  10: ["Xã Thư Lâm", "Xã Đông Anh", "Xã Phúc Thịnh", "Xã Thiên Lộc", "Xã Vĩnh Thanh"],
+  11: ["Phường Long Biên", "Phường Bồ Đề", "Phường Việt Hưng", "Phường Phúc Lợi"],
+  12: ["Xã Gia Lâm", "Xã Thuận An", "Xã Bát Tràng", "Xã Phù Đổng"],
+  13: ["Phường Lĩnh Nam", "Phường Hoàng Mai", "Phường Vĩnh Hưng", "Phường Tương Mai", "Phường Định Công", "Phường Hoàng Liệt", "Phường Yên Sở"],
+  14: ["Xã Thanh Trì", "Xã Đại Thanh", "Xã Nam Phù", "Xã Ngọc Hồi", "Phường Thanh Liệt"],
+  15: ["Phường Hà Đông", "Phường Dương Nội", "Phường Yên Nghĩa", "Phường Phú Lương", "Phường Kiến Hưng"],
+  16: ["Phường Sơn Tây", "Phường Tùng Thiện", "Xã Đoài Phương"],
+  17: ["Xã Minh Châu", "Xã Quảng Oai", "Xã Vật Lại", "Xã Cổ Đô", "Xã Bất Bạt", "Xã Suối Hai", "Xã Ba Vì", "Xã Yên Bài"],
+  18: ["Xã Sóc Sơn", "Xã Đa Phúc", "Xã Nội Bài", "Xã Trung Giã", "Xã Kim Anh", "Xã Mê Linh", "Xã Yên Lãng", "Xã Tiến Thắng", "Xã Quang Minh"],
+  19: ["Xã Thường Tín", "Xã Thượng Phúc", "Xã Chương Dương", "Xã Hồng Vân", "Xã Phú Xuyên", "Xã Phượng Dực", "Xã Chuyên Mỹ", "Xã Đại Xuyên"],
+  20: ["Xã Vân Đình", "Xã Ứng Thiên", "Xã Ứng Hòa", "Xã Hòa Xá", "Xã Mỹ Đức", "Xã Hồng Sơn", "Xã Phúc Sơn", "Xã Hương Sơn"],
+  21: ["Phường Chương Mỹ", "Xã Thanh Oai", "Xã Bình Minh", "Xã Tam Hưng", "Xã Dân Hòa", "Xã Phú Nghĩa", "Xã Xuân Mai", "Xã Trần Phú", "Xã Hòa Phú", "Xã Quảng Bị"],
+  22: ["Xã Thạch Thất", "Xã Hạ Bằng", "Xã Tây Phương", "Xã Hòa Lạc", "Xã Yên Xuân", "Xã Quốc Oai", "Xã Hưng Đạo", "Xã Kiều Phú", "Xã Phú Cát"],
+  23: ["Xã Hoài Đức", "Xã Dương Hòa", "Xã Sơn Đồng", "Xã An Khánh"],
+  24: ["Xã Đan Phượng", "Xã Ô Diên", "Xã Liên Minh"],
+  25: ["Xã Phúc Lộc", "Xã Phúc Thọ", "Xã Hát Môn"],
+};
+
+const LOCATION_CODE_BY_FULL_NAME = Object.fromEntries(
+  (joins.locations as { locationCode: string; kind: string; name: string }[]).map((row) => [
+    `${row.kind} ${row.name}`,
+    row.locationCode,
+  ]),
+);
+
+export const TAX_OFFICE_LOCATION_IDS: Record<string, string[]> = Object.fromEntries(
+  TAX_OFFICES.map((office) => {
+    const number = Number(office.name.match(/cơ sở\s+(\d+)/i)?.[1]);
+    const ids = (TAX_OFFICE_AREA_NAMES[number] ?? [])
+      .map((name) => LOCATION_CODE_BY_FULL_NAME[name])
+      .filter((id): id is string => Boolean(id));
+    return [office.code, ids];
+  }),
+);
+
+export const taxOfficeLocationIds = (code: string): string[] => TAX_OFFICE_LOCATION_IDS[code] ?? [];
+
+/**
  * Tên cơ quan thuế theo mã.
  *
  * Tra theo MÃ, không theo tên: 32 mã quy về 27 tên, năm cặp mã dùng chung một

@@ -1,5 +1,7 @@
 # Phụ thuộc và kết quả build — dựng lại được bằng `npm install` và `npm run build`
 node_modules/
+__pycache__/
+*.py[cod]
 dist/
 *.tsbuildinfo
 

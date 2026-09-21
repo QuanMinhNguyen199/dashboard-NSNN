@@ -23,8 +23,14 @@ export function KpiStrip({
   /** Nhãn cho trình đọc màn hình; dải không có tiêu đề nhìn thấy được. */
   label: string;
   children: ReactNode;
-  /** Số ô thực tế; tránh chừa một cột trắng khi một KPI không có giá trị. */
-  columns?: 3 | 4;
+  /**
+   * Số cột của dải.
+   *
+   * Phải chia hết số ô, nếu không hàng cuối để hở và dải trông như bị cắt dở.
+   * Sáu ô thì dùng 3 (hai hàng đầy), năm ô thì dùng 5. Ba workspace mở có 5–6
+   * KPI nên dải không còn mặc định bốn ô như trước.
+   */
+  columns?: 3 | 4 | 5 | 6;
 }) {
   return (
     <section className="dkpis" data-columns={columns} aria-label={label}>
