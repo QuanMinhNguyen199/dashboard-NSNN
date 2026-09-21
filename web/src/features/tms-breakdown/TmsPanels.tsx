@@ -1,20 +1,46 @@
 import type { TmsBreakdownData } from "@/domain/types";
-import { useMemo } from "react";
-import { taxOfficeLocationIds } from "@/domain/tms";
+import { useCallback, useMemo, useRef } from "react";
+import { TAX_OFFICE_NAME, taxOfficeLocationIds } from "@/domain/tms";
 import { LOCATION_BY_ID } from "@/domain/catalog";
 import { Card, columnLabel, inScale, moneyScale } from "@/components/primitives";
 import { Amount } from "./TmsTables";
 import { toDisplayNumber } from "@/domain/money";
 
-/** Các địa bàn do CQT đang chọn quản lý; bộ lọc CQT nằm trên thanh lọc chính. */
+const taxPeriodLabel = (period: string | undefined) => {
+  if (!period) return null;
+  const month = /^(\d{4})-(\d{2})$/.exec(period);
+  return month ? `Tháng ${Number(month[2])}/${month[1]}` : period;
+};
+
+/**
+ * Các địa bàn do CQT đang chọn quản lý; bộ lọc CQT nằm trên thanh lọc chính.
+ *
+ * Panel này KHÔNG dùng `ResourceView`, và đó là có chủ ý: hai nửa của nó có độ
+ * tươi khác nhau.
+ *
+ *   · **Danh sách phường/xã** đến từ bảng phân công tĩnh (`taxOfficeLocationIds`),
+ *     biết ngay khi người dùng chọn mã — không bao giờ cũ, không cần đợi mạng.
+ *   · **Số thu từng địa bàn** đến từ payload, và có thể là số của mã vừa chọn
+ *     trước đó.
+ *
+ * Nếu đợi cả panel thì tên phường biến mất rồi hiện lại y nguyên, tức là nháy
+ * một cái mà không nói thêm điều gì. Nếu giữ nguyên cả panel như bản trước thì
+ * số cũ nằm trơ ra một lúc rồi tự đổi — người dùng đọc phải số của mã khác mà
+ * không biết. Nên chỉ **cột số và thanh tỷ lệ** vào trạng thái chờ; khung và
+ * tên đứng yên.
+ */
 export function TaxOfficeAssignedAreas({
   data,
   selectedCode,
+  pending = false,
 }: {
   data: TmsBreakdownData | null;
   selectedCode: string | null;
+  /** Đang chờ phản hồi cho một phạm vi khác với phạm vi của `data`. */
+  pending?: boolean;
 }) {
-  const selectedScope = data?.taxOfficeScopes?.offices.find((office) => office.code === selectedCode);
+  const scopes = pending ? undefined : data?.taxOfficeScopes;
+  const selectedScope = scopes?.offices.find((office) => office.code === selectedCode);
   const selectedLocations = useMemo(() => {
     if (!selectedCode) return [];
     const amounts = new Map((selectedScope?.locations ?? []).map((row) => [row.id, row.amount]));
@@ -36,38 +62,95 @@ export function TaxOfficeAssignedAreas({
     value === 0
       ? (0).toLocaleString("vi-VN", { minimumFractionDigits: locationScale.decimals })
       : inScale(value, locationScale);
+  const stripCleanupRef = useRef<(() => void) | null>(null);
+  const bindScrollRegion = useCallback((region: HTMLElement | null) => {
+    stripCleanupRef.current?.();
+    stripCleanupRef.current = null;
+    if (!region) return;
+    const handleWheel = (event: WheelEvent) => {
+      const strip = region.querySelector<HTMLOListElement>(".dtax-location-grid");
+      if (!strip) return;
+      // Chuột thường có thể gửi delta theo pixel, dòng hoặc cả trang. Cộng thẳng
+      // `deltaY` khiến một nấc chuột dạng `line` chỉ dịch 3px và trông như không
+      // hoạt động. Trackpad lại thường gửi `deltaX`, nên dùng trục có biên độ lớn
+      // hơn rồi chuẩn hoá về pixel trước khi cuộn.
+      const rawDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      if (rawDelta === 0) return;
+      const unit = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+        ? 32
+        : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+          ? strip.clientWidth
+          : 1;
+      const delta = rawDelta * unit;
+      const max = strip.scrollWidth - strip.clientWidth;
+      const canMove = delta > 0 ? strip.scrollLeft < max - 1 : strip.scrollLeft > 1;
+      if (!canMove) return;
+      event.preventDefault();
+      event.stopPropagation();
+      strip.scrollLeft = Math.max(0, Math.min(max, strip.scrollLeft + delta));
+    };
+    // Gắn vào cả section để tiêu đề, khoảng giữa các card và vùng scrollbar đều
+    // điều khiển cùng một dải; capture xử lý trước các vùng mô phỏng host.
+    region.addEventListener("wheel", handleWheel, { passive: false, capture: true });
+    stripCleanupRef.current = () => region.removeEventListener("wheel", handleWheel, { capture: true });
+  }, []);
 
   if (!selectedCode) return null;
   return (
-    <section className="dtax-scope is-compact" aria-labelledby="tax-office-location-title">
-      <div className="dtax-scope-head">
-        <div className="dtax-scope-titleline">
-          <h3 id="tax-office-location-title">Địa bàn phụ trách</h3>
-          <span className={data?.taxOfficeScopes?.origin === "mock" ? "dtag is-review" : "dtag"}>
-            {data?.taxOfficeScopes?.origin === "mock" ? "Số thu mô phỏng" : `Kỳ ${data?.taxOfficeScopes?.period ?? ""}`}
-          </span>
+    <section ref={bindScrollRegion} className="dtax-scope is-compact" aria-labelledby="tax-office-location-title">
+      <span className="sr-only" role="status" aria-live="polite">
+        {pending ? "Đang cập nhật số thu theo địa bàn." : ""}
+      </span>
+      <div className="dtax-scope-inner">
+        <div className="dtax-scope-head">
+          <div className="dtax-scope-titleline">
+            <h2 id="tax-office-location-title">Địa bàn phụ trách</h2>
+            {pending ? (
+              <span className="dtag is-loading">Đang cập nhật số thu…</span>
+            ) : (
+              <span className={scopes?.origin === "mock" ? "dtag is-review" : "dtag"}>
+                {scopes?.origin === "mock"
+                  ? ["Mô phỏng", taxPeriodLabel(scopes.period)].filter(Boolean).join(" · ")
+                  : (taxPeriodLabel(scopes?.period) ?? "Chưa có kỳ")}
+              </span>
+            )}
+          </div>
+          <p>
+            {TAX_OFFICE_NAME[selectedCode] ?? selectedCode} · {selectedLocations.length.toLocaleString("vi-VN")} phường/xã · Sắp theo số thu giảm dần
+          </p>
         </div>
-        <p>{selectedLocations.length.toLocaleString("vi-VN")} phường/xã · Sắp theo số thu giảm dần</p>
+        {selectedLocations.length > 0 ? (
+          <div className="dtax-location-strip">
+            <ol
+              className="dtax-location-grid"
+              aria-busy={pending || undefined}
+              aria-label="Địa bàn phụ trách, sắp theo số thu giảm dần"
+              tabIndex={selectedLocations.length > 4 ? 0 : undefined}
+            >
+              {selectedLocations.map((row, index) => (
+                <li key={row.id}>
+                  <span className="dtax-rank" aria-label={`Hạng ${index + 1}`}>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <strong className="dtax-name">{row.name}</strong>
+                  <span className="dtax-card-amount">
+                    {pending ? (
+                      <i className="dshimmer" aria-hidden="true" />
+                    ) : (
+                      <>
+                        {locationAmount(toDisplayNumber(row.amount))}
+                        {toDisplayNumber(row.amount) !== null && <> <small>{locationScale.short}</small></>}
+                      </>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : (
+          <p className="dempty">Mã này không thuộc danh sách 25 Thuế cơ sở phân công theo địa bàn.</p>
+        )}
       </div>
-      {selectedLocations.length > 0 ? (
-        <table className="dtax-locations">
-          <caption className="sr-only">Địa bàn phụ trách, sắp theo số thu giảm dần</caption>
-          <thead>
-            <tr><th scope="col">STT</th><th scope="col">Địa bàn</th><th scope="col">{columnLabel("Số thu", locationScale)}</th></tr>
-          </thead>
-          <tbody>
-            {selectedLocations.map((row, index) => (
-              <tr key={row.id}>
-                <td className="dtax-rank">{String(index + 1).padStart(2, "0")}</td>
-                <td className="dtax-name">{row.name}</td>
-                <td className="dtax-amount">{locationAmount(toDisplayNumber(row.amount))}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="dempty">Mã này không thuộc danh sách 25 Thuế cơ sở phân công theo địa bàn.</p>
-      )}
     </section>
   );
 }
@@ -99,7 +182,7 @@ export function CorrespondencePanel({ data }: { data: TmsBreakdownData }) {
     budgetTotal,
   ]);
   return (
-    <Card title="Cấp quản lý và cấp ngân sách" subtitle="Cùng một tổng, cắt theo hai trường khác nhau của giao dịch">
+    <Card title="Cấp quản lý và cấp ngân sách" subtitle="Hai cách phân loại cùng một tổng">
       <div className="dtable-wrap">
         <table className="dtable dtms-pairs">
           <caption className="sr-only">
@@ -136,12 +219,6 @@ export function CorrespondencePanel({ data }: { data: TmsBreakdownData }) {
           </tfoot>
         </table>
       </div>
-      <p className="dhint">
-        Hai cột cộng ra cùng một số vì cùng chia một tổng. Cấp quản lý đọc từ mã Chương trên chứng từ; cấp
-        ngân sách được hưởng là trường khác của chính giao dịch đó. Chúng cùng hình dạng hai bậc nhưng không
-        suy được ra nhau, nên một đơn vị do trung ương quản lý vẫn có thể nộp khoản mà ngân sách địa phương
-        hưởng.
-      </p>
     </Card>
   );
 }
@@ -167,7 +244,7 @@ function reconcile(data: TmsBreakdownData): { tone: "ok" | "warn"; text: string 
 export function QualityPanel({ data }: { data: TmsBreakdownData }) {
   const check = reconcile(data);
   return (
-    <Card title="Chất lượng dữ liệu" subtitle="Ba phép kiểm tra chạy bên trong TMS, trên chính số đang hiện">
+    <Card title="Chất lượng dữ liệu">
       <dl className="dtms-quality">
         <div>
           <dt>Tổng theo Mục so với tổng của cấp</dt>
@@ -189,9 +266,6 @@ export function QualityPanel({ data }: { data: TmsBreakdownData }) {
       {/* Ba phép kiểm ở trên đều chạy BÊN TRONG TMS, nên chúng phải khớp tuyệt
           đối. Quan hệ với Kho bạc là chuyện khác hẳn và đã có bảng riêng; để
           chung một chỗ thì hai loại sai số bị đọc lẫn vào nhau. */}
-      <p className="dhint">
-        Phạm vi là <b>tổng thu nội địa A</b>, gồm dầu thô và condensate. Thu xuất nhập khẩu nằm ngoài bộ quy tắc này.
-      </p>
     </Card>
   );
 }

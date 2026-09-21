@@ -76,7 +76,7 @@ export function AdvancedCompareTab() {
 /** Bộ dựng hai vế. Không cho ghép hai đối tượng khác phạm vi phân bổ. */
 function CompareBuilder() {
   const state = useDashboardState();
-  const { mode, filters } = state;
+  const { mode } = state;
 
   if (mode === "period")
     return (
@@ -123,10 +123,6 @@ function CompareBuilder() {
             ))}
           </select>
         </label>
-        <p className="dbuilder-note">
-          Kỳ đang xét: {filters.periodType === "MONTH" ? "tháng" : "quý"} {filters.period}/{filters.year}.
-          Không ghép nguồn phân bổ theo địa bàn với nguồn do trung ương quản lý.
-        </p>
       </section>
     );
   }
@@ -271,10 +267,7 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
 
       {data.rows.length === 0 && (
         <p className="dnote" role="note">
-          Hai nguồn thu không có khoản thu chung nên chỉ so được ở mức tổng —
-          một bảng theo khoản sẽ phải điền 0 cho những khoản vốn không tồn tại ở
-          vế kia, và con số đó đọc ra thành “mất trắng” chứ không phải “không áp
-          dụng”.
+          Hai nguồn không có khoản thu chung; chỉ hiển thị so sánh tổng.
         </p>
       )}
 

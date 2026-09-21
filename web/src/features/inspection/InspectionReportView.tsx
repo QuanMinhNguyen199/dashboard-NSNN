@@ -56,9 +56,6 @@ export function InspectionReportView() {
             ))}
           </select>
         </label>
-        <p className="dhint">
-          KPI và bảng đơn vị theo kỳ đang chọn ở bộ lọc chung; diễn biến tháng hiển thị từ đầu năm đến kỳ đó.
-        </p>
       </div>
 
       <ResourceView resource={resource} retry={retry} minHeight={420} pending={pending}>
@@ -131,6 +128,7 @@ function InspectionBody({ data, status }: { data: InspectionData; status: Inspec
               actions={
                 <ReportExportButton
                   request={{
+                    title: "Kết quả kiểm tra theo đơn vị",
                     fileName: `ket-qua-kiem-tra-theo-${data.cycle === "week" ? "tuan" : "thang"}`,
                     rows: () => data.units,
                     meta: {
@@ -141,12 +139,12 @@ function InspectionBody({ data, status }: { data: InspectionData; status: Inspec
                     },
                     columns: [
                       { header: "Đơn vị", value: (r: InspectionUnitRow) => r.name },
-                      { header: "Số cuộc", value: (r: InspectionUnitRow) => r.totalCases },
-                      { header: "Đã hoàn thành", value: (r: InspectionUnitRow) => r.completedCases },
-                      { header: "Tỷ lệ hoàn thành (%)", value: (r: InspectionUnitRow) => r.completionRate },
-                      { header: "Số tiền xử lý (đồng)", value: (r: InspectionUnitRow) => r.processedAmount },
-                      { header: "Số đã nộp (đồng)", value: (r: InspectionUnitRow) => r.paidAmount },
-                      { header: "Tỷ lệ đã nộp (%)", value: (r: InspectionUnitRow) => r.paidRate },
+                      { header: "Số cuộc", value: (r: InspectionUnitRow) => r.totalCases, format: "count" },
+                      { header: "Đã hoàn thành", value: (r: InspectionUnitRow) => r.completedCases, format: "count" },
+                      { header: "Tỷ lệ hoàn thành (%)", value: (r: InspectionUnitRow) => r.completionRate, format: "percent" },
+                      { header: "Số tiền xử lý (đồng)", value: (r: InspectionUnitRow) => r.processedAmount, format: "money" },
+                      { header: "Số đã nộp (đồng)", value: (r: InspectionUnitRow) => r.paidAmount, format: "money" },
+                      { header: "Tỷ lệ đã nộp (%)", value: (r: InspectionUnitRow) => r.paidRate, format: "percent" },
                     ],
                   }}
                 />

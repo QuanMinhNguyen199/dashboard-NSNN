@@ -67,11 +67,6 @@ export function BudgetForecastView() {
             ))}
           </select>
         </label>
-        <p className="dlocal-context" aria-live="polite">
-          {viewBy === "location"
-            ? "Lũy kế đến kỳ báo cáo · tiến độ của từng phường, xã"
-            : "Lũy kế đến kỳ báo cáo · tiến độ của từng sắc thuế, khoản thu"}
-        </p>
       </div>
 
       <ResourceView key={viewBy} resource={resource} retry={retry} minHeight={420} pending={pending}>
@@ -173,6 +168,10 @@ function BudgetBody({
         actions={
           <ReportExportButton
             request={{
+              title:
+                data.viewBy === "location"
+                  ? "Tiến độ dự toán theo phường, xã"
+                  : "Tiến độ dự toán theo khoản thu",
               fileName:
                 data.viewBy === "location"
                   ? "thuc-hien-du-toan-theo-phuong-xa"
@@ -187,13 +186,13 @@ function BudgetBody({
               },
               columns: [
                 { header: data.viewBy === "location" ? "Phường, xã" : "Khoản thu", value: (r: BudgetProgressRow) => r.name },
-                { header: "Dự toán (đồng)", value: (r: BudgetProgressRow) => r.plan },
-                { header: "Thực hiện (đồng)", value: (r: BudgetProgressRow) => r.actual },
-                { header: "Tỷ lệ hoàn thành (%)", value: (r: BudgetProgressRow) => r.completionRate },
-                { header: "Còn thiếu hoặc vượt (đồng)", value: (r: BudgetProgressRow) => r.remaining },
-                { header: "Cùng kỳ (đồng)", value: (r: BudgetProgressRow) => r.previous },
-                { header: "Dự báo (đồng)", value: (r: BudgetProgressRow) => r.forecast },
-                { header: "Sai số dự báo (%)", value: (r: BudgetProgressRow) => r.forecastError },
+                { header: "Dự toán (đồng)", value: (r: BudgetProgressRow) => r.plan, format: "money" },
+                { header: "Thực hiện (đồng)", value: (r: BudgetProgressRow) => r.actual, format: "money" },
+                { header: "Tỷ lệ hoàn thành (%)", value: (r: BudgetProgressRow) => r.completionRate, format: "percent" },
+                { header: "Còn thiếu hoặc vượt (đồng)", value: (r: BudgetProgressRow) => r.remaining, format: "money" },
+                { header: "Cùng kỳ (đồng)", value: (r: BudgetProgressRow) => r.previous, format: "money" },
+                { header: "Dự báo (đồng)", value: (r: BudgetProgressRow) => r.forecast, format: "money" },
+                { header: "Sai số dự báo (%)", value: (r: BudgetProgressRow) => r.forecastError, format: "percent" },
                 { header: "Trạng thái", value: (r: BudgetProgressRow) => BUDGET_STATUS_LABEL[r.status] },
               ],
             }}

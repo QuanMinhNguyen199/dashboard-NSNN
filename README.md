@@ -60,31 +60,6 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 | `TMS/` | **Nguồn nghiệp vụ bên Thuế.** Tài liệu và bảng nối dùng để rà soát cục bộ; dữ liệu riêng được loại khỏi Git. Tài liệu công khai không nêu tên tệp nguồn. |
 | [`bao-cao-outline/noi-bo/`](bao-cao-outline/noi-bo) | **TMS và tích hợp dashboard.** Bốn tài liệu nghiệp vụ và kỹ thuật dùng trong phạm vi được phân quyền. |
 
-## Tài liệu TMS và tích hợp dashboard
-
-Bắt đầu tại [Báo cáo BA TMS](bao-cao-outline/noi-bo/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md). Bộ đọc hiện tại có bốn tài liệu:
-
-| Tài liệu | Vai trò |
-|---|---|
-| [Báo cáo BA TMS](bao-cao-outline/noi-bo/BA-PHAN-TICH-TMS-THEO-CHUONG-VA-DIA-BAN.md) | Nghiệp vụ, cách tổ chức dashboard, dữ liệu còn thiếu và quyết định cần chốt. |
-| [Nghiệp vụ TMS nội bộ](bao-cao-outline/noi-bo/NGHIEP-VU-TMS-NOI-BO.md) | Ba chiều phân tích đích, sáu bước lấy số, đối soát với Kho bạc, hiệu lực văn bản và việc cần chốt. |
-| [Đặc tả tích hợp dashboard](bao-cao-outline/noi-bo/SPEC-KY-THUAT-DASHBOARD-NSNN.md) | API/MCP, giao diện, trạng thái dữ liệu và tiêu chí nghiệm thu. |
-| [Đặc tả kỹ thuật TMS nội bộ](bao-cao-outline/noi-bo/SPEC-KY-THUAT-TMS-NOI-BO.md) | Mô hình dữ liệu, quy tắc 113 dòng, danh mục mã đầy đủ và bảng quy đổi. |
-
-Tài liệu NSNN, prototype, mobile/host và khảo sát cũ được giữ tại [thư mục lưu trữ](tai-lieu-luu-tru/nsnn/README.md). Bộ TMS nội bộ chỉ dùng trong phạm vi được phân quyền.
-
-## Tài liệu ở repo
-
-Đi kèm mã nguồn, không đăng lên Outline.
-
-| File | Vai trò |
-|---|---|
-| [`web/DESIGN.md`](web/DESIGN.md) | Hệ thống thị giác: token, thang màu dữ liệu, quy tắc bố cục. |
-| [`web/README.md`](web/README.md) | Hướng dẫn chạy, cấu trúc source, cách thay provider. |
-| [`PROMPT-CLAUDE-NSNN.md`](PROMPT-CLAUDE-NSNN.md) | Yêu cầu của giai đoạn clone nguyên trạng. Tài liệu lịch sử. |
-| [`dac-ta-v2.html`](dac-ta-v2.html) | Đặc tả nghiệp vụ v2. |
-| [`update_dac-ta-89_tham-khaor.html`](update_dac-ta-89_tham-khaor.html) | Phản hồi bên thuế và đặc tả trước v2. |
-
 ## Workspace
 
 Sáu workspace, chung một bộ lọc và một nguồn state. Ba mảng mở theo biên bản

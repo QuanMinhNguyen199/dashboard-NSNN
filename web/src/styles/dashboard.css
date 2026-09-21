@@ -93,6 +93,9 @@
   --tooltip-surface: #111c2ce6;
   --control-border: #c6d2e0;
   --scrollbar-thumb: #c3cedd;
+  /* Đậm lên khi trỏ vào vùng cuộn: thanh mảnh thì phải nói rõ hơn là nó kéo
+     được, nếu không người dùng chỉ thấy một vạch trang trí. */
+  --scrollbar-thumb-hover: #9aa9bd;
 
   /* Mực trên nền tối — không phải `surface`. Hai thứ cùng là trắng nhưng khác
      vai trò: một cái là bề mặt, một cái là chữ nằm trên bề mặt khác. */
@@ -113,6 +116,9 @@
   --shadow-overlay: -18px 0 42px #0e2a4722;
   --shadow-frame: 0 0 0 1px #00000040, 0 10px 34px #0000004d;
   --shadow-tip: 0 4px 14px #19334e18;
+  /* Bóng khi trỏ vào thẻ. Cùng gốc màu mực với bốn bóng trên (#19334e) nên nó
+     đọc như bóng của cùng một nguồn sáng, không phải một màu xám lạ ghép vào. */
+  --shadow-hover: 0 3px 10px #19334e1f;
 
   --scrim: #0e2a4780;
 
@@ -201,10 +207,46 @@ table { border-collapse: collapse; width: 100%; }
   outline-offset: 2px;
   border-radius: var(--r-chip);
 }
-* { scrollbar-color: var(--scrollbar-thumb) var(--canvas); scrollbar-width: thin; }
-::-webkit-scrollbar { width: 11px; height: 11px; }
-::-webkit-scrollbar-track { background: var(--canvas); }
-::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border: 3px solid var(--canvas); border-radius: 99px; }
+/* Thanh cuộn: mảnh, không rãnh, ôm sát mép vùng cuộn.
+ *
+ * Bản trước tô rãnh bằng `--canvas` — màu NỀN TRANG. Bên trong một thẻ trắng
+ * thì rãnh đó hiện ra thành một dải xám chạy dọc mép thẻ, trông như thẻ bị hở.
+ * Rãnh trong suốt thì thanh cuộn mượn đúng mặt nền nó đang nằm trên, nên nó
+ * hợp với mọi thẻ mà không cần khai riêng cho từng chỗ.
+ *
+ * Bề rộng 9px là VÙNG BẤM, không phải bề dày nhìn thấy: `border` trong suốt
+ * cộng `background-clip: padding-box` để lại một vạch 5px, trong khi cả 9px vẫn
+ * kéo được. Làm mảnh bằng cách giảm `width` thì vùng bấm mảnh theo. */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+/*
+ * KHÔNG khai `scrollbar-width` hay `scrollbar-color` ở phạm vi chung.
+ *
+ * Đo trên Chrome 153: chỉ cần một trong hai thuộc tính đó khác `auto` là trình
+ * duyệt chuyển sang thanh cuộn chuẩn và BỎ QUA toàn bộ khối `::-webkit-*` ở
+ * trên. Bản trước khai `scrollbar-width: thin` cho `*`, nên mọi dòng tạo dáng
+ * thanh cuộn đều không có tác dụng và bề dày đứng nguyên ở 10px dù khai 9px.
+ *
+ * Đo lại sau khi gỡ: khai 5px ra 5px, 9px ra 9px — đúng từng pixel.
+ *
+ * Firefox không có `::-webkit-scrollbar` nên nhận đường còn lại. `@supports`
+ * tách hai đường thay vì để chúng đè nhau.
+ */
+@supports not selector(::-webkit-scrollbar) {
+  * { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) transparent; }
+}
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -243,6 +285,16 @@ table { border-collapse: collapse; width: 100%; }
   flex: none; padding: 3px 7px; border: 1px solid var(--on-dark-line);
   border-radius: var(--r-chip); color: var(--navy-ink); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
+
+/* Nút vào chế độ xem thử, đặt trên nền đậm của header nên dùng bộ màu
+   `on-dark` thay vì viền/nền mực thường. */
+.dheader-tools { display: flex; align-items: center; gap: var(--s3); flex: none; }
+.dheader-frame {
+  min-height: 30px; padding: 5px 11px; white-space: nowrap;
+  background: var(--on-dark-fill); border: 1px solid var(--on-dark-line); border-radius: var(--r-chip);
+  color: var(--ink-on-dark); font-size: var(--fs-label); font-weight: var(--fw-label);
+}
+.dheader-frame:hover { background: var(--on-dark-fill-hover); border-color: var(--on-dark-line-hover); }
 
 /* ───────────────────── Xem thử khổ nhúng (iframe thật) ──────────────────── */
 .dframe { display: flex; flex-direction: column; height: 100dvh; background: var(--canvas); }
@@ -471,14 +523,15 @@ select:hover {
    tên phường dài nên ô địa bàn rộng gần hết hàng, còn "Tất cả cấp" ngắn nên ô
    cấp quản lý chỉ được 200px. Hai ô cùng vai mà lệch nhau thì đọc thành một ô
    chính và một ô phụ. Cho cả hai trọn hàng. */
-.dfilters[data-embedded="true"][data-open="false"] > .dfilter-location,
-.dfilters[data-embedded="true"][data-open="false"] > .dfilter-management { flex: 1 1 100%; }
-.dfilters[data-embedded="true"][data-open="false"] > .dfilter-management select { width: 100%; }
+.dfilters[data-embedded="true"][data-open="false"] > [data-keep] { flex: 1 1 100%; }
+.dfilters[data-embedded="true"][data-open="false"] > [data-keep] select { width: 100%; }
 
-.dfilters[data-embedded="true"][data-open="false"] > label:not(.dfilter-management),
-.dfilters[data-embedded="true"][data-open="false"] > .dfilter-tax-office,
-.dfilters[data-embedded="true"][data-open="false"] > .dfilters-reset-row,
-.dfilters[data-embedded="true"][data-open="false"] > .dfield { display: none; }
+/* Ẩn mọi thứ TRỪ ô mang `data-keep` và thanh tóm tắt. Bản cũ kể tên từng lớp
+   phải ẩn, nên ô nào không có trong danh sách thì mặc nhiên ở lại — và ô nào
+   chỉ xuất hiện ở một tab thì lọt qua theo chiều ngược lại. */
+.dfilters[data-embedded="true"][data-open="false"] > *:not(.dfilters-summary):not([data-keep]) {
+  display: none;
+}
 .dfilters[data-embedded="true"][data-open="true"] {
   display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: end; width: 100%;
@@ -753,6 +806,44 @@ select:hover {
   padding: 0 16px 14px;
 }
 
+/* ─────────────────────── Nhô lên khi trỏ vào thẻ ────────────────────────── */
+/*
+ * Thẻ nhô 2px và nhận một bóng nhẹ khi con trỏ đi vào. Mục đích là cho biết
+ * ranh giới của khối đang đọc, nhất là ở màn hình nhiều thẻ xếp sát nhau.
+ *
+ * Quy tắc: nhô cái NHỎ NHẤT mà con trỏ đang chỉ vào.
+ *
+ * Thẻ lớn chứa bảng, lưới thẻ con hoặc biểu đồ thì đứng yên, và phần tử con
+ * nhô thay: một dòng bảng, một thẻ địa bàn. Trỏ vào dòng 7 của bảng 124 dòng
+ * mà cả khối trượt lên thì hiệu ứng nói sai về thứ đang được chọn — và với
+ * biểu đồ thì nó chồng lên lớp hover sẵn có của lát donut hay cột.
+ *
+ * Thẻ không chứa gì trong số đó thì chính nó là đơn vị nhỏ nhất, nên nó nhô.
+ *
+ * `@supports` bọc ngoài: không có `:has()` thì phần loại trừ mất hiệu lực và
+ * mọi thẻ đều nhô, kể cả thẻ bảng. Thà không có hiệu ứng còn hơn có sai chỗ.
+ *
+ * Dải KPI và các thanh lọc không nằm trong đây: chúng là thanh điều khiển, các
+ * ô dính chung một viền, nâng một ô là làm rách dải.
+ */
+@supports selector(:has(*)) {
+  .dcard:not(:has(table, .dtax-location-grid, .ddonut, .dbars, .dchart-wrap, .dforecast, .dmap, .dwaterfall)),
+  .dtax-scope:not(:has(table, .dtax-location-grid, .ddonut, .dbars, .dchart-wrap, .dforecast, .dmap, .dwaterfall)) {
+    transition:
+      transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dcard:not(:has(table, .dtax-location-grid, .ddonut, .dbars, .dchart-wrap, .dforecast, .dmap, .dwaterfall)):hover,
+  .dtax-scope:not(:has(table, .dtax-location-grid, .ddonut, .dbars, .dchart-wrap, .dforecast, .dmap, .dwaterfall)):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    /* Viền đậm thêm một bậc: bóng đổ một mình biến mất trên nền sáng và với
+       người không phân biệt được sắc độ nhạt. */
+    border-color: var(--blue-100);
+  }
+}
+
 .dstack { display: grid; gap: var(--s4); }
 .dstack-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); align-items: stretch; }
 /* Biểu đồ ghép với một danh sách ngắn: biểu đồ lấy phần rộng hơn và tự giãn cao
@@ -815,7 +906,7 @@ button.dlink { border: 0; background: none; cursor: pointer; font-family: inheri
 /* 120ms nằm trong dải phản hồi tức thì: đủ để mắt bắt được là có gì đó đáp lại,
    chưa đủ để cảm thấy chậm. */
 .dbar-row, .dlist button, .dcontrib-row, .dbtn, .dseg button, .dtabs button,
-.dsubnav button, .dlink, .dmap-zoom button {
+.dsubnav button, .dlink, .dmap-zoom button, .dheader-frame {
   transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
 }
 button.dbar-row:hover { background: var(--blue-050); }
@@ -1189,8 +1280,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dtable th { white-space: normal; overflow: visible; text-overflow: clip; hyphens: none; }
 /* Bảng cuộn trong thẻ: `border-bottom` trên ô sticky không dính theo ô nên dòng
    phía sau lộ ra một vệt dưới tiêu đề. Dùng inset shadow và nâng z-index. */
+/* z-index 2 chứ không phải 1: dòng đang nhô có z-index 1, nếu đầu bảng cũng ở 1
+   thì khi cuộn, dòng sẽ trượt lên che mất tiêu đề cột. */
 .dtable thead th {
-  position: sticky; top: 0; z-index: 1; background: var(--surface);
+  position: sticky; top: 0; z-index: 2; background: var(--surface);
   color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label);
   border-bottom: 0; box-shadow: inset 0 -1px 0 var(--hairline);
 }
@@ -1203,7 +1296,33 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dtable thead th.is-num .dsort { text-align: right; }
 .dtable .is-num { text-align: right; }
 .dtable tbody th { font-weight: var(--fw-medium); white-space: normal; }
-.dtable tbody tr:hover { background: var(--surface-sunken); }
+/* Dòng bảng và thẻ địa bàn: cùng ngôn ngữ với thẻ lớn, ở một tầng nhỏ hơn.
+ *
+ * `position: relative` là bắt buộc chứ không phải thói quen — không có nó thì
+ * `z-index` vô nghĩa và dòng kế tiếp vẽ đè mất một nửa bóng của dòng đang nhô.
+ * `.dtable` dùng `border-collapse: separate` nên `<tr>` nhận được `box-shadow`;
+ * với `collapse` thì trình duyệt không vẽ bóng trên hàng. */
+.dtable tbody tr {
+  position: relative;
+  transition:
+    transform 140ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 140ms ease;
+}
+/* Trỏ vào thì NỔI LÊN, và nổi lên thì không tối đi.
+ *
+ * Trước đây dòng bảng nhô 2px nhưng nền lại chuyển sang xám chìm — hai tín hiệu
+ * nói ngược nhau trong cùng một chuyển động. Giờ nền giữ nguyên mặt trắng của
+ * thẻ, còn dấu hiệu "đang trỏ vào dòng này" do một VÒNG VIỀN đảm nhận.
+ *
+ * Vòng viền vẽ bằng `box-shadow: 0 0 0 1px` chứ không phải `border`: thêm border
+ * cho `<tr>` sẽ đẩy chiều cao hàng và cả bảng giật mỗi lần trỏ sang dòng khác. */
+.dtable tbody tr:hover {
+  background: var(--surface);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px var(--blue-100), var(--shadow-hover);
+  z-index: 1;
+}
 .dtable.is-compact th, .dtable.is-compact td { padding: 6px 8px; }
 
 .dledger { display: grid; }
@@ -1223,7 +1342,10 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 /* Thanh lọc nằm trong thân thẻ, ngay trên bảng nó lọc, và dồn về phải.
    `justify-content` chứ không phải `margin-left: auto`: đây là flex nên cả hai
    cùng đẩy được, nhưng chỉ cái đầu giữ nguyên bề rộng khi có thêm nút bên trái. */
-.dcard-body > .dlist-tools { padding: 0 16px var(--s2); justify-content: flex-end; }
+/* KHÔNG đắp lại đệm ngang: `.dcard-body` đã có `padding: 0 16px`. Đắp thêm thì
+   ô tìm kiếm thụt vào 32px trong khi tiêu đề và bảng ở 16px — lệch 16px, nhìn
+   ra ngay vì mép phải ô và mép phải cột cuối nằm cạnh nhau theo chiều dọc. */
+.dcard-body > .dlist-tools { padding: 0 0 var(--s2); justify-content: flex-end; }
 .dcard-body > .dlist-tools .dsearch { flex: 0 1 260px; }
 .dlist-tools .dsearch { flex: 1 1 130px; min-width: 0; }
 .dlist-tools .dsearch input { width: 100%; }
@@ -1363,8 +1485,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    onClick lên `<tr>`: giữ đúng một điểm dừng bàn phím, đúng một tên cho trình
    đọc màn hình, và vùng bấm thì trải hết hàng. */
 .dmap-table tbody tr { position: relative; }
-.dmap-table tbody tr th button::after { content: ""; position: absolute; inset: 0; }
-.dmap-table tbody tr:hover { background: var(--blue-050); cursor: pointer; }
+.dmap-table tbody tr:hover { background: var(--blue-050); }
 .dmap-table tbody tr:hover th button { color: var(--brand); }
 /* Vòng focus vẽ quanh cả hàng chứ không quanh mỗi chữ, vì vùng bấm là cả hàng. */
 .dmap-table tbody tr:has(th button:focus-visible) {
@@ -1399,7 +1520,6 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dbuilder span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
 /* impeccable-disable-next-line design-system-font-size -- glyph mũi tên một lần, không phải bậc chữ */
 .dbuilder-arrow { color: var(--ink-3); font-size: var(--fs-metric-sm); padding-bottom: 6px; }
-.dbuilder-note { flex: 1 1 100%; color: var(--ink-2); font-size: var(--fs-label); }
 .dpicker { display: flex; align-items: flex-end; gap: var(--s2); }
 .dpicker-label { color: var(--ink); font-size: var(--fs-label); font-weight: var(--fw-label); padding-bottom: 9px; }
 
@@ -1504,27 +1624,65 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 
 .dtax-scope {
-  padding: var(--s4); background: var(--surface);
+  width: 100%; padding: var(--s4); background: var(--surface);
   border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
+.dtax-scope-inner { width: 100%; }
 .dtax-scope-head { display: grid; gap: 2px; }
 .dtax-scope-titleline { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
-.dtax-scope-head h3 { margin: 0; color: var(--ink); font-size: var(--fs-title); font-weight: var(--fw-bold); }
+.dtax-scope-head h2 { margin: 0; color: var(--ink); font-size: var(--fs-title); font-weight: var(--fw-bold); }
 .dtax-scope-head p { margin: 0; color: var(--ink-3); font-size: var(--fs-caption); }
-.dtax-locations {
-  width: 100%; margin-top: var(--s3); border-collapse: collapse; table-layout: fixed;
-  color: var(--ink-2); font-size: var(--fs-body);
+/* Một hàng tối đa bốn card; phần dư cuộn ngang thay vì đẩy trang dài xuống. */
+.dtax-location-strip { min-width: 0; }
+.dtax-location-grid {
+  display: grid; grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 3 * var(--s2)) / 4);
+  gap: var(--s2); margin: var(--s3) 0 0; list-style: none;
+  /* Chỉ chừa đúng chỗ cho card nhô 2px và bóng của nó — `overflow-y: hidden`
+     cắt ngay ở mép hộp đệm. 13px là mức đo được vừa đủ; thêm nữa thì thanh cuộn
+     rời khỏi mép thẻ và trôi lơ lửng giữa khoảng trắng. */
+  padding: 4px 0 13px;
+  /* Không khai `scrollbar-width` ở đây: khai là mất luôn thanh cuộn tạo dáng
+     chung, xem ghi chú ở khối `::-webkit-scrollbar`. */
+  overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain;
 }
-.dtax-locations th, .dtax-locations td {
-  padding: 10px var(--s2); border-bottom: 1px solid var(--divider); text-align: left;
+.dtax-location-grid li {
+  position: relative; display: grid; grid-template-rows: 1fr auto; align-content: start; gap: 5px;
+  min-width: 0; min-height: 72px; padding: 10px 42px 10px 12px;
+  background: var(--surface-sunken); border: 1px solid var(--hairline); border-radius: var(--r-control);
 }
-.dtax-locations th:first-child, .dtax-locations td:first-child { width: 54px; padding-left: 0; }
-.dtax-locations th:last-child, .dtax-locations td:last-child { width: 160px; padding-right: 0; text-align: right; }
-.dtax-locations th { color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-label); }
-.dtax-locations .dtax-rank { color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.dtax-locations .dtax-name { overflow-wrap: anywhere; }
-.dtax-locations .dtax-amount { color: var(--ink); font-weight: var(--fw-label); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.dtax-locations tbody tr:hover td { background: var(--surface-sunken); }
+/* Card con nhô thay cho thẻ lớn bọc ngoài: đây mới là thứ con trỏ chỉ vào. */
+.dtax-location-grid li {
+  transition:
+    transform 140ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 140ms ease;
+}
+.dtax-location-grid li:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  /* Nghỉ thì chìm (`surface-sunken`), trỏ vào thì nổi lên đúng mặt nền trắng —
+     cùng một luật với dòng bảng. Viền đổi màu ở đây thay cho vòng `box-shadow`
+     vì card đã sẵn có `border`; kết quả đọc ra là một. */
+  background: var(--surface);
+  border-color: var(--blue-100);
+}
+.dtax-location-grid .dtax-rank {
+  position: absolute; top: 9px; right: 10px;
+  display: grid; place-items: center; width: 24px; height: 24px;
+  border-radius: 50%; background: var(--blue-100); color: var(--brand);
+  font-size: var(--fs-label); font-weight: var(--fw-label); font-variant-numeric: tabular-nums;
+}
+.dtax-location-grid .dtax-name {
+  color: var(--ink-2); font-size: var(--fs-body); font-weight: var(--fw-medium);
+  line-height: var(--lh-dense); overflow-wrap: anywhere;
+}
+.dtax-card-amount {
+  color: var(--ink); font-size: var(--fs-metric-sm); font-weight: var(--fw-bold);
+  font-variant-numeric: tabular-nums; line-height: var(--lh-dense); white-space: nowrap;
+}
+.dtax-card-amount small { margin-left: 4px; color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-regular); }
+.dtax-card-amount .dshimmer { width: 5.5ch; height: 14px; }
 
 /* ───────────────────────── Màn hình Báo cáo tám mẫu ──────────────────────── */
 
@@ -1621,7 +1779,25 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    hệ dùng dải màu, vì đây là nhóm do người dùng tạo ra chứ không phải một hạng
    mục nghiệp vụ. */
 .dpin-group { background: var(--star-surface); box-shadow: inset 3px 0 0 var(--star-on); }
-.dpin-group tr:hover { background: var(--star-surface-hover); }
+/* Phải ĐỦ CỤ THỂ để thắng `.dtable tbody tr:hover`, nên có `.dtable tbody` ở
+   đầu. Viết `.dpin-group tr:hover` không thôi thì kém một bậc phần tử, và dòng
+   đã ghim chuyển sang xám như mọi dòng khác ngay khi trỏ vào — đúng lúc người
+   dùng cần thấy nó vẫn đang được ghim.
+
+   Vạch vàng cũng phải nhắc lại ở đây. Nó nằm trên `<tbody>`, còn dòng khi nhô
+   có `position: relative; z-index: 1` nên nó vẽ đè lên vạch đó. Không nhắc lại
+   thì vạch biến mất đúng ở dòng đang trỏ. */
+.dtable tbody.dpin-group tr:hover {
+  /* Giữ đúng sắc kem lúc nghỉ. Trước đây nó chuyển sang `--star-surface-hover`
+     đậm hơn, tức là vẫn tối đi khi nhô — cùng mâu thuẫn như dòng thường. Màu
+     kem ở đây là DẤU HIỆU ĐÃ GHIM, không phải trạng thái trỏ; đổi nó khi hover
+     là mượn một tín hiệu đang mang nghĩa khác. */
+  background: var(--star-surface);
+  box-shadow:
+    inset 3px 0 0 var(--star-on),
+    0 0 0 1px var(--star-on),
+    var(--shadow-hover);
+}
 .dpin-group .dpin { color: var(--star-on); }
 .dpin-group .dpin-head th {
   padding-top: var(--s2); padding-bottom: var(--s2);
@@ -1728,6 +1904,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   font-size: var(--fs-label); color: var(--ink-2); white-space: nowrap;
 }
 .dtag.is-review { background: var(--note-surface); border-color: var(--note-line); color: var(--note-ink); }
+/* Chip trạng thái chờ: trung tính, KHÔNG mang màu của nhãn nó đang thay. Nhãn
+   thật nói số này thuộc kỳ nào hoặc là số mô phỏng; trong lúc chờ thì chưa ai
+   biết, nên chip phải nói đúng chừng đó. */
+.dtag.is-loading {
+  background: var(--surface-sunken); border-color: var(--hairline); color: var(--ink-3);
+}
 /* Chip đứng tự do thì `nowrap` đúng — nó ngắn. Nhưng chip trong ô bảng mang cả
    câu ("Đã có hướng dẫn", "Chưa có dòng tương ứng"), và ở khổ 768-1279px ô chỉ
    rộng 122px cho nội dung cần 137px, nên chữ bị cắt mất. Cuộn ngang không cứu
@@ -1755,6 +1937,9 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 /* Bề rộng quyết định, không phải ngữ cảnh: iframe 500px nằm trong cửa sổ 1200px
    vẫn có viewport riêng 500px, nên cùng một media query phục vụ cả iframe, mobile
    host và trình duyệt điện thoại thật. */
+@media (max-width: 1023px) {
+  .dtax-location-grid { grid-auto-columns: calc((100% - var(--s2)) / 2); }
+}
 @media (max-width: 767px) {
   .dtms-levelbar { align-items: stretch; }
   .dtms-levelbar-controls { width: 100%; align-items: stretch; }
@@ -1762,11 +1947,13 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dtms-levelbar-controls .dseg button { flex: 1 1 auto; }
   .dtms-levelbar-controls .dseg.is-sub { margin-right: 0; }
 
-  .dtax-locations th:first-child, .dtax-locations td:first-child { width: 42px; }
-  .dtax-locations th:last-child, .dtax-locations td:last-child { width: 116px; }
+  .dtax-location-grid { grid-auto-columns: 100%; }
   /* 260px nép bên phải ở khổ hẹp để lại một khoảng trống vô nghĩa bên trái;
      ô lọc trải hết bề rộng thì vùng gõ rộng hơn và không thừa chỗ. */
   .dcard-body > .dlist-tools .dsearch { flex: 1 1 100%; }
+  /* Cùng lý do cho ô tìm kiếm ở hàng tiêu đề: khi nó đã phải xuống dòng thì
+     giữ bề rộng cố định chỉ để trống nốt phần còn lại của dòng. */
+  .dcard-head .dcard-actions { flex: 1 1 100%; }
 
   /* Bốn bảng mới dùng LẠI luật xếp chồng này thay vì có kiểu riêng: ở 390px,
      bảy cột nghĩa là năm cột cuối nằm ngoài màn hình và không có dấu hiệu nào
@@ -2088,7 +2275,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .ddonut-layout:not(.is-callout) .ddonut-legend { width: 100%; }
   .dheader { padding: 12px 15px; }
   .dheader h1 { font-size: var(--fs-insight); }
-  .dheader p { display: none; }
+  .dheader p, .dheader-frame { display: none; }
   .dshell { padding: 0 10px 32px; }
   .dtabs {
     gap: var(--s4); padding-right: var(--s6);
@@ -2143,13 +2330,9 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
     border: 1px solid var(--blue-250); border-radius: var(--r-control);
     background: var(--blue-050); color: var(--brand);
   }
-  .dfilters[data-open="false"] > .dfilter-location,
-  .dfilters[data-open="false"] > .dfilter-management { grid-column: 1 / -1; }
+  .dfilters[data-open="false"] > [data-keep] { grid-column: 1 / -1; }
 
-  .dfilters[data-open="false"] > label:not(.dfilter-management),
-  .dfilters[data-open="false"] > .dfilter-tax-office,
-  .dfilters[data-open="false"] > .dfilters-reset-row,
-  .dfilters[data-open="false"] > .dfield { display: none; }
+  .dfilters[data-open="false"] > *:not(.dfilters-summary):not([data-keep]) { display: none; }
 
   /* Quy tắc touch target 44px bên dưới chỉ chạm tới nút trong `.dseg` nên nhóm
      chọn cao 50px trong khi select vẫn 38px: hai cột lệch nhau, nhãn không
@@ -2364,11 +2547,6 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
 .dlocalbar .dfield { display: grid; gap: 5px; min-width: 0; }
-.dlocal-context {
-  align-self: center; margin: 0 0 1px; color: var(--ink-3);
-  font-size: var(--fs-caption); line-height: var(--lh-body);
-}
-
 /* Nguồn và thời điểm chốt số. Một dải mảnh, không phải một thẻ — nó là siêu dữ
    liệu của cả trang, không phải một widget ngang hàng với các widget khác. */
 .dfresh {
@@ -2408,8 +2586,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 .dofficial-snapshot[open] > summary { border-bottom: 1px solid var(--divider); }
 .dofficial-snapshot > .dstack { padding: var(--s4); }
 
-.dreport-search { display: block; width: min(280px, 34vw); }
-.dreport-search input { width: 100%; }
+/* Ô tìm kiếm đứng ở hàng tiêu đề thẻ, dùng chung cho mọi tab.
+   Tên đặt theo CHỖ NÓ ĐỨNG, không theo tab nào gọi nó: tab thứ hai cần đúng
+   kiểu này thì phải dùng lại được lớp có sẵn. Viết một lớp thứ hai cùng công
+   dụng thì hai lớp đè nhau theo độ ưu tiên và chỉ một bên ra đúng bề rộng. */
+.dhead-search { display: block; width: min(280px, 34vw); }
+.dhead-search input { width: 100%; }
 
 /* Tóm tắt động và mốc tham chiếu chung cùng nằm trong một vùng nhìn. Tỷ lệ 2/3
    dành phần lớn không gian cho số chịu tác động của bộ chọn; bảng chi tiết phía
@@ -2516,7 +2698,37 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 .dtable td.dcol-meta, .dtable td[data-label="Phạm vi ảnh hưởng"] { white-space: normal; }
 
 /* Dòng nhóm đang mở ở bảng doanh nghiệp. */
+/* ── Dòng bấm được thì bấm chỗ nào trong dòng cũng được ──────────────────────
+ *
+ * Nút thật vẫn là `<button>` bọc tên; `::after` của nó trải kín dòng, nên vùng
+ * bấm là cả dòng còn tiêu điểm bàn phím, tên đọc cho trình đọc màn hình và
+ * `aria-pressed` không đổi một chữ nào. Neo của `inset: 0` là `<tr>`, vốn đã có
+ * `position: relative` từ luật hover.
+ *
+ * Trước đây dòng nhô lên, đổi nền và hiện con trỏ bàn tay trên cả bề ngang,
+ * nhưng bấm vào ô số thì không có gì xảy ra — giao diện hứa một vùng bấm rộng
+ * hơn vùng bấm thật.
+ *
+ * CHỈ áp cho dòng có ĐÚNG MỘT hành động. Dòng của `.dtms-table` có cả nút mở
+ * rộng lẫn ngôi sao ghim, trải một nút kín dòng là nuốt mất nút kia — ở đó hai
+ * vùng bấm tách rời mới đúng. */
+.dmap-table tbody tr > th > button::after,
+.dent-table tbody tr > th > .dlink::after {
+  content: ""; position: absolute; inset: 0;
+}
+.dmap-table tbody tr:has(> th > button),
+.dent-table tbody tr:has(> th > .dlink) { cursor: pointer; }
+
 .dent-table tbody tr.is-active { background: var(--blue-050); box-shadow: inset 3px 0 0 var(--brand); }
+/* Cùng lý do như dòng đã ghim: giữ nền xanh và vạch của dòng đang mở khi trỏ. */
+.dtable.dent-table tbody tr.is-active:hover {
+  /* Cùng lý do: nền xanh là dấu hiệu ĐANG MỞ, giữ nguyên khi trỏ. */
+  background: var(--blue-050);
+  box-shadow:
+    inset 3px 0 0 var(--brand),
+    0 0 0 1px var(--brand),
+    var(--shadow-hover);
+}
 /* Phần chưa xác định ghim ở `tfoot`: nó luôn hiện dù đang xem trang nào, nên
    phải nhìn ra ngay rằng đây KHÔNG phải một dòng của trang hiện tại. Đường kẻ
    đậm tách nó khỏi bảng xếp hạng, đúng cách đọc một dòng còn-lại-của-tổng. */
@@ -2643,7 +2855,21 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   }
   .dreport-detail .dcard-head { display: grid; grid-template-columns: 1fr; }
   .dreport-detail .dcard-actions { width: 100%; }
-  .dreport-search { width: 100%; }
+  .dhead-search { width: 100%; }
   .dpager { flex-direction: column; align-items: stretch; }
   .dpager .dbtn { width: 100%; }
+}
+
+/* ─────────────── Tắt chuyển động nhô (đặt cuối tệp có chủ ý) ─────────────── */
+/* Khối này phải đứng SAU mọi luật `:hover` ở trên. Cùng độ ưu tiên thì luật
+   viết sau thắng, nên đặt nó ở giữa tệp là nó thua chính thứ nó định tắt —
+   người bật "giảm chuyển động" vẫn thấy mọi thứ nhô lên như cũ.
+
+   Chỉ tắt phần DỜI CHỖ. Bóng và viền vẫn còn, vì chúng không chuyển động mà là
+   cách chỉ ra khối đang trỏ tới; bỏ nốt thì mất hẳn tín hiệu chứ không phải
+   làm nó tĩnh lại. */
+@media (prefers-reduced-motion: reduce) {
+  .dcard, .dtax-scope, .dtable tbody tr, .dtax-location-grid li { transition: none; }
+  .dcard:hover, .dtax-scope:hover,
+  .dtable tbody tr:hover, .dtax-location-grid li:hover { transform: none; }
 }

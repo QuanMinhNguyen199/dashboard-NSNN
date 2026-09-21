@@ -60,6 +60,7 @@ export function TmsBreakdownTab() {
       <TaxOfficeAssignedAreas
         data={lastData}
         selectedCode={taxOfficeCode}
+        pending={pending || resource.status === "loading"}
       />
 
       <h2 className="dsubject">
@@ -219,7 +220,7 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
 
       <Card
         title="Mục và Tiểu mục"
-        subtitle="Mã nằm trong điều kiện báo cáo của cấp đang lọc. Nhóm chưa tra được Mục cha đứng đầu bảng."
+        subtitle="Theo cấp quản lý đang chọn"
       >
         <SectionTable sections={data.sections} open={open} onToggle={toggle} total={data.levelTotal.amount} />
       </Card>
@@ -242,21 +243,29 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
 
       <Card
         title="Chương trong điều kiện"
-        subtitle="Để tra cứu và lọc nâng cao; theo cấp quản lý, không đổi theo địa bàn"
+        actions={
+          <>
+            <span className="dsearch dhead-search">
+              <input
+                type="search"
+                placeholder="Tìm mã hoặc tên Chương"
+                aria-label="Tìm Chương"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </span>
+            {!query && (
+              <button
+                type="button"
+                className="dbtn is-secondary"
+                onClick={() => setShowAllChapters((value) => !value)}
+              >
+                {showAllChapters ? "Thu gọn" : `Xem tất cả (${data.chapters.length})`}
+              </button>
+            )}
+          </>
+        }
       >
-        {/* Ô lọc đứng ngay trên bảng nó lọc, không nằm ở tiêu đề thẻ: bảng này
-            dài 105 dòng và ô lọc thuộc về bảng chứ không thuộc về cái thẻ. */}
-        <div className="dlist-tools">
-          <span className="dsearch">
-            <input
-              type="search"
-              placeholder="Tìm mã hoặc tên Chương"
-              aria-label="Tìm Chương"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </span>
-        </div>
         <CodeTable
           rows={filteredChapters}
           lastHeader="Cấp quản lý"
@@ -265,18 +274,6 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
           pinned={pinnedChapters}
           staleRows={query ? [] : staleChapters}
         />
-        {!query && (
-          <p className="dhint">
-            Đang hiện {filteredChapters.length} trên {data.chapters.length} Chương trong điều kiện.{" "}
-            <button
-              type="button"
-              className="dlink"
-              onClick={() => setShowAllChapters((value) => !value)}
-            >
-              {showAllChapters ? "Thu gọn" : `Xem tất cả ${data.chapters.length} Chương`}
-            </button>
-          </p>
-        )}
       </Card>
 
       <CorrespondencePanel data={data} />
