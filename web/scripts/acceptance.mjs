@@ -280,7 +280,7 @@ const run = async () => {
   );
   const officeScope = await page.evaluate(() => ({
     oneOfficeControl: document.querySelectorAll("#tms-tax-office").length === 1 && !document.querySelector("#tms-tax-office-local"),
-    hasAssignedLocations: document.querySelectorAll(".dtax-scope .dtax-locations tbody tr").length > 0,
+    hasAssignedLocations: document.querySelectorAll(".dtax-scope .dtax-location-grid li").length > 0,
     explainsAssignment: /Địa bàn phụ trách/i.test(
       document.querySelector(".dtax-scope")?.textContent ?? "",
     ),

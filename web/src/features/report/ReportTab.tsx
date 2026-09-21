@@ -330,8 +330,9 @@ function ReportBody({
         actions={
           <div className="dreport-actions">
             <ReportExportButton
-              label="Xuất toàn bộ CSV"
+              label="Xuất toàn bộ Excel"
               request={{
+                title: "Báo cáo thu ngân sách nhà nước",
                 fileName: `bao-cao-thu-nsnn-${data.groupBy}${data.subGroupBy ? `-${data.subGroupBy}` : ""}`,
                 rows: () => [],
                 prepare: () => prepareWideReportExport(filters, data.groupBy, data.subGroupBy),
@@ -444,10 +445,6 @@ function ReportBody({
             </tbody>
           </table>
         </div>
-        <p className="dhint">
-          Dòng "Trong đó" và dòng giải thích có số của riêng chúng nhưng không cộng vào dòng cha, vì cha đã
-          bao gồm phần đó. Tiêu đề Hoàn thuế và Thu hồi hoàn thuế không phát sinh tổng nên để trống.
-        </p>
       </Card>
     </>
   );
@@ -459,7 +456,7 @@ type WideReportExportRow = {
 };
 
 /**
- * Tải toàn bộ các trang cột rồi dựng CSV dạng ma trận giống bảng báo cáo.
+ * Tải toàn bộ các trang cột rồi dựng bảng Excel dạng ma trận giống bảng báo cáo.
  * Mỗi chỉ tiêu là một dòng; mỗi topic của cặp chiều là một cột. Không dùng dữ
  * liệu của trang đang nhìn vì trang mobile chỉ có ba cột và desktop chỉ tám.
  */
@@ -514,11 +511,12 @@ async function prepareWideReportExport(
     columns: [
       { header: "Mã chỉ tiêu", value: (item: WideReportExportRow) => item.row.id },
       { header: "Chỉ tiêu", value: (item: WideReportExportRow) => item.row.name },
-      { header: "Cấp", value: (item: WideReportExportRow) => item.row.depth },
+      { header: "Cấp", value: (item: WideReportExportRow) => item.row.depth, format: "count" as const },
       { header: "Loại dòng", value: (item: WideReportExportRow) => KIND_LABEL[item.row.kind] ?? item.row.kind },
-      { header: "Tổng (đồng)", value: (item: WideReportExportRow) => item.row.total },
+      { header: "Tổng (đồng)", value: (item: WideReportExportRow) => item.row.total, format: "money" as const },
       ...leafColumns.map((column) => ({
         header: `${column.header} (đồng)`,
+        format: "money" as const,
         value: (item: WideReportExportRow) => item.values.get(column.id) ?? null,
       })),
     ],

@@ -326,7 +326,7 @@ function BreakdownTable({ data }: { data: RevenueAnalysisData }) {
       subtitle={`${data.breakdown.length} khoản trong nhóm${data.scope === "domestic" ? " · đúng 21 khoản nội địa" : ""}`}
       unit={unit}
       actions={
-        <label className="dsearch">
+        <label className="dsearch dhead-search">
           <span className="sr-only">Tìm khoản thu</span>
           <input
             type="search"
@@ -410,10 +410,6 @@ function NetReconciliation({ data }: { data: RevenueAnalysisData }) {
           <strong>{inScale(net.net, unit)}</strong>
         </li>
       </ul>
-      <p className="dnote">
-        Các dòng hoàn đã mang dấu âm trong nguồn nên phép cộng ở đây là cộng đại số — không trừ
-        thêm một lần nữa.
-      </p>
     </Card>
   );
 }

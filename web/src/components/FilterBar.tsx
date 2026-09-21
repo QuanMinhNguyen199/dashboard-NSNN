@@ -72,9 +72,22 @@ export function FilterBar() {
       (key) => filters[key] === DEFAULT_FILTERS[key],
     );
 
+  /**
+   * `data-keep` = ô này Ở LẠI khi panel lọc thu gọn.
+   *
+   * Ô nào ở lại phụ thuộc vào TAB, vì mỗi tab có một chiều điều khiển chính
+   * khác nhau, và thanh lọc này đã đổi thành phần theo tab sẵn rồi: Mã hạch
+   * toán thay cặp địa bàn + cấp quản lý bằng ô cơ quan thuế. Danh sách cũ nằm
+   * trong CSS và kể tên từng lớp, nên ở tab đó **không ô nào** được miễn — thu
+   * gọn panel là mất luôn ô cơ quan thuế, đúng thứ cả tab xoay quanh.
+   *
+   * Đánh dấu ở đây chứ không kể tên lớp trong CSS: quyết định "ô nào quan trọng
+   * ở tab nào" nằm cùng chỗ với logic tab, và thêm một tab mới thì không phải
+   * nhớ sang sửa một danh sách ở tệp khác.
+   */
   /** Chọn địa bàn là lối điều hướng sang tab chi tiết; tab Mã hạch toán đi từ CQT xuống địa bàn phụ trách. */
   const locationField = (
-    <div className="dfilter-location">
+    <div className="dfilter-location" data-keep="">
       <AutocompleteSelect
         id="location-autocomplete"
         label="Chi tiết địa bàn"
@@ -104,7 +117,7 @@ export function FilterBar() {
    * Tổng quan trả lời, còn bỏ lọc cấp thì không tương ứng với tab nào cả.
    */
   const managementField = (
-    <label className="dfilter-management">
+    <label className="dfilter-management" data-keep="">
       <span>Cấp quản lý</span>
       <select
         value={managementLevel}
@@ -259,7 +272,7 @@ export function FilterBar() {
       </label>
 
       {tab === "tms-breakdown" && (
-        <div className="dfilter-tax-office">
+        <div className="dfilter-tax-office" data-keep="">
           <AutocompleteSelect
             id="tms-tax-office"
             label="Cơ quan thuế"

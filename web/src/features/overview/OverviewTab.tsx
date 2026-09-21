@@ -241,6 +241,11 @@ function OverviewBody({
                   title="Theo cấp ngân sách"
                   subtitle="Tỷ trọng trên tổng NSNN · chọn một phần để xem chi tiết"
                   unit={budgetDetailUnit}
+                  actions={data.unclassifiedBudget && data.unclassifiedBudget.amount !== 0 ? (
+                    <span className="dtag is-review">
+                      Chưa phân loại: <Money value={data.unclassifiedBudget.amount} />
+                    </span>
+                  ) : undefined}
                 >
                   <DonutChart
                     rows={data.budgetLevels}
@@ -248,12 +253,6 @@ function OverviewBody({
                     selectedId={selectedBudgetLevel}
                     onSelect={(id) => setSelectedBudgetLevel(id as "NSTW" | "NSDP")}
                   />
-                  {data.unclassifiedBudget && data.unclassifiedBudget.amount !== 0 && (
-                    <p className="dhint">
-                      Chênh chưa giải thích: <strong><Money value={data.unclassifiedBudget.amount} /></strong>. Phần này
-                      vẫn nằm trong tổng NSNN và không được phân bổ lại vào NSTW hoặc NSĐP.
-                    </p>
-                  )}
                   <section
                     className="dbudget-local"
                     aria-live="polite"

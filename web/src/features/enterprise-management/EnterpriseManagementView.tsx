@@ -121,6 +121,7 @@ function EnterpriseBody({
           actions={
             <ReportExportButton
               request={{
+                title: `Số thu theo ${dimensionName.toLowerCase()}`,
                 fileName: `thu-theo-${data.groupBy}`,
                 rows: () => data.groups,
                 meta: {
@@ -131,10 +132,10 @@ function EnterpriseBody({
                 },
                 columns: [
                   { header: dimensionName, value: (r: EnterpriseGroupRow) => r.name },
-                  { header: "Số thu (đồng)", value: (r: EnterpriseGroupRow) => r.amount },
-                  { header: "Tỷ trọng (%)", value: (r: EnterpriseGroupRow) => r.share },
-                  { header: "Cùng kỳ (đồng)", value: (r: EnterpriseGroupRow) => r.previous },
-                  { header: "Số doanh nghiệp", value: (r: EnterpriseGroupRow) => r.enterpriseCount },
+                  { header: "Số thu (đồng)", value: (r: EnterpriseGroupRow) => r.amount, format: "money" },
+                  { header: "Tỷ trọng (%)", value: (r: EnterpriseGroupRow) => r.share, format: "percent" },
+                  { header: "Cùng kỳ (đồng)", value: (r: EnterpriseGroupRow) => r.previous, format: "money" },
+                  { header: "Số doanh nghiệp", value: (r: EnterpriseGroupRow) => r.enterpriseCount, format: "count" },
                 ],
               }}
             />
@@ -164,7 +165,7 @@ function EnterpriseBody({
             title={`Doanh nghiệp thuộc ${activeGroup.name}`}
             unit={unit}
             actions={
-              <label className="dsearch dreport-search">
+              <label className="dsearch dhead-search">
                 <span className="sr-only">Tìm doanh nghiệp</span>
                 <input
                   type="search"

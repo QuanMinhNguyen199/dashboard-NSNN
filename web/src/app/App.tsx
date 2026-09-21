@@ -171,6 +171,38 @@ export function App() {
               <p>Kho bạc Nhà nước khu vực I · Thành phố Hà Nội</p>
             </div>
           </div>
+          {/* Hai lối vào chế độ xem thử khổ nhúng. Chúng đổi `location.search`
+              chứ không đổi state: `FramePreview` dựng một cây React riêng, không
+              nằm trong `DashboardProvider`, nên phải tải lại trang mới vào được. */}
+          <div className="dheader-tools">
+            <button
+              type="button"
+              className="dheader-frame"
+              onClick={() => {
+                const query = new URLSearchParams(window.location.search);
+                query.set("frame", "500");
+                window.location.search = query.toString();
+              }}
+              title="Mở dashboard trong một iframe thật để xem bố cục ở khổ hẹp"
+            >
+              Xem thử iframe
+            </button>
+            <button
+              type="button"
+              className="dheader-frame"
+              onClick={() => {
+                const query = new URLSearchParams(window.location.search);
+                query.set("frame", "390");
+                query.set("host", "mobile");
+                query.set("platform", "ios");
+                query.set("device", "iphone-14");
+                window.location.search = query.toString();
+              }}
+              title="Mở bản báo cáo dành cho Mobile WebView"
+            >
+              Xem thử mobile
+            </button>
+          </div>
         </header>
       )}
 

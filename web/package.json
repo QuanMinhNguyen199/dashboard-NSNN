@@ -20,7 +20,8 @@
     "d3-transition": "^3.0.1",
     "d3-zoom": "^3.0.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@types/d3-geo": "^3.1.0",
