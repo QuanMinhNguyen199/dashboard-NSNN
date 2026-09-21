@@ -3,8 +3,7 @@ import { useTmsBreakdown } from "@/data/hooks";
 import type { ManagementLevelFilter } from "@/domain/tms";
 import type { TmsBreakdownData, TmsRow } from "@/domain/types";
 import { useDashboardState } from "@/state/DashboardState";
-import { LOCATION_BY_ID } from "@/domain/catalog";
-import { levelLabel } from "@/domain/tms";
+import { levelLabel, TAX_OFFICE_NAME } from "@/domain/tms";
 import { Kpi, KpiStrip } from "@/components/Kpi";
 import { Bars, Card, Change, LiveNotice, Money, moneyScale, pct, ResourceView } from "@/components/primitives";
 import { DonutChart } from "@/components/charts";
@@ -12,7 +11,7 @@ import { useNarrow } from "@/components/useNarrow";
 import { usePinned } from "@/components/usePinned";
 import { LevelFilter } from "./LevelFilter";
 import { CodeTable, SectionTable, UNKNOWN_SECTION } from "./TmsTables";
-import { CorrespondencePanel, QualityPanel, TaxOfficePanel } from "./TmsPanels";
+import { CorrespondencePanel, QualityPanel, TaxOfficeAssignedAreas } from "./TmsPanels";
 
 /**
  * Tab Mã hạch toán: Cấp quản lý → Mục → Tiểu mục.
@@ -27,14 +26,16 @@ import { CorrespondencePanel, QualityPanel, TaxOfficePanel } from "./TmsPanels";
  * `origin: "api"` — giao diện không phải sửa dòng nào.
  */
 export function TmsBreakdownTab() {
-  const { filters, location, managementLevel, setManagementLevel } = useDashboardState();
-  const [taxOfficeCode, setTaxOfficeCode] = useState<string | null>(null);
-  // Địa bàn là chiều độc lập với cấp quản lý, nhưng vẫn là một bộ lọc thật: bỏ
-  // qua nó thì thanh lọc nói một phường còn bảng trả số toàn thành phố.
+  const { filters, location, managementLevel, taxOfficeCode, setManagementLevel, setLocationScope } = useDashboardState();
+  // Màn này đi từ CQT xuống các địa bàn được phân công. Xoá phạm vi địa bàn cũ
+  // khi đi từ tab khác sang để URL và thanh lọc không mô tả một chiều bị bỏ qua.
+  useEffect(() => {
+    if (location !== null) setLocationScope(null);
+  }, [location, setLocationScope]);
   const { resource, retry, pending } = useTmsBreakdown(
     filters,
     managementLevel,
-    location,
+    null,
     taxOfficeCode,
   );
 
@@ -47,33 +48,24 @@ export function TmsBreakdownTab() {
    * sự thật là bộ lọc, không phải phản hồi mạng. Suy từ bộ lọc thì tiêu đề
    * không bao giờ nói sai, và không có lý do gì phải đợi.
    */
-  const scopeName = location ? (LOCATION_BY_ID[location]?.name ?? location) : "Toàn thành phố";
+  const scopeName = taxOfficeCode ? (TAX_OFFICE_NAME[taxOfficeCode] ?? taxOfficeCode) : "Toàn thành phố";
   const levelName = levelLabel(managementLevel);
-  /**
-   * Số của lần tải gần nhất, để thẻ Cơ quan thuế giữ được thứ tự trong lúc chờ.
-   * `keepPreviousData` giữ trạng thái ở `ready`, nên đây là số của phạm vi trước.
-   */
+  /** Giữ số trước đó trong lúc tải lại để phạm vi địa bàn không giật. */
   const lastData =
     resource.status === "ready" || resource.status === "partial" ? resource.data : null;
 
   return (
     <div className="dstack">
       <LevelFilter value={managementLevel} onChange={setManagementLevel} />
+      <TaxOfficeAssignedAreas
+        data={lastData}
+        selectedCode={taxOfficeCode}
+      />
 
       <h2 className="dsubject">
         {scopeName}
         <small>{levelName} · tổng thu nội địa A theo TMS</small>
       </h2>
-
-      {/* Hai bộ lọc và tiêu đề đứng ngoài `ResourceView`: đổi cấp hay đổi cơ
-          quan thuế thì chỉ phần số bên dưới tải lại, chỗ đứng để bấm tiếp vẫn
-          còn nguyên. */}
-      <TaxOfficePanel
-        data={lastData}
-        pending={pending}
-        selectedCode={taxOfficeCode}
-        onSelect={setTaxOfficeCode}
-      />
 
       <ResourceView resource={resource} retry={retry} minHeight={320} pending={pending}>
         {(data) => <TmsBody data={data} level={managementLevel} />}
@@ -163,7 +155,7 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
 
   return (
     <>
-      <KpiStrip label={`Mã hạch toán · ${data.levelTotal.name} · ${data.scopeName}`}>
+      <KpiStrip columns={3} label={`Mã hạch toán · ${data.levelTotal.name} · ${data.scopeName}`}>
         {/* Tổng của cấp đang lọc: cộng đúng các cặp (Chương, Tiểu mục) có Chương
             thuộc cấp đó. Là một phần của cùng một tổng nên chọn cấp nào thì số
             này nhỏ hơn dòng phạm vi, và bốn cấp cộng lại bằng đúng dòng đó. */}
@@ -190,15 +182,12 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
         >
           {data.levelTotal.share === null ? null : pct(data.levelTotal.share)}
         </Kpi>
-        {/* Hai ô đếm này theo CẤP, không theo địa bàn — điều kiện báo cáo không
+        {/* Số mã theo CẤP, không theo địa bàn — điều kiện báo cáo không
             đổi khi đổi phường. Đứng ngay dưới tên một phường mà không nói rõ thì
             người đọc tưởng chúng cũng đã được lọc, rồi thấy số không nhúc nhích
             và nghĩ màn hình bị hỏng. */}
-        <Kpi label="Mục trong điều kiện" note="Trên 37 Mục; theo cấp quản lý, không đổi theo địa bàn">
-          {data.sections.filter((row) => row.id !== UNKNOWN_SECTION).length}
-        </Kpi>
-        <Kpi label="Tiểu mục trong điều kiện" note="Theo cấp quản lý, không đổi theo địa bàn">
-          {subItemCount}
+        <Kpi label="Mã trong điều kiện" note="Theo cấp quản lý, không đổi theo địa bàn">
+          {data.sections.filter((row) => row.id !== UNKNOWN_SECTION).length} Mục · {subItemCount} Tiểu mục
         </Kpi>
       </KpiStrip>
 

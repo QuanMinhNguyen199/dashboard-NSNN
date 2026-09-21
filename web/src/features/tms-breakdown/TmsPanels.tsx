@@ -1,186 +1,76 @@
 import type { TmsBreakdownData } from "@/domain/types";
-import { useMemo, useState } from "react";
-import { TAX_OFFICES } from "@/domain/tms";
-import { Card, Money, columnLabel, moneyScale } from "@/components/primitives";
+import { useMemo } from "react";
+import { taxOfficeLocationIds } from "@/domain/tms";
+import { LOCATION_BY_ID } from "@/domain/catalog";
+import { Card, columnLabel, inScale, moneyScale } from "@/components/primitives";
 import { Amount } from "./TmsTables";
 import { toDisplayNumber } from "@/domain/money";
 
-interface TaxOfficePanelProps {
-  /** Số của lần tải gần nhất; `null` khi chưa có lần nào xong. */
+/** Các địa bàn do CQT đang chọn quản lý; bộ lọc CQT nằm trên thanh lọc chính. */
+export function TaxOfficeAssignedAreas({
+  data,
+  selectedCode,
+}: {
   data: TmsBreakdownData | null;
-  /** Đang chờ số cho phạm vi vừa chọn. */
-  pending?: boolean;
   selectedCode: string | null;
-  onSelect: (code: string | null) => void;
-}
+}) {
+  const selectedScope = data?.taxOfficeScopes?.offices.find((office) => office.code === selectedCode);
+  const selectedLocations = useMemo(() => {
+    if (!selectedCode) return [];
+    const amounts = new Map((selectedScope?.locations ?? []).map((row) => [row.id, row.amount]));
+    return taxOfficeLocationIds(selectedCode).map((id) => ({
+      id,
+      name: LOCATION_BY_ID[id]?.name ?? id,
+      amount: amounts.get(id) ?? null,
+    })).sort((a, b) =>
+      (toDisplayNumber(b.amount) ?? -Infinity) - (toDisplayNumber(a.amount) ?? -Infinity)
+      || a.name.localeCompare(b.name, "vi"),
+    );
+  }, [selectedCode, selectedScope]);
+  const locationScale = useMemo(() => {
+    const scale = moneyScale(selectedLocations.map((row) => toDisplayNumber(row.amount)));
+    // Một chữ số thập phân cho cả cột giúp phân biệt dấu nghìn với dấu thập phân.
+    return { ...scale, decimals: scale.divisor === 1 ? 0 : 1 };
+  }, [selectedLocations]);
+  const locationAmount = (value: number | null) =>
+    value === 0
+      ? (0).toLocaleString("vi-VN", { minimumFractionDigits: locationScale.decimals })
+      : inScale(value, locationScale);
 
-/**
- * Bộ lọc CQT cục bộ: ưu tiên Top 5, danh sách đầy đủ chỉ mở khi cần.
- *
- * Thẻ này nằm NGOÀI vùng tải lại, và đó là điểm chính. Trước đây nó nằm trong,
- * nên bấm chọn một cơ quan thuế thì chính ô chọn vừa bấm biến mất vào khung
- * chờ — người dùng mất luôn chỗ đứng để bấm tiếp. Danh mục 32 cơ quan là dữ
- * liệu tĩnh, không phụ thuộc kỳ hay cấp, nên ô chọn không có lý do gì phải đợi
- * mạng. Chỉ phần SỐ mới đợi.
- */
-export function TaxOfficePanel({ data, pending = false, selectedCode, onSelect }: TaxOfficePanelProps) {
-  const [showAll, setShowAll] = useState(false);
-  const [query, setQuery] = useState("");
-  const scopes = data?.taxOfficeScopes ?? null;
-  /**
-   * Danh sách để CHỌN luôn lấy từ danh mục tĩnh, không lấy từ payload.
-   *
-   * Số tiền thì lấy từ payload khi có. Đang chờ thì bỏ trống số chứ không giữ
-   * số cũ: đổi cấp quản lý xong mà vẫn hiện đóng góp của cấp trước là màn hình
-   * tự nói sai, và làm mờ nó đi cũng không làm nó đúng lên.
-   */
-  const lastAmounts = useMemo(() => {
-    const map = new Map<string, number | null>();
-    if (!data) return map;
-    if (scopes) for (const o of scopes.offices) map.set(o.code, toDisplayNumber(o.amount));
-    else for (const o of data.taxOffices) map.set(o.id, o.amount);
-    return map;
-  }, [data, scopes]);
-  /**
-   * THỨ TỰ giữ theo lần tải trước kể cả khi đang chờ; chỉ SỐ mới bị giấu.
-   *
-   * Giấu cả thứ tự thì hàng Top 5 xáo tung mỗi lần bấm, và người dùng mất dấu
-   * cái thẻ mình vừa định bấm. Thứ tự cũ không phải một khẳng định về số liệu
-   * mới, nên giữ nó không nói sai điều gì.
-   */
-  const amountOf = pending ? new Map<string, number | null>() : lastAmounts;
-  const offices = useMemo(
-    () =>
-      TAX_OFFICES.map((office) => ({
-        code: office.code,
-        name: office.name,
-        amount: amountOf.get(office.code) ?? null,
-        rank: lastAmounts.get(office.code) ?? null,
-      })),
-    [amountOf, lastAmounts],
-  );
-  // Xếp theo số của lần tải gần nhất, không theo `amount` (đang bị giấu khi chờ).
-  const sorted = useMemo(
-    () => [...offices].sort((a, b) => (b.rank ?? 0) - (a.rank ?? 0)),
-    [offices],
-  );
-  const selected = offices.find((office) => office.code === selectedCode) ?? null;
-  const top = useMemo(() => {
-    const rows = sorted.slice(0, 5);
-    if (selected && !rows.some((office) => office.code === selected.code)) rows.push(selected);
-    return rows;
-  }, [selected, sorted]);
-  const matched = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return needle
-      ? sorted.filter(
-          (office) => office.code.includes(needle) || office.name.toLowerCase().includes(needle),
-        )
-      : sorted;
-  }, [query, sorted]);
-  const scale = useMemo(() => moneyScale(offices.map((office) => office.amount)), [offices]);
-
+  if (!selectedCode) return null;
   return (
-    <Card
-      title="Cơ quan thuế"
-      subtitle="Bộ lọc cục bộ, độc lập với cấp quản lý của Chương"
-    >
-      <div className="dtax-picker">
-        <label>
-          <span>Cơ quan đang xem</span>
-          <select
-            value={selectedCode ?? ""}
-            onChange={(event) => onSelect(event.target.value || null)}
-          >
-            <option value="">Tất cả cơ quan thuế</option>
-            {sorted.map((office) => (
-              <option key={office.code} value={office.code}>
-                {office.code} · {office.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          type="button"
-          className="dbtn"
-          disabled={!selectedCode}
-          onClick={() => onSelect(null)}
-        >
-          Bỏ chọn
-        </button>
-      </div>
-
-      <div className="dtax-top" aria-label="Cơ quan thuế có số thu lớn nhất" aria-busy={pending}>
-        {top.map((office) => {
-          const active = selectedCode === office.code;
-          return (
-            <button
-              key={office.code}
-              type="button"
-              className={active ? "is-active" : undefined}
-              aria-pressed={active}
-              onClick={() => onSelect(active ? null : office.code)}
-            >
-              <span><b>{office.code}</b>{office.name}</span>
-              <strong>
-                    {/* Đang chờ số của phạm vi mới: vạch chờ, KHÔNG phải dấu "—".
-                        Gạch ngang là ký hiệu thay chỗ và bị đọc thành "không có
-                        số", trong khi thực tế là "đang tính". */}
-                    {pending ? <i className="dshimmer" style={{ width: 54 }} /> : <Money value={office.amount} scale={scale} />}
-                  </strong>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="dtax-more">
-        <p className="dhint">
-          {selected
-            ? `Đang lọc toàn bộ KPI, Mục/Tiểu mục và Chương theo ${selected.code} · ${selected.name}.`
-            : `Top 5 trên ${offices.length} cơ quan.`}
-        </p>
-        <button type="button" className="dlink" onClick={() => setShowAll((value) => !value)}>
-          {showAll ? "Thu gọn" : `Xem tất cả ${offices.length} cơ quan`}
-        </button>
-      </div>
-
-      {showAll && (
-        <div className="dtax-all">
-          <span className="dsearch">
-            <input
-              type="search"
-              placeholder="Tìm mã hoặc tên cơ quan"
-              aria-label="Tìm cơ quan thuế"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
+    <section className="dtax-scope is-compact" aria-labelledby="tax-office-location-title">
+      <div className="dtax-scope-head">
+        <div className="dtax-scope-titleline">
+          <h3 id="tax-office-location-title">Địa bàn phụ trách</h3>
+          <span className={data?.taxOfficeScopes?.origin === "mock" ? "dtag is-review" : "dtag"}>
+            {data?.taxOfficeScopes?.origin === "mock" ? "Số thu mô phỏng" : `Kỳ ${data?.taxOfficeScopes?.period ?? ""}`}
           </span>
-          <ul>
-            {matched.map((office) => (
-              <li key={office.code}>
-                <button
-                  type="button"
-                  className={selectedCode === office.code ? "is-active" : undefined}
-                  onClick={() => onSelect(selectedCode === office.code ? null : office.code)}
-                >
-                  <span><b>{office.code}</b>{office.name}</span>
-                  <strong>
-                    {/* Đang chờ số của phạm vi mới: vạch chờ, KHÔNG phải dấu "—".
-                        Gạch ngang là ký hiệu thay chỗ và bị đọc thành "không có
-                        số", trong khi thực tế là "đang tính". */}
-                    {pending ? <i className="dshimmer" style={{ width: 54 }} /> : <Money value={office.amount} scale={scale} />}
-                  </strong>
-                </button>
-              </li>
-            ))}
-          </ul>
-          {matched.length === 0 && <p className="dempty">Không có cơ quan thuế nào khớp từ khoá.</p>}
         </div>
+        <p>{selectedLocations.length.toLocaleString("vi-VN")} phường/xã · Sắp theo số thu giảm dần</p>
+      </div>
+      {selectedLocations.length > 0 ? (
+        <table className="dtax-locations">
+          <caption className="sr-only">Địa bàn phụ trách, sắp theo số thu giảm dần</caption>
+          <thead>
+            <tr><th scope="col">STT</th><th scope="col">Địa bàn</th><th scope="col">{columnLabel("Số thu", locationScale)}</th></tr>
+          </thead>
+          <tbody>
+            {selectedLocations.map((row, index) => (
+              <tr key={row.id}>
+                <td className="dtax-rank">{String(index + 1).padStart(2, "0")}</td>
+                <td className="dtax-name">{row.name}</td>
+                <td className="dtax-amount">{locationAmount(toDisplayNumber(row.amount))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="dempty">Mã này không thuộc danh sách 25 Thuế cơ sở phân công theo địa bàn.</p>
       )}
-    </Card>
+    </section>
   );
 }
-
 const sumOrNull = (values: (number | null)[]) =>
   values.some((value) => value !== null) ? values.reduce((sum: number, v) => sum + (v ?? 0), 0) : null;
 

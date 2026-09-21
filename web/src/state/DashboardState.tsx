@@ -20,13 +20,14 @@ import {
   type SourceCode,
 } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
-import type { ManagementLevelFilter } from "@/domain/tms";
+import { TAX_OFFICES, type ManagementLevelFilter } from "@/domain/tms";
 import { groupFromUrl, groupUrlId, sourceFromUrl, sourceUrlId } from "@/domain/urlIds";
 import type {
   AdvancedComparisonMode,
   DashboardFilters,
   DashboardNavigationAction,
   TabId,
+  ReportMode,
 } from "@/domain/types";
 
 /**
@@ -45,6 +46,26 @@ const TABS: TabId[] = [
   "tms-breakdown",
   "advanced-compare",
 ];
+const REPORT_MODES: ReportMode[] = ["nsnn", "budget", "taxpayer", "inspection"];
+
+/**
+ * Ba URL tạm của lượt trước chuyển thẳng sang chế độ báo cáo tương ứng.
+ *
+ * Lượt trước ba mảng này là tab cấp cao và đã sinh ra link thật. Bỏ chúng khỏi
+ * `TABS` mà không xử lý gì thì `one("tab", TABS, "overview")` âm thầm đưa về
+ * Tổng quan — người bấm link cũ không thấy màn hình trắng, nhưng thấy một màn
+ * hình KHÁC mà không hiểu vì sao, và đó còn khó chịu hơn.
+ *
+ * Bảng này đọc ở `readUrl` nên redirect xảy ra ngay lúc dựng state, trước khi
+ * render. `writeUrl` sau đó ghi lại đường dẫn chuẩn, nên Back và Forward đi qua
+ * đúng một mục lịch sử cho mỗi lần điều hướng.
+ */
+const LEGACY_TAB_TO_REPORT: Record<string, ReportMode> = {
+  "budget-forecast": "budget",
+  enterprise: "taxpayer",
+  inspection: "inspection",
+};
+
 const MANAGEMENT_LEVELS_URL = ["all", "trung-uong", "dia-phuong", "tinh", "huyen", "xa", "unknown"] as const;
 
 const MODES: AdvancedComparisonMode[] = ["period", "revenue", "location"];
@@ -53,6 +74,7 @@ export type AnalysisView = (typeof VIEWS)[number];
 
 export interface DashboardUrlState {
   tab: TabId;
+  reportMode: ReportMode;
   filters: DashboardFilters;
   /** Tab Phân tích thu */
   section: SourceCode;
@@ -62,6 +84,8 @@ export interface DashboardUrlState {
   location: string | null;
   /** Tab Mã hạch toán — bộ lọc cấp quản lý của Chương, không phải bậc danh mục. */
   managementLevel: ManagementLevelFilter;
+  /** Tab Mã hạch toán — mã cơ quan thuế đang lọc. */
+  taxOfficeCode: string | null;
   /** Drawer xem nhanh nguồn thu */
   panelSource: SourceCode | null;
   /** Tab So sánh nâng cao */
@@ -126,14 +150,24 @@ function readUrl(search: string): DashboardUrlState {
     return raw && raw in LOCATION_BY_ID ? raw : null;
   };
 
+  // URL tạm của lượt trước: đổi thành tab `report` kèm đúng chế độ.
+  const rawTab = q.get("tab") ?? "";
+  const legacyMode = LEGACY_TAB_TO_REPORT[rawTab];
+
   return {
-    tab: one("tab", TABS, "overview"),
+    tab: legacyMode ? "report" : one("tab", TABS, "overview"),
+    // Giá trị ngoài danh sách đóng luôn về mặc định, không giữ nguyên chuỗi lạ.
+    reportMode: legacyMode ?? one("report", REPORT_MODES, "nsnn"),
     filters,
     section: sourceFromUrl(q.get("section"), "domestic"),
     view: one("view", VIEWS, "overview"),
     group: groupFromUrl(q.get("group"), "sxkd"),
     location: locationOf("location"),
     managementLevel: one("mgmt", MANAGEMENT_LEVELS_URL, "all"),
+    taxOfficeCode: (() => {
+      const code = q.get("cqt");
+      return code && TAX_OFFICES.some((office) => office.code === code) ? code : null;
+    })(),
     panelSource: q.get("panel") === "revenue-preview" ? sourceFromUrl(q.get("source"), "domestic") : null,
     mode: one("mode", MODES, "period"),
     periodA: q.get("periodA") ?? "2025m8",
@@ -164,6 +198,10 @@ function writeUrl(state: DashboardUrlState): string {
   q.set("level", state.filters.budgetLevel);
   q.set("indicator", state.filters.indicator);
 
+  // Chỉ ghi `report` khi đang ở tab Báo cáo: để nó bám theo mọi tab thì URL của
+  // năm tab kia mang một tham số không ảnh hưởng gì tới nội dung chúng hiển thị.
+  if (state.tab === "report") q.set("report", state.reportMode);
+
   if (state.tab === "revenue-analysis") {
     q.set("section", sourceUrlId(state.section));
     q.set("view", state.view);
@@ -178,7 +216,10 @@ function writeUrl(state: DashboardUrlState): string {
    */
   if (state.location && (state.tab === "location-detail" || state.tab === "tms-breakdown"))
     q.set("location", state.location);
-  if (state.tab === "tms-breakdown") q.set("mgmt", state.managementLevel);
+  if (state.tab === "tms-breakdown") {
+    q.set("mgmt", state.managementLevel);
+    if (state.taxOfficeCode) q.set("cqt", state.taxOfficeCode);
+  }
   if (state.tab === "advanced-compare") {
     q.set("mode", state.mode);
     if (state.mode === "period") {
@@ -204,12 +245,15 @@ interface DashboardContextValue extends DashboardUrlState {
   resetFilters: () => void;
   setTab: (tab: TabId) => void;
   setSection: (section: SourceCode) => void;
+  /** Đổi loại báo cáo bên trong tab Báo cáo. */
+  setReportMode: (mode: ReportMode) => void;
   setView: (view: AnalysisView) => void;
   setGroup: (group: DomesticGroupId) => void;
   selectLocation: (id: string | null) => void;
   /** Đổi phạm vi địa bàn mà KHÔNG đổi tab; dùng ở tab tự đọc được địa bàn. */
   setLocationScope: (id: string | null) => void;
   setManagementLevel: (level: ManagementLevelFilter) => void;
+  setTaxOfficeCode: (code: string | null) => void;
   openPreview: (source: SourceCode) => void;
   closePreview: () => void;
   setMode: (mode: AdvancedComparisonMode) => void;
@@ -272,6 +316,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           filters: { ...DEFAULT_FILTERS },
           location: null,
           managementLevel: "all",
+          taxOfficeCode: null,
           tab: current.tab === "location-detail" ? "overview" : current.tab,
           panelSource: null,
         })),
@@ -286,9 +331,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           panelSource: null,
         })),
       setSection: (section) => patch({ section }),
+      setReportMode: (reportMode) => patch({ reportMode }),
       setView: (view) => patch({ view }),
       setGroup: (group) => patch({ group }),
       setManagementLevel: (managementLevel) => patch({ managementLevel }),
+      setTaxOfficeCode: (taxOfficeCode) => patch({ taxOfficeCode }),
       selectLocation: (location) =>
         setState((current) => ({ ...current, location, tab: location ? "location-detail" : current.tab })),
       setLocationScope: (location) => patch({ location }),

@@ -39,9 +39,9 @@ const problems = [];
 
 /** Nhãn tab lấy thẳng từ nguồn, không chép tay sang đây. */
 const tabs = [...read("web/src/app/tabs.ts").matchAll(/label:\s*"([^"]+)"/g)].map((m) => m[1]);
-/** Nhãn ô lọc: các `<span>` con trực tiếp của label trong thanh lọc. */
+/** Nhãn ô lọc: cả ô chọn thường và ô tìm kiếm gợi ý trong thanh lọc. */
 const filterBar = read("web/src/components/FilterBar.tsx");
-const filters = [...filterBar.matchAll(/<span>([^<{]+)<\/span>/g)]
+const filters = [...filterBar.matchAll(/<span>([^<{]+)<\/span>/g), ...filterBar.matchAll(/<AutocompleteSelect\b[^>]*\blabel="([^"]+)"/gs)]
   .map((m) => m[1].trim())
   .filter((x) => !["Kỳ báo cáo", "Phạm vi"].includes(x));
 
@@ -68,9 +68,34 @@ if (ba === null) {
 for (const tab of tabs)
   if (!ba.includes(tab)) problems.push(`Tab "${tab}" có trong giao diện nhưng không có trong ${BA}`);
 
-// Tab đã bỏ mà tài liệu còn nhắc như đang có.
-for (const stale of ["Chi tiết thu |"])
-  if (ba.includes(stale)) problems.push(`${BA} còn mô tả tab "${stale.replace(" |", "")}" đã không còn trong giao diện`);
+/**
+ * Chiều NGƯỢC LẠI: tài liệu mô tả một tab mà giao diện không còn có.
+ *
+ * Bản cũ chỉ soi một chiều — mỗi tab đang có phải được nhắc trong tài liệu — cộng
+ * một danh sách chuỗi cũ viết tay ("Chi tiết thu |"). Nên khi tab Đối soát Kho
+ * bạc bị gỡ khỏi giao diện, tài liệu vẫn liệt kê nó kèm trạng thái "Đã dựng" và
+ * phép kiểm **vẫn báo xanh**: không tab hiện có nào thiếu, còn cái thừa thì
+ * không ai hỏi tới. Một danh sách viết tay chỉ bắt được đúng lần đã xảy ra.
+ *
+ * Đọc thẳng cột đầu của bảng tab trong tài liệu và so hai chiều. Bảng nhận ra
+ * bằng hàng tiêu đề bắt đầu bằng "| Tab |".
+ */
+const LINE_BREAK = String.fromCharCode(10);
+const tabTable = ba.match(
+  new RegExp(`^\\| Tab \\|.*${LINE_BREAK}\\|[-| ]+\\|${LINE_BREAK}((?:\\|.*${LINE_BREAK})+)`, "m"),
+);
+if (!tabTable) {
+  problems.push(`${BA} không còn bảng tab (hàng tiêu đề "| Tab |"), nên không đối chiếu được.`);
+} else {
+  const documented = tabTable[1]
+    .trim()
+    .split(LINE_BREAK)
+    .map((row) => row.split("|")[1]?.trim())
+    .filter(Boolean);
+  for (const named of documented)
+    if (!tabs.includes(named))
+      problems.push(`${BA} còn mô tả tab "${named}", nhưng giao diện không còn tab đó`);
+}
 
 for (const field of filters)
   if (!ba.includes(field)) problems.push(`Ô lọc "${field}" có trong giao diện nhưng không được nhắc trong ${BA}`);

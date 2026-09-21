@@ -259,26 +259,64 @@ const run = async () => {
     withFastMock(BASE + "/?tab=tms-breakdown&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
   );
+  await page.select(".dfilter-budget select", "NSDP");
+  await wait(700);
+  const budgetLevelLinked = await page.$eval(
+    '.dtms-levelbar [aria-label="Cấp quản lý của Chương"] button[aria-pressed="true"]',
+    (el) => el.textContent.trim() === "Địa phương",
+  );
   const firstKpi = () =>
     page.$eval(".dkpis > div:first-child > strong", (el) => el.textContent.trim());
   const beforeOffice = await firstKpi();
-  await page.click(".dtax-top button");
+  await page.click("#tms-tax-office");
+  await page.type("#tms-tax-office", "0106");
+  await page.click('.dfilter-tax-office .dautocomplete-list [data-value="0106"]');
   await wait(900);
   const afterOffice = await firstKpi();
-  const officeSelected = await page.$eval(".dtax-picker select", (el) => el.value !== "");
-  await page.click(".dtax-picker .dbtn");
+  const officeUrl = await query(page, "cqt");
+  const officeSelected = await page.$eval(
+    "#tms-tax-office",
+    (el) => el.value.includes("Thuế cơ sở 1"),
+  );
+  const officeScope = await page.evaluate(() => ({
+    oneOfficeControl: document.querySelectorAll("#tms-tax-office").length === 1 && !document.querySelector("#tms-tax-office-local"),
+    hasAssignedLocations: document.querySelectorAll(".dtax-scope .dtax-locations tbody tr").length > 0,
+    explainsAssignment: /Địa bàn phụ trách/i.test(
+      document.querySelector(".dtax-scope")?.textContent ?? "",
+    ),
+    locationFilterHidden: !document.querySelector(".dfilter-location"),
+  }));
+  await page.click("#tms-tax-office");
+  await page.click('.dfilter-tax-office .dautocomplete-list [data-value=""]');
   await wait(900);
+  const clearedOfficeUrl = await query(page, "cqt");
   const resetOffice = await firstKpi();
   check(
     8,
     "Đủ 21 khoản và bộ lọc CQT cập nhật rồi khôi phục tổng Mã hạch toán",
     {
       domesticRows,
+      budgetLevelLinked,
       officeSelected,
+      officeUrl,
+      clearedOfficeUrl,
+      ...officeScope,
       changed: beforeOffice !== afterOffice,
       restored: beforeOffice === resetOffice,
     },
-    { domesticRows: 21, officeSelected: true, changed: true, restored: true },
+    {
+      domesticRows: 21,
+      budgetLevelLinked: true,
+      officeSelected: true,
+      officeUrl: "0106",
+      clearedOfficeUrl: null,
+      oneOfficeControl: true,
+      hasAssignedLocations: true,
+      explainsAssignment: true,
+      locationFilterHidden: true,
+      changed: true,
+      restored: true,
+    },
   );
 
   // 9 — Null, zero và số âm

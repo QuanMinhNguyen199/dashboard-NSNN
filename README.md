@@ -85,6 +85,17 @@ Tài liệu NSNN, prototype, mobile/host và khảo sát cũ được giữ tạ
 | [`dac-ta-v2.html`](dac-ta-v2.html) | Đặc tả nghiệp vụ v2. |
 | [`update_dac-ta-89_tham-khaor.html`](update_dac-ta-89_tham-khaor.html) | Phản hồi bên thuế và đặc tả trước v2. |
 
+## Workspace
+
+Sáu workspace, chung một bộ lọc và một nguồn state. Ba mảng mở theo biên bản
+làm việc 18/09/2026 — dự toán và dự báo, quản lý thu, kết quả kiểm tra — là
+**chế độ bên trong tab Báo cáo**, không phải tab cấp cao. Dự toán và Quản lý thu
+đã nhận phần dữ liệu tổng hợp an toàn từ bộ bàn giao 18-09; phần chưa có giao
+dịch/API vẫn chạy bằng số mô phỏng và được ghi rõ trên giao diện.
+
+Chi tiết từng workspace, ba bảo đảm của lớp mock và cách xuất CSV nằm ở
+[`web/README.md`](web/README.md).
+
 ## Kiến trúc
 
 - **Một kho quan sát gốc.** KPI, xu hướng, cơ cấu, xếp hạng, bảng và waterfall đều tổng hợp

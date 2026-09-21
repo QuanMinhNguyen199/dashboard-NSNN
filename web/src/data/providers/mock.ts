@@ -17,6 +17,17 @@ import {
 import { buildTmsBreakdown } from "../mock/tms";
 import { buildReportGrid } from "../mock/report";
 import {
+  buildBudgetForecast,
+  buildEnterpriseManagement,
+  buildInspection,
+  buildReportSummary,
+} from "../mock/workspaces";
+import type {
+  BudgetViewBy,
+  EnterpriseGroupBy,
+  InspectionCycle,
+} from "@/domain/workspaces";
+import {
   NoDataError,
   PayloadError,
   validateAdvancedComparison,
@@ -25,6 +36,10 @@ import {
   validateRevenueAnalysis,
   validateTmsBreakdown,
   validateReportGrid,
+  validateBudgetForecast,
+  validateEnterpriseManagement,
+  validateInspection,
+  validateReportSummary,
 } from "../validate";
 
 function envelope<T>(
@@ -164,6 +179,41 @@ export class MockDashboardProvider implements DashboardDataProvider {
       tab: "report",
       section: `${options.groupBy}/${options.subGroupBy ?? "-"}`,
     });
+  }
+
+  async getReportSummary(filters: DashboardFilters, dimension: ReportDimension, signal: AbortSignal) {
+    await delay(latencyFor("report"), signal);
+    const data = buildReportSummary(filters, dimension);
+    if (!data) throw new NoDataError("Kỳ đang chọn chưa có số để tóm tắt theo chiều này.");
+    return envelope(validateReportSummary(data), filters, { tab: "report", section: dimension });
+  }
+
+  async getBudgetForecast(filters: DashboardFilters, viewBy: BudgetViewBy, signal: AbortSignal) {
+    await delay(latencyFor("report"), signal);
+    const data = buildBudgetForecast(filters, viewBy);
+    if (!data) throw new NoDataError("Kỳ đang chọn chưa có số thực hiện để so với dự toán.");
+    return envelope(validateBudgetForecast(data), filters, { tab: "report", section: `budget/${viewBy}` });
+  }
+
+  async getEnterpriseManagement(
+    filters: DashboardFilters,
+    groupBy: EnterpriseGroupBy,
+    signal: AbortSignal,
+  ) {
+    await delay(latencyFor("report"), signal);
+    const data = buildEnterpriseManagement(filters, groupBy);
+    if (!data) throw new NoDataError("Kỳ đang chọn chưa có số thu để chia theo nhóm doanh nghiệp.");
+    return envelope(validateEnterpriseManagement(data), filters, {
+      tab: "report",
+      section: `taxpayer/${groupBy}`,
+    });
+  }
+
+  async getInspection(filters: DashboardFilters, cycle: InspectionCycle, signal: AbortSignal) {
+    await delay(latencyFor("report"), signal);
+    const data = buildInspection(filters, cycle);
+    if (!data) throw new NoDataError("Kỳ đang chọn chưa có kết quả kiểm tra.");
+    return envelope(validateInspection(data), filters, { tab: "report", section: `inspection/${cycle}` });
   }
 
   async getAdvancedComparison(filters: AdvancedComparisonFilters, signal: AbortSignal) {

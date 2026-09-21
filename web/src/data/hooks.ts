@@ -15,6 +15,15 @@ import type {
 } from "@/domain/types";
 import type { ManagementLevelFilter } from "@/domain/tms";
 import type { ReportDimension } from "@/domain/report";
+import type {
+  BudgetForecastData,
+  BudgetViewBy,
+  EnterpriseGroupBy,
+  EnterpriseManagementData,
+  InspectionCycle,
+  InspectionData,
+  ReportSummaryData,
+} from "@/domain/workspaces";
 
 /**
  * Hook tài nguyên dùng chung.
@@ -167,6 +176,53 @@ export function useReportGrid(
     undefined,
     // Đổi chiều hoặc lật trang cột là đổi lát cắt của cùng một bảng. Giữ nội
     // dung cũ trong lúc tải để bảng không co lại rồi nở ra sau mỗi lần bấm.
+    true,
+  );
+}
+
+/**
+ * Bốn workspace mở đều bật `keepPreviousData`.
+ *
+ * Đổi góc nhìn (địa bàn ↔ khoản thu, ngành ↔ cơ quan thuế, tuần ↔ tháng) là đổi
+ * lát cắt của cùng một bảng, không phải mở màn hình khác. Giữ nội dung cũ trong
+ * lúc tải để trang không co lại rồi nở ra sau mỗi lần bấm.
+ */
+export function useBudgetForecast(filters: DashboardFilters, viewBy: BudgetViewBy) {
+  return useAsyncResource<BudgetForecastData>(
+    `budget|${viewBy}|${filterKey(filters)}`,
+    (signal) => provider.getBudgetForecast(filters, viewBy, signal),
+    true,
+    undefined,
+    true,
+  );
+}
+
+export function useEnterpriseManagement(filters: DashboardFilters, groupBy: EnterpriseGroupBy) {
+  return useAsyncResource<EnterpriseManagementData>(
+    `enterprise|${groupBy}|${filterKey(filters)}`,
+    (signal) => provider.getEnterpriseManagement(filters, groupBy, signal),
+    true,
+    undefined,
+    true,
+  );
+}
+
+export function useInspection(filters: DashboardFilters, cycle: InspectionCycle) {
+  return useAsyncResource<InspectionData>(
+    `inspection|${cycle}|${filterKey(filters)}`,
+    (signal) => provider.getInspection(filters, cycle, signal),
+    true,
+    undefined,
+    true,
+  );
+}
+
+export function useReportSummary(filters: DashboardFilters, dimension: ReportDimension) {
+  return useAsyncResource<ReportSummaryData>(
+    `report-summary|${dimension}|${filterKey(filters)}`,
+    (signal) => provider.getReportSummary(filters, dimension, signal),
+    true,
+    undefined,
     true,
   );
 }

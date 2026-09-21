@@ -1,11 +1,29 @@
 import { useState } from "react";
 import { ALL_PERIODS, LOCATIONS, YEARS, latestMonth } from "@/domain/catalog";
-import { LEVEL_BY_ID, LOCAL_LEVELS, levelLabel, type ManagementLevelFilter } from "@/domain/tms";
+import { LEVEL_BY_ID, LOCAL_LEVELS, TAX_OFFICES, levelLabel, type ManagementLevelFilter } from "@/domain/tms";
 import { periodCount } from "@/domain/metrics";
 import { DEFAULT_FILTERS, useDashboardState } from "@/state/DashboardState";
 import { useHostContext } from "@/host/HostContext";
 import type { AccumulationMode, DashboardFilters, PeriodType } from "@/domain/types";
 import { Segmented } from "@/components/primitives";
+import { AutocompleteSelect } from "@/components/AutocompleteSelect";
+
+const taxOfficeOptions = [
+  { value: "", label: "Tất cả cơ quan thuế" },
+  ...[...TAX_OFFICES]
+    .sort((a, b) => {
+      const aNumber = Number(a.name.match(/cơ sở\s+(\d+)/i)?.[1] ?? Infinity);
+      const bNumber = Number(b.name.match(/cơ sở\s+(\d+)/i)?.[1] ?? Infinity);
+      return aNumber - bNumber || a.code.localeCompare(b.code);
+    })
+    .map((office) => ({ value: office.code, label: `${office.code} · ${office.name}` })),
+];
+const locationOptions = [
+  { value: "", label: "Toàn thành phố" },
+  ...[...LOCATIONS]
+    .sort((a, b) => a.name.localeCompare(b.name, "vi"))
+    .map((item) => ({ value: item.id, label: item.name })),
+];
 
 /**
  * Bộ lọc chung, giữ nguyên khi chuyển tab.
@@ -14,7 +32,7 @@ import { Segmented } from "@/components/primitives";
  * tương lai rồi diễn giải dữ liệu thiếu thành 0.
  */
 export function FilterBar() {
-  const { tab, filters, location, managementLevel, resetFilters, setFilters, setTab, setManagementLevel, setLocationScope, dispatchIntent } =
+  const { tab, filters, location, managementLevel, taxOfficeCode, resetFilters, setFilters, setTab, setManagementLevel, setTaxOfficeCode, dispatchIntent } =
     useDashboardState();
   const { host, embedded, postToHost } = useHostContext();
   const count = periodCount(filters);
@@ -42,60 +60,33 @@ export function FilterBar() {
     : filters.accumulation === "YTD"
       ? "Lũy kế"
       : "Trong kỳ";
+  const selectedTaxOffice = TAX_OFFICES.find((office) => office.code === taxOfficeCode) ?? null;
 
   // Địa bàn tính vào "đã đổi" vì nó là một ô trong chính thanh lọc này. Bỏ sót
   // nó thì chọn một phường xong nút vẫn xám, và người dùng đọc ra là nút hỏng.
   const isDefaultFilter =
     location === null &&
     managementLevel === "all" &&
+    (tab !== "tms-breakdown" || taxOfficeCode === null) &&
     (Object.keys(DEFAULT_FILTERS) as (keyof DashboardFilters)[]).every(
       (key) => filters[key] === DEFAULT_FILTERS[key],
     );
 
-  /**
-   * Không phải một bộ lọc mà là một lối đi tắt: chọn một phường, xã đưa thẳng
-   * sang tab Chi tiết địa bàn, chọn "Toàn thành phố" đưa về Tổng quan. Nó KHÔNG
-   * lọc lại số của tab đang đứng — `dispatchIntent`/`setTab` điều hướng chứ
-   * không chạm vào `filters`.
-   *
-   * Render đúng một lần, ở vị trí ngay trước `Cấp ngân sách`. Khi panel thu gọn
-   * lại (iframe, mobile, web hẹp) thì CSS **miễn** ô này khỏi luật ẩn-khi-đóng
-   * thay vì dựng thêm một bản sao ở chỗ khác: chọn địa bàn là đổi thứ đang xem
-   * chứ không phải tinh chỉnh cách xem, nên đặt nó sau một cánh cửa là sai —
-   * nhưng hai bản sao cùng một `<select>` trong một form thì còn sai hơn.
-   */
-  /**
-   * Tab đọc được địa bàn và vẫn có nghĩa khi không có địa bàn nào.
-   *
-   * Ở những tab này, ô địa bàn là BỘ LỌC chứ không phải lối đi tắt: đổi phường
-   * thì đổi phạm vi tại chỗ. Trước đây nó luôn điều hướng, nên đứng ở tab Mã
-   * hạch toán mà muốn đổi địa bàn thì bị đá sang Chi tiết phường/xã, còn muốn bỏ
-   * địa bàn thì bị đá về Tổng quan — phạm vi nhìn thấy được mà không chạm tới
-   * được. Tab Chi tiết phường/xã không nằm trong danh sách vì nó cần một địa bàn
-   * để tồn tại; bỏ địa bàn ở đó thì đúng là phải đi nơi khác.
-   */
-  const tabReadsLocation = tab === "tms-breakdown";
-
+  /** Chọn địa bàn là lối điều hướng sang tab chi tiết; tab Mã hạch toán đi từ CQT xuống địa bàn phụ trách. */
   const locationField = (
-    <label className="dfilter-location">
-      <span>Chi tiết địa bàn</span>
-      <select
+    <div className="dfilter-location">
+      <AutocompleteSelect
+        id="location-autocomplete"
+        label="Chi tiết địa bàn"
         value={location ?? ""}
-        onChange={(event) => {
-          const id = event.target.value;
-          if (tabReadsLocation) setLocationScope(id || null);
-          else if (id) dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: id });
+        options={locationOptions}
+        placeholder="Tìm phường, xã"
+        onChange={(id) => {
+          if (id) dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: id });
           else setTab("overview");
         }}
-      >
-        <option value="">Toàn thành phố</option>
-        {LOCATIONS.map((item) => (
-          <option key={item.id} value={item.id}>
-            {item.name}
-          </option>
-        ))}
-      </select>
-    </label>
+      />
+    </div>
   );
 
   /**
@@ -157,7 +148,9 @@ export function FilterBar() {
           <div className="dfilters-mobile-group">
             <span>Phạm vi</span>
             <strong title={budgetLabel}>{budgetLabel}</strong>
-            <small title={levelLabel(managementLevel)}>{levelLabel(managementLevel)}</small>
+            <small title={tab === "tms-breakdown" ? (selectedTaxOffice?.name ?? "Tất cả cơ quan thuế") : levelLabel(managementLevel)}>
+              {tab === "tms-breakdown" ? (selectedTaxOffice?.name ?? "Tất cả cơ quan thuế") : levelLabel(managementLevel)}
+            </small>
           </div>
         </div>
         <button
@@ -166,7 +159,7 @@ export function FilterBar() {
           aria-expanded={usesHostFilter ? undefined : open}
           onClick={() => {
             if (usesHostFilter) {
-              postToHost("NSNN_OPEN_FILTER", { currentFilters: filters });
+              postToHost("NSNN_OPEN_FILTER", { currentFilters: { ...filters, taxOfficeCode } });
               return;
             }
             setOpen((value) => !value);
@@ -240,15 +233,24 @@ export function FilterBar() {
         />
       </div>
 
-      {locationField}
+      {/* Mã hạch toán đi từ CQT xuống địa bàn được phân công quản lý.
+          Không đặt ô địa bàn ở đây vì nó đảo ngược luồng và làm người dùng
+          tưởng một địa bàn chỉ thuộc một CQT. */}
+      {tab !== "tms-breakdown" && locationField}
 
       <label className="dfilter-budget">
         <span>Cấp ngân sách</span>
         <select
           value={filters.budgetLevel}
-          onChange={(event) =>
-            setFilters({ budgetLevel: event.target.value as typeof filters.budgetLevel })
-          }
+          onChange={(event) => {
+            const budgetLevel = event.target.value as typeof filters.budgetLevel;
+            setFilters({ budgetLevel });
+            if (tab === "tms-breakdown") {
+              setManagementLevel(
+                budgetLevel === "NSTW" ? "trung-uong" : budgetLevel === "NSDP" ? "dia-phuong" : "all",
+              );
+            }
+          }}
         >
           <option value="NSNN">Tổng NSNN</option>
           <option value="NSTW">NSTW</option>
@@ -256,7 +258,33 @@ export function FilterBar() {
         </select>
       </label>
 
-      {managementField}
+      {tab === "tms-breakdown" && (
+        <div className="dfilter-tax-office">
+          <AutocompleteSelect
+            id="tms-tax-office"
+            label="Cơ quan thuế"
+            value={taxOfficeCode ?? ""}
+            options={taxOfficeOptions}
+            placeholder="Tìm mã hoặc tên cơ quan"
+            onChange={(code) => setTaxOfficeCode(code || null)}
+          />
+        </div>
+      )}
+
+      {/* Ở TAB Mã hạch toán thì ô này không hiện.
+       *
+       * Tab đó có thanh phân đoạn "Cấp quản lý của Chương" buộc vào đúng cùng
+       * một state, cách ô này chừng 100px — cùng bộ lựa chọn, cùng kết quả, hai
+       * điều khiển. Và bản trong tab tốt hơn: nó tách hai bậc (địa phương rồi
+       * mới tới tỉnh/huyện/xã) thay vì trộn thành một danh sách phẳng, và nó
+       * mang được câu giải thích "cấp của Chương, không phải cấp của địa bàn" —
+       * thứ ô chọn trong thanh lọc chỉ nhét được vào `title`.
+       *
+       * Ô này vẫn giữ ở các tab khác, nơi nó làm việc KHÁC: chọn một cấp là
+       * điều hướng sang Mã hạch toán. Nghịch lý là chính thành công của nó lại
+       * thả người dùng vào màn hình có bản sao của nó — nên đúng ở đó thì nó
+       * lui. */}
+      {tab !== "tms-breakdown" && managementField}
 
       {/* Render ở mọi ngữ cảnh. Trước đây điều kiện `open` khiến nút chỉ tồn tại
           ở bản thu gọn, nên desktop rộng — nơi bày cả sáu điều khiển cùng lúc và
