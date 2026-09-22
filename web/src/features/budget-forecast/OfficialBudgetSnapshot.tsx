@@ -53,14 +53,14 @@ export function OfficialBudgetSnapshot({ variant }: { variant: "summary" | "deta
   }
 
   return (
-    <details className="dofficial-snapshot">
+    <details className="dofficial-snapshot dexpandable">
       <summary>
         <span>Xem dữ liệu tham chiếu mở rộng</span>
         <small>
           Ước thu cuối năm và dự toán chi tiết 126 phường, xã
         </small>
       </summary>
-      <div className="dstack is-compact">
+      <div className="dstack is-compact dexpandable-content">
       <Card
         title="Dự toán và ước thực hiện đã bàn giao"
         subtitle="Số ước được giữ riêng với số thực hiện; không dùng để thay cho kết quả đã chốt"
@@ -94,9 +94,9 @@ export function OfficialBudgetSnapshot({ variant }: { variant: "summary" | "deta
           </section>
         </div>
 
-        <details className="dforecast-table">
+        <details className="dforecast-table dexpandable">
           <summary>Xem đầy đủ dự toán 126 phường, xã</summary>
-          <div className="dtable-wrap">
+          <div className="dtable-wrap dexpandable-content">
             <table className="dtable is-compact dofficial-plan-table">
               <caption className="sr-only">Dự toán thu năm 2026 của 126 phường, xã</caption>
               <thead>

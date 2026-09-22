@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SortHeader, sortRows, useSort } from "@/components/SortableHeader";
+import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
 import { Change, columnLabel, inScale, pct, type MoneyScale } from "@/components/primitives";
 import {
   BUDGET_STATUS_LABEL,
@@ -52,7 +52,47 @@ export function BudgetProgressTable({
 
   const firstHeader = viewBy === "location" ? "Phường, xã" : "Khoản thu";
 
+  /**
+   * Trạng thái giống nhau ở MỌI dòng đang hiện thì nó thuộc về đầu cột.
+   *
+   * Đo được: "Vượt dự toán" lặp trên từng dòng của bảng 126 phường/xã. Một cột
+   * rộng, đầy trọng lượng, mang đúng không thông tin nào — và mắt người đối
+   * soát quét bảng này để tìm NGOẠI LỆ, nên một cột hằng chỉ làm loãng chỗ mà
+   * ngoại lệ đáng lẽ phải bật ra.
+   */
+  /**
+   * Số khoản cấu thành giống nhau ở MỌI dòng — đo được: "20 khoản" trên cả 124
+   * dòng. Một cột lặp đúng một chuỗi 124 lần không phân biệt được gì, mà vẫn
+   * chiếm trọng lượng ngang tên phường/xã ngay cạnh nó.
+   */
+  const soKhoanChung =
+    ordered.length > 1 &&
+    ordered.every((row) => (breakdown[row.id] ?? []).length === (breakdown[ordered[0].id] ?? []).length)
+      ? (breakdown[ordered[0].id] ?? []).length
+      : null;
+
+  const trangThaiChung =
+    ordered.length > 1 && ordered.every((row) => row.status === ordered[0].status)
+      ? BUDGET_STATUS_LABEL[ordered[0].status]
+      : null;
+
+  // Một danh sách cột cho CẢ đầu bảng lẫn hàng chip: hai danh sách thì chỉ cần
+  // lệch một cột là chip sắp theo cột khác với cái nó ghi.
+  const cot: SortCol<SortKey>[] = [
+    // Thông tin không mất đi, nó chuyển lên đầu cột — nơi một câu nói đúng một
+    // lần thay cho một chuỗi lặp 124 lần.
+    { key: "name", label: soKhoanChung ? `${firstHeader} · mỗi dòng ${soKhoanChung} khoản` : firstHeader },
+    { key: "actual", label: columnLabel("Thực hiện", unit), numeric: true, className: "dcol-money" },
+    { key: null, label: columnLabel("Dự toán", unit), numeric: true, className: "dcol-money" },
+    { key: "completion", label: "Hoàn thành", numeric: true, className: "dcol-pct" },
+    { key: "remaining", label: columnLabel("Còn thiếu", unit), numeric: true, className: "dcol-money" },
+    { key: "change", label: "So cùng kỳ", numeric: true, className: "dcol-change" },
+    { key: "status", label: trangThaiChung ? `Trạng thái · tất cả ${trangThaiChung}` : "Trạng thái", className: "dcol-status" },
+  ];
+
   return (
+    <>
+    <SortStrip cot={cot} sort={sort} onSort={toggle} nhan="tiến độ dự toán" />
     <div className="dtable-wrap">
       <table className="dtable dbudget-table">
         <caption className="sr-only">
@@ -60,43 +100,7 @@ export function BudgetProgressTable({
         </caption>
         <thead>
           <tr>
-            <SortHeader sortKey="name" label={firstHeader} sort={sort} onSort={toggle} />
-            <SortHeader
-              sortKey="actual"
-              label={columnLabel("Thực hiện", unit)}
-              numeric
-              className="dcol-money"
-              sort={sort}
-              onSort={toggle}
-            />
-            <th scope="col" className="is-num dcol-money">
-              {columnLabel("Dự toán", unit)}
-            </th>
-            <SortHeader
-              sortKey="completion"
-              label="Hoàn thành"
-              numeric
-              className="dcol-pct"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader
-              sortKey="remaining"
-              label={columnLabel("Còn thiếu", unit)}
-              numeric
-              className="dcol-money"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader
-              sortKey="change"
-              label="So cùng kỳ"
-              numeric
-              className="dcol-change"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader sortKey="status" label="Trạng thái" className="dcol-status" sort={sort} onSort={toggle} />
+            <SortHeaders cot={cot} sort={sort} onSort={toggle} />
           </tr>
         </thead>
         {ordered.map((row) => {
@@ -115,7 +119,9 @@ export function BudgetProgressTable({
                   >
                     <span aria-hidden="true" className="dtms-caret" />
                     {row.name}
-                    {parts.length > 0 && <em>{parts.length} khoản</em>}
+                    {/* Số khoản giống nhau ở mọi dòng thì nó không phân biệt được
+                        dòng nào với dòng nào; nó đã nằm ở phụ đề thẻ. */}
+                    {parts.length > 0 && !soKhoanChung && <em>{parts.length} khoản</em>}
                   </button>
                 </th>
                 <td className="is-num" data-label="Thực hiện">
@@ -136,9 +142,11 @@ export function BudgetProgressTable({
                   <Change current={row.actual} previous={row.previous} label="" />
                 </td>
                 <td data-label="Trạng thái">
-                  <span className={row.status === "atRisk" ? "dtag is-review" : "dtag"}>
-                    {BUDGET_STATUS_LABEL[row.status]}
-                  </span>
+                  {trangThaiChung ? null : (
+                    <span className={row.status === "atRisk" ? "dtag is-alert" : "dtag is-running"}>
+                      {BUDGET_STATUS_LABEL[row.status]}
+                    </span>
+                  )}
                 </td>
               </tr>
               {expanded &&
@@ -168,5 +176,6 @@ export function BudgetProgressTable({
         })}
       </table>
     </div>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import { Pager, usePage } from "@/components/Pager";
-import { SortHeader, sortRows, useSort } from "@/components/SortableHeader";
+import { useNarrow } from "@/components/useNarrow";
+import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
 import { Change, columnLabel, inScale, pct, type MoneyScale } from "@/components/primitives";
 import type { EnterpriseGroupRow, EnterpriseManagementData } from "@/domain/workspaces";
 
@@ -37,6 +38,7 @@ export function IndustrySummary({
   onSelect: (id: string | null) => void;
   dimensionName: string;
 }) {
+  const hep = useNarrow();
   const { sort, toggle } = useSort<SortKey>("amount");
   const ranked = groups.filter((g) => !g.unclassified);
   const rest = groups.filter((g) => g.unclassified);
@@ -77,8 +79,101 @@ export function IndustrySummary({
     </>
   );
 
+  const cot: SortCol<SortKey>[] = [
+    { key: "name", label: dimensionName },
+    { key: "amount", label: columnLabel("Số thu", unit), numeric: true, className: "dcol-money" },
+    { key: "share", label: "Tỷ trọng", numeric: true, className: "dcol-pct" },
+    { key: "change", label: "So cùng kỳ", numeric: true, className: "dcol-change" },
+    { key: "count", label: "Doanh nghiệp", numeric: true, className: "dcol-pct" },
+  ];
+
+  /**
+   * Khổ hẹp dựng THẺ, không phải bảng xếp chồng.
+   *
+   * Bảng xếp chồng bằng CSS cho ra bốn cặp nhãn–số chạy liền thành hai dòng
+   * chữ: "Số thu 8.212 Tỷ trọng 14,6% So cùng kỳ +46,9% Doanh nghiệp 52.640".
+   * Mọi con số cùng một cỡ nên không có gì nói con số nào là con số chính, và
+   * đọc lướt một danh sách mười mấy nhóm như vậy là không đọc được.
+   *
+   * Thẻ đặt ba tầng: tên nhóm, rồi SỐ THU cỡ lớn kèm biến động, rồi phần phụ.
+   * Cả thẻ là một cái nút nên bấm chỗ nào cũng mở, và dấu › nói rằng nó mở ra
+   * một trang khác chứ không phải bung ra tại chỗ.
+   */
+  const the = (row: EnterpriseGroupRow) => (
+    <>
+      <span className="dgc-ten">{row.name}</span>
+      <span className="dgc-so">
+        <strong>{inScale(row.amount, unit)}</strong>
+        <small>{unit.short}</small>
+        <Change current={row.amount} previous={row.previous} label="" />
+      </span>
+      <span className="dgc-phu">
+        {pct(row.share)} tổng thu
+        {row.enterpriseCount > 0 && ` · ${row.enterpriseCount.toLocaleString("vi-VN")} doanh nghiệp`}
+      </span>
+    </>
+  );
+
+  if (hep)
+    return (
+      <>
+        <SortStrip cot={cot} sort={sort} onSort={toggle} nhan={`số thu theo ${dimensionName.toLowerCase()}`} />
+        <ul className="dgroup-cards">
+          {ordered.map((row) => (
+            <li key={row.id}>
+              {row.enterpriseCount > 0 ? (
+                <button type="button" data-group={row.id} onClick={() => onSelect(row.id)}>
+                  {the(row)}
+                  <span className="dgc-mui" aria-hidden="true">›</span>
+                  <span className="sr-only">, xem doanh nghiệp</span>
+                </button>
+              ) : (
+                /* Nhóm không có doanh nghiệp nào thì không mở ra được gì. Vẫn
+                   hiện để tổng cộng lại đúng, nhưng không giả vờ bấm được. */
+                <div>{the(row)}</div>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        {/* Phần dư và dòng tổng nằm NGOÀI danh sách xếp hạng và ngoài phân
+            trang: chúng là phần còn lại của tổng, không phải đối thủ trong bảng
+            xếp hạng, và phải thấy được ở mọi trang. */}
+        <div className="dgroup-sum">
+          {rest.map((row) => (
+            <p key={row.id}>
+              <span>{row.name}</span>
+              <span>
+                {inScale(row.amount, unit)} {unit.short} · {pct(row.share)}
+              </span>
+            </p>
+          ))}
+          <p className="is-total">
+            <span>Tổng</span>
+            <span>
+              {inScale(totals.amount, unit)} {unit.short} ·{" "}
+              {totals.directoryTotal?.toLocaleString("vi-VN")} doanh nghiệp
+            </span>
+          </p>
+        </div>
+
+        <Pager
+          className="dpager-management"
+          current={page.current}
+          pages={page.pages}
+          from={page.from}
+          to={page.to}
+          total={ranked.length}
+          noun={dimensionName.toLowerCase()}
+          onChange={page.setPage}
+        />
+      </>
+    );
+
+
   return (
     <>
+      <SortStrip cot={cot} sort={sort} onSort={toggle} nhan={`số thu theo ${dimensionName.toLowerCase()}`} />
       <div className="dtable-wrap">
         <table className="dtable dent-table">
           <caption className="sr-only">
@@ -86,32 +181,7 @@ export function IndustrySummary({
           </caption>
           <thead>
             <tr>
-              <SortHeader sortKey="name" label={dimensionName} sort={sort} onSort={toggle} />
-              <SortHeader
-                sortKey="amount"
-                label={columnLabel("Số thu", unit)}
-                numeric
-                className="dcol-money"
-                sort={sort}
-                onSort={toggle}
-              />
-              <SortHeader sortKey="share" label="Tỷ trọng" numeric className="dcol-pct" sort={sort} onSort={toggle} />
-              <SortHeader
-                sortKey="change"
-                label="So cùng kỳ"
-                numeric
-                className="dcol-change"
-                sort={sort}
-                onSort={toggle}
-              />
-              <SortHeader
-                sortKey="count"
-                label="Doanh nghiệp"
-                numeric
-                className="dcol-pct"
-                sort={sort}
-                onSort={toggle}
-              />
+              <SortHeaders cot={cot} sort={sort} onSort={toggle} />
             </tr>
           </thead>
           <tbody>
@@ -165,6 +235,7 @@ export function IndustrySummary({
       </div>
 
       <Pager
+        className="dpager-management"
         current={page.current}
         pages={page.pages}
         from={page.from}

@@ -12,6 +12,18 @@ import { inScale, LiveNotice, money, moneyScale, pct } from "@/components/primit
  * trên nền trắng vì lát donut vừa mang thông tin vừa là thứ bấm được.
  */
 const DONUT_TOKENS = ["--donut-1", "--donut-2", "--donut-3", "--donut-4"];
+
+/**
+ * Số lát TỐI ĐA mà thang màu nói được.
+ *
+ * Xuất ra để nơi gọi cắt danh sách theo đúng con số này thay vì tự đoán. Thang
+ * có bốn bậc; đưa vào lát thứ năm là `index % 4` quay vòng và hai lát khác hẳn
+ * nhau nhận cùng một màu. Đo trên bản trước: donut `Cơ cấu theo Mục` có sáu lát,
+ * `--donut-1` tô cả 38,1% lẫn 11,1% — lệch nhau 3,4 lần mà cùng một sắc. In đen
+ * trắng thì hai cặp trùng biến mất hoàn toàn.
+ */
+export const DONUT_STEPS = DONUT_TOKENS.length;
+
 const donutColor = (index: number) => `var(${DONUT_TOKENS[index % DONUT_TOKENS.length]})`;
 
 /**
@@ -29,11 +41,22 @@ const donutColor = (index: number) => `var(${DONUT_TOKENS[index % DONUT_TOKENS.l
  */
 const isUnclassified = (id: string) => id === "chua-xac-dinh" || id.startsWith("chua-xac-dinh-");
 
+/**
+ * Lát KHÔNG mang độ lớn: nhóm chưa xác định, và phần gộp "Khác".
+ *
+ * "Khác" cũng vậy và vì cùng một lý do. Nó là phần dư của phép cắt danh sách,
+ * không phải một hạng mục nghiệp vụ — mà vì nó gộp nhiều mục lại nên nó thường
+ * là lát LỚN NHẤT, và xếp bậc theo độ lớn thì nó chiếm ngay bậc đậm nhất. Thang
+ * khi đó tuyên bố rằng "phần còn lại" là hạng mục quan trọng nhất trong hình.
+ */
+const isResidual = (id: string) => id === "khac" || isUnclassified(id);
+
 /** Biểu đồ cơ cấu nhỏ gọn, có bảng chú giải đọc được bằng bàn phím. */
 export function DonutChart({
   rows,
   centerLabel = "Tổng",
   selectedId,
+  selectedIds = [],
   onSelect,
   labels = "legend",
   getCalloutLabel = (row) => row.name,
@@ -41,6 +64,8 @@ export function DonutChart({
   rows: AmountRow[];
   centerLabel?: string;
   selectedId?: string;
+  /** Dùng khi một phép so sánh cần giữ nhiều lát nổi bật đồng thời. */
+  selectedIds?: readonly string[];
   onSelect?: (id: string) => void;
   labels?: "legend" | "callout";
   getCalloutLabel?: (row: AmountRow) => string;
@@ -50,6 +75,15 @@ export function DonutChart({
   const positiveRows = rows.filter((row) => row.amount > 0);
   const total = positiveRows.reduce((sum, row) => sum + row.amount, 0);
   if (!positiveRows.length || total <= 0) return null;
+
+  /* Một donut có thể có một lựa chọn chính và nhiều lát cùng được giữ sáng.
+     Hover/focus chỉ bổ sung vào tập này, không được làm mờ lựa chọn đã có. */
+  const visibleIds = new Set(positiveRows.map((row) => row.id));
+  const selectedSet = new Set(
+    [selectedId, ...selectedIds].filter((id): id is string => Boolean(id && visibleIds.has(id))),
+  );
+  const emphasizedIds = new Set(selectedSet);
+  if (hoveredId && visibleIds.has(hoveredId)) emphasizedIds.add(hoveredId);
 
   const callout = labels === "callout";
   const centerX = callout ? 170 : 60;
@@ -67,13 +101,13 @@ export function DonutChart({
    */
   const rankByAmount = new Map(
     [...positiveRows]
-      .filter((row) => !isUnclassified(row.id))
+      .filter((row) => !isResidual(row.id))
       .sort((a, b) => b.amount - a.amount)
       .map((row, rank) => [row.id, rank]),
   );
-  /** Trả về màu lát: bậc thang cho hạng mục thật, màu trung tính cho nhóm chưa xác định. */
-  const sliceColor = (row: AmountRow, index: number) =>
-    isUnclassified(row.id) ? "var(--nodata)" : donutColor(rankByAmount.get(row.id) ?? index);
+  /** Màu lát: bậc thang cho hạng mục thật, màu trung tính cho phần dư. */
+  const sliceColor = (row: AmountRow) =>
+    isResidual(row.id) ? "var(--nodata)" : donutColor(rankByAmount.get(row.id) ?? 0);
 
   let runningOffset = 0;
   const slices = positiveRows.map((row, index) => {
@@ -107,21 +141,21 @@ export function DonutChart({
       <div className={`ddonut${callout ? " is-callout" : ""}`}>
         <svg viewBox={callout ? "0 0 340 194" : "0 0 120 120"} role={onSelect ? "group" : "img"} aria-label={`Cơ cấu ${positiveRows.map((row) => `${row.name} ${pct((row.amount / total) * 100)}`).join(", ")}`}>
           <circle className="ddonut-track" cx={centerX} cy={centerY} r={radius} transform={`rotate(-90 ${centerX} ${centerY})`} />
-          {slices.map(({ row, index, length, offset }) => {
+          {slices.map(({ row, length, offset }) => {
             const segment = (
               <circle
                 key={row.id}
-                className={`ddonut-segment${onSelect ? " is-interactive" : ""}${selectedId === row.id ? " is-selected" : ""}${hoveredId === row.id ? " is-hovered" : ""}${hoveredId && hoveredId !== row.id ? " is-muted" : ""}`}
+                className={`ddonut-segment${onSelect ? " is-interactive" : ""}${selectedSet.has(row.id) ? " is-selected" : ""}${hoveredId === row.id ? " is-hovered" : ""}${emphasizedIds.size > 0 && !emphasizedIds.has(row.id) ? " is-muted" : ""}`}
                 cx={centerX}
                 cy={centerY}
                 r={radius}
-                style={{ stroke: sliceColor(row, index) }}
+                style={{ stroke: sliceColor(row) }}
                 strokeDasharray={`${length} ${circumference - length}`}
                 strokeDashoffset={-offset}
                 transform={`rotate(-90 ${centerX} ${centerY})`}
                 role={onSelect ? "button" : undefined}
                 tabIndex={onSelect ? 0 : undefined}
-                aria-pressed={onSelect ? selectedId === row.id : undefined}
+                aria-pressed={onSelect ? selectedSet.has(row.id) : undefined}
                 data-segment-id={row.id}
                 aria-label={onSelect ? `${row.name}, ${pct((row.amount / total) * 100)}. Chọn để xem chi tiết` : undefined}
                 onPointerEnter={() => setHoveredId(row.id)}
@@ -148,7 +182,7 @@ export function DonutChart({
         {(() => {
           const active =
             positiveRows.find((row) => row.id === hoveredId) ??
-            positiveRows.find((row) => row.id === selectedId);
+            positiveRows.find((row) => selectedSet.has(row.id));
           return active ? (
             <span>
               <b>{pct((active.amount / total) * 100)}</b>
@@ -163,11 +197,11 @@ export function DonutChart({
         })()}
         {callout && (
           <div className="ddonut-labels">
-            {slices.map(({ row, index }) => {
+            {slices.map(({ row }) => {
               const position = calloutPositions.get(row.id)!;
               const content = (
                 <>
-                  <i style={{ background: sliceColor(row, index) }} />
+                  <i style={{ background: sliceColor(row) }} />
                   <span>{getCalloutLabel(row)}</span>
                   <strong>{pct((row.amount / total) * 100)}</strong>
                 </>
@@ -175,8 +209,8 @@ export function DonutChart({
               const style = { left: `${position.left}%`, top: `${position.top}%` };
               return onSelect ? (
                 <button key={row.id} type="button"
-                  className={`ddonut-float-label${selectedId === row.id ? " is-selected" : ""}`}
-                  style={style} aria-pressed={selectedId === row.id} onClick={() => onSelect(row.id)} title={row.name}>
+                  className={`ddonut-float-label${selectedSet.has(row.id) ? " is-selected" : ""}`}
+                  style={style} aria-pressed={selectedSet.has(row.id)} onClick={() => onSelect(row.id)} title={row.name}>
                   {content}
                 </button>
               ) : (
@@ -187,11 +221,11 @@ export function DonutChart({
         )}
       </div>
       {!callout && <ul className="ddonut-legend">
-        {positiveRows.map((row, index) => {
+        {positiveRows.map((row) => {
           const tooltipId = `${chartId}-${row.id}`;
           const content = (
             <>
-              <i style={{ background: sliceColor(row, index) }} />
+              <i style={{ background: sliceColor(row) }} />
               <span>{row.name}</span>
               <strong>{pct((row.amount / total) * 100)}</strong>
             </>
@@ -199,8 +233,8 @@ export function DonutChart({
           return (
             <li key={row.id} onPointerEnter={() => setHoveredId(row.id)} onPointerLeave={() => setHoveredId(null)}>
               {onSelect ? (
-                <button type="button" className={selectedId === row.id ? "is-selected" : undefined}
-                  aria-pressed={selectedId === row.id} aria-describedby={tooltipId}
+                <button type="button" className={selectedSet.has(row.id) ? "is-selected" : undefined}
+                  aria-pressed={selectedSet.has(row.id)} aria-describedby={tooltipId}
                   onFocus={() => setHoveredId(row.id)} onBlur={() => setHoveredId(null)} onClick={() => onSelect(row.id)}>
                   {content}
                 </button>

@@ -44,6 +44,8 @@ export function Kpi({
   note,
   code = false,
   tone,
+  onActivate,
+  controls,
   children,
 }: {
   label: string;
@@ -53,13 +55,26 @@ export function Kpi({
   code?: boolean;
   /** Chiều biến động của chính giá trị. Bỏ trống khi giá trị không có chiều. */
   tone?: "pos" | "neg";
+  /** Chỉ truyền khi ô thực sự dẫn tới một vùng nội dung chi tiết. */
+  onActivate?: () => void;
+  controls?: string;
   children: ReactNode;
 }) {
-  return (
-    <div>
+  const content = (
+    <>
       <span>{label}</span>
       <strong className={cx(code && "is-code", tone && `tone-${tone}`)}>{children}</strong>
       {note && <small>{note}</small>}
+    </>
+  );
+
+  return (
+    <div className={cx(onActivate && "is-actionable")}>
+      {onActivate ? (
+        <button type="button" className="dkpi-action" aria-controls={controls} onClick={onActivate}>
+          {content}
+        </button>
+      ) : content}
     </div>
   );
 }

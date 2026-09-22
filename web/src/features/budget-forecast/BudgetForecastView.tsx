@@ -17,6 +17,8 @@ import { BudgetProgressTable } from "./BudgetProgressTable";
 import { ForecastChart } from "./ForecastChart";
 import { OfficialBudgetSnapshot } from "./OfficialBudgetSnapshot";
 import { isOfficialCityTotalScope } from "@/data/official-18-09";
+import { revealSection } from "@/components/sectionNavigation";
+import { useNarrow } from "@/components/useNarrow";
 
 const VIEWS: { id: BudgetViewBy; label: string }[] = [
   { id: "location", label: "Theo địa bàn" },
@@ -91,6 +93,7 @@ function BudgetBody({
   status: BudgetStatus | "all";
   showOfficialReference: boolean;
 }) {
+  const narrow = useNarrow();
   const rows = useMemo(
     () => (status === "all" ? data.rows : data.rows.filter((r) => r.status === status)),
     [data.rows, status],
@@ -119,25 +122,29 @@ function BudgetBody({
 
       <div className={showOfficialReference ? "dbudget-summary-split" : undefined}>
         <KpiStrip columns={6} label={`Dự toán mô phỏng · lũy kế · ${data.meta.scopeLabel} · ${data.meta.periodLabel}`}>
-          <Kpi label="Thực hiện lũy kế" note={<>{data.rows.length} đơn vị có số</>}>
+          <Kpi label="Thực hiện lũy kế" note={<>{data.rows.length} đơn vị có số</>} onActivate={narrow ? () => revealSection("budget-progress") : undefined} controls="budget-progress">
             <Money value={data.totals.actual} scale={unit} />
           </Kpi>
-          <Kpi label="Dự toán được giao">
+          <Kpi label="Dự toán được giao" onActivate={narrow ? () => revealSection("budget-progress") : undefined} controls="budget-progress">
             <Money value={data.totals.plan} scale={unit} />
           </Kpi>
           <Kpi
             label="Tỷ lệ hoàn thành"
             tone={data.totals.completionRate !== null && data.totals.completionRate >= 100 ? "pos" : undefined}
+            onActivate={narrow ? () => revealSection("budget-progress") : undefined}
+            controls="budget-progress"
           >
             {pct(data.totals.completionRate)}
           </Kpi>
           <Kpi
             label={data.totals.remaining >= 0 ? "Số còn phải thu" : "Đã vượt dự toán"}
             note="Dự toán trừ thực hiện"
+            onActivate={narrow ? () => revealSection("budget-progress") : undefined}
+            controls="budget-progress"
           >
             <Money value={Math.abs(data.totals.remaining)} scale={unit} />
           </Kpi>
-          <Kpi label="Dự báo cuối kỳ" note="Số mô phỏng, chưa phải dự báo nghiệp vụ">
+          <Kpi label="Dự báo cuối kỳ" note="Số mô phỏng, chưa phải dự báo nghiệp vụ" onActivate={narrow ? () => revealSection("budget-forecast-chart") : undefined} controls="budget-forecast-chart">
             <Money value={data.totals.forecast} scale={unit} />
           </Kpi>
           <Kpi
@@ -147,6 +154,8 @@ function BudgetBody({
                 ? `Mục tiêu ≤ ${data.forecastTargetPct}% — chưa kết luận được trên số mô phỏng`
                 : `Mục tiêu ≤ ${data.forecastTargetPct}%`
             }
+            onActivate={narrow ? () => revealSection("budget-forecast-chart") : undefined}
+            controls="budget-forecast-chart"
           >
             {pct(data.totals.forecastError)}
           </Kpi>
@@ -156,6 +165,7 @@ function BudgetBody({
 
       {showOfficialReference && <OfficialBudgetSnapshot variant="details" />}
 
+      <div id="budget-progress" className="dsection-target" tabIndex={-1}>
       <Card
         title={data.viewBy === "location" ? "Tiến độ dự toán theo phường, xã" : "Tiến độ dự toán theo khoản thu"}
         /* "124 trên 124" không nói gì; chỉ khi đang lọc thì tỷ lệ mới là tin. */
@@ -201,7 +211,9 @@ function BudgetBody({
       >
         <BudgetProgressTable rows={rows} breakdown={data.breakdown} viewBy={data.viewBy} unit={unit} />
       </Card>
+      </div>
 
+      <div id="budget-forecast-chart" className="dsection-target" tabIndex={-1}>
       <Card
         title="Thực hiện và dự báo theo tháng"
         subtitle="Thực hiện, dự toán và dự báo trên cùng một thang"
@@ -209,6 +221,7 @@ function BudgetBody({
       >
         <ForecastChart points={data.trend} unit={unit} />
       </Card>
+      </div>
 
     </>
   );

@@ -3,14 +3,14 @@ import { useTmsBreakdown } from "@/data/hooks";
 import type { ManagementLevelFilter } from "@/domain/tms";
 import type { TmsBreakdownData, TmsRow } from "@/domain/types";
 import { useDashboardState } from "@/state/DashboardState";
-import { levelLabel, taxOfficeNameOf } from "@/domain/tms";
+import { levelLabel, taxOfficeNameOf, SECTIONS, SUB_ITEMS } from "@/domain/tms";
 import { Kpi, KpiStrip } from "@/components/Kpi";
 import { Bars, Card, Change, LiveNotice, Money, moneyScale, pct, ResourceView, NhanOnDinh } from "@/components/primitives";
-import { DonutChart } from "@/components/charts";
+import { DONUT_STEPS, DonutChart } from "@/components/charts";
 import { useNarrow } from "@/components/useNarrow";
 import { usePinned } from "@/components/usePinned";
 import { LevelFilter } from "./LevelFilter";
-import { CodeTable, SectionTable, UNKNOWN_SECTION } from "./TmsTables";
+import { CodeTable, SectionTable } from "./TmsTables";
 import { CorrespondencePanel, QualityPanel, TaxOfficeAssignedAreas } from "./TmsPanels";
 
 /**
@@ -116,8 +116,6 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
   const toggle = (id: string) =>
     setOpen((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]));
 
-  const subItemCount = data.sections.reduce((total, row) => total + row.subItems.length, 0);
-
   const filteredChapters = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (needle)
@@ -140,8 +138,10 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
     const total = data.levelTotal.amount;
     if (total === null || total <= 0 || data.sections.some((row) => (row.amount ?? 0) < 0)) return null;
     const sorted = [...data.sections].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0));
-    const top = sorted.slice(0, 5).map((row) => ({ ...row, amount: row.amount ?? 0 }));
-    const rest = sorted.slice(5);
+    // Cắt đúng bằng số bậc của thang màu, không phải một con số chọn bừa: thừa
+    // một lát là thang quay vòng và hai Mục khác hẳn nhau nhận cùng một sắc.
+    const top = sorted.slice(0, DONUT_STEPS).map((row) => ({ ...row, amount: row.amount ?? 0 }));
+    const rest = sorted.slice(DONUT_STEPS);
     const other = rest.reduce((sum, row) => sum + (row.amount ?? 0), 0);
     return other > 0
       ? [...top, { id: "khac", name: `Khác (${rest.length} Mục)`, amount: other, previous: null }]
@@ -183,12 +183,15 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
         >
           {data.levelTotal.share === null ? null : pct(data.levelTotal.share)}
         </Kpi>
-        {/* Số mã theo CẤP, không theo địa bàn — điều kiện báo cáo không
-            đổi khi đổi phường. Đứng ngay dưới tên một phường mà không nói rõ thì
-            người đọc tưởng chúng cũng đã được lọc, rồi thấy số không nhúc nhích
-            và nghĩ màn hình bị hỏng. */}
-        <Kpi label="Mã trong điều kiện" note="Theo cấp quản lý, không đổi theo địa bàn">
-          {data.sections.filter((row) => row.id !== UNKNOWN_SECTION).length} Mục · {subItemCount} Tiểu mục
+        {/* Đây là quy mô của DANH MỤC đã đối chiếu, không phải số ký hiệu bốn
+            chữ số được nhắc trong điều kiện báo cáo. Các ký hiệu chưa có dòng
+            danh mục có thể là cận khoảng, mã loại trừ hoặc mã cần bổ sung; chỉ
+            báo chúng ở phần Chất lượng dữ liệu, không nâng thành Tiểu mục. */}
+        <Kpi
+          label="Danh mục hạch toán"
+          note="Danh mục tra cứu đã đối chiếu; không đổi theo bộ lọc"
+        >
+          {SECTIONS.length} Mục - {SUB_ITEMS.length} Tiểu mục
         </Kpi>
       </KpiStrip>
 
@@ -220,7 +223,7 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
 
       <Card
         title="Mục và Tiểu mục"
-        subtitle="Theo cấp quản lý đang chọn"
+        subtitle={`Theo cấp quản lý đang chọn · danh mục tra cứu: ${SECTIONS.length} Mục, ${SUB_ITEMS.length} Tiểu mục`}
       >
         <SectionTable sections={data.sections} open={open} onToggle={toggle} total={data.levelTotal.amount} />
       </Card>
@@ -230,7 +233,11 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
           xa nhau thì phải nhớ để so. */}
       <Card
         title="Cơ cấu theo Mục"
-        subtitle={donutRows ? "5 Mục lớn nhất và phần còn lại" : "Có thành phần âm nên dùng bảng bên trên"}
+        subtitle={
+          donutRows
+            ? `${DONUT_STEPS} Mục lớn nhất và phần còn lại`
+            : "Có thành phần âm nên dùng bảng bên trên"
+        }
       >
         {donutRows ? (
           <DonutChart rows={donutRows} centerLabel="Mục" />

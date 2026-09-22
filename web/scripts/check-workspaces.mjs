@@ -324,14 +324,25 @@ check(
 await page.goto(`${BASE}/?tab=report&${P}`, { waitUntil: "networkidle0" });
 await wait(2600);
 check(
+  "Chọn loại báo cáo là một vùng điều hướng, không phải một ô lọc",
+  await page.evaluate(() => {
+    const e = document.querySelector(".dreport-modebar > *");
+    return [e?.tagName, e?.getAttribute("aria-label")];
+  }),
+  ["NAV", "Loại báo cáo"],
+);
+check(
   "Thanh điều hướng có đúng sáu tab, không có tab thứ bảy",
   await page.evaluate(() => document.querySelectorAll('[role="tab"]').length),
   6,
 );
+// Bám vào VAI TRÒ chứ không bám vào lớp trình bày: loại báo cáo giờ là điều
+// hướng cấp hai (`<nav>`), không còn là một rãnh phân đoạn trong thẻ trắng.
+// Khẳng định cũ tra `.dseg` nên đổi cách vẽ là nó gãy, dù bốn chế độ vẫn nguyên.
 check(
   "Tab Báo cáo có đúng bốn chế độ",
   await page.evaluate(() =>
-    [...document.querySelectorAll(".dreport-modebar .dseg button")].map((b) => b.textContent.trim()),
+    [...document.querySelectorAll(".dreport-modebar button")].map((b) => b.textContent.trim()),
   ),
   ["Thu NSNN", "Dự toán & dự báo", "Quản lý thu", "Kết quả kiểm tra"],
 );

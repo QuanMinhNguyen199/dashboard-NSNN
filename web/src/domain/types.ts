@@ -383,7 +383,7 @@ export interface TmsBreakdownData {
     sharedShare: number | null;
   } | null;
   quality: {
-    /** Số Tiểu mục có phát sinh nhưng chưa có tên trong danh mục 180 mã. */
+    /** Số mã bốn chữ số trong điều kiện chưa có dòng tên trong danh mục 180 Tiểu mục. */
     subItemsWithoutName: number;
     /** Số Chương có phát sinh nhưng chưa có bản ghi nên chưa xác định được cấp. */
     chaptersWithoutLevel: number;

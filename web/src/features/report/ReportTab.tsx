@@ -20,6 +20,7 @@ import { ReportModePicker } from "./ReportModePicker";
 import { xuatTheoMauNganh } from "./nsnnTemplateExport";
 import reportTree from "@/domain/report-tree.json";
 import { useNarrow } from "@/components/useNarrow";
+import { revealSection } from "@/components/sectionNavigation";
 
 const BudgetForecastView = lazy(() =>
   import("@/features/budget-forecast/BudgetForecastView").then((module) => ({ default: module.BudgetForecastView })),
@@ -54,7 +55,7 @@ const InspectionReportView = lazy(() =>
 export function ReportTab() {
   const { reportMode, setReportMode } = useDashboardState();
   return (
-    <div className="dstack">
+    <div className="dstack dreport-workspace" data-report-mode={reportMode}>
       <div className="dreport-modebar">
         <ReportModePicker value={reportMode} onChange={setReportMode} />
       </div>
@@ -93,7 +94,7 @@ function NsnnReportView() {
   const [mobileDimensionsOpen, setMobileDimensionsOpen] = useState(false);
   const openMobileTable = () => {
     setMobileSection("table");
-    window.requestAnimationFrame(() => document.getElementById("nsnn-report-table-title")?.focus());
+    revealSection("nsnn-report-table-title");
   };
 
   /**
@@ -196,7 +197,7 @@ function NsnnReportView() {
         aria-controls="report-dimension-controls"
         onClick={() => setMobileDimensionsOpen((open) => !open)}
       >
-        <span>Thiết lập mẫu</span>
+        <span>Chiều báo cáo</span>
         <strong>
           {DIMENSION_BY_ID[groupBy].name}
           {subGroupBy ? ` · ${DIMENSION_BY_ID[subGroupBy].name}` : " · Không chi tiết"}
@@ -277,7 +278,7 @@ function NsnnReportView() {
         <ReportSummary
           filters={filters}
           dimension={groupBy}
-          onOpenTable={openMobileTable}
+          onOpenTable={narrow ? openMobileTable : undefined}
         />
       </div>
 
@@ -359,6 +360,7 @@ function ReportBody({
   outerId: string | null;
   onOuter: (id: string) => void;
 }) {
+  const hepKho = useNarrow();
   const hasChildren = useMemo(
     () => new Set(data.rows.map((row) => row.parent).filter((id): id is string => !!id)),
     [data.rows],
@@ -412,20 +414,42 @@ function ReportBody({
 
   return (
     <>
-      <h2 className="dsubject" id="nsnn-report-table-title" tabIndex={-1}>
-        {data.templateNo ? `Mẫu ${data.templateNo}` : "Cặp chiều ngoài tám mẫu"}
-        <small>
-          {DIMENSION_BY_ID[data.groupBy].name}
-          {data.subGroupBy ? ` · chi tiết theo ${DIMENSION_BY_ID[data.subGroupBy].name}` : ""} ·{" "}
-          {data.meta.periodLabel}
-        </small>
-      </h2>
-
       <Card
         title="Bảng báo cáo"
+        // Mốc tiêu điểm khi mở khung bảng ở khổ hẹp. Trước đây mốc này nằm trên
+        // dòng "Mẫu N" phía trên; dòng đó đã bỏ nên mốc chuyển về tiêu đề thẻ,
+        // chứ không bỏ theo — bỏ là trình đọc màn hình mất chỗ đáp xuống.
+        titleId="nsnn-report-table-title"
         subtitle={`${DIMENSION_BY_ID[data.groupBy].source}. Ô theo ${scale.unit}, cột tổng theo ${totalScale.unit}.`}
         actions={
           <div className="dreport-actions">
+            {/*
+              Khổ hẹp: ô chọn nhóm lên thanh công cụ.
+
+              Dưới 768px bảng xếp chồng thành thẻ và cả `thead` bị ẩn, nên ô chọn
+              nằm trong đầu bảng biến mất — không còn đường nào đổi nhóm đang
+              xem. Trên màn hình rộng nó vẫn ở nguyên trong đầu bảng: ở đó nó
+              đứng ngay trên đúng dải cột mà nó điều khiển, gần hơn là đưa ra
+              đây.
+            */}
+            {hepKho && thanhVienNgoai.length > 0 && (
+              <label className="dreport-group-pick dreport-group-pick-ngoai">
+                <span className="sr-only">
+                  {DIMENSION_BY_ID[data.groupBy].name} đang xem, {thanhVienNgoai.length} nhóm
+                </span>
+                <select
+                  data-field="outerMemberNgoai"
+                  value={outerId ?? thanhVienNgoai[0]?.id}
+                  onChange={(event) => onOuter(event.target.value)}
+                >
+                  {thanhVienNgoai.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <MauNganhButton
               filters={filters}
               groupBy={data.groupBy}
@@ -447,7 +471,7 @@ function ReportBody({
           </div>
         }
       >
-        <div className="dtable-wrap">
+        <div className="dtable-wrap" id="nsnn-report-table" tabIndex={-1}>
           <table
             className="dtable dreport-table"
             data-loading={dangTaiSo || undefined}
@@ -483,22 +507,29 @@ function ReportBody({
                       scope="colgroup"
                       colSpan={leaves.filter((leaf) => leaf.parentId === group.id).length}
                     >
-                      <label className="dreport-group-pick">
-                        <span className="sr-only">
-                          Nhóm đang xem, {thanhVienNgoai.length} nhóm
-                        </span>
-                        <select
-                          data-field="outerMember"
-                          value={outerId ?? group.id}
-                          onChange={(event) => onOuter(event.target.value)}
-                        >
-                          {thanhVienNgoai.map((m) => (
-                            <option key={m.id} value={m.id}>
-                              {m.name}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      {/* Ở khổ hẹp ô chọn đã lên thanh công cụ; dựng ở cả hai chỗ
+                          là hai điều khiển cho cùng một thứ, và trình đọc màn
+                          hình đọc lên cả hai. */}
+                      {hepKho ? (
+                        group.name
+                      ) : (
+                        <label className="dreport-group-pick">
+                          <span className="sr-only">
+                            Nhóm đang xem, {thanhVienNgoai.length} nhóm
+                          </span>
+                          <select
+                            data-field="outerMember"
+                            value={outerId ?? group.id}
+                            onChange={(event) => onOuter(event.target.value)}
+                          >
+                            {thanhVienNgoai.map((m) => (
+                              <option key={m.id} value={m.id}>
+                                {m.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
                     </th>
                   ))}
                 </tr>
@@ -522,12 +553,17 @@ function ReportBody({
                 const expandable = hasChildren.has(row.id);
                 const expanded = open.has(row.id);
                 return (
-                  <tr key={row.id} className={`is-${row.kind}`} data-depth={Math.min(row.depth, 4)}>
+                  <tr
+                    key={row.id}
+                    className={`is-${row.kind}${expanded ? " is-open" : ""}`}
+                    data-depth={Math.min(row.depth, 4)}
+                    data-revealed={row.parent ? "true" : undefined}
+                  >
                     <th scope="row">
                       {expandable ? (
                         <button type="button" className="dtms-toggle" aria-expanded={expanded} onClick={() => toggle(row.id)}>
                           <span aria-hidden="true" className="dtms-caret" />
-                          {row.name}
+                          <span className="dtms-toggle-label">{row.name}</span>
                         </button>
                       ) : (
                         <span className="dreport-name">{row.name}</span>
@@ -540,7 +576,7 @@ function ReportBody({
                         <em>{KIND_LABEL[row.kind]}</em>
                       )}
                     </th>
-                    <td className="is-num dreport-total" data-label="Tổng toàn bộ cột">
+                    <td className="is-num dreport-total" data-label="Tổng">
                       {toDisplayNumber(row.total) === null
                         ? null
                         : inScale(toDisplayNumber(row.total), totalScale)}

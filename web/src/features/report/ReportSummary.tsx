@@ -43,23 +43,19 @@ function SummaryBody({ data, onOpenTable }: { data: ReportSummaryData; onOpenTab
     <>
       <DataFreshnessBar freshness={data.freshness} />
 
-      {onOpenTable && (
-        <button type="button" className="dbtn dreport-table-jump" onClick={onOpenTable}>
-          Đi đến bảng báo cáo
-        </button>
-      )}
-
       <KpiStrip columns={4} label={`Tóm tắt · ${name} · ${data.meta.periodLabel}`}>
-        <Kpi label="Tổng thu trong phạm vi">
+        <Kpi label="Tổng thu trong phạm vi" onActivate={onOpenTable} controls="nsnn-report-table">
           <Money value={data.total} scale={unit} />
         </Kpi>
-        <Kpi label={`Số ${name.toLowerCase()} có dữ liệu`}>{data.groupCount}</Kpi>
-        <Kpi label="Đóng góp lớn nhất" note={top?.name}>
+        <Kpi label={`Số ${name.toLowerCase()} có dữ liệu`} onActivate={onOpenTable} controls="nsnn-report-table">{data.groupCount}</Kpi>
+        <Kpi label="Đóng góp lớn nhất" note={top?.name} onActivate={onOpenTable} controls="nsnn-report-table">
           {top ? <Money value={top.amount} scale={unit} /> : null}
         </Kpi>
         <Kpi
           label="Đã xác định được nhóm"
           note={<><Money value={data.unclassifiedAmount} scale={unit} /> chưa xác định, vẫn nằm trong tổng</>}
+          onActivate={onOpenTable}
+          controls="nsnn-report-table"
         >
           {pct(data.classifiedRate)}
         </Kpi>
