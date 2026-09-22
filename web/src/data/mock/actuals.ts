@@ -1,7 +1,7 @@
 import actuals from "../tms-actuals.json";
 import { LOCATION_BY_TMS_CODE } from "@/domain/catalog";
 import { CITY_SCOPE } from "@/domain/report";
-import { TAX_OFFICE_NAME } from "@/domain/tms";
+import { taxOfficeEntityOf, taxOfficeNameOf } from "@/domain/tms";
 import { monthsOf } from "@/domain/metrics";
 import type { DashboardFilters, TmsBreakdownData } from "@/domain/types";
 
@@ -50,22 +50,48 @@ export function actualMonthsOf(filters: DashboardFilters): string[] {
 
 const add = (a: bigint, b: string) => a + BigInt(b);
 
-function mergeMap(months: string[], field: keyof PeriodBucket): Map<string, bigint> {
+/**
+ * Khóa cơ quan thuế của dữ liệu thật quy về THỰC THỂ ngay tại đây.
+ *
+ * Chứng từ mang mã nguồn, và kỳ 07/2025 phát sinh đủ cả 33 mã. Cộng thẳng theo
+ * mã thì năm cơ quan hiện hành bị tách làm đôi: mỗi nửa ra một dòng riêng với
+ * cùng một tên, nên bảng vừa đếm thừa vừa hiển thị hai dòng trùng tên mà không
+ * có cách nào phân biệt. Gộp ở tầng khóa giữ tổng không đổi.
+ */
+const khoaCqt = (key: string) => taxOfficeEntityOf(key);
+const khoaCap = (key: string) => {
+  const [office, location] = key.split("|");
+  return `${taxOfficeEntityOf(office)}|${location}`;
+};
+
+function mergeMap(
+  months: string[],
+  field: keyof PeriodBucket,
+  khoa: (key: string) => string = (key) => key,
+): Map<string, bigint> {
   const out = new Map<string, bigint>();
   for (const month of months) {
     const source = PERIODS[month][field] as Record<string, string>;
-    for (const [key, value] of Object.entries(source))
+    for (const [rawKey, value] of Object.entries(source)) {
+      const key = khoa(rawKey);
       out.set(key, add(out.get(key) ?? 0n, value));
+    }
   }
   return out;
 }
 
-function mergeCount(months: string[], field: keyof PeriodBucket): Map<string, number> {
+function mergeCount(
+  months: string[],
+  field: keyof PeriodBucket,
+  khoa: (key: string) => string = (key) => key,
+): Map<string, number> {
   const out = new Map<string, number>();
   for (const month of months) {
     const source = PERIODS[month][field] as Record<string, number>;
-    for (const [key, value] of Object.entries(source))
+    for (const [rawKey, value] of Object.entries(source)) {
+      const key = khoa(rawKey);
       out.set(key, (out.get(key) ?? 0) + value);
+    }
   }
   return out;
 }
@@ -91,9 +117,9 @@ export function taxOfficeScopesOf(
   const months = actualMonthsOf(filters);
   if (!months.length) return null;
 
-  const byOffice = mergeMap(months, "byTaxOffice");
-  const counts = mergeCount(months, "byTaxOfficeCount");
-  const pairs = mergeMap(months, "byPair");
+  const byOffice = mergeMap(months, "byTaxOffice", khoaCqt);
+  const counts = mergeCount(months, "byTaxOfficeCount", khoaCqt);
+  const pairs = mergeMap(months, "byPair", khoaCap);
 
   const locationsOf = new Map<string, { id: string; name: string; amount: bigint }[]>();
   const officesOfLocation = new Map<string, Set<string>>();
@@ -116,7 +142,7 @@ export function taxOfficeScopesOf(
   const offices = [...byOffice.entries()]
     .map(([code, amount]) => ({
       code,
-      name: TAX_OFFICE_NAME[code] ?? `${code} · chưa có tên trong danh mục`,
+      name: taxOfficeNameOf(code) ?? `${code} · chưa có tên trong danh mục`,
       amount: amount.toString(),
       txCount: counts.get(code) ?? 0,
       locations: (locationsOf.get(code) ?? [])
@@ -160,16 +186,36 @@ export function mockTaxOfficeScopesOf(total: number | null): TmsBreakdownData["t
   const officeTotal = Object.values(reference.byTaxOffice).reduce((a, b) => a + BigInt(b), 0n);
   if (officeTotal === 0n) return null;
 
+  // Cùng phép gộp như nhánh dữ liệu thật: kỳ tham chiếu cũng là chứng từ, nên
+  // nó mang mã nguồn và cũng tách đôi năm cơ quan nếu cộng thẳng theo mã.
+  const theoCqt = new Map<string, bigint>();
+  for (const [code, value] of Object.entries(reference.byTaxOffice)) {
+    const id = taxOfficeEntityOf(code);
+    theoCqt.set(id, (theoCqt.get(id) ?? 0n) + BigInt(value));
+  }
+  const soCt = new Map<string, number>();
+  for (const [code, value] of Object.entries(reference.byTaxOfficeCount)) {
+    const id = taxOfficeEntityOf(code);
+    soCt.set(id, (soCt.get(id) ?? 0) + value);
+  }
+
   const pairsOf = new Map<string, [string, bigint][]>();
+  const theoCap = new Map<string, bigint>();
   for (const [key, value] of Object.entries(reference.byPair)) {
+    const [rawOffice, location] = key.split("|");
+    const office = taxOfficeEntityOf(rawOffice);
+    const capKey = `${office}|${location}`;
+    theoCap.set(capKey, (theoCap.get(capKey) ?? 0n) + BigInt(value));
+  }
+  for (const [key, value] of theoCap) {
     const [office, location] = key.split("|");
     const list = pairsOf.get(office) ?? [];
-    list.push([location, BigInt(value)]);
+    list.push([location, value]);
     pairsOf.set(office, list);
   }
 
   const officesOfLocation = new Map<string, Set<string>>();
-  for (const key of Object.keys(reference.byPair)) {
+  for (const key of theoCap.keys()) {
     const [office, location] = key.split("|");
     const set = officesOfLocation.get(location) ?? new Set<string>();
     set.add(office);
@@ -180,12 +226,12 @@ export function mockTaxOfficeScopesOf(total: number | null): TmsBreakdownData["t
   // Tỷ lệ giữ nguyên dấu của kỳ tham chiếu; phần hoàn vẫn là số âm.
   const scale = (value: bigint) => (base * value) / officeTotal;
 
-  const offices = Object.entries(reference.byTaxOffice)
+  const offices = [...theoCqt.entries()]
     .map(([code, value]) => ({
       code,
-      name: TAX_OFFICE_NAME[code] ?? `${code} · chưa có tên trong danh mục`,
-      amount: scale(BigInt(value)).toString(),
-      txCount: reference.byTaxOfficeCount[code] ?? 0,
+      name: taxOfficeNameOf(code) ?? `${code} · chưa có tên trong danh mục`,
+      amount: scale(value).toString(),
+      txCount: soCt.get(code) ?? 0,
       locations: (pairsOf.get(code) ?? [])
         .sort((a, b) => (b[1] > a[1] ? 1 : b[1] < a[1] ? -1 : 0))
         .map(([id, value]) => ({ id, name: locationName(id), amount: scale(value).toString() })),

@@ -284,7 +284,7 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
    * prototype hiện chỉ có hai cấp NSTW/NSDP. Tách tất định dưới đây chỉ phục vụ
    * mock UI; số cuối cùng được lấy làm phần dư để bảo toàn tuyệt đối:
    *   NSĐP = cấp tỉnh + cấp huyện + cấp xã.
-   * Cấp huyện âm là điều chỉnh hợp lệ theo mẫu nghiệp vụ, không được ép về 0.
+   * Cấp con âm là điều chỉnh hợp lệ theo mẫu nghiệp vụ, không được ép về 0.
    */
   const localBudgetLevels = (() => {
     const local = budgetLevels.find((row) => row.id === "NSDP");

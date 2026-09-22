@@ -1,7 +1,9 @@
 import { CRUDE_OIL_ITEMS, DOMESTIC_ITEMS } from "@/domain/catalog";
 import {
   DIMENSION_BY_ID,
+  GRID_UNCLASSIFIED,
   REPORT_ROWS,
+  gridMembersOf,
   childrenOf,
   isLeaf,
   summableChildrenOf,
@@ -33,7 +35,7 @@ import { metaOf } from "./build";
  *   phần của chính dòng cha; đưa chúng vào phép cộng là đếm tiền hai lần.
  */
 
-const UNCLASSIFIED = "chua-xac-dinh";
+const UNCLASSIFIED = GRID_UNCLASSIFIED;
 
 /** Băm tất định 32 bit. Chỉ phục vụ số mô phỏng, không phải quy tắc nghiệp vụ. */
 function hash(...parts: string[]): number {
@@ -172,9 +174,7 @@ const depthOf = (row: ReportRowDef, byId: Map<string, ReportRowDef>) => {
  * tổng các cột không còn bằng tổng của hàng, và người đọc không có cách nào biết
  * phần thiếu lớn bao nhiêu.
  */
-function membersOf(dimension: ReportDimension) {
-  return [...DIMENSION_BY_ID[dimension].members, { id: UNCLASSIFIED, name: "Chưa xác định" }];
-}
+const membersOf = gridMembersOf;
 
 interface LeafColumn {
   id: string;

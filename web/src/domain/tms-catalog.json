@@ -1,1576 +1,1576 @@
 {
- "chapters": [
-  {
-   "code": "001",
-   "name": "Văn phòng Chủ tịch nước",
-   "level": "trung-uong"
-  },
-  {
-   "code": "002",
-   "name": "Văn phòng Quốc hội",
-   "level": "trung-uong"
-  },
-  {
-   "code": "003",
-   "name": "Tòa án nhân dân tối cao",
-   "level": "trung-uong"
-  },
-  {
-   "code": "004",
-   "name": "Viện kiểm sát nhân dân tối cao",
-   "level": "trung-uong"
-  },
-  {
-   "code": "005",
-   "name": "Văn phòng Chính phủ",
-   "level": "trung-uong"
-  },
-  {
-   "code": "009",
-   "name": "Bộ Công an",
-   "level": "trung-uong"
-  },
-  {
-   "code": "010",
-   "name": "Bộ Quốc phòng",
-   "level": "trung-uong"
-  },
-  {
-   "code": "011",
-   "name": "Bộ Ngoại giao",
-   "level": "trung-uong"
-  },
-  {
-   "code": "012",
-   "name": "Bộ Nông nghiệp và Phát triển nông thôn",
-   "level": "trung-uong"
-  },
-  {
-   "code": "014",
-   "name": "Bộ Tư pháp",
-   "level": "trung-uong"
-  },
-  {
-   "code": "016",
-   "name": "Bộ Công thương",
-   "level": "trung-uong"
-  },
-  {
-   "code": "017",
-   "name": "Bộ Khoa học và Công nghệ",
-   "level": "trung-uong"
-  },
-  {
-   "code": "018",
-   "name": "Bộ Tài chính",
-   "level": "trung-uong"
-  },
-  {
-   "code": "019",
-   "name": "Bộ Xây dựng",
-   "level": "trung-uong"
-  },
-  {
-   "code": "021",
-   "name": "Bộ Giao thông - Vận tải",
-   "level": "trung-uong"
-  },
-  {
-   "code": "022",
-   "name": "Bộ Giáo dục và Đào tạo",
-   "level": "trung-uong"
-  },
-  {
-   "code": "023",
-   "name": "Bộ Y tế",
-   "level": "trung-uong"
-  },
-  {
-   "code": "025",
-   "name": "Bộ Văn hóa, Thể thao và Du lịch",
-   "level": "trung-uong"
-  },
-  {
-   "code": "026",
-   "name": "Bộ Tài nguyên và Môi trường",
-   "level": "trung-uong"
-  },
-  {
-   "code": "027",
-   "name": "Bộ Thông tin và Truyền thông",
-   "level": "trung-uong"
-  },
-  {
-   "code": "035",
-   "name": "Bộ Nội vụ",
-   "level": "trung-uong"
-  },
-  {
-   "code": "036",
-   "name": "Ngân hàng Nhà nước Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "040",
-   "name": "Đài Tiếng nói Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "041",
-   "name": "Đài Truyền hình Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "042",
-   "name": "Thông tấn xã Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "045",
-   "name": "Viện Hàn lâm Khoa học Xã hội Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "100",
-   "name": "Ban Quản lý Lăng Chủ tịch Hồ Chí Minh",
-   "level": "trung-uong"
-  },
-  {
-   "code": "109",
-   "name": "Văn phòng Trung ương Đảng",
-   "level": "trung-uong"
-  },
-  {
-   "code": "110",
-   "name": "Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "121",
-   "name": "Tập đoàn Dầu khí Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "122",
-   "name": "Tập đoàn Công nghiệp Than - Khoáng sản Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "123",
-   "name": "Tập đoàn Điện lực Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "124",
-   "name": "Tập đoàn Bưu chính Viễn thông Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "125",
-   "name": "Tập đoàn Hóa chất Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "133",
-   "name": "Tổng công ty Thuốc lá Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "134",
-   "name": "Tổng công ty Hàng hải Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "135",
-   "name": "Tổng công ty Hàng không Việt Nam - Công ty cổ phần",
-   "level": "trung-uong"
-  },
-  {
-   "code": "136",
-   "name": "Tập đoàn Xăng dầu Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "137",
-   "name": "Tổng công ty Đường sắt Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "139",
-   "name": "Ngân hàng thương mại cổ phần Ngoại thương Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "140",
-   "name": "Ngân hàng thương mại cổ phần Công thương Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "141",
-   "name": "Ngân hàng Nông nghiệp và Phát triển nông thôn Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "142",
-   "name": "Ngân hàng thương mại cổ phần Đầu tư và Phát triển Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "151",
-   "name": "Các đơn vị kinh tế có 100% vốn đầu tư nước ngoài vào Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "152",
-   "name": "Các đơn vị có vốn nước ngoài từ 51% đến dưới 100% vốn điều lệ hoặc có đa số thành viên hợp danh là cá nhân người nước ngoài đối với công ty hợp danh",
-   "level": "trung-uong"
-  },
-  {
-   "code": "154",
-   "name": "Kinh tế hỗn hợp ngoài quốc doanh",
-   "level": "trung-uong"
-  },
-  {
-   "code": "158",
-   "name": "Các đơn vị kinh tế hỗn hợp có vốn nhà nước trên 50% đến dưới 100% vốn điều lệ",
-   "level": "trung-uong"
-  },
-  {
-   "code": "159",
-   "name": "Các đơn vị có vốn nhà nước từ 50% vốn điều lệ trở xuống",
-   "level": "trung-uong"
-  },
-  {
-   "code": "160",
-   "name": "Các quan hệ khác của ngân sách",
-   "level": "trung-uong"
-  },
-  {
-   "code": "161",
-   "name": "Nhà thầu chính ngoài nước",
-   "level": "trung-uong"
-  },
-  {
-   "code": "162",
-   "name": "Nhà thầu phụ ngoài nước",
-   "level": "trung-uong"
-  },
-  {
-   "code": "169",
-   "name": "Tổng công ty cổ phần Xuất nhập khẩu xây dựng Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "170",
-   "name": "Tổng công ty Đầu tư phát triển nhà và đô thị",
-   "level": "trung-uong"
-  },
-  {
-   "code": "176",
-   "name": "Các đơn vị có vốn nhà nước nắm giữ 100% vốn điều lệ (không thuộc các cơ quan chủ quản, các Chương Tập đoàn, Tổng công ty)",
-   "level": "trung-uong"
-  },
-  {
-   "code": "208",
-   "name": "Nhà cung cấp nước ngoài không có cơ sở thường trú tại Việt Nam",
-   "level": "trung-uong"
-  },
-  {
-   "code": "399",
-   "name": "Các đơn vị khác",
-   "level": "trung-uong"
-  },
-  {
-   "code": "405",
-   "name": "Văn phòng Ủy ban nhân dân",
-   "level": "tinh"
-  },
-  {
-   "code": "412",
-   "name": "Sở Nông nghiệp và Phát triển nông thôn",
-   "level": "tinh"
-  },
-  {
-   "code": "414",
-   "name": "Sở Tư pháp",
-   "level": "tinh"
-  },
-  {
-   "code": "416",
-   "name": "Sở Công Thương",
-   "level": "tinh"
-  },
-  {
-   "code": "418",
-   "name": "Sở Tài chính",
-   "level": "tinh"
-  },
-  {
-   "code": "419",
-   "name": "Sở Xây dựng",
-   "level": "tinh"
-  },
-  {
-   "code": "421",
-   "name": "Sở Giao thông - Vận tải",
-   "level": "tinh"
-  },
-  {
-   "code": "422",
-   "name": "Sở Giáo dục và Đào tạo",
-   "level": "tinh"
-  },
-  {
-   "code": "423",
-   "name": "Sở Y tế",
-   "level": "tinh"
-  },
-  {
-   "code": "425",
-   "name": "Sở Văn hóa, Thể thao và Du lịch",
-   "level": "tinh"
-  },
-  {
-   "code": "428",
-   "name": "Sở Du lịch",
-   "level": "tinh"
-  },
-  {
-   "code": "429",
-   "name": "Sở Văn hóa - Thể thao",
-   "level": "tinh"
-  },
-  {
-   "code": "435",
-   "name": "Sở Nội vụ",
-   "level": "tinh"
-  },
-  {
-   "code": "439",
-   "name": "Sở Quy hoạch - Kiến trúc",
-   "level": "tinh"
-  },
-  {
-   "code": "505",
-   "name": "Ban quản lý khu công nghiệp",
-   "level": "tinh"
-  },
-  {
-   "code": "510",
-   "name": "Ủy ban Mặt trận Tổ quốc tỉnh",
-   "level": "tinh"
-  },
-  {
-   "code": "516",
-   "name": "Liên hiệp các hội khoa học và kỹ thuật",
-   "level": "tinh"
-  },
-  {
-   "code": "551",
-   "name": "Các đơn vị có 100% vốn đầu tư nước ngoài vào Việt Nam",
-   "level": "tinh"
-  },
-  {
-   "code": "552",
-   "name": "Các đơn vị có vốn đầu tư nước ngoài từ 51% đến dưới 100% vốn điều lệ hoặc có đa số thành viên hợp danh là cá nhân người nước ngoài đối với công ty hợp danh",
-   "level": "tinh"
-  },
-  {
-   "code": "554",
-   "name": "Kinh tế hỗn hợp ngoài quốc doanh",
-   "level": "tinh"
-  },
-  {
-   "code": "555",
-   "name": "Doanh nghiệp tư nhân",
-   "level": "tinh"
-  },
-  {
-   "code": "556",
-   "name": "Hợp tác xã",
-   "level": "tinh"
-  },
-  {
-   "code": "557",
-   "name": "Hộ gia đình, cá nhân",
-   "level": "tinh"
-  },
-  {
-   "code": "558",
-   "name": "Các đơn vị kinh tế hỗn hợp có vốn Nhà nước trên 50% đến dưới 100% vốn điều lệ",
-   "level": "tinh"
-  },
-  {
-   "code": "559",
-   "name": "Các đơn vị có vốn nhà nước từ 50% vốn điều lệ trở xuống",
-   "level": "tinh"
-  },
-  {
-   "code": "560",
-   "name": "Các quan hệ khác của ngân sách",
-   "level": "tinh"
-  },
-  {
-   "code": "561",
-   "name": "Nhà thầu chính ngoài nước",
-   "level": "tinh"
-  },
-  {
-   "code": "562",
-   "name": "Nhà thầu phụ ngoài nước",
-   "level": "tinh"
-  },
-  {
-   "code": "564",
-   "name": "Các đơn vị có vốn nhà nước nắm giữ 100% vốn điều lệ (không thuộc các cơ quan chủ quản, các Chương Tập đoàn, Tổng công ty)",
-   "level": "tinh"
-  },
-  {
-   "code": "599",
-   "name": "Các đơn vị khác",
-   "level": "tinh"
-  },
-  {
-   "code": "757",
-   "name": "Hộ gia đình, cá nhân",
-   "level": "huyen"
-  },
-  {
-   "code": "800",
-   "name": "Tổng hợp ngân sách xã",
-   "level": "xa"
-  },
-  {
-   "code": "805",
-   "name": "Văn phòng Ủy ban nhân dân",
-   "level": "xa"
-  },
-  {
-   "code": "809",
-   "name": "Công an xã",
-   "level": "xa"
-  },
-  {
-   "code": "821",
-   "name": "Đơn vị sự nghiệp công lập cung ứng dịch vụ sự nghiệp công cơ bản, thiết yếu",
-   "level": "xa"
-  },
-  {
-   "code": "822",
-   "name": "Trường mầm non, nhà trẻ",
-   "level": "xa"
-  },
-  {
-   "code": "823",
-   "name": "Trạm Y tế xã",
-   "level": "xa"
-  },
-  {
-   "code": "829",
-   "name": "Ban Quản lý dự án",
-   "level": "xa"
-  },
-  {
-   "code": "830",
-   "name": "Văn phòng Hội đồng nhân dân và Ủy ban nhân dân",
-   "level": "xa"
-  },
-  {
-   "code": "831",
-   "name": "Phòng Kinh tế (đối với xã, đặc khu) hoặc Phòng Kinh tế, Hạ tầng và Đô thị (đối với phường và đặc khu Phú Quốc)",
-   "level": "xa"
-  },
-  {
-   "code": "832",
-   "name": "Phòng Văn hóa - Xã hội",
-   "level": "xa"
-  },
-  {
-   "code": "854",
-   "name": "Kinh tế hỗn hợp ngoài quốc doanh",
-   "level": "xa"
-  },
-  {
-   "code": "855",
-   "name": "Doanh nghiệp tư nhân",
-   "level": "xa"
-  },
-  {
-   "code": "856",
-   "name": "Hợp tác xã",
-   "level": "xa"
-  },
-  {
-   "code": "857",
-   "name": "Hộ gia đình, cá nhân",
-   "level": "xa"
-  },
-  {
-   "code": "858",
-   "name": "Các đơn vị kinh tế hỗn hợp có vốn nhà nước trên 50% đến dưới 100% vốn điều lệ",
-   "level": "xa"
-  },
-  {
-   "code": "860",
-   "name": "Các quan hệ khác của ngân sách",
-   "level": "xa"
-  },
-  {
-   "code": "989",
-   "name": "Các đơn vị khác",
-   "level": "xa"
-  }
- ],
- "sections": [
-  {
-   "code": "1000",
-   "name": "Thuế thu nhập cá nhân"
-  },
-  {
-   "code": "1050",
-   "name": "Thuế thu nhập doanh nghiệp"
-  },
-  {
-   "code": "1150",
-   "name": "Thu nhập sau thuế thu nhập"
-  },
-  {
-   "code": "1250",
-   "name": "Thu tiền cấp quyền khai thác tài nguyên khoáng sản, vùng trời, vùng biển"
-  },
-  {
-   "code": "1400",
-   "name": "Thu tiền sử dụng đất"
-  },
-  {
-   "code": "1550",
-   "name": "Thuế tài nguyên"
-  },
-  {
-   "code": "1600",
-   "name": "Thuế sử dụng đất phi nông nghiệp"
-  },
-  {
-   "code": "1700",
-   "name": "Thuế giá trị gia tăng"
-  },
-  {
-   "code": "1750",
-   "name": "Thuế tiêu thụ đặc biệt"
-  },
-  {
-   "code": "2000",
-   "name": "Thuế bảo vệ môi trường"
-  },
-  {
-   "code": "2100",
-   "name": "Phí trong lĩnh vực khác"
-  },
-  {
-   "code": "2150",
-   "name": "Phí thuộc lĩnh vực nông nghiệp, lâm nghiệp, thủy sản"
-  },
-  {
-   "code": "2200",
-   "name": "Phí thuộc lĩnh vực ngoại giao"
-  },
-  {
-   "code": "2250",
-   "name": "Phí thuộc lĩnh vực công nghiệp, thương mại, đầu tư, xây dựng"
-  },
-  {
-   "code": "2300",
-   "name": "Phí thuộc lĩnh vực giao thông vận tải"
-  },
-  {
-   "code": "2350",
-   "name": "Phí thuộc lĩnh vực thông tin và truyền thông"
-  },
-  {
-   "code": "2400",
-   "name": "Phí thuộc lĩnh vực an ninh, quốc phòng"
-  },
-  {
-   "code": "2450",
-   "name": "Phí thuộc lĩnh vực văn hóa, thể thao, du lịch"
-  },
-  {
-   "code": "2500",
-   "name": "Phí thuộc lĩnh vực khoa học và công nghệ"
-  },
-  {
-   "code": "2550",
-   "name": "Phí thuộc lĩnh vực y tế"
-  },
-  {
-   "code": "2600",
-   "name": "Phí thuộc lĩnh vực tài nguyên và môi trường"
-  },
-  {
-   "code": "2650",
-   "name": "Phí thuộc lĩnh vực tài chính, ngân hàng, bảo hiểm"
-  },
-  {
-   "code": "2700",
-   "name": "Phí thuộc lĩnh vực tư pháp"
-  },
-  {
-   "code": "2750",
-   "name": "Lệ phí quản lý nhà nước liên quan đến quyền và nghĩa vụ của công dân"
-  },
-  {
-   "code": "2800",
-   "name": "Lệ phí quản lý nhà nước liên quan đến quyền sở hữu, quyền sử dụng tài sản"
-  },
-  {
-   "code": "2850",
-   "name": "Lệ phí quản lý nhà nước liên quan đến sản xuất, kinh doanh"
-  },
-  {
-   "code": "3000",
-   "name": "Lệ phí quản lý nhà nước đặc biệt về chủ quyền quốc gia"
-  },
-  {
-   "code": "3050",
-   "name": "Lệ phí quản lý nhà nước trong các lĩnh vực khác"
-  },
-  {
-   "code": "3350",
-   "name": "Thu từ bán và thanh lý tài sản khác"
-  },
-  {
-   "code": "3600",
-   "name": "Tiền cho thuê mặt đất, mặt nước"
-  },
-  {
-   "code": "3850",
-   "name": "Thu tiền khai thác, cho thuê tài sản công"
-  },
-  {
-   "code": "3900",
-   "name": "Thu khác từ quỹ đất"
-  },
-  {
-   "code": "4250",
-   "name": "Thu tiền phạt"
-  },
-  {
-   "code": "4300",
-   "name": "Thu tịch thu"
-  },
-  {
-   "code": "4500",
-   "name": "Các khoản đóng góp tự nguyện"
-  },
-  {
-   "code": "4900",
-   "name": "Các khoản thu khác"
-  },
-  {
-   "code": "7550",
-   "name": "Hoàn thuế giá trị gia tăng; thuế tiêu thụ đặc biệt; thuế nhập khẩu theo chương trình ưu đãi thuế công nghiệp hỗ trợ, theo chế độ quy định"
-  }
- ],
- "subItems": [
-  {
-   "code": "1001",
-   "name": "Thuế thu nhập từ tiền lương, tiền công",
-   "section": "1000"
-  },
-  {
-   "code": "1003",
-   "name": "Thuế thu nhập từ hoạt động sản xuất, kinh doanh của cá nhân",
-   "section": "1000"
-  },
-  {
-   "code": "1004",
-   "name": "Thuế thu nhập từ đầu tư vốn của cá nhân",
-   "section": "1000"
-  },
-  {
-   "code": "1005",
-   "name": "Thuế thu nhập từ chuyển nhượng vốn (không gồm chuyển nhượng chứng khoán)",
-   "section": "1000"
-  },
-  {
-   "code": "1006",
-   "name": "Thuế thu nhập từ chuyển nhượng bất động sản, nhận thừa kế và nhận quà tặng là bất động sản",
-   "section": "1000"
-  },
-  {
-   "code": "1007",
-   "name": "Thuế thu nhập từ trúng thưởng",
-   "section": "1000"
-  },
-  {
-   "code": "1008",
-   "name": "Thuế thu nhập từ bản quyền, nhượng quyền thương mại",
-   "section": "1000"
-  },
-  {
-   "code": "1012",
-   "name": "Thuế thu nhập từ thừa kế, quà biếu, quà tặng khác trừ bất động sản",
-   "section": "1000"
-  },
-  {
-   "code": "1014",
-   "name": "Thuế thu nhập từ hoạt động cho thuê tài sản",
-   "section": "1000"
-  },
-  {
-   "code": "1015",
-   "name": "Thuế thu nhập từ chuyển nhượng chứng khoán",
-   "section": "1000"
-  },
-  {
-   "code": "1049",
-   "name": "Thuế thu nhập cá nhân khác",
-   "section": "1000"
-  },
-  {
-   "code": "1052",
-   "name": "Thuế thu nhập doanh nghiệp từ hoạt động sản xuất kinh doanh (gồm cả dịch vụ trong lĩnh vực dầu khí)",
-   "section": "1050"
-  },
-  {
-   "code": "1053",
-   "name": "Thuế thu nhập doanh nghiệp từ chuyển nhượng bất động sản",
-   "section": "1050"
-  },
-  {
-   "code": "1055",
-   "name": "Thuế thu nhập doanh nghiệp từ hoạt động chuyển nhượng vốn",
-   "section": "1050"
-  },
-  {
-   "code": "1099",
-   "name": "Khác",
-   "section": "1050"
-  },
-  {
-   "code": "1151",
-   "name": "Lợi nhuận sau thuế còn lại sau khi trích lập các quỹ",
-   "section": "1150"
-  },
-  {
-   "code": "1199",
-   "name": "Khác",
-   "section": "1150"
-  },
-  {
-   "code": "1254",
-   "name": "Thu tiền cấp quyền khai thác tài nguyên nước đối với giấy phép do cơ quan địa phương cấp phép",
-   "section": "1250"
-  },
-  {
-   "code": "1401",
-   "name": "Đất được nhà nước giao",
-   "section": "1400"
-  },
-  {
-   "code": "1407",
-   "name": "Tiền chuyển mục đích sử dụng đất đối với đất do cơ quan, đơn vị, tổ chức thuộc Nhà nước quản lý",
-   "section": "1400"
-  },
-  {
-   "code": "1408",
-   "name": "Đất thực hiện dự án đầu tư xây dựng nhà ở để bán hoặc để bán kết hợp cho thuê",
-   "section": "1400"
-  },
-  {
-   "code": "1411",
-   "name": "Đất được nhà nước công nhận quyền sử dụng đất",
-   "section": "1400"
-  },
-  {
-   "code": "1449",
-   "name": "Khác",
-   "section": "1400"
-  },
-  {
-   "code": "1555",
-   "name": "Khoáng sản phi kim loại",
-   "section": "1550"
-  },
-  {
-   "code": "1558",
-   "name": "Nước thiên nhiên khác",
-   "section": "1550"
-  },
-  {
-   "code": "1601",
-   "name": "Thu từ đất ở tại nông thôn",
-   "section": "1600"
-  },
-  {
-   "code": "1602",
-   "name": "Thu từ đất ở tại đô thị",
-   "section": "1600"
-  },
-  {
-   "code": "1603",
-   "name": "Thu từ đất sản xuất, kinh doanh phi nông nghiệp",
-   "section": "1600"
-  },
-  {
-   "code": "1649",
-   "name": "Thu từ đất phi nông nghiệp khác",
-   "section": "1600"
-  },
-  {
-   "code": "1701",
-   "name": "Thuế giá trị gia tăng hàng sản xuất, kinh doanh trong nước (gồm cả dịch vụ trong lĩnh vực dầu khí)",
-   "section": "1700"
-  },
-  {
-   "code": "1705",
-   "name": "Thuế giá trị gia tăng từ hoạt động xổ số kiến thiết",
-   "section": "1700"
-  },
-  {
-   "code": "1749",
-   "name": "Hàng hóa, dịch vụ khác",
-   "section": "1700"
-  },
-  {
-   "code": "1754",
-   "name": "Rượu sản xuất trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1757",
-   "name": "Các dịch vụ, hàng hóa khác sản xuất trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1758",
-   "name": "Bia sản xuất trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1761",
-   "name": "Thuế tiêu thụ đặc biệt từ hoạt động xổ số kiến thiết",
-   "section": "1750"
-  },
-  {
-   "code": "1763",
-   "name": "Rượu nhập khẩu bán ra trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1764",
-   "name": "Xe ô tô dưới 24 chỗ ngồi các loại nhập khẩu bán ra trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1766",
-   "name": "Các dịch vụ, hàng hóa khác nhập khẩu bán ra trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1767",
-   "name": "Bia nhập khẩu bán ra trong nước",
-   "section": "1750"
-  },
-  {
-   "code": "1799",
-   "name": "Khác",
-   "section": "1750"
-  },
-  {
-   "code": "2007",
-   "name": "Túi ni lông sản xuất trong nước",
-   "section": "2000"
-  },
-  {
-   "code": "2022",
-   "name": "Thuế bảo vệ môi trường mặt hàng xăng (trừ etanol) bán ra trong nước",
-   "section": "2000"
-  },
-  {
-   "code": "2023",
-   "name": "Thuế bảo vệ môi trường mặt hàng dầu diezel bán ra trong nước",
-   "section": "2000"
-  },
-  {
-   "code": "2025",
-   "name": "Thuế bảo vệ môi trường mặt hàng dầu mazut, dầu mỡ nhờn bán ra trong nước",
-   "section": "2000"
-  },
-  {
-   "code": "2026",
-   "name": "Thuế bảo vệ môi trường mặt hàng nhiên liệu bay bán ra trong nước",
-   "section": "2000"
-  },
-  {
-   "code": "2106",
-   "name": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề theo quy định của pháp luật",
-   "section": "2100"
-  },
-  {
-   "code": "2107",
-   "name": "Phí tuyển dụng, dự thi nâng ngạch, thăng hạng công chức, viên chức",
-   "section": "2100"
-  },
-  {
-   "code": "2111",
-   "name": "Phí xác minh giấy tờ, tài liệu",
-   "section": "2100"
-  },
-  {
-   "code": "2151",
-   "name": "Phí kiểm dịch (kiểm dịch động vật, thực vật, sản phẩm động vật)",
-   "section": "2150"
-  },
-  {
-   "code": "2152",
-   "name": "Phí giám sát khử trùng vật thể thuộc diện kiểm dịch thực vật",
-   "section": "2150"
-  },
-  {
-   "code": "2153",
-   "name": "Phí kiểm soát giết mổ động vật",
-   "section": "2150"
-  },
-  {
-   "code": "2164",
-   "name": "Phí bảo hộ giống trong lĩnh vực nông nghiệp, lâm nghiệp, thủy sản",
-   "section": "2150"
-  },
-  {
-   "code": "2165",
-   "name": "Phí kiểm nghiệm an toàn thực phẩm nông nghiệp, lâm nghiệp, thủy sản nhập khẩu",
-   "section": "2150"
-  },
-  {
-   "code": "2166",
-   "name": "Phí thẩm định trong lĩnh vực nông nghiệp",
-   "section": "2150"
-  },
-  {
-   "code": "2207",
-   "name": "Phí cấp thị thực và các giấy tờ có liên quan đến xuất nhập cảnh Việt Nam cho người nước ngoài",
-   "section": "2200"
-  },
-  {
-   "code": "2211",
-   "name": "Phí chứng nhận lãnh sự và hợp pháp hóa lãnh sự",
-   "section": "2200"
-  },
-  {
-   "code": "2251",
-   "name": "Phí chứng nhận xuất xứ hàng hóa (C/O)",
-   "section": "2250"
-  },
-  {
-   "code": "2255",
-   "name": "Phí thẩm định đầu tư, dự án đầu tư",
-   "section": "2250"
-  },
-  {
-   "code": "2263",
-   "name": "Phí thẩm định cấp phép sử dụng vật liệu nổ công nghiệp",
-   "section": "2250"
-  },
-  {
-   "code": "2264",
-   "name": "Phí trong lĩnh vực hóa chất",
-   "section": "2250"
-  },
-  {
-   "code": "2265",
-   "name": "Phí thẩm định điều kiện, tiêu chuẩn ngành nghề thuộc lĩnh vực công nghiệp, thương mại, xây dựng",
-   "section": "2250"
-  },
-  {
-   "code": "2266",
-   "name": "Phí cung cấp thông tin doanh nghiệp",
-   "section": "2250"
-  },
-  {
-   "code": "2301",
-   "name": "Phí thuộc lĩnh vực đường bộ (không bao gồm phí sử dụng đường bộ thu qua đầu phương tiện ô tô)",
-   "section": "2300"
-  },
-  {
-   "code": "2302",
-   "name": "Phí thuộc lĩnh vực đường thủy nội địa",
-   "section": "2300"
-  },
-  {
-   "code": "2303",
-   "name": "Phí thuộc lĩnh vực đường biển (không bao gồm phí bảo đảm hàng hải)",
-   "section": "2300"
-  },
-  {
-   "code": "2316",
-   "name": "Phí thuộc lĩnh vực hàng không",
-   "section": "2300"
-  },
-  {
-   "code": "2323",
-   "name": "Phí sử dụng kết cấu hạ tầng đường sắt",
-   "section": "2300"
-  },
-  {
-   "code": "2352",
-   "name": "Phí duy trì sử dụng tên miền và địa chỉ Internet",
-   "section": "2350"
-  },
-  {
-   "code": "2353",
-   "name": "Phí sử dụng mã, số viễn thông",
-   "section": "2350"
-  },
-  {
-   "code": "2361",
-   "name": "Phí quyền hoạt động viễn thông",
-   "section": "2350"
-  },
-  {
-   "code": "2362",
-   "name": "Phí thẩm định điều kiện hoạt động viễn thông",
-   "section": "2350"
-  },
-  {
-   "code": "2363",
-   "name": "Phí thẩm định điều kiện hoạt động bưu chính",
-   "section": "2350"
-  },
-  {
-   "code": "2364",
-   "name": "Phí dịch vụ duy trì hệ thống kiểm tra trạng thái chứng thư số",
-   "section": "2350"
-  },
-  {
-   "code": "2365",
-   "name": "Phí quyền cung cấp dịch vụ truyền hình trả tiền",
-   "section": "2350"
-  },
-  {
-   "code": "2366",
-   "name": "Phí thẩm định nội dung, kịch bản trò chơi điện tử trên mạng",
-   "section": "2350"
-  },
-  {
-   "code": "2416",
-   "name": "Phí sát hạch cấp chứng chỉ nghiệp vụ bảo vệ",
-   "section": "2400"
-  },
-  {
-   "code": "2418",
-   "name": "Phí thẩm định điều kiện, tiêu chuẩn hành nghề thuộc lĩnh vực an ninh, quốc phòng",
-   "section": "2400"
-  },
-  {
-   "code": "2421",
-   "name": "Phí khai thác và sử dụng thông tin trong cơ sở dữ liệu quốc gia về dân cư",
-   "section": "2400"
-  },
-  {
-   "code": "2452",
-   "name": "Phí thăm quan",
-   "section": "2450"
-  },
-  {
-   "code": "2453",
-   "name": "Phí thẩm định văn hóa phẩm",
-   "section": "2450"
-  },
-  {
-   "code": "2455",
-   "name": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề thuộc lĩnh vực văn hóa, thể thao, du lịch",
-   "section": "2450"
-  },
-  {
-   "code": "2457",
-   "name": "Phí bảo quản ký gửi và sử dụng tài liệu lưu trữ",
-   "section": "2450"
-  },
-  {
-   "code": "2458",
-   "name": "Phí đăng ký quyền tác giả, quyền liên quan đến quyền tác giả",
-   "section": "2450"
-  },
-  {
-   "code": "2504",
-   "name": "Phí sở hữu trí tuệ",
-   "section": "2500"
-  },
-  {
-   "code": "2505",
-   "name": "Phí cấp mã số, mã vạch",
-   "section": "2500"
-  },
-  {
-   "code": "2512",
-   "name": "Phí thẩm định hợp đồng chuyển giao công nghệ",
-   "section": "2500"
-  },
-  {
-   "code": "2561",
-   "name": "Phí thẩm định hoạt động, tiêu chuẩn, điều kiện hành nghề thuộc lĩnh vực y tế",
-   "section": "2550"
-  },
-  {
-   "code": "2566",
-   "name": "Phí thẩm định cấp giấy phép lưu hành, nhập khẩu, xuất khẩu, công bố trang thiết bị y tế",
-   "section": "2550"
-  },
-  {
-   "code": "2567",
-   "name": "Phí thẩm định cấp phép lưu hành, nhập khẩu, xác nhận, công bố",
-   "section": "2550"
-  },
-  {
-   "code": "2618",
-   "name": "Phí bảo vệ môi trường đối với nước thải, khí thải",
-   "section": "2600"
-  },
-  {
-   "code": "2625",
-   "name": "Phí bảo vệ môi trường đối với khai thác khoáng sản còn lại",
-   "section": "2600"
-  },
-  {
-   "code": "2627",
-   "name": "Phí thẩm định hồ sơ cấp giấy chứng nhận quyền sử dụng đất",
-   "section": "2600"
-  },
-  {
-   "code": "2631",
-   "name": "Phí khai thác, sử dụng nguồn nước",
-   "section": "2600"
-  },
-  {
-   "code": "2632",
-   "name": "Phí thẩm định điều kiện hành nghề thuộc lĩnh vực tài nguyên môi trường",
-   "section": "2600"
-  },
-  {
-   "code": "2633",
-   "name": "Phí khai thác, sử dụng tài liệu, dữ liệu tài nguyên và môi trường (không bao gồm phí khai thác và sử dụng tài liệu dầu khí)",
-   "section": "2600"
-  },
-  {
-   "code": "2634",
-   "name": "Phí thẩm định báo cáo đánh giá tác động môi trường, đề án bảo vệ môi trường chi tiết; thẩm định phương án cải tạo, phục hồi môi trường và phương án cải tạo, phục hồi môi trường bổ sung",
-   "section": "2600"
-  },
-  {
-   "code": "2652",
-   "name": "Phí dịch vụ thanh toán trong hoạt động của Kho bạc nhà nước",
-   "section": "2650"
-  },
-  {
-   "code": "2663",
-   "name": "Phí hải quan",
-   "section": "2650"
-  },
-  {
-   "code": "2665",
-   "name": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề thuộc lĩnh vực tài chính",
-   "section": "2650"
-  },
-  {
-   "code": "2701",
-   "name": "Án phí",
-   "section": "2700"
-  },
-  {
-   "code": "2706",
-   "name": "Phí thi hành án dân sự",
-   "section": "2700"
-  },
-  {
-   "code": "2715",
-   "name": "Phí công chứng",
-   "section": "2700"
-  },
-  {
-   "code": "2716",
-   "name": "Phí chứng thực",
-   "section": "2700"
-  },
-  {
-   "code": "2717",
-   "name": "Phí thẩm định điều kiện hoạt động thuộc lĩnh vực tư pháp",
-   "section": "2700"
-  },
-  {
-   "code": "2718",
-   "name": "Phí đăng ký giao dịch bảo đảm",
-   "section": "2700"
-  },
-  {
-   "code": "2721",
-   "name": "Phí sử dụng thông tin",
-   "section": "2700"
-  },
-  {
-   "code": "2722",
-   "name": "Phí cấp mã số sử dụng cơ sở dữ liệu về giao dịch bảo đảm",
-   "section": "2700"
-  },
-  {
-   "code": "2751",
-   "name": "Lệ phí quốc tịch",
-   "section": "2750"
-  },
-  {
-   "code": "2752",
-   "name": "Lệ phí cấp hộ chiếu",
-   "section": "2750"
-  },
-  {
-   "code": "2766",
-   "name": "Lệ phí tòa án",
-   "section": "2750"
-  },
-  {
-   "code": "2767",
-   "name": "Lệ phí đăng ký cư trú",
-   "section": "2750"
-  },
-  {
-   "code": "2768",
-   "name": "Lệ phí cấp chứng minh nhân dân, căn cước công dân",
-   "section": "2750"
-  },
-  {
-   "code": "2771",
-   "name": "Lệ phí hộ tịch",
-   "section": "2750"
-  },
-  {
-   "code": "2801",
-   "name": "Lệ phí trước bạ nhà đất",
-   "section": "2800"
-  },
-  {
-   "code": "2802",
-   "name": "Lệ phí trước bạ ô tô",
-   "section": "2800"
-  },
-  {
-   "code": "2803",
-   "name": "Lệ phí trước bạ tàu thủy, thuyền",
-   "section": "2800"
-  },
-  {
-   "code": "2804",
-   "name": "Lệ phí trước bạ tài sản khác",
-   "section": "2800"
-  },
-  {
-   "code": "2805",
-   "name": "Lệ phí cấp giấy chứng nhận quyền sử dụng đất, quyền sở hữu nhà, tài sản gắn liền với đất",
-   "section": "2800"
-  },
-  {
-   "code": "2815",
-   "name": "Lệ phí cấp giấy phép xây dựng",
-   "section": "2800"
-  },
-  {
-   "code": "2824",
-   "name": "Lệ phí trước bạ xe máy",
-   "section": "2800"
-  },
-  {
-   "code": "2827",
-   "name": "Lệ phí quản lý phương tiện giao thông",
-   "section": "2800"
-  },
-  {
-   "code": "2828",
-   "name": "Lệ phí trong lĩnh vực hàng hải",
-   "section": "2800"
-  },
-  {
-   "code": "2831",
-   "name": "Lệ phí sở hữu trí tuệ",
-   "section": "2800"
-  },
-  {
-   "code": "2852",
-   "name": "Lệ phí đăng ký kinh doanh",
-   "section": "2850"
-  },
-  {
-   "code": "2853",
-   "name": "Lệ phí về cấp chứng nhận, cấp bằng, cấp chứng chỉ, cấp phép, cấp giấy phép, cấp giấy chứng nhận, điều chỉnh giấy chứng nhận đối với các hoạt động, các ngành nghề kinh doanh theo quy định của pháp luật",
-   "section": "2850"
-  },
-  {
-   "code": "2854",
-   "name": "Lệ phí cấp phép đặt chi nhánh, văn phòng đại diện của các tổ chức nước ngoài tại Việt Nam",
-   "section": "2850"
-  },
-  {
-   "code": "2862",
-   "name": "Lệ phí môn bài mức (bậc) 1",
-   "section": "2850"
-  },
-  {
-   "code": "2863",
-   "name": "Lệ phí môn bài mức (bậc) 2",
-   "section": "2850"
-  },
-  {
-   "code": "2864",
-   "name": "Lệ phí môn bài mức (bậc) 3",
-   "section": "2850"
-  },
-  {
-   "code": "2865",
-   "name": "Lệ phí phân bổ kho số viễn thông, tài nguyên Internet",
-   "section": "2850"
-  },
-  {
-   "code": "2871",
-   "name": "Lệ phí trong lĩnh vực tiêu chuẩn, đo lường chất lượng",
-   "section": "2850"
-  },
-  {
-   "code": "2872",
-   "name": "Lệ phí đăng ký các quyền đối với tàu bay",
-   "section": "2850"
-  },
-  {
-   "code": "3003",
-   "name": "Lệ phí hàng hóa, phương tiện quá cảnh",
-   "section": "3000"
-  },
-  {
-   "code": "3064",
-   "name": "Lệ phí cấp chứng chỉ hành nghề dịch vụ thú y; chế phẩm sinh học, vi sinh vật, hóa chất, chất xử lý cải tạo môi trường trong nuôi trồng thủy sản, chăn nuôi",
-   "section": "3050"
-  },
-  {
-   "code": "3065",
-   "name": "Lệ phí cấp chứng nhận kiểm dịch động vật, sản phẩm động vật trên cạn; thủy sản nhập khẩu, quá cảnh, tạm nhập tái xuất, chuyển cửa khẩu",
-   "section": "3050"
-  },
-  {
-   "code": "3066",
-   "name": "Lệ phí cấp chứng chỉ hành nghề luật sư",
-   "section": "3050"
-  },
-  {
-   "code": "3067",
-   "name": "Lệ phí cấp thẻ công chứng viên",
-   "section": "3050"
-  },
-  {
-   "code": "3068",
-   "name": "Lệ phí cấp chứng chỉ hành nghề quản tài viên",
-   "section": "3050"
-  },
-  {
-   "code": "3072",
-   "name": "Lệ phí công nhận chất lượng vật tư nông nghiệp được phép lưu hành tại Việt Nam",
-   "section": "3050"
-  },
-  {
-   "code": "3352",
-   "name": "Ô tô con, ô tô tải",
-   "section": "3350"
-  },
-  {
-   "code": "3365",
-   "name": "Thu tiền bán tài sản nhà nước khác",
-   "section": "3350"
-  },
-  {
-   "code": "3399",
-   "name": "Các tài sản khác",
-   "section": "3350"
-  },
-  {
-   "code": "3601",
-   "name": "Tiền thuê mặt đất hàng năm",
-   "section": "3600"
-  },
-  {
-   "code": "3605",
-   "name": "Tiền thuê mặt đất thu một lần cho cả thời gian thuê",
-   "section": "3600"
-  },
-  {
-   "code": "3649",
-   "name": "Khác",
-   "section": "3600"
-  },
-  {
-   "code": "3858",
-   "name": "Tiền thu từ sử dụng tài sản công của tổ chức vào mục đích kinh doanh, cho thuê, liên doanh, liên kết",
-   "section": "3850"
-  },
-  {
-   "code": "3899",
-   "name": "Thu từ khai thác cho thuê tài sản kết cấu hạ tầng khác",
-   "section": "3850"
-  },
-  {
-   "code": "3901",
-   "name": "Thu hoa lợi công sản từ quỹ đất công ích",
-   "section": "3900"
-  },
-  {
-   "code": "3902",
-   "name": "Thu hoa lợi công sản từ quỹ đất công",
-   "section": "3900"
-  },
-  {
-   "code": "4252",
-   "name": "Phạt vi phạm hành chính trong lĩnh vực giao thông",
-   "section": "4250"
-  },
-  {
-   "code": "4254",
-   "name": "Phạt vi phạm hành chính trong lĩnh vực thuế thuộc thẩm quyền ra quyết định của cơ quan thuế (không bao gồm phạt vi phạm hành chính đối với Luật thuế thu nhập cá nhân)",
-   "section": "4250"
-  },
-  {
-   "code": "4261",
-   "name": "Phạt vi phạm hành chính về bảo vệ môi trường",
-   "section": "4250"
-  },
-  {
-   "code": "4263",
-   "name": "Phạt vi phạm hành chính trong lĩnh vực trật tự, an ninh, quốc phòng",
-   "section": "4250"
-  },
-  {
-   "code": "4267",
-   "name": "Phạt vi phạm hành chính về trật tự đô thị",
-   "section": "4250"
-  },
-  {
-   "code": "4268",
-   "name": "Phạt vi phạm hành chính đối với Luật thuế thu nhập cá nhân",
-   "section": "4250"
-  },
-  {
-   "code": "4271",
-   "name": "Tiền phạt do phạm tội theo quyết định của Tòa án",
-   "section": "4250"
-  },
-  {
-   "code": "4272",
-   "name": "Tiền nộp do chậm thi hành quyết định xử phạt vi phạm hành chính do cơ quan thuế quản lý",
-   "section": "4250"
-  },
-  {
-   "code": "4276",
-   "name": "Phạt vi phạm hành chính về an toàn vệ sinh thực phẩm",
-   "section": "4250"
-  },
-  {
-   "code": "4277",
-   "name": "Tiền nộp do chậm thi hành quyết định xử phạt vi phạm hành chính trong các lĩnh vực khác",
-   "section": "4250"
-  },
-  {
-   "code": "4278",
-   "name": "Phạt vi phạm hành chính trong các lĩnh vực khác",
-   "section": "4250"
-  },
-  {
-   "code": "4279",
-   "name": "Các khoản tiền khác từ xử phạt vi phạm hành chính",
-   "section": "4250"
-  },
-  {
-   "code": "4281",
-   "name": "Thu tiền phạt vi phạm hành chính do lực lượng quản lý thị trường thực hiện",
-   "section": "4250"
-  },
-  {
-   "code": "4299",
-   "name": "Phạt vi phạm khác",
-   "section": "4250"
-  },
-  {
-   "code": "4311",
-   "name": "Tịch thu do phạm tội hoặc liên quan tội phạm các vụ án khác theo quyết định của Tòa án, cơ quan Thi hành án",
-   "section": "4300"
-  },
-  {
-   "code": "4349",
-   "name": "Tịch thu khác",
-   "section": "4300"
-  },
-  {
-   "code": "4501",
-   "name": "Xây dựng kết cấu hạ tầng",
-   "section": "4500"
-  },
-  {
-   "code": "4549",
-   "name": "Khác",
-   "section": "4500"
-  },
-  {
-   "code": "4902",
-   "name": "Thu hồi các khoản chi năm trước",
-   "section": "4900"
-  },
-  {
-   "code": "4914",
-   "name": "Thu tiền bảo vệ, phát triển đất trồng lúa",
-   "section": "4900"
-  },
-  {
-   "code": "4917",
-   "name": "Tiền chậm nộp thuế thu nhập cá nhân",
-   "section": "4900"
-  },
-  {
-   "code": "4918",
-   "name": "Tiền chậm nộp thuế thu nhập doanh nghiệp (không bao gồm tiền chậm nộp thuế thu nhập doanh nghiệp từ hoạt động thăm dò, khai thác dầu khí)",
-   "section": "4900"
-  },
-  {
-   "code": "4927",
-   "name": "Tiền chậm nộp thuế tài nguyên khác còn lại",
-   "section": "4900"
-  },
-  {
-   "code": "4931",
-   "name": "Tiền chậm nộp thuế giá trị gia tăng từ hàng hóa sản xuất kinh doanh trong nước khác còn lại",
-   "section": "4900"
-  },
-  {
-   "code": "4933",
-   "name": "Tiền chậm nộp thuế tiêu thụ đặc biệt hàng nhập khẩu bán ra trong nước",
-   "section": "4900"
-  },
-  {
-   "code": "4934",
-   "name": "Tiền chậm nộp thuế tiêu thụ đặc biệt hàng hóa sản xuất kinh doanh trong nước khác còn lại",
-   "section": "4900"
-  },
-  {
-   "code": "4943",
-   "name": "Tiền chậm nộp các khoản khác điều tiết 100% ngân sách trung ương theo quy định của pháp luật do ngành thuế quản lý",
-   "section": "4900"
-  },
-  {
-   "code": "4944",
-   "name": "Tiền chậm nộp các khoản khác điều tiết 100% ngân sách địa phương theo quy định của pháp luật do ngành thuế quản lý",
-   "section": "4900"
-  },
-  {
-   "code": "4949",
-   "name": "Các khoản thu khác (bao gồm các khoản thu nợ không được phản ánh ở các tiểu mục thu nợ)",
-   "section": "4900"
-  },
-  {
-   "code": "7551",
-   "name": "Hoàn thuế giá trị gia tăng",
-   "section": "7550"
-  }
- ]
+  "chapters": [
+    {
+      "code": "001",
+      "name": "Văn phòng Chủ tịch nước",
+      "level": "trung-uong"
+    },
+    {
+      "code": "002",
+      "name": "Văn phòng Quốc hội",
+      "level": "trung-uong"
+    },
+    {
+      "code": "003",
+      "name": "Tòa án nhân dân tối cao",
+      "level": "trung-uong"
+    },
+    {
+      "code": "004",
+      "name": "Viện kiểm sát nhân dân tối cao",
+      "level": "trung-uong"
+    },
+    {
+      "code": "005",
+      "name": "Văn phòng Chính phủ",
+      "level": "trung-uong"
+    },
+    {
+      "code": "009",
+      "name": "Bộ Công an",
+      "level": "trung-uong"
+    },
+    {
+      "code": "010",
+      "name": "Bộ Quốc phòng",
+      "level": "trung-uong"
+    },
+    {
+      "code": "011",
+      "name": "Bộ Ngoại giao",
+      "level": "trung-uong"
+    },
+    {
+      "code": "012",
+      "name": "Bộ Nông nghiệp và Phát triển nông thôn",
+      "level": "trung-uong"
+    },
+    {
+      "code": "014",
+      "name": "Bộ Tư pháp",
+      "level": "trung-uong"
+    },
+    {
+      "code": "016",
+      "name": "Bộ Công thương",
+      "level": "trung-uong"
+    },
+    {
+      "code": "017",
+      "name": "Bộ Khoa học và Công nghệ",
+      "level": "trung-uong"
+    },
+    {
+      "code": "018",
+      "name": "Bộ Tài chính",
+      "level": "trung-uong"
+    },
+    {
+      "code": "019",
+      "name": "Bộ Xây dựng",
+      "level": "trung-uong"
+    },
+    {
+      "code": "021",
+      "name": "Bộ Giao thông - Vận tải",
+      "level": "trung-uong"
+    },
+    {
+      "code": "022",
+      "name": "Bộ Giáo dục và Đào tạo",
+      "level": "trung-uong"
+    },
+    {
+      "code": "023",
+      "name": "Bộ Y tế",
+      "level": "trung-uong"
+    },
+    {
+      "code": "025",
+      "name": "Bộ Văn hóa, Thể thao và Du lịch",
+      "level": "trung-uong"
+    },
+    {
+      "code": "026",
+      "name": "Bộ Tài nguyên và Môi trường",
+      "level": "trung-uong"
+    },
+    {
+      "code": "027",
+      "name": "Bộ Thông tin và Truyền thông",
+      "level": "trung-uong"
+    },
+    {
+      "code": "035",
+      "name": "Bộ Nội vụ",
+      "level": "trung-uong"
+    },
+    {
+      "code": "036",
+      "name": "Ngân hàng Nhà nước Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "040",
+      "name": "Đài Tiếng nói Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "041",
+      "name": "Đài Truyền hình Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "042",
+      "name": "Thông tấn xã Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "045",
+      "name": "Viện Hàn lâm Khoa học Xã hội Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "100",
+      "name": "Ban Quản lý Lăng Chủ tịch Hồ Chí Minh",
+      "level": "trung-uong"
+    },
+    {
+      "code": "109",
+      "name": "Văn phòng Trung ương Đảng",
+      "level": "trung-uong"
+    },
+    {
+      "code": "110",
+      "name": "Ủy ban Trung ương Mặt trận Tổ quốc Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "121",
+      "name": "Tập đoàn Dầu khí Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "122",
+      "name": "Tập đoàn Công nghiệp Than - Khoáng sản Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "123",
+      "name": "Tập đoàn Điện lực Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "124",
+      "name": "Tập đoàn Bưu chính Viễn thông Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "125",
+      "name": "Tập đoàn Hóa chất Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "133",
+      "name": "Tổng công ty Thuốc lá Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "134",
+      "name": "Tổng công ty Hàng hải Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "135",
+      "name": "Tổng công ty Hàng không Việt Nam - Công ty cổ phần",
+      "level": "trung-uong"
+    },
+    {
+      "code": "136",
+      "name": "Tập đoàn Xăng dầu Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "137",
+      "name": "Tổng công ty Đường sắt Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "139",
+      "name": "Ngân hàng thương mại cổ phần Ngoại thương Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "140",
+      "name": "Ngân hàng thương mại cổ phần Công thương Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "141",
+      "name": "Ngân hàng Nông nghiệp và Phát triển nông thôn Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "142",
+      "name": "Ngân hàng thương mại cổ phần Đầu tư và Phát triển Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "151",
+      "name": "Các đơn vị kinh tế có 100% vốn đầu tư nước ngoài vào Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "152",
+      "name": "Các đơn vị có vốn nước ngoài từ 51% đến dưới 100% vốn điều lệ hoặc có đa số thành viên hợp danh là cá nhân người nước ngoài đối với công ty hợp danh",
+      "level": "trung-uong"
+    },
+    {
+      "code": "154",
+      "name": "Kinh tế hỗn hợp ngoài quốc doanh",
+      "level": "trung-uong"
+    },
+    {
+      "code": "158",
+      "name": "Các đơn vị kinh tế hỗn hợp có vốn nhà nước trên 50% đến dưới 100% vốn điều lệ",
+      "level": "trung-uong"
+    },
+    {
+      "code": "159",
+      "name": "Các đơn vị có vốn nhà nước từ 50% vốn điều lệ trở xuống",
+      "level": "trung-uong"
+    },
+    {
+      "code": "160",
+      "name": "Các quan hệ khác của ngân sách",
+      "level": "trung-uong"
+    },
+    {
+      "code": "161",
+      "name": "Nhà thầu chính ngoài nước",
+      "level": "trung-uong"
+    },
+    {
+      "code": "162",
+      "name": "Nhà thầu phụ ngoài nước",
+      "level": "trung-uong"
+    },
+    {
+      "code": "169",
+      "name": "Tổng công ty cổ phần Xuất nhập khẩu xây dựng Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "170",
+      "name": "Tổng công ty Đầu tư phát triển nhà và đô thị",
+      "level": "trung-uong"
+    },
+    {
+      "code": "176",
+      "name": "Các đơn vị có vốn nhà nước nắm giữ 100% vốn điều lệ (không thuộc các cơ quan chủ quản, các Chương Tập đoàn, Tổng công ty)",
+      "level": "trung-uong"
+    },
+    {
+      "code": "208",
+      "name": "Nhà cung cấp nước ngoài không có cơ sở thường trú tại Việt Nam",
+      "level": "trung-uong"
+    },
+    {
+      "code": "399",
+      "name": "Các đơn vị khác",
+      "level": "trung-uong"
+    },
+    {
+      "code": "405",
+      "name": "Văn phòng Ủy ban nhân dân",
+      "level": "tinh"
+    },
+    {
+      "code": "412",
+      "name": "Sở Nông nghiệp và Phát triển nông thôn",
+      "level": "tinh"
+    },
+    {
+      "code": "414",
+      "name": "Sở Tư pháp",
+      "level": "tinh"
+    },
+    {
+      "code": "416",
+      "name": "Sở Công Thương",
+      "level": "tinh"
+    },
+    {
+      "code": "418",
+      "name": "Sở Tài chính",
+      "level": "tinh"
+    },
+    {
+      "code": "419",
+      "name": "Sở Xây dựng",
+      "level": "tinh"
+    },
+    {
+      "code": "421",
+      "name": "Sở Giao thông - Vận tải",
+      "level": "tinh"
+    },
+    {
+      "code": "422",
+      "name": "Sở Giáo dục và Đào tạo",
+      "level": "tinh"
+    },
+    {
+      "code": "423",
+      "name": "Sở Y tế",
+      "level": "tinh"
+    },
+    {
+      "code": "425",
+      "name": "Sở Văn hóa, Thể thao và Du lịch",
+      "level": "tinh"
+    },
+    {
+      "code": "428",
+      "name": "Sở Du lịch",
+      "level": "tinh"
+    },
+    {
+      "code": "429",
+      "name": "Sở Văn hóa - Thể thao",
+      "level": "tinh"
+    },
+    {
+      "code": "435",
+      "name": "Sở Nội vụ",
+      "level": "tinh"
+    },
+    {
+      "code": "439",
+      "name": "Sở Quy hoạch - Kiến trúc",
+      "level": "tinh"
+    },
+    {
+      "code": "505",
+      "name": "Ban quản lý khu công nghiệp",
+      "level": "tinh"
+    },
+    {
+      "code": "510",
+      "name": "Ủy ban Mặt trận Tổ quốc tỉnh",
+      "level": "tinh"
+    },
+    {
+      "code": "516",
+      "name": "Liên hiệp các hội khoa học và kỹ thuật",
+      "level": "tinh"
+    },
+    {
+      "code": "551",
+      "name": "Các đơn vị có 100% vốn đầu tư nước ngoài vào Việt Nam",
+      "level": "tinh"
+    },
+    {
+      "code": "552",
+      "name": "Các đơn vị có vốn đầu tư nước ngoài từ 51% đến dưới 100% vốn điều lệ hoặc có đa số thành viên hợp danh là cá nhân người nước ngoài đối với công ty hợp danh",
+      "level": "tinh"
+    },
+    {
+      "code": "554",
+      "name": "Kinh tế hỗn hợp ngoài quốc doanh",
+      "level": "tinh"
+    },
+    {
+      "code": "555",
+      "name": "Doanh nghiệp tư nhân",
+      "level": "tinh"
+    },
+    {
+      "code": "556",
+      "name": "Hợp tác xã",
+      "level": "tinh"
+    },
+    {
+      "code": "557",
+      "name": "Hộ gia đình, cá nhân",
+      "level": "tinh"
+    },
+    {
+      "code": "558",
+      "name": "Các đơn vị kinh tế hỗn hợp có vốn Nhà nước trên 50% đến dưới 100% vốn điều lệ",
+      "level": "tinh"
+    },
+    {
+      "code": "559",
+      "name": "Các đơn vị có vốn nhà nước từ 50% vốn điều lệ trở xuống",
+      "level": "tinh"
+    },
+    {
+      "code": "560",
+      "name": "Các quan hệ khác của ngân sách",
+      "level": "tinh"
+    },
+    {
+      "code": "561",
+      "name": "Nhà thầu chính ngoài nước",
+      "level": "tinh"
+    },
+    {
+      "code": "562",
+      "name": "Nhà thầu phụ ngoài nước",
+      "level": "tinh"
+    },
+    {
+      "code": "564",
+      "name": "Các đơn vị có vốn nhà nước nắm giữ 100% vốn điều lệ (không thuộc các cơ quan chủ quản, các Chương Tập đoàn, Tổng công ty)",
+      "level": "tinh"
+    },
+    {
+      "code": "599",
+      "name": "Các đơn vị khác",
+      "level": "tinh"
+    },
+    {
+      "code": "757",
+      "name": "Hộ gia đình, cá nhân",
+      "level": "xa"
+    },
+    {
+      "code": "800",
+      "name": "Tổng hợp ngân sách xã",
+      "level": "xa"
+    },
+    {
+      "code": "805",
+      "name": "Văn phòng Ủy ban nhân dân",
+      "level": "xa"
+    },
+    {
+      "code": "809",
+      "name": "Công an xã",
+      "level": "xa"
+    },
+    {
+      "code": "821",
+      "name": "Đơn vị sự nghiệp công lập cung ứng dịch vụ sự nghiệp công cơ bản, thiết yếu",
+      "level": "xa"
+    },
+    {
+      "code": "822",
+      "name": "Trường mầm non, nhà trẻ",
+      "level": "xa"
+    },
+    {
+      "code": "823",
+      "name": "Trạm Y tế xã",
+      "level": "xa"
+    },
+    {
+      "code": "829",
+      "name": "Ban Quản lý dự án",
+      "level": "xa"
+    },
+    {
+      "code": "830",
+      "name": "Văn phòng Hội đồng nhân dân và Ủy ban nhân dân",
+      "level": "xa"
+    },
+    {
+      "code": "831",
+      "name": "Phòng Kinh tế (đối với xã, đặc khu) hoặc Phòng Kinh tế, Hạ tầng và Đô thị (đối với phường và đặc khu Phú Quốc)",
+      "level": "xa"
+    },
+    {
+      "code": "832",
+      "name": "Phòng Văn hóa - Xã hội",
+      "level": "xa"
+    },
+    {
+      "code": "854",
+      "name": "Kinh tế hỗn hợp ngoài quốc doanh",
+      "level": "xa"
+    },
+    {
+      "code": "855",
+      "name": "Doanh nghiệp tư nhân",
+      "level": "xa"
+    },
+    {
+      "code": "856",
+      "name": "Hợp tác xã",
+      "level": "xa"
+    },
+    {
+      "code": "857",
+      "name": "Hộ gia đình, cá nhân",
+      "level": "xa"
+    },
+    {
+      "code": "858",
+      "name": "Các đơn vị kinh tế hỗn hợp có vốn nhà nước trên 50% đến dưới 100% vốn điều lệ",
+      "level": "xa"
+    },
+    {
+      "code": "860",
+      "name": "Các quan hệ khác của ngân sách",
+      "level": "xa"
+    },
+    {
+      "code": "989",
+      "name": "Các đơn vị khác",
+      "level": "xa"
+    }
+  ],
+  "sections": [
+    {
+      "code": "1000",
+      "name": "Thuế thu nhập cá nhân"
+    },
+    {
+      "code": "1050",
+      "name": "Thuế thu nhập doanh nghiệp"
+    },
+    {
+      "code": "1150",
+      "name": "Thu nhập sau thuế thu nhập"
+    },
+    {
+      "code": "1250",
+      "name": "Thu tiền cấp quyền khai thác tài nguyên khoáng sản, vùng trời, vùng biển"
+    },
+    {
+      "code": "1400",
+      "name": "Thu tiền sử dụng đất"
+    },
+    {
+      "code": "1550",
+      "name": "Thuế tài nguyên"
+    },
+    {
+      "code": "1600",
+      "name": "Thuế sử dụng đất phi nông nghiệp"
+    },
+    {
+      "code": "1700",
+      "name": "Thuế giá trị gia tăng"
+    },
+    {
+      "code": "1750",
+      "name": "Thuế tiêu thụ đặc biệt"
+    },
+    {
+      "code": "2000",
+      "name": "Thuế bảo vệ môi trường"
+    },
+    {
+      "code": "2100",
+      "name": "Phí trong lĩnh vực khác"
+    },
+    {
+      "code": "2150",
+      "name": "Phí thuộc lĩnh vực nông nghiệp, lâm nghiệp, thủy sản"
+    },
+    {
+      "code": "2200",
+      "name": "Phí thuộc lĩnh vực ngoại giao"
+    },
+    {
+      "code": "2250",
+      "name": "Phí thuộc lĩnh vực công nghiệp, thương mại, đầu tư, xây dựng"
+    },
+    {
+      "code": "2300",
+      "name": "Phí thuộc lĩnh vực giao thông vận tải"
+    },
+    {
+      "code": "2350",
+      "name": "Phí thuộc lĩnh vực thông tin và truyền thông"
+    },
+    {
+      "code": "2400",
+      "name": "Phí thuộc lĩnh vực an ninh, quốc phòng"
+    },
+    {
+      "code": "2450",
+      "name": "Phí thuộc lĩnh vực văn hóa, thể thao, du lịch"
+    },
+    {
+      "code": "2500",
+      "name": "Phí thuộc lĩnh vực khoa học và công nghệ"
+    },
+    {
+      "code": "2550",
+      "name": "Phí thuộc lĩnh vực y tế"
+    },
+    {
+      "code": "2600",
+      "name": "Phí thuộc lĩnh vực tài nguyên và môi trường"
+    },
+    {
+      "code": "2650",
+      "name": "Phí thuộc lĩnh vực tài chính, ngân hàng, bảo hiểm"
+    },
+    {
+      "code": "2700",
+      "name": "Phí thuộc lĩnh vực tư pháp"
+    },
+    {
+      "code": "2750",
+      "name": "Lệ phí quản lý nhà nước liên quan đến quyền và nghĩa vụ của công dân"
+    },
+    {
+      "code": "2800",
+      "name": "Lệ phí quản lý nhà nước liên quan đến quyền sở hữu, quyền sử dụng tài sản"
+    },
+    {
+      "code": "2850",
+      "name": "Lệ phí quản lý nhà nước liên quan đến sản xuất, kinh doanh"
+    },
+    {
+      "code": "3000",
+      "name": "Lệ phí quản lý nhà nước đặc biệt về chủ quyền quốc gia"
+    },
+    {
+      "code": "3050",
+      "name": "Lệ phí quản lý nhà nước trong các lĩnh vực khác"
+    },
+    {
+      "code": "3350",
+      "name": "Thu từ bán và thanh lý tài sản khác"
+    },
+    {
+      "code": "3600",
+      "name": "Tiền cho thuê mặt đất, mặt nước"
+    },
+    {
+      "code": "3850",
+      "name": "Thu tiền khai thác, cho thuê tài sản công"
+    },
+    {
+      "code": "3900",
+      "name": "Thu khác từ quỹ đất"
+    },
+    {
+      "code": "4250",
+      "name": "Thu tiền phạt"
+    },
+    {
+      "code": "4300",
+      "name": "Thu tịch thu"
+    },
+    {
+      "code": "4500",
+      "name": "Các khoản đóng góp tự nguyện"
+    },
+    {
+      "code": "4900",
+      "name": "Các khoản thu khác"
+    },
+    {
+      "code": "7550",
+      "name": "Hoàn thuế giá trị gia tăng; thuế tiêu thụ đặc biệt; thuế nhập khẩu theo chương trình ưu đãi thuế công nghiệp hỗ trợ, theo chế độ quy định"
+    }
+  ],
+  "subItems": [
+    {
+      "code": "1001",
+      "name": "Thuế thu nhập từ tiền lương, tiền công",
+      "section": "1000"
+    },
+    {
+      "code": "1003",
+      "name": "Thuế thu nhập từ hoạt động sản xuất, kinh doanh của cá nhân",
+      "section": "1000"
+    },
+    {
+      "code": "1004",
+      "name": "Thuế thu nhập từ đầu tư vốn của cá nhân",
+      "section": "1000"
+    },
+    {
+      "code": "1005",
+      "name": "Thuế thu nhập từ chuyển nhượng vốn (không gồm chuyển nhượng chứng khoán)",
+      "section": "1000"
+    },
+    {
+      "code": "1006",
+      "name": "Thuế thu nhập từ chuyển nhượng bất động sản, nhận thừa kế và nhận quà tặng là bất động sản",
+      "section": "1000"
+    },
+    {
+      "code": "1007",
+      "name": "Thuế thu nhập từ trúng thưởng",
+      "section": "1000"
+    },
+    {
+      "code": "1008",
+      "name": "Thuế thu nhập từ bản quyền, nhượng quyền thương mại",
+      "section": "1000"
+    },
+    {
+      "code": "1012",
+      "name": "Thuế thu nhập từ thừa kế, quà biếu, quà tặng khác trừ bất động sản",
+      "section": "1000"
+    },
+    {
+      "code": "1014",
+      "name": "Thuế thu nhập từ hoạt động cho thuê tài sản",
+      "section": "1000"
+    },
+    {
+      "code": "1015",
+      "name": "Thuế thu nhập từ chuyển nhượng chứng khoán",
+      "section": "1000"
+    },
+    {
+      "code": "1049",
+      "name": "Thuế thu nhập cá nhân khác",
+      "section": "1000"
+    },
+    {
+      "code": "1052",
+      "name": "Thuế thu nhập doanh nghiệp từ hoạt động sản xuất kinh doanh (gồm cả dịch vụ trong lĩnh vực dầu khí)",
+      "section": "1050"
+    },
+    {
+      "code": "1053",
+      "name": "Thuế thu nhập doanh nghiệp từ chuyển nhượng bất động sản",
+      "section": "1050"
+    },
+    {
+      "code": "1055",
+      "name": "Thuế thu nhập doanh nghiệp từ hoạt động chuyển nhượng vốn",
+      "section": "1050"
+    },
+    {
+      "code": "1099",
+      "name": "Khác",
+      "section": "1050"
+    },
+    {
+      "code": "1151",
+      "name": "Lợi nhuận sau thuế còn lại sau khi trích lập các quỹ",
+      "section": "1150"
+    },
+    {
+      "code": "1199",
+      "name": "Khác",
+      "section": "1150"
+    },
+    {
+      "code": "1254",
+      "name": "Thu tiền cấp quyền khai thác tài nguyên nước đối với giấy phép do cơ quan địa phương cấp phép",
+      "section": "1250"
+    },
+    {
+      "code": "1401",
+      "name": "Đất được nhà nước giao",
+      "section": "1400"
+    },
+    {
+      "code": "1407",
+      "name": "Tiền chuyển mục đích sử dụng đất đối với đất do cơ quan, đơn vị, tổ chức thuộc Nhà nước quản lý",
+      "section": "1400"
+    },
+    {
+      "code": "1408",
+      "name": "Đất thực hiện dự án đầu tư xây dựng nhà ở để bán hoặc để bán kết hợp cho thuê",
+      "section": "1400"
+    },
+    {
+      "code": "1411",
+      "name": "Đất được nhà nước công nhận quyền sử dụng đất",
+      "section": "1400"
+    },
+    {
+      "code": "1449",
+      "name": "Khác",
+      "section": "1400"
+    },
+    {
+      "code": "1555",
+      "name": "Khoáng sản phi kim loại",
+      "section": "1550"
+    },
+    {
+      "code": "1558",
+      "name": "Nước thiên nhiên khác",
+      "section": "1550"
+    },
+    {
+      "code": "1601",
+      "name": "Thu từ đất ở tại nông thôn",
+      "section": "1600"
+    },
+    {
+      "code": "1602",
+      "name": "Thu từ đất ở tại đô thị",
+      "section": "1600"
+    },
+    {
+      "code": "1603",
+      "name": "Thu từ đất sản xuất, kinh doanh phi nông nghiệp",
+      "section": "1600"
+    },
+    {
+      "code": "1649",
+      "name": "Thu từ đất phi nông nghiệp khác",
+      "section": "1600"
+    },
+    {
+      "code": "1701",
+      "name": "Thuế giá trị gia tăng hàng sản xuất, kinh doanh trong nước (gồm cả dịch vụ trong lĩnh vực dầu khí)",
+      "section": "1700"
+    },
+    {
+      "code": "1705",
+      "name": "Thuế giá trị gia tăng từ hoạt động xổ số kiến thiết",
+      "section": "1700"
+    },
+    {
+      "code": "1749",
+      "name": "Hàng hóa, dịch vụ khác",
+      "section": "1700"
+    },
+    {
+      "code": "1754",
+      "name": "Rượu sản xuất trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1757",
+      "name": "Các dịch vụ, hàng hóa khác sản xuất trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1758",
+      "name": "Bia sản xuất trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1761",
+      "name": "Thuế tiêu thụ đặc biệt từ hoạt động xổ số kiến thiết",
+      "section": "1750"
+    },
+    {
+      "code": "1763",
+      "name": "Rượu nhập khẩu bán ra trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1764",
+      "name": "Xe ô tô dưới 24 chỗ ngồi các loại nhập khẩu bán ra trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1766",
+      "name": "Các dịch vụ, hàng hóa khác nhập khẩu bán ra trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1767",
+      "name": "Bia nhập khẩu bán ra trong nước",
+      "section": "1750"
+    },
+    {
+      "code": "1799",
+      "name": "Khác",
+      "section": "1750"
+    },
+    {
+      "code": "2007",
+      "name": "Túi ni lông sản xuất trong nước",
+      "section": "2000"
+    },
+    {
+      "code": "2022",
+      "name": "Thuế bảo vệ môi trường mặt hàng xăng (trừ etanol) bán ra trong nước",
+      "section": "2000"
+    },
+    {
+      "code": "2023",
+      "name": "Thuế bảo vệ môi trường mặt hàng dầu diezel bán ra trong nước",
+      "section": "2000"
+    },
+    {
+      "code": "2025",
+      "name": "Thuế bảo vệ môi trường mặt hàng dầu mazut, dầu mỡ nhờn bán ra trong nước",
+      "section": "2000"
+    },
+    {
+      "code": "2026",
+      "name": "Thuế bảo vệ môi trường mặt hàng nhiên liệu bay bán ra trong nước",
+      "section": "2000"
+    },
+    {
+      "code": "2106",
+      "name": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề theo quy định của pháp luật",
+      "section": "2100"
+    },
+    {
+      "code": "2107",
+      "name": "Phí tuyển dụng, dự thi nâng ngạch, thăng hạng công chức, viên chức",
+      "section": "2100"
+    },
+    {
+      "code": "2111",
+      "name": "Phí xác minh giấy tờ, tài liệu",
+      "section": "2100"
+    },
+    {
+      "code": "2151",
+      "name": "Phí kiểm dịch (kiểm dịch động vật, thực vật, sản phẩm động vật)",
+      "section": "2150"
+    },
+    {
+      "code": "2152",
+      "name": "Phí giám sát khử trùng vật thể thuộc diện kiểm dịch thực vật",
+      "section": "2150"
+    },
+    {
+      "code": "2153",
+      "name": "Phí kiểm soát giết mổ động vật",
+      "section": "2150"
+    },
+    {
+      "code": "2164",
+      "name": "Phí bảo hộ giống trong lĩnh vực nông nghiệp, lâm nghiệp, thủy sản",
+      "section": "2150"
+    },
+    {
+      "code": "2165",
+      "name": "Phí kiểm nghiệm an toàn thực phẩm nông nghiệp, lâm nghiệp, thủy sản nhập khẩu",
+      "section": "2150"
+    },
+    {
+      "code": "2166",
+      "name": "Phí thẩm định trong lĩnh vực nông nghiệp",
+      "section": "2150"
+    },
+    {
+      "code": "2207",
+      "name": "Phí cấp thị thực và các giấy tờ có liên quan đến xuất nhập cảnh Việt Nam cho người nước ngoài",
+      "section": "2200"
+    },
+    {
+      "code": "2211",
+      "name": "Phí chứng nhận lãnh sự và hợp pháp hóa lãnh sự",
+      "section": "2200"
+    },
+    {
+      "code": "2251",
+      "name": "Phí chứng nhận xuất xứ hàng hóa (C/O)",
+      "section": "2250"
+    },
+    {
+      "code": "2255",
+      "name": "Phí thẩm định đầu tư, dự án đầu tư",
+      "section": "2250"
+    },
+    {
+      "code": "2263",
+      "name": "Phí thẩm định cấp phép sử dụng vật liệu nổ công nghiệp",
+      "section": "2250"
+    },
+    {
+      "code": "2264",
+      "name": "Phí trong lĩnh vực hóa chất",
+      "section": "2250"
+    },
+    {
+      "code": "2265",
+      "name": "Phí thẩm định điều kiện, tiêu chuẩn ngành nghề thuộc lĩnh vực công nghiệp, thương mại, xây dựng",
+      "section": "2250"
+    },
+    {
+      "code": "2266",
+      "name": "Phí cung cấp thông tin doanh nghiệp",
+      "section": "2250"
+    },
+    {
+      "code": "2301",
+      "name": "Phí thuộc lĩnh vực đường bộ (không bao gồm phí sử dụng đường bộ thu qua đầu phương tiện ô tô)",
+      "section": "2300"
+    },
+    {
+      "code": "2302",
+      "name": "Phí thuộc lĩnh vực đường thủy nội địa",
+      "section": "2300"
+    },
+    {
+      "code": "2303",
+      "name": "Phí thuộc lĩnh vực đường biển (không bao gồm phí bảo đảm hàng hải)",
+      "section": "2300"
+    },
+    {
+      "code": "2316",
+      "name": "Phí thuộc lĩnh vực hàng không",
+      "section": "2300"
+    },
+    {
+      "code": "2323",
+      "name": "Phí sử dụng kết cấu hạ tầng đường sắt",
+      "section": "2300"
+    },
+    {
+      "code": "2352",
+      "name": "Phí duy trì sử dụng tên miền và địa chỉ Internet",
+      "section": "2350"
+    },
+    {
+      "code": "2353",
+      "name": "Phí sử dụng mã, số viễn thông",
+      "section": "2350"
+    },
+    {
+      "code": "2361",
+      "name": "Phí quyền hoạt động viễn thông",
+      "section": "2350"
+    },
+    {
+      "code": "2362",
+      "name": "Phí thẩm định điều kiện hoạt động viễn thông",
+      "section": "2350"
+    },
+    {
+      "code": "2363",
+      "name": "Phí thẩm định điều kiện hoạt động bưu chính",
+      "section": "2350"
+    },
+    {
+      "code": "2364",
+      "name": "Phí dịch vụ duy trì hệ thống kiểm tra trạng thái chứng thư số",
+      "section": "2350"
+    },
+    {
+      "code": "2365",
+      "name": "Phí quyền cung cấp dịch vụ truyền hình trả tiền",
+      "section": "2350"
+    },
+    {
+      "code": "2366",
+      "name": "Phí thẩm định nội dung, kịch bản trò chơi điện tử trên mạng",
+      "section": "2350"
+    },
+    {
+      "code": "2416",
+      "name": "Phí sát hạch cấp chứng chỉ nghiệp vụ bảo vệ",
+      "section": "2400"
+    },
+    {
+      "code": "2418",
+      "name": "Phí thẩm định điều kiện, tiêu chuẩn hành nghề thuộc lĩnh vực an ninh, quốc phòng",
+      "section": "2400"
+    },
+    {
+      "code": "2421",
+      "name": "Phí khai thác và sử dụng thông tin trong cơ sở dữ liệu quốc gia về dân cư",
+      "section": "2400"
+    },
+    {
+      "code": "2452",
+      "name": "Phí thăm quan",
+      "section": "2450"
+    },
+    {
+      "code": "2453",
+      "name": "Phí thẩm định văn hóa phẩm",
+      "section": "2450"
+    },
+    {
+      "code": "2455",
+      "name": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề thuộc lĩnh vực văn hóa, thể thao, du lịch",
+      "section": "2450"
+    },
+    {
+      "code": "2457",
+      "name": "Phí bảo quản ký gửi và sử dụng tài liệu lưu trữ",
+      "section": "2450"
+    },
+    {
+      "code": "2458",
+      "name": "Phí đăng ký quyền tác giả, quyền liên quan đến quyền tác giả",
+      "section": "2450"
+    },
+    {
+      "code": "2504",
+      "name": "Phí sở hữu trí tuệ",
+      "section": "2500"
+    },
+    {
+      "code": "2505",
+      "name": "Phí cấp mã số, mã vạch",
+      "section": "2500"
+    },
+    {
+      "code": "2512",
+      "name": "Phí thẩm định hợp đồng chuyển giao công nghệ",
+      "section": "2500"
+    },
+    {
+      "code": "2561",
+      "name": "Phí thẩm định hoạt động, tiêu chuẩn, điều kiện hành nghề thuộc lĩnh vực y tế",
+      "section": "2550"
+    },
+    {
+      "code": "2566",
+      "name": "Phí thẩm định cấp giấy phép lưu hành, nhập khẩu, xuất khẩu, công bố trang thiết bị y tế",
+      "section": "2550"
+    },
+    {
+      "code": "2567",
+      "name": "Phí thẩm định cấp phép lưu hành, nhập khẩu, xác nhận, công bố",
+      "section": "2550"
+    },
+    {
+      "code": "2618",
+      "name": "Phí bảo vệ môi trường đối với nước thải, khí thải",
+      "section": "2600"
+    },
+    {
+      "code": "2625",
+      "name": "Phí bảo vệ môi trường đối với khai thác khoáng sản còn lại",
+      "section": "2600"
+    },
+    {
+      "code": "2627",
+      "name": "Phí thẩm định hồ sơ cấp giấy chứng nhận quyền sử dụng đất",
+      "section": "2600"
+    },
+    {
+      "code": "2631",
+      "name": "Phí khai thác, sử dụng nguồn nước",
+      "section": "2600"
+    },
+    {
+      "code": "2632",
+      "name": "Phí thẩm định điều kiện hành nghề thuộc lĩnh vực tài nguyên môi trường",
+      "section": "2600"
+    },
+    {
+      "code": "2633",
+      "name": "Phí khai thác, sử dụng tài liệu, dữ liệu tài nguyên và môi trường (không bao gồm phí khai thác và sử dụng tài liệu dầu khí)",
+      "section": "2600"
+    },
+    {
+      "code": "2634",
+      "name": "Phí thẩm định báo cáo đánh giá tác động môi trường, đề án bảo vệ môi trường chi tiết; thẩm định phương án cải tạo, phục hồi môi trường và phương án cải tạo, phục hồi môi trường bổ sung",
+      "section": "2600"
+    },
+    {
+      "code": "2652",
+      "name": "Phí dịch vụ thanh toán trong hoạt động của Kho bạc nhà nước",
+      "section": "2650"
+    },
+    {
+      "code": "2663",
+      "name": "Phí hải quan",
+      "section": "2650"
+    },
+    {
+      "code": "2665",
+      "name": "Phí thẩm định tiêu chuẩn, điều kiện hành nghề thuộc lĩnh vực tài chính",
+      "section": "2650"
+    },
+    {
+      "code": "2701",
+      "name": "Án phí",
+      "section": "2700"
+    },
+    {
+      "code": "2706",
+      "name": "Phí thi hành án dân sự",
+      "section": "2700"
+    },
+    {
+      "code": "2715",
+      "name": "Phí công chứng",
+      "section": "2700"
+    },
+    {
+      "code": "2716",
+      "name": "Phí chứng thực",
+      "section": "2700"
+    },
+    {
+      "code": "2717",
+      "name": "Phí thẩm định điều kiện hoạt động thuộc lĩnh vực tư pháp",
+      "section": "2700"
+    },
+    {
+      "code": "2718",
+      "name": "Phí đăng ký giao dịch bảo đảm",
+      "section": "2700"
+    },
+    {
+      "code": "2721",
+      "name": "Phí sử dụng thông tin",
+      "section": "2700"
+    },
+    {
+      "code": "2722",
+      "name": "Phí cấp mã số sử dụng cơ sở dữ liệu về giao dịch bảo đảm",
+      "section": "2700"
+    },
+    {
+      "code": "2751",
+      "name": "Lệ phí quốc tịch",
+      "section": "2750"
+    },
+    {
+      "code": "2752",
+      "name": "Lệ phí cấp hộ chiếu",
+      "section": "2750"
+    },
+    {
+      "code": "2766",
+      "name": "Lệ phí tòa án",
+      "section": "2750"
+    },
+    {
+      "code": "2767",
+      "name": "Lệ phí đăng ký cư trú",
+      "section": "2750"
+    },
+    {
+      "code": "2768",
+      "name": "Lệ phí cấp chứng minh nhân dân, căn cước công dân",
+      "section": "2750"
+    },
+    {
+      "code": "2771",
+      "name": "Lệ phí hộ tịch",
+      "section": "2750"
+    },
+    {
+      "code": "2801",
+      "name": "Lệ phí trước bạ nhà đất",
+      "section": "2800"
+    },
+    {
+      "code": "2802",
+      "name": "Lệ phí trước bạ ô tô",
+      "section": "2800"
+    },
+    {
+      "code": "2803",
+      "name": "Lệ phí trước bạ tàu thủy, thuyền",
+      "section": "2800"
+    },
+    {
+      "code": "2804",
+      "name": "Lệ phí trước bạ tài sản khác",
+      "section": "2800"
+    },
+    {
+      "code": "2805",
+      "name": "Lệ phí cấp giấy chứng nhận quyền sử dụng đất, quyền sở hữu nhà, tài sản gắn liền với đất",
+      "section": "2800"
+    },
+    {
+      "code": "2815",
+      "name": "Lệ phí cấp giấy phép xây dựng",
+      "section": "2800"
+    },
+    {
+      "code": "2824",
+      "name": "Lệ phí trước bạ xe máy",
+      "section": "2800"
+    },
+    {
+      "code": "2827",
+      "name": "Lệ phí quản lý phương tiện giao thông",
+      "section": "2800"
+    },
+    {
+      "code": "2828",
+      "name": "Lệ phí trong lĩnh vực hàng hải",
+      "section": "2800"
+    },
+    {
+      "code": "2831",
+      "name": "Lệ phí sở hữu trí tuệ",
+      "section": "2800"
+    },
+    {
+      "code": "2852",
+      "name": "Lệ phí đăng ký kinh doanh",
+      "section": "2850"
+    },
+    {
+      "code": "2853",
+      "name": "Lệ phí về cấp chứng nhận, cấp bằng, cấp chứng chỉ, cấp phép, cấp giấy phép, cấp giấy chứng nhận, điều chỉnh giấy chứng nhận đối với các hoạt động, các ngành nghề kinh doanh theo quy định của pháp luật",
+      "section": "2850"
+    },
+    {
+      "code": "2854",
+      "name": "Lệ phí cấp phép đặt chi nhánh, văn phòng đại diện của các tổ chức nước ngoài tại Việt Nam",
+      "section": "2850"
+    },
+    {
+      "code": "2862",
+      "name": "Lệ phí môn bài mức (bậc) 1",
+      "section": "2850"
+    },
+    {
+      "code": "2863",
+      "name": "Lệ phí môn bài mức (bậc) 2",
+      "section": "2850"
+    },
+    {
+      "code": "2864",
+      "name": "Lệ phí môn bài mức (bậc) 3",
+      "section": "2850"
+    },
+    {
+      "code": "2865",
+      "name": "Lệ phí phân bổ kho số viễn thông, tài nguyên Internet",
+      "section": "2850"
+    },
+    {
+      "code": "2871",
+      "name": "Lệ phí trong lĩnh vực tiêu chuẩn, đo lường chất lượng",
+      "section": "2850"
+    },
+    {
+      "code": "2872",
+      "name": "Lệ phí đăng ký các quyền đối với tàu bay",
+      "section": "2850"
+    },
+    {
+      "code": "3003",
+      "name": "Lệ phí hàng hóa, phương tiện quá cảnh",
+      "section": "3000"
+    },
+    {
+      "code": "3064",
+      "name": "Lệ phí cấp chứng chỉ hành nghề dịch vụ thú y; chế phẩm sinh học, vi sinh vật, hóa chất, chất xử lý cải tạo môi trường trong nuôi trồng thủy sản, chăn nuôi",
+      "section": "3050"
+    },
+    {
+      "code": "3065",
+      "name": "Lệ phí cấp chứng nhận kiểm dịch động vật, sản phẩm động vật trên cạn; thủy sản nhập khẩu, quá cảnh, tạm nhập tái xuất, chuyển cửa khẩu",
+      "section": "3050"
+    },
+    {
+      "code": "3066",
+      "name": "Lệ phí cấp chứng chỉ hành nghề luật sư",
+      "section": "3050"
+    },
+    {
+      "code": "3067",
+      "name": "Lệ phí cấp thẻ công chứng viên",
+      "section": "3050"
+    },
+    {
+      "code": "3068",
+      "name": "Lệ phí cấp chứng chỉ hành nghề quản tài viên",
+      "section": "3050"
+    },
+    {
+      "code": "3072",
+      "name": "Lệ phí công nhận chất lượng vật tư nông nghiệp được phép lưu hành tại Việt Nam",
+      "section": "3050"
+    },
+    {
+      "code": "3352",
+      "name": "Ô tô con, ô tô tải",
+      "section": "3350"
+    },
+    {
+      "code": "3365",
+      "name": "Thu tiền bán tài sản nhà nước khác",
+      "section": "3350"
+    },
+    {
+      "code": "3399",
+      "name": "Các tài sản khác",
+      "section": "3350"
+    },
+    {
+      "code": "3601",
+      "name": "Tiền thuê mặt đất hàng năm",
+      "section": "3600"
+    },
+    {
+      "code": "3605",
+      "name": "Tiền thuê mặt đất thu một lần cho cả thời gian thuê",
+      "section": "3600"
+    },
+    {
+      "code": "3649",
+      "name": "Khác",
+      "section": "3600"
+    },
+    {
+      "code": "3858",
+      "name": "Tiền thu từ sử dụng tài sản công của tổ chức vào mục đích kinh doanh, cho thuê, liên doanh, liên kết",
+      "section": "3850"
+    },
+    {
+      "code": "3899",
+      "name": "Thu từ khai thác cho thuê tài sản kết cấu hạ tầng khác",
+      "section": "3850"
+    },
+    {
+      "code": "3901",
+      "name": "Thu hoa lợi công sản từ quỹ đất công ích",
+      "section": "3900"
+    },
+    {
+      "code": "3902",
+      "name": "Thu hoa lợi công sản từ quỹ đất công",
+      "section": "3900"
+    },
+    {
+      "code": "4252",
+      "name": "Phạt vi phạm hành chính trong lĩnh vực giao thông",
+      "section": "4250"
+    },
+    {
+      "code": "4254",
+      "name": "Phạt vi phạm hành chính trong lĩnh vực thuế thuộc thẩm quyền ra quyết định của cơ quan thuế (không bao gồm phạt vi phạm hành chính đối với Luật thuế thu nhập cá nhân)",
+      "section": "4250"
+    },
+    {
+      "code": "4261",
+      "name": "Phạt vi phạm hành chính về bảo vệ môi trường",
+      "section": "4250"
+    },
+    {
+      "code": "4263",
+      "name": "Phạt vi phạm hành chính trong lĩnh vực trật tự, an ninh, quốc phòng",
+      "section": "4250"
+    },
+    {
+      "code": "4267",
+      "name": "Phạt vi phạm hành chính về trật tự đô thị",
+      "section": "4250"
+    },
+    {
+      "code": "4268",
+      "name": "Phạt vi phạm hành chính đối với Luật thuế thu nhập cá nhân",
+      "section": "4250"
+    },
+    {
+      "code": "4271",
+      "name": "Tiền phạt do phạm tội theo quyết định của Tòa án",
+      "section": "4250"
+    },
+    {
+      "code": "4272",
+      "name": "Tiền nộp do chậm thi hành quyết định xử phạt vi phạm hành chính do cơ quan thuế quản lý",
+      "section": "4250"
+    },
+    {
+      "code": "4276",
+      "name": "Phạt vi phạm hành chính về an toàn vệ sinh thực phẩm",
+      "section": "4250"
+    },
+    {
+      "code": "4277",
+      "name": "Tiền nộp do chậm thi hành quyết định xử phạt vi phạm hành chính trong các lĩnh vực khác",
+      "section": "4250"
+    },
+    {
+      "code": "4278",
+      "name": "Phạt vi phạm hành chính trong các lĩnh vực khác",
+      "section": "4250"
+    },
+    {
+      "code": "4279",
+      "name": "Các khoản tiền khác từ xử phạt vi phạm hành chính",
+      "section": "4250"
+    },
+    {
+      "code": "4281",
+      "name": "Thu tiền phạt vi phạm hành chính do lực lượng quản lý thị trường thực hiện",
+      "section": "4250"
+    },
+    {
+      "code": "4299",
+      "name": "Phạt vi phạm khác",
+      "section": "4250"
+    },
+    {
+      "code": "4311",
+      "name": "Tịch thu do phạm tội hoặc liên quan tội phạm các vụ án khác theo quyết định của Tòa án, cơ quan Thi hành án",
+      "section": "4300"
+    },
+    {
+      "code": "4349",
+      "name": "Tịch thu khác",
+      "section": "4300"
+    },
+    {
+      "code": "4501",
+      "name": "Xây dựng kết cấu hạ tầng",
+      "section": "4500"
+    },
+    {
+      "code": "4549",
+      "name": "Khác",
+      "section": "4500"
+    },
+    {
+      "code": "4902",
+      "name": "Thu hồi các khoản chi năm trước",
+      "section": "4900"
+    },
+    {
+      "code": "4914",
+      "name": "Thu tiền bảo vệ, phát triển đất trồng lúa",
+      "section": "4900"
+    },
+    {
+      "code": "4917",
+      "name": "Tiền chậm nộp thuế thu nhập cá nhân",
+      "section": "4900"
+    },
+    {
+      "code": "4918",
+      "name": "Tiền chậm nộp thuế thu nhập doanh nghiệp (không bao gồm tiền chậm nộp thuế thu nhập doanh nghiệp từ hoạt động thăm dò, khai thác dầu khí)",
+      "section": "4900"
+    },
+    {
+      "code": "4927",
+      "name": "Tiền chậm nộp thuế tài nguyên khác còn lại",
+      "section": "4900"
+    },
+    {
+      "code": "4931",
+      "name": "Tiền chậm nộp thuế giá trị gia tăng từ hàng hóa sản xuất kinh doanh trong nước khác còn lại",
+      "section": "4900"
+    },
+    {
+      "code": "4933",
+      "name": "Tiền chậm nộp thuế tiêu thụ đặc biệt hàng nhập khẩu bán ra trong nước",
+      "section": "4900"
+    },
+    {
+      "code": "4934",
+      "name": "Tiền chậm nộp thuế tiêu thụ đặc biệt hàng hóa sản xuất kinh doanh trong nước khác còn lại",
+      "section": "4900"
+    },
+    {
+      "code": "4943",
+      "name": "Tiền chậm nộp các khoản khác điều tiết 100% ngân sách trung ương theo quy định của pháp luật do ngành thuế quản lý",
+      "section": "4900"
+    },
+    {
+      "code": "4944",
+      "name": "Tiền chậm nộp các khoản khác điều tiết 100% ngân sách địa phương theo quy định của pháp luật do ngành thuế quản lý",
+      "section": "4900"
+    },
+    {
+      "code": "4949",
+      "name": "Các khoản thu khác (bao gồm các khoản thu nợ không được phản ánh ở các tiểu mục thu nợ)",
+      "section": "4900"
+    },
+    {
+      "code": "7551",
+      "name": "Hoàn thuế giá trị gia tăng",
+      "section": "7550"
+    }
+  ]
 }

@@ -15,6 +15,7 @@ import {
   inScale,
   moneyScale,
   pct,
+  NhanOnDinh,
 } from "@/components/primitives";
 
 /** Sub-navigation của workspace phân tích thu. */
@@ -194,7 +195,10 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
                       className="dlink"
                       onClick={() => setView(view === "waterfall" ? "overview" : "waterfall")}
                     >
-                      {view === "waterfall" ? "Thu gọn" : "Mở rộng"}
+                      <NhanOnDinh
+                        nhan={view === "waterfall" ? "Thu gọn" : "Mở rộng"}
+                        moi={["Thu gọn", "Mở rộng"]}
+                      />
                     </button>
                   }
                 >

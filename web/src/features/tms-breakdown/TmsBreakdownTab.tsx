@@ -3,9 +3,9 @@ import { useTmsBreakdown } from "@/data/hooks";
 import type { ManagementLevelFilter } from "@/domain/tms";
 import type { TmsBreakdownData, TmsRow } from "@/domain/types";
 import { useDashboardState } from "@/state/DashboardState";
-import { levelLabel, TAX_OFFICE_NAME } from "@/domain/tms";
+import { levelLabel, taxOfficeNameOf } from "@/domain/tms";
 import { Kpi, KpiStrip } from "@/components/Kpi";
-import { Bars, Card, Change, LiveNotice, Money, moneyScale, pct, ResourceView } from "@/components/primitives";
+import { Bars, Card, Change, LiveNotice, Money, moneyScale, pct, ResourceView, NhanOnDinh } from "@/components/primitives";
 import { DonutChart } from "@/components/charts";
 import { useNarrow } from "@/components/useNarrow";
 import { usePinned } from "@/components/usePinned";
@@ -48,7 +48,7 @@ export function TmsBreakdownTab() {
    * sự thật là bộ lọc, không phải phản hồi mạng. Suy từ bộ lọc thì tiêu đề
    * không bao giờ nói sai, và không có lý do gì phải đợi.
    */
-  const scopeName = taxOfficeCode ? (TAX_OFFICE_NAME[taxOfficeCode] ?? taxOfficeCode) : "Toàn thành phố";
+  const scopeName = taxOfficeCode ? (taxOfficeNameOf(taxOfficeCode) ?? taxOfficeCode) : "Toàn thành phố";
   const levelName = levelLabel(managementLevel);
   /** Giữ số trước đó trong lúc tải lại để phạm vi địa bàn không giật. */
   const lastData =
@@ -244,7 +244,7 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
       <Card
         title="Chương trong điều kiện"
         actions={
-          <>
+          <div className="dhead-tools">
             <span className="dsearch dhead-search">
               <input
                 type="search"
@@ -260,10 +260,16 @@ function TmsBody({ data, level }: { data: TmsBreakdownData; level: ManagementLev
                 className="dbtn is-secondary"
                 onClick={() => setShowAllChapters((value) => !value)}
               >
-                {showAllChapters ? "Thu gọn" : `Xem tất cả (${data.chapters.length})`}
+                {/* Nhãn "Xem tất cả (104)" mang số của dữ liệu nên không phải tập
+                    đóng; đo cả hai nhãn với số hiện tại là đủ vì số chỉ đổi khi
+                    đổi kỳ, lúc đó cả bảng vẽ lại. */}
+                <NhanOnDinh
+                  nhan={showAllChapters ? "Thu gọn" : `Xem tất cả (${data.chapters.length})`}
+                  moi={["Thu gọn", `Xem tất cả (${data.chapters.length})`]}
+                />
               </button>
             )}
-          </>
+          </div>
         }
       >
         <CodeTable

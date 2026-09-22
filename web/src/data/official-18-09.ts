@@ -1,4 +1,5 @@
 import source from "./official-18-09.json";
+import { TAX_OFFICE_ENTITY_BY_ID } from "@/domain/tms";
 
 export interface OfficialLocationPlan {
   id: string;
@@ -91,7 +92,14 @@ export function officialDirectoryCount(
   id: string,
   name: string,
 ): number | null {
-  if (groupBy === "taxOffice") return OFFICIAL_18_09.directory.byTaxOfficeCode[id] ?? null;
+  if (groupBy === "taxOffice") {
+    // Danh bạ đếm theo MÃ NGUỒN, còn `id` là mã thực thể. Năm cơ quan có hai mã,
+    // nên tra thẳng một mã là bỏ rơi nửa số dòng của chúng mà không báo gì.
+    const codes = TAX_OFFICE_ENTITY_BY_ID[id]?.codes ?? [id];
+    const co = codes.some((code) => code in OFFICIAL_18_09.directory.byTaxOfficeCode);
+    if (!co) return null;
+    return codes.reduce((sum, code) => sum + (OFFICIAL_18_09.directory.byTaxOfficeCode[code] ?? 0), 0);
+  }
   if (groupBy === "location") return directoryLocation.get(normalized(name)) ?? null;
   // Danh bạ dùng dấu gạch ở "Nông - Lâm - Thủy sản", còn UI dùng dấu phẩy.
   return directoryIndustry.get(normalized(name)) ?? null;

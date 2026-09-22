@@ -1,14 +1,13 @@
 import { LEVEL_BY_ID, LOCAL_LEVELS, type ManagementLevelFilter } from "@/domain/tms";
 
-/** Tầng trên: trung ương, địa phương, và nhóm chưa tra được cấp. */
+/** Tầng trên: trung ương và địa phương. Mọi Chương đều tra được cấp. */
 const TOP_OPTIONS: { value: ManagementLevelFilter; label: string }[] = [
   { value: "all", label: "Tất cả" },
   { value: "trung-uong", label: "Trung ương" },
   { value: "dia-phuong", label: "Địa phương" },
-  { value: "unknown", label: "Chưa xác định" },
 ];
 
-/** Ba cấp bên trong địa phương; chỉ hiện khi đang đứng trong nhánh địa phương. */
+/** Hai cấp bên trong địa phương; chỉ hiện khi đang đứng trong nhánh địa phương. */
 const LOCAL_OPTIONS: { value: ManagementLevelFilter; label: string }[] = [
   { value: "dia-phuong", label: "Tất cả địa phương" },
   ...LOCAL_LEVELS.map((id) => ({ value: id as ManagementLevelFilter, label: LEVEL_BY_ID[id].name })),
@@ -20,10 +19,11 @@ const isLocalBranch = (value: ManagementLevelFilter) =>
 /**
  * Hai hàng chứ không phải một hàng sáu nút.
  *
- * Bốn cấp không ngang hàng: cấp tỉnh, huyện và xã đều nằm trong địa phương. Bày
- * chúng thành sáu nút cạnh nhau là nói rằng chọn "Cấp xã" và chọn "Trung ương"
- * là hai thao tác cùng loại, trong khi cái thứ nhất là đi sâu vào một nhánh của
- * cái thứ hai. Hàng thứ hai chỉ xuất hiện khi đang ở trong nhánh địa phương.
+ * Các cấp không ngang hàng: thành phố và phường/xã đều nằm trong địa phương.
+ * Bày chúng thành một hàng năm nút là nói rằng chọn "Phường/xã" và chọn "Trung
+ * ương" là hai thao tác cùng loại, trong khi cái thứ nhất là đi sâu vào một
+ * nhánh của cái thứ hai. Hàng thứ hai chỉ hiện khi đang ở trong nhánh địa
+ * phương.
  */
 export function LevelFilter({
   value,

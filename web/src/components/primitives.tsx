@@ -563,3 +563,33 @@ export function ResourceView<T>({
     </div>
   );
 }
+
+
+/**
+ * Nhãn đổi theo trạng thái mà nút KHÔNG đổi bề rộng.
+ *
+ * "Xuất toàn bộ Excel" rộng 144px, "Xuất Excel nhóm đang chọn" rộng 200px: mỗi
+ * lần đổi lựa chọn là cái nút co giãn và mấy nút bên cạnh trượt theo. Người
+ * dùng đang nhắm vào "Cột sau" thì nó đã nhích đi chỗ khác.
+ *
+ * Xếp mọi nhãn có thể có vào CÙNG một ô lưới rồi giấu những nhãn không dùng:
+ * nút rộng bằng nhãn dài nhất và đứng yên mãi. Đo bằng chính phông chữ đang
+ * dùng nên không phải đoán một con số `min-width` rồi sai khi đổi phông hay
+ * đổi ngôn ngữ.
+ *
+ * `moi` phải là tập ĐÓNG. Nhãn có con số chạy theo dữ liệu — "Xuất 12 tệp" —
+ * thì không thuộc về đây: tập không đóng thì bề rộng lại đổi theo dữ liệu, đúng
+ * cái đang cần tránh.
+ */
+export function NhanOnDinh({ nhan, moi }: { nhan: string; moi: string[] }) {
+  const tap = moi.includes(nhan) ? moi : [...moi, nhan];
+  return (
+    <span className="dnhan-on-dinh">
+      {tap.map((mot) => (
+        <span key={mot} data-hien={mot === nhan ? "" : undefined} aria-hidden={mot === nhan ? undefined : true}>
+          {mot}
+        </span>
+      ))}
+    </span>
+  );
+}

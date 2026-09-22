@@ -583,11 +583,36 @@ select:hover {
   padding-inline: max(10px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right));
 }
 .dapp[data-host="mobile"] .dtabs {
-  margin-bottom: var(--s3); scrollbar-width: none;
+  margin-bottom: var(--s3);
   cursor: grab; user-select: none; overscroll-behavior-inline: contain;
 }
 .dapp[data-host="mobile"] .dtabs.is-dragging { cursor: grabbing; }
-.dapp[data-host="mobile"] .dtabs::-webkit-scrollbar { display: none; }
+
+/* ─────────── Chế độ mobile: không thanh cuộn, cuộn bằng cách kéo ─────────── */
+/*
+ * Điện thoại không có thanh cuộn thường trực. Để nguyên thanh cuộn của desktop
+ * trong bản xem thử mobile là bày ra một thứ máy thật không có, và người xem
+ * demo sẽ đo bố cục theo một bề rộng sai — thanh cuộn chiếm 9px, đúng bằng
+ * khoảng làm một bảng bảy cột vừa hay không vừa khổ 390px.
+ *
+ * `html`/`body` cần rule riêng vì thanh cuộn của trang không nằm trong `.dapp`.
+ *
+ * `scrollbar-width: none` là đường chính; `::-webkit-scrollbar` là đường dự
+ * phòng cho trình duyệt chưa hỗ trợ thuộc tính chuẩn. Ở đây hai đường cùng làm
+ * MỘT việc (ẩn) nên chúng không đá nhau như khi tạo dáng.
+ *
+ * Ẩn thanh thì `useDragScroll` trả lại cách cuộn: kéo chuột như kéo ngón tay.
+ */
+:root[data-host="mobile"],
+:root[data-host="mobile"] body,
+.dapp[data-host="mobile"] * { scrollbar-width: none; }
+:root[data-host="mobile"]::-webkit-scrollbar,
+:root[data-host="mobile"] body::-webkit-scrollbar,
+.dapp[data-host="mobile"] *::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* Trong lúc kéo: con trỏ nói rõ đang kéo, và không bôi đen chữ giữa chừng. */
+body.is-drag-scroll { cursor: grabbing; user-select: none; }
+body.is-drag-scroll * { cursor: grabbing !important; }
 .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="false"] {
   position: relative; z-index: 20;
   /* `wrap` để ô "Chi tiết địa bàn" xuống hàng riêng bên dưới thanh tóm tắt:
@@ -1645,11 +1670,19 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   /* Không khai `scrollbar-width` ở đây: khai là mất luôn thanh cuộn tạo dáng
      chung, xem ghi chú ở khối `::-webkit-scrollbar`. */
   overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain;
+  /* `mandatory` chứ không phải `proximity`: với `proximity` trình duyệt tự
+     quyết định có bám hay không, và một cú vuốt vừa phải dừng lại giữa hai
+     card — người dùng thấy hai nửa card cụt ở hai mép và không card nào đọc
+     trọn. Dải này chỉ có một hàng, mỗi card là một đơn vị, nên bám cứng mới
+     đúng: vuốt một cái là sang hẳn card kế tiếp. */
+  scroll-snap-type: inline mandatory;
+  scroll-padding-inline: 0;
 }
 .dtax-location-grid li {
   position: relative; display: grid; grid-template-rows: 1fr auto; align-content: start; gap: 5px;
   min-width: 0; min-height: 72px; padding: 10px 42px 10px 12px;
   background: var(--surface-sunken); border: 1px solid var(--hairline); border-radius: var(--r-control);
+  scroll-snap-align: start;
 }
 /* Card con nhô thay cho thẻ lớn bọc ngoài: đây mới là thứ con trỏ chỉ vào. */
 .dtax-location-grid li {
@@ -1813,6 +1846,141 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    tách khỏi vùng cột động bằng một đường kẻ chứ không trôi lẫn vào đó. */
 .dreport-total { border-right: 1px solid var(--divider); font-weight: var(--fw-medium); }
 .dreport-table thead th[scope="colgroup"] { text-align: left; border-bottom: 1px solid var(--divider); }
+/* Nhãn đổi mà nút không co giãn: mọi nhãn chồng lên cùng một ô lưới, nút rộng
+   bằng nhãn dài nhất. `visibility: hidden` vừa giấu khỏi mắt vừa gỡ khỏi cây
+   trợ năng, nên tên của nút vẫn chỉ là nhãn đang hiện. */
+.dnhan-on-dinh { display: grid; justify-items: center; }
+.dnhan-on-dinh > span { grid-area: 1 / 1; visibility: hidden; white-space: nowrap; }
+.dnhan-on-dinh > span[data-hien] { visibility: visible; }
+
+/* Hộp chọn phạm vi xuất đứng sát nút, đọc như một phần của nút chứ không như
+   một ô lọc lạc khỏi thanh lọc. Trần bề rộng để tên nhóm dài không đẩy nút ra
+   rìa; tên dài hơn thì cắt bằng dấu ba chấm chứ không xuống dòng làm cao nút. */
+.dexport-loc { position: relative; }
+/* Bề rộng cố định, không phải `max-width`: nhãn ở đây là TÊN NHÓM, mà tên nhóm
+   dài ngắn tuỳ danh mục nên không có tập đóng để đo. "Thương mại" 117px rồi
+   "Toàn bộ ngành nghề" 167px là nút nhảy đúng 50px mỗi lần đổi lựa chọn. */
+.dexport-loc-nut {
+  display: inline-flex; align-items: center; justify-content: space-between; gap: var(--s1);
+  width: 210px; font-weight: var(--fw-regular);
+}
+.dexport-loc-nut > :not(svg) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dexport-loc-nut svg { flex: none; }
+.dexport-loc-nut[aria-expanded="true"] { border-color: var(--blue-250); color: var(--brand); }
+.dexport-loc-bang {
+  position: absolute; z-index: 35; top: calc(100% + 4px); left: 0;
+  min-width: 260px; max-width: 320px;
+  padding: var(--s2); background: var(--surface);
+  border: 1px solid var(--control-border); border-radius: var(--r-control);
+  box-shadow: var(--shadow-tip);
+  display: flex; flex-direction: column; gap: var(--s2);
+  /* Hộp mở ra từ thanh công cụ nên nội dung bên trong căn trái như một biểu mẫu,
+     không thừa hưởng canh giữa hay canh phải của ô chứa nút. */
+  text-align: left;
+}
+.dexport-loc-nhac { margin: 0; font-size: var(--fs-caption); color: var(--ink-3); }
+/* 128 địa bàn thì danh sách dài hơn cả màn hình: cuộn trong hộp, không đẩy trang. */
+.dexport-loc-ds { max-height: min(260px, 40vh); overflow-y: auto; display: grid; gap: 1px; }
+/* Mỗi dòng là MỘT nút phủ hết bề ngang, không phải ô tích kèm chữ. Ô vuông bên
+   trong chỉ là hình vẽ nên không cướp cú bấm của thẻ. */
+.dexport-loc-ds button {
+  display: flex; align-items: center; gap: var(--s2); width: 100%;
+  min-height: 32px; padding: 4px 6px; border: 0; border-radius: var(--r-chip);
+  background: none; text-align: left; font: inherit;
+  font-size: var(--fs-caption); color: var(--ink-2); cursor: pointer;
+}
+.dexport-loc-ds button:hover { background: var(--blue-050); color: var(--brand); }
+.dexport-loc-ds button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.dcheck {
+  flex: none; width: 15px; height: 15px; border-radius: 3px;
+  border: 1px solid var(--control-border); background: var(--surface);
+}
+[aria-checked="true"] > .dcheck { border-color: var(--brand); background: var(--brand); }
+/* Dấu tích vẽ bằng hai cạnh của một hình vuông xoay: không cần tệp ảnh nào. */
+[aria-checked="true"] > .dcheck::after {
+  content: ""; display: block; width: 4px; height: 8px; margin: 1px auto 0;
+  border: solid var(--ink-on-dark); border-width: 0 2px 2px 0; transform: rotate(45deg);
+}
+
+/* Ô chọn nhóm nằm TRONG đầu bảng: bỏ khung của một ô chọn thường để nó đọc như
+   một tiêu đề cột, chỉ còn mũi tên cho biết bấm được. Giữ vùng chạm 32px. */
+.dreport-group-pick select {
+  max-width: 100%; min-height: 32px; padding: 2px 26px 2px 6px;
+  border-color: transparent; background-color: transparent;
+  font-size: var(--fs-label); font-weight: var(--fw-label); color: var(--ink);
+}
+.dreport-group-pick select:hover { border-color: var(--control-border); background-color: var(--surface); }
+.dreport-group-pick select:focus-visible { border-color: var(--control-border); background-color: var(--surface); }
+
+/* ── Cột Chỉ tiêu và cột Tổng dính khi cuộn ngang ────────────────────────────
+ *
+ * Bảng có 33 cột cơ quan thuế; cuộn sang cột thứ hai mươi thì tên chỉ tiêu đã
+ * ra khỏi màn hình, và mỗi con số trở thành một con số không biết của dòng nào.
+ * Hai cột đầu là thứ duy nhất cho biết đang đọc dòng gì, nên chúng phải ở lại.
+ *
+ * `z-index` xếp ba tầng, không phải hai: đầu bảng (3) đè lên ô dính của thân
+ * bảng (2), ô dính đè lên ô thường (mặc định). Để đầu bảng và ô dính cùng một
+ * tầng thì khi cuộn chéo, tên chỉ tiêu trượt lên che mất tên cột.
+ */
+.dreport-table th:first-child,
+.dreport-table td:first-child {
+  position: sticky; left: 0; z-index: 2;
+  background: var(--surface);
+}
+.dreport-table thead th:first-child { z-index: 3; }
+.dreport-table tbody tr.is-heading th:first-child { background: var(--surface-sunken); }
+.dreport-table tbody tr:hover th:first-child { background: var(--surface); }
+/* Đường kẻ vẽ bằng bóng đổ chứ không phải `border`: ô dính vẽ đè lên ô kế bên,
+   nên viền phải của nó bị chính nó che mất.
+   Ô đầu bảng phải mang CẢ HAI bóng: vạch dọc bên phải và vạch ngang dưới đáy.
+   `.dtable thead th` vẽ vạch đáy bằng `inset 0 -1px 0`, mà `box-shadow` ghi đè
+   toàn phần — khai riêng một bóng ở đây là xoá mất vạch đáy của cột đầu, và
+   đầu bảng hở một đoạn đúng bằng bề rộng cột đó. */
+.dreport-table th:first-child, .dreport-table td:first-child {
+  box-shadow: 1px 0 0 var(--divider);
+}
+.dreport-table thead th:first-child {
+  box-shadow: 1px 0 0 var(--divider), inset 0 -1px 0 var(--hairline);
+}
+
+/* ── Hai dòng đầu bảng cùng dính, mỗi dòng một mốc ───────────────────────────
+ *
+ * Cả hai dòng để `top: 0` thì khi cuộn chúng chồng lên nhau: dòng tên cột trèo
+ * lên che mất dòng chọn nhóm, và ô chọn ngành nghề biến mất đúng lúc người
+ * dùng cuộn xuống để đọc số.
+ *
+ * Dòng chọn nhóm cố định 48px để mốc của dòng dưới là một con số biết trước,
+ * không phải đo lại mỗi lần tên nhóm dài ngắn khác nhau. */
+.dreport-table thead tr:first-child th { top: 0; height: 48px; }
+.dreport-table thead tr:nth-child(2) th { top: 48px; }
+
+/* ── Sang trang cột: chỉ vùng số đổi, và nó nói ra điều đó ───────────────────
+ *
+ * Khung bảng đứng yên, nên nếu số mới hiện ra không kèm dấu hiệu gì thì người
+ * dùng không chắc cú bấm đã ăn — nhất là khi hai trang có độ lớn gần nhau.
+ * Một lượt trượt ngang ngắn nói đúng thứ vừa xảy ra: nội dung dịch sang một
+ * trang khác, còn hàng thì vẫn là hàng cũ.
+ *
+ * Chỉ ô SỐ chạy, không phải cả hàng: tên chỉ tiêu không đổi thì nó không được
+ * nhúc nhích, nếu không người đọc tưởng cả bảng vừa được thay.
+ */
+@keyframes dreport-cot-moi {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.dreport-table tbody td:not(.dreport-total) {
+  animation: dreport-cot-moi 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* Trong lúc chờ số mới: vùng số mờ đi và không bấm được, khung vẫn đọc được.
+   Không dùng khung chờ xương cá vì cấu trúc bảng có đổi đâu mà phải dựng lại. */
+.dreport-table[data-loading] tbody td:not(.dreport-total) {
+  opacity: .35; animation: none; transition: opacity 140ms ease;
+}
+.dreport-table[data-loading] { pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dreport-table tbody td:not(.dreport-total) { animation: none; }
+}
 
 /* Bảng đối chiếu có hai cột tên, nên quy tắc 36% cho cột đầu không dùng được. */
 .dtms-pairs th:first-child, .dtms-pairs td:first-child { width: auto; }
@@ -1879,6 +2047,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   font-size: var(--fs-label); font-weight: var(--fw-medium); color: inherit;
 }
 .dtms-toggle:hover { color: var(--brand); }
+
 .dtms-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-chip); }
 .dtms-toggle em {
   flex: none; margin-left: auto; font-style: normal;
@@ -1947,7 +2116,39 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dtms-levelbar-controls .dseg button { flex: 1 1 auto; }
   .dtms-levelbar-controls .dseg.is-sub { margin-right: 0; }
 
-  .dtax-location-grid { grid-auto-columns: 100%; }
+  /*
+   * Card hẹp hơn bề rộng dải, có chủ ý.
+   *
+   * Card chiếm trọn 100% thì không thấy mép card kế tiếp, và dải đọc ra như một
+   * khối tĩnh — không có gì nói rằng vuốt được. Chừa lại một phần tư để card
+   * sau ló ra: đó là thứ duy nhất trên màn hình nói "còn nữa, kéo sang".
+   *
+   * Trần 260px để ở khổ 500px (iframe) card không phình ra thành một mảng
+   * trống — cùng một luật phục vụ cả điện thoại lẫn khung nhúng.
+   */
+  .dtax-location-grid { grid-auto-columns: min(74%, 260px); }
+  /*
+   * Dựng lại bố cục trong card cho khổ hẹp.
+   *
+   * Bản rộng đặt số thứ tự làm huy hiệu tròn 24px ở góc phải, nên card phải
+   * chừa 42px đệm phải. Trên một card 248px thì 42px đó là một phần sáu bề
+   * ngang dành cho một con số thứ tự — trong khi tên phường là thứ cần chỗ.
+   * Ở khổ hẹp, số thứ tự về đứng ngay trước tên như một nhãn nhỏ.
+   */
+  .dtax-location-grid li {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas: "rank name" "amount amount";
+    align-items: baseline;
+    min-height: 0; padding: 9px 12px 10px; gap: 3px var(--s2);
+  }
+  .dtax-location-grid .dtax-rank {
+    grid-area: rank;
+    position: static; width: auto; height: auto; min-width: 22px;
+    padding: 1px 6px; border-radius: var(--r-chip);
+  }
+  .dtax-location-grid .dtax-name { grid-area: name; }
+  .dtax-location-grid .dtax-card-amount { grid-area: amount; }
   /* 260px nép bên phải ở khổ hẹp để lại một khoảng trống vô nghĩa bên trái;
      ô lọc trải hết bề rộng thì vùng gõ rộng hơn và không thừa chỗ. */
   .dcard-body > .dlist-tools .dsearch { flex: 1 1 100%; }
@@ -2591,7 +2792,9 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
    kiểu này thì phải dùng lại được lớp có sẵn. Viết một lớp thứ hai cùng công
    dụng thì hai lớp đè nhau theo độ ưu tiên và chỉ một bên ra đúng bề rộng. */
 .dhead-search { display: block; width: min(280px, 34vw); }
-.dhead-search input { width: 100%; }
+.dhead-search input { width: 100%; min-height: 38px; }
+.dhead-tools { display: flex; align-items: center; gap: var(--s2); min-width: 0; }
+.dhead-tools .dhead-search { flex: 1 1 280px; width: auto; }
 
 /* Tóm tắt động và mốc tham chiếu chung cùng nằm trong một vùng nhìn. Tỷ lệ 2/3
    dành phần lớn không gian cho số chịu tác động của bộ chọn; bảng chi tiết phía
@@ -2856,6 +3059,9 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dreport-detail .dcard-head { display: grid; grid-template-columns: 1fr; }
   .dreport-detail .dcard-actions { width: 100%; }
   .dhead-search { width: 100%; }
+  .dhead-tools { width: 100%; flex-wrap: wrap; }
+  .dhead-tools .dhead-search { flex-basis: 100%; }
+  .dhead-tools .dbtn { width: 100%; justify-content: center; }
   .dpager { flex-direction: column; align-items: stretch; }
   .dpager .dbtn { width: 100%; }
 }

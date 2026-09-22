@@ -1,6 +1,6 @@
 import type { TmsBreakdownData } from "@/domain/types";
 import { useCallback, useMemo, useRef } from "react";
-import { TAX_OFFICE_NAME, taxOfficeLocationIds } from "@/domain/tms";
+import { taxOfficeNameOf, taxOfficeLocationIds, taxOfficeScopeNote } from "@/domain/tms";
 import { LOCATION_BY_ID } from "@/domain/catalog";
 import { Card, columnLabel, inScale, moneyScale } from "@/components/primitives";
 import { Amount } from "./TmsTables";
@@ -116,7 +116,7 @@ export function TaxOfficeAssignedAreas({
             )}
           </div>
           <p>
-            {TAX_OFFICE_NAME[selectedCode] ?? selectedCode} · {selectedLocations.length.toLocaleString("vi-VN")} phường/xã · Sắp theo số thu giảm dần
+            {taxOfficeNameOf(selectedCode) ?? selectedCode} · {selectedLocations.length.toLocaleString("vi-VN")} phường/xã · Sắp theo số thu giảm dần
           </p>
         </div>
         {selectedLocations.length > 0 ? (
@@ -148,7 +148,14 @@ export function TaxOfficeAssignedAreas({
             </ol>
           </div>
         ) : (
-          <p className="dempty">Mã này không thuộc danh sách 25 Thuế cơ sở phân công theo địa bàn.</p>
+          /* Ba đơn vị quản theo đối tượng thì rỗng là ĐÚNG, nên phải nói ra
+             điều đó. Câu cũ — "mã này không thuộc danh sách 25 Thuế cơ sở" —
+             đọc như một lời từ chối, và người dùng hiểu thành mã họ chọn là
+             mã sai. */
+          <p className="dempty">
+            {taxOfficeScopeNote(selectedCode ?? "") ??
+              "Chưa có bảng phân công phường/xã cho cơ quan này."}
+          </p>
         )}
       </div>
     </section>
@@ -260,6 +267,18 @@ export function QualityPanel({ data }: { data: TmsBreakdownData }) {
           <dt>Khoản thu chưa có điều kiện TMS</dt>
           <dd className={data.quality.itemsWithoutRule.length ? "is-warn" : "is-ok"}>
             {data.quality.itemsWithoutRule.length ? data.quality.itemsWithoutRule.join("; ") : "Không có"}
+          </dd>
+        </div>
+        {/* Tách khỏi dòng trên chứ không gộp: một bên là chưa ai viết điều kiện,
+            một bên là điều kiện đã có nhưng danh mục Tiểu mục chưa có tên cho
+            các mã nó nhắc tới. Gộp lại thì người đi xử lý đi tìm điều kiện cho
+            một khoản vốn đã có đủ điều kiện. */}
+        <div>
+          <dt>Khoản có điều kiện nhưng Tiểu mục chưa có trong danh mục</dt>
+          <dd className={data.quality.itemsWithoutCataloguedSubItems.length ? "is-warn" : "is-ok"}>
+            {data.quality.itemsWithoutCataloguedSubItems.length
+              ? data.quality.itemsWithoutCataloguedSubItems.join("; ")
+              : "Không có"}
           </dd>
         </div>
       </dl>
