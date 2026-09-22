@@ -389,6 +389,8 @@ export interface TmsBreakdownData {
     chaptersWithoutLevel: number;
     /** Khoản thuộc tổng A chưa có điều kiện TMS được xác nhận, nằm ngoài phạm vi. */
     itemsWithoutRule: string[];
+    /** Khoản có điều kiện nhưng Tiểu mục của nó chưa có tên trong danh mục. */
+    itemsWithoutCataloguedSubItems: string[];
   };
 }
 

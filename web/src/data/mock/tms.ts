@@ -5,10 +5,12 @@ import {
   LOCAL_LEVELS,
   SECTION_BY_CODE,
   SUB_ITEM_BY_CODE,
-  TAX_OFFICES,
+  TAX_OFFICE_ENTITIES,
+  taxOfficeEntityOf,
   taxOfficeLocationIds,
   TMS_ITEMS,
   TMS_ITEMS_WITHOUT_RULE,
+  TMS_ITEMS_WITHOUT_CATALOGUED_SUBITEMS,
   branchesOfItem,
   levelLabel,
   levelOfChapter,
@@ -37,13 +39,28 @@ import { metaOf } from "./build";
  *   điều kiện của chính khoản đó. Tổng theo Chương, theo Tiểu mục và theo chỉ
  *   tiêu vì vậy bằng nhau tới từng đồng, đúng phép kiểm của đặc tả mục 4.
  * · **Tất định.** Cùng bộ lọc luôn cho cùng con số, không có số ngẫu nhiên.
- * · **Giữ nguyên nhóm chưa xác định.** Mã chưa có tên vẫn mang số của nó thay vì
- *   bị gán bừa vào một Mục hay bị loại khỏi bảng.
+ * · **Mã chưa có tên vẫn nằm đúng nhánh.** Danh mục Chương/Tiểu mục của ngành
+ *   là bảng tham chiếu mô tả, không phải danh mục kiểm soát, nên không dùng nó
+ *   để loại bản ghi. Mã ngoài danh mục giữ nguyên số của nó và được xếp vào
+ *   đúng cấp (suy từ dải mã) và đúng Mục cha (suy từ mã) — hai phép suy đã kiểm
+ *   đúng 104/104 và 180/180 trên chính danh mục. Chỉ TÊN là để trống.
+ *
+ *   Khác hẳn với việc dồn chúng vào một nhóm "chưa xác định": nhóm đó là một
+ *   nhánh thứ ba không có trong mục lục ngân sách, và nó kéo tiền ra khỏi nhánh
+ *   mà tiền đó thực sự thuộc về.
  */
 
-const UNKNOWN_SECTION = "chua-xac-dinh-muc";
-const UNKNOWN_LEVEL = "chua-xac-dinh-cap";
+const NO_NAME = "Chưa có tên trong danh mục";
 const NO_NAME_NOTE = "Mã chưa có tên và hiệu lực trong danh mục tra cứu.";
+
+/**
+ * Khoá nhóm Mục của một Tiểu mục.
+ *
+ * `sectionOfSubItem` suy được Mục cho cả mã ngoài danh mục. Chỉ khi chính mã
+ * Mục suy ra cũng không có trong danh mục thì mới dùng mã Tiểu mục làm khoá —
+ * vẫn là một nhóm có mã đọc được, không phải một rổ "chưa xác định".
+ */
+const sectionKeyOf = (code: string): string => sectionOfSubItem(code) ?? code;
 
 /* ─────────────────────────── Phân bổ mô phỏng ───────────────────────────── */
 
@@ -158,8 +175,12 @@ interface PairAmount extends MockPair {
  * với tổng phạm vi, và cùng bộ lọc luôn cho cùng kết quả.
  */
 function taxOfficeOf(itemCode: string, chapterCode: string, subItemCode: string): string {
-  const index = Math.floor(hash("tax-office", itemCode, chapterCode, subItemCode) * TAX_OFFICES.length);
-  return TAX_OFFICES[Math.min(index, TAX_OFFICES.length - 1)].code;
+  // Chia trên 28 CƠ QUAN, không phải 33 mã: chia theo mã rồi mới gộp thì năm cơ
+  // quan hai mã nhận gấp đôi phần của cơ quan một mã, và cái dốc đó là tạo tác
+  // của danh mục chứ không phải của số liệu.
+  const n = TAX_OFFICE_ENTITIES.length;
+  const index = Math.floor(hash("tax-office", itemCode, chapterCode, subItemCode) * n);
+  return TAX_OFFICE_ENTITIES[Math.min(index, n - 1)].id;
 }
 
 /** Chia tổng của từng khoản thu xuống các cặp của chính nó. */
@@ -232,9 +253,9 @@ export function buildTmsBreakdown(
   const locationIds = locationId ? [locationId] : undefined;
   const allPairs = pairAmounts(filters, locationIds);
   if (!allPairs.length) return null;
-  if (taxOfficeCode && !TAX_OFFICES.some((office) => office.code === taxOfficeCode)) return null;
+  if (taxOfficeCode && !TAX_OFFICE_ENTITIES.some((office) => office.id === taxOfficeCode)) return null;
   const pairs = taxOfficeCode
-    ? allPairs.filter((pair) => pair.taxOfficeCode === taxOfficeCode)
+    ? allPairs.filter((pair) => taxOfficeEntityOf(pair.taxOfficeCode) === taxOfficeCode)
     : allPairs;
   if (!pairs.length) return null;
 
@@ -246,18 +267,19 @@ export function buildTmsBreakdown(
     matchesLevel(level, levelOfChapter(pair.chapterCode)),
   );
   for (const pair of officeScopePairs) {
-    const bucket = officeBuckets.get(pair.taxOfficeCode) ?? { amount: 0, previous: null };
+    const id = taxOfficeEntityOf(pair.taxOfficeCode);
+    const bucket = officeBuckets.get(id) ?? { amount: 0, previous: null };
     bucket.amount += pair.amount;
     bucket.previous = addPrevious(bucket.previous, pair.previous);
-    officeBuckets.set(pair.taxOfficeCode, bucket);
+    officeBuckets.set(id, bucket);
   }
   const periodLabel =
     filters.periodType === "MONTH"
       ? `${filters.year}-${String(filters.period).padStart(2, "0")}`
       : `${filters.year}-Q${filters.period}`;
-  const officeScopeRows = TAX_OFFICES.map((office) => {
-    const bucket = officeBuckets.get(office.code) ?? { amount: 0, previous: null };
-    const assignedIds = taxOfficeLocationIds(office.code);
+  const officeScopeRows = TAX_OFFICE_ENTITIES.map((office) => {
+    const bucket = officeBuckets.get(office.id) ?? { amount: 0, previous: null };
+    const assignedIds = taxOfficeLocationIds(office.id);
     const candidates = locationId
       ? assignedIds.includes(locationId)
         ? [LOCATION_BY_ID[locationId]].filter(Boolean)
@@ -265,10 +287,10 @@ export function buildTmsBreakdown(
       : assignedIds.map((id) => LOCATION_BY_ID[id]).filter(Boolean);
     const locationAmounts = allocate(
       bucket.amount,
-      candidates.map((item) => 0.2 + hash("office-location-weight", office.code, item.id) * 1.8),
+      candidates.map((item) => 0.2 + hash("office-location-weight", office.id, item.id) * 1.8),
     );
     return {
-      code: office.code,
+      code: office.id,
       name: office.name,
       amount: String(bucket.amount),
       // Chỉ là quy mô minh họa, không được đọc như số chứng từ đã nhập.
@@ -299,7 +321,7 @@ export function buildTmsBreakdown(
   let scopeAmount = 0;
   let scopePrevious: number | null = null;
   for (const pair of pairs) {
-    push(levelBuckets, levelOfChapter(pair.chapterCode) ?? UNKNOWN_LEVEL, pair);
+    push(levelBuckets, levelOfChapter(pair.chapterCode)!, pair);
     scopeAmount += pair.amount;
     scopePrevious = addPrevious(scopePrevious, pair.previous);
   }
@@ -312,7 +334,7 @@ export function buildTmsBreakdown(
   let levelAmount = 0;
   let levelPrevious: number | null = null;
   for (const pair of selected) {
-    push(sectionBuckets, sectionOfSubItem(pair.subItemCode) ?? UNKNOWN_SECTION, pair);
+    push(sectionBuckets, sectionKeyOf(pair.subItemCode), pair);
     push(subItemBuckets, pair.subItemCode, pair);
     push(chapterBuckets, pair.chapterCode, pair);
     levelAmount += pair.amount;
@@ -321,7 +343,7 @@ export function buildTmsBreakdown(
 
   const subItemsBySection = new Map<string, string[]>();
   for (const code of subItemBuckets.keys()) {
-    const key = sectionOfSubItem(code) ?? UNKNOWN_SECTION;
+    const key = sectionKeyOf(code);
     subItemsBySection.set(key, [...(subItemsBySection.get(key) ?? []), code]);
   }
 
@@ -330,35 +352,19 @@ export function buildTmsBreakdown(
     const children = (subItemsBySection.get(key) ?? [])
       .map((code) => {
         const def = SUB_ITEM_BY_CODE[code];
-        return rowOf(
-          code,
-          def ? def.name : "Chưa có tên trong danh mục",
-          subItemBuckets.get(code)!,
-          def ? undefined : NO_NAME_NOTE,
-        );
+        return rowOf(code, def ? def.name : NO_NAME, subItemBuckets.get(code)!, def ? undefined : NO_NAME_NOTE);
       })
       .sort(byAmountDesc);
     const base = rowOf(
       key,
-      known ? `${known.code} · ${known.name}` : "Chưa xác định Mục",
+      known ? `${known.code} · ${known.name}` : `${key} · ${NO_NAME}`,
       sectionBuckets.get(key)!,
-      known ? undefined : "Tiểu mục chưa có tên trong danh mục nên chưa tra được Mục cha.",
+      known ? undefined : NO_NAME_NOTE,
     );
     return { ...base, share: share(base.amount, levelAmount), subItems: children };
   };
 
-  const sections = [...sectionBuckets.keys()]
-    .filter((key) => key !== UNKNOWN_SECTION)
-    .map(sectionRow)
-    .sort(byAmountDesc);
-  /**
-   * Nhóm chưa xác định đứng ĐẦU bảng, không phải cuối.
-   *
-   * Nó không dự thi thứ hạng với các Mục thật, nhưng thường là nhóm lớn nhất vì
-   * điều kiện báo cáo tham chiếu hàng trăm mã chưa có tên. Xếp cuối một bảng có
-   * vùng cuộn riêng nghĩa là con số quan trọng nhất nằm ngoài tầm nhìn.
-   */
-  if (sectionBuckets.has(UNKNOWN_SECTION)) sections.unshift(sectionRow(UNKNOWN_SECTION));
+  const sections = [...sectionBuckets.keys()].map(sectionRow).sort(byAmountDesc);
 
   const chapterRows = [...chapterBuckets.entries()]
     .map(([code, bucket]) => {
@@ -369,10 +375,11 @@ export function buildTmsBreakdown(
         bucket,
         def ? undefined : NO_NAME_NOTE,
       );
+      const cap = levelOfChapter(code);
       return {
         ...row,
         share: share(row.amount, levelAmount),
-        meta: def ? LEVEL_BY_ID[def.level].name : "Chưa xác định cấp",
+        meta: cap ? LEVEL_BY_ID[cap].name : "",
       };
     })
     .sort(byAmountDesc);
@@ -390,7 +397,6 @@ export function buildTmsBreakdown(
     );
   const localTotals = sumLevels(LOCAL_LEVELS);
   const centralTotals = sumLevels(["trung-uong"]);
-  const unknownTotals = sumLevels([UNKNOWN_LEVEL]);
 
   const levels: TmsRow[] = [
     {
@@ -406,21 +412,9 @@ export function buildTmsBreakdown(
       name: "Địa phương",
       ...localTotals,
       share: share(localTotals.amount, scopeAmount),
-      meta: "Gồm cấp tỉnh, cấp huyện và cấp xã",
+      meta: "Gồm cấp thành phố và cấp phường/xã",
       status: "confirmed",
     },
-    ...(levelBuckets.has(UNKNOWN_LEVEL)
-      ? [
-          {
-            id: UNKNOWN_LEVEL,
-            name: "Chưa xác định cấp",
-            ...unknownTotals,
-            share: share(unknownTotals.amount, scopeAmount),
-            meta: "Chương chưa có bản ghi trong danh mục",
-            status: "confirmed" as const,
-          },
-        ]
-      : []),
   ];
 
   const localLevels: TmsRow[] = LOCAL_LEVELS.filter((id) => levelBuckets.has(id)).map((id) => {
@@ -460,26 +454,10 @@ export function buildTmsBreakdown(
   const correspondence = [
     { id: "trung-uong", management: "Trung ương", budget: "NSTW", amount: centralTotals.amount, budgetAmount: budgetTotalOf("NSTW") },
     { id: "dia-phuong", management: "Địa phương", budget: "NSĐP", amount: localTotals.amount, budgetAmount: budgetTotalOf("NSDP") },
-    /**
-     * Dòng thứ ba phải có mặt, dù vế ngân sách của nó trống.
-     *
-     * Chương chưa có trong danh mục thì chưa tra được cấp quản lý, nhưng giao
-     * dịch vẫn mang một cấp ngân sách và số tiền vẫn nằm trong tổng. Bỏ dòng này
-     * đi thì cột trái cộng thiếu đúng phần đó, và bảng hiện ra hai con số không
-     * bằng nhau mà không nói vì sao — người đọc hiểu thành số bị lệch, trong khi
-     * cả hai cột đều là cách chia đúng của cùng một tổng.
-     */
-    ...(levelBuckets.has(UNKNOWN_LEVEL)
-      ? [
-          {
-            id: UNKNOWN_LEVEL,
-            management: "Chưa xác định cấp",
-            budget: "",
-            amount: unknownTotals.amount,
-            budgetAmount: null,
-          },
-        ]
-      : []),
+    /* Hai dòng là đủ: mọi Chương trong lớp mô phỏng đều tra được cấp, nên cột
+       trái cộng đúng bằng cột phải. Trước đây có dòng thứ ba cho phần chưa tra
+       được cấp — nó tồn tại để bảng không cộng thiếu, và cùng biến mất với
+       nguyên nhân sinh ra nó. */
   ].map((row) => ({ ...row, gap: row.budgetAmount === null ? null : row.amount - row.budgetAmount }));
 
   const nsnnAmount = sumOf(filters, { locationIds });
@@ -542,6 +520,9 @@ export function buildTmsBreakdown(
       subItemsWithoutName: [...subItemBuckets.keys()].filter((code) => !SUB_ITEM_BY_CODE[code]).length,
       chaptersWithoutLevel: [...chapterBuckets.keys()].filter((code) => !CHAPTER_BY_CODE[code]).length,
       itemsWithoutRule: TMS_ITEMS_WITHOUT_RULE.map((item) => ITEM_BY_CODE[item.code]?.name ?? item.code),
+      itemsWithoutCataloguedSubItems: TMS_ITEMS_WITHOUT_CATALOGUED_SUBITEMS.map(
+        (item) => ITEM_BY_CODE[item.code]?.name ?? item.code,
+      ),
     },
   };
 }

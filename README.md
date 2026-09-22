@@ -60,16 +60,7 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 | `TMS/` | **Nguồn nghiệp vụ bên Thuế.** Tài liệu và bảng nối dùng để rà soát cục bộ; dữ liệu riêng được loại khỏi Git. Tài liệu công khai không nêu tên tệp nguồn. |
 | [`bao-cao-outline/noi-bo/`](bao-cao-outline/noi-bo) | **TMS và tích hợp dashboard.** Bốn tài liệu nghiệp vụ và kỹ thuật dùng trong phạm vi được phân quyền. |
 
-## Workspace
 
-Sáu workspace, chung một bộ lọc và một nguồn state. Ba mảng mở theo biên bản
-làm việc 18/09/2026 — dự toán và dự báo, quản lý thu, kết quả kiểm tra — là
-**chế độ bên trong tab Báo cáo**, không phải tab cấp cao. Dự toán và Quản lý thu
-đã nhận phần dữ liệu tổng hợp an toàn từ bộ bàn giao 18-09; phần chưa có giao
-dịch/API vẫn chạy bằng số mô phỏng và được ghi rõ trên giao diện.
-
-Chi tiết từng workspace, ba bảo đảm của lớp mock và cách xuất CSV nằm ở
-[`web/README.md`](web/README.md).
 
 ## Kiến trúc
 

@@ -1,6 +1,6 @@
 import tree from "./report-tree.json";
 import { LOCATIONS } from "./catalog";
-import { TAX_OFFICES } from "./tms";
+import { TAX_OFFICE_ENTITIES } from "./tms";
 
 /**
  * Cây chỉ tiêu và tám mẫu báo cáo.
@@ -115,8 +115,12 @@ export const DIMENSIONS: DimensionDef[] = [
   {
     id: "taxOffice",
     name: "Cơ quan thuế",
-    source: "Cột cơ quan thuế trên chứng từ",
-    members: TAX_OFFICES.map((item) => ({ id: item.code, name: item.name })),
+    source: "Cột cơ quan thuế trên chứng từ, gộp về cơ quan hiện hành",
+    // 28 thực thể (25 Thuế cơ sở + Thuế TP Hà Nội + CCT Doanh nghiệp lớn +
+    // CCT Thương mại điện tử), không phải 33 mã: năm cơ quan có hai mã nguồn.
+    // Đếm theo mã thì báo cáo hai chiều sinh thừa năm cột, và năm cơ quan đó bị
+    // chia đôi số.
+    members: TAX_OFFICE_ENTITIES.map((item) => ({ id: item.id, name: item.name })),
   },
   {
     id: "industry",
@@ -154,6 +158,22 @@ export const REPORT_TEMPLATES: ReportTemplate[] = [
   { no: 6, groupBy: "industry", subGroupBy: "location" },
   { no: 7, groupBy: "taxOffice", subGroupBy: "industry" },
   { no: 8, groupBy: "industry", subGroupBy: "taxOffice" },
+];
+
+/** Mã của nhóm "chưa xác định" trên lưới báo cáo. */
+export const GRID_UNCLASSIFIED = "chua-xac-dinh";
+
+/**
+ * Thành viên của một chiều KHI DỰNG LƯỚI, gồm cả nhóm chưa xác định.
+ *
+ * Đặt ở tầng domain chứ không nằm riêng trong lớp mô phỏng: giao diện cần đúng
+ * danh sách này để biết cột nào thuộc thành viên nào mà không phải tải hết cột
+ * về. Hai nơi tự dựng hai danh sách thì chỉ cần lệch một phần tử là ô chọn trỏ
+ * sang nhầm nhóm, và không có gì trên màn hình nói rằng nó đã trỏ nhầm.
+ */
+export const gridMembersOf = (dimension: ReportDimension) => [
+  ...DIMENSION_BY_ID[dimension].members,
+  { id: GRID_UNCLASSIFIED, name: "Chưa xác định" },
 ];
 
 /** Số hiệu mẫu của một cặp chiều; `null` khi cặp đó không nằm trong tám mẫu. */

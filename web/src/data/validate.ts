@@ -40,7 +40,7 @@ export const TABS_ALLOWED: TabId[] = [
   "tms-breakdown",
   "advanced-compare",
 ];
-const TMS_LEVELS_ALLOWED = ["all", "trung-uong", "dia-phuong", "tinh", "huyen", "xa", "unknown"];
+const TMS_LEVELS_ALLOWED = ["all", "trung-uong", "dia-phuong", "tinh", "xa"];
 const MODES_ALLOWED: AdvancedComparisonMode[] = ["period", "revenue", "location"];
 
 export class PayloadError extends Error {}

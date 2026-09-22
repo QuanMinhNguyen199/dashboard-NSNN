@@ -20,7 +20,7 @@ import {
   type SourceCode,
 } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
-import { TAX_OFFICES, type ManagementLevelFilter } from "@/domain/tms";
+import { TAX_OFFICE_ENTITY_BY_CODE, type ManagementLevelFilter } from "@/domain/tms";
 import { groupFromUrl, groupUrlId, sourceFromUrl, sourceUrlId } from "@/domain/urlIds";
 import type {
   AdvancedComparisonMode,
@@ -66,7 +66,9 @@ const LEGACY_TAB_TO_REPORT: Record<string, ReportMode> = {
   inspection: "inspection",
 };
 
-const MANAGEMENT_LEVELS_URL = ["all", "trung-uong", "dia-phuong", "tinh", "huyen", "xa", "unknown"] as const;
+/* `huyen` đã bỏ khỏi danh sách: URL cũ mang `mgmt=huyen` sẽ rơi về mặc định
+   "all" qua `one()`, đúng hơn là dựng một màn hình cho một cấp không còn. */
+const MANAGEMENT_LEVELS_URL = ["all", "trung-uong", "dia-phuong", "tinh", "xa"] as const;
 
 const MODES: AdvancedComparisonMode[] = ["period", "revenue", "location"];
 const VIEWS = ["overview", "ranking", "waterfall"] as const;
@@ -165,8 +167,11 @@ function readUrl(search: string): DashboardUrlState {
     location: locationOf("location"),
     managementLevel: one("mgmt", MANAGEMENT_LEVELS_URL, "all"),
     taxOfficeCode: (() => {
+      // Đường dẫn cũ có thể mang mã phụ (0127, 0151…). Quy về mã đại diện thay
+      // vì trả null: người dùng đã lưu đường dẫn đó, và bỏ lọc im lặng thì họ
+      // đọc số toàn thành phố như số của một cơ quan.
       const code = q.get("cqt");
-      return code && TAX_OFFICES.some((office) => office.code === code) ? code : null;
+      return code ? (TAX_OFFICE_ENTITY_BY_CODE[code] ?? null) : null;
     })(),
     panelSource: q.get("panel") === "revenue-preview" ? sourceFromUrl(q.get("source"), "domestic") : null,
     mode: one("mode", MODES, "period"),

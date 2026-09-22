@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { INDICATORS, YEARS } from "@/domain/catalog";
 import type { DashboardFilters, TabId } from "@/domain/types";
 import { useHostContext } from "@/host/HostContext";
+import { useDragScroll } from "@/host/useDragScroll";
 import { useDashboardState } from "@/state/DashboardState";
 import { TABS } from "./tabs";
 import { AdvancedCompareTab } from "@/features/advanced-compare/AdvancedCompareTab";
@@ -79,6 +80,38 @@ export function App() {
       tabDrag.current.suppressClick = false;
     }, 0);
   };
+
+  /**
+   * Kéo tab đang chọn vào tầm nhìn.
+   *
+   * Sáu tab dài 637px trong một dải 390px, nên hai tab cuối luôn nằm ngoài màn
+   * hình. Mở app bằng một URL trỏ thẳng vào tab cuối — đúng cách người ta gửi
+   * link cho nhau — thì thanh tab hiện ra ở đầu dải và không tab nào sáng, y
+   * như đang đứng ở một tab không tồn tại.
+   *
+   * `nearest` chứ không phải `center`: tab đang ở trong tầm nhìn rồi thì không
+   * bị đẩy đi đâu cả.
+   */
+  useEffect(() => {
+    const el = tablistRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+    el?.scrollIntoView({ inline: "nearest", block: "nearest" });
+  }, [tab]);
+
+  // Kéo chuột để cuộn, thay cho thanh cuộn đã ẩn ở chế độ mobile.
+  useDragScroll(mobileHost);
+
+  /**
+   * Chép `host` lên thẻ gốc của tài liệu.
+   *
+   * Thanh cuộn của TRANG thuộc về `html`/`body`, nằm ngoài `.dapp`, nên không
+   * có cách nào chọn tới nó từ một thuộc tính đặt trên một `<div>` bên trong.
+   */
+  useEffect(() => {
+    document.documentElement.dataset.host = host.source;
+    return () => {
+      delete document.documentElement.dataset.host;
+    };
+  }, [host.source]);
 
   // Tiêu đề trang đi theo workspace để lịch sử trình duyệt đọc được.
   useEffect(() => {
