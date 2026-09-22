@@ -45,9 +45,9 @@ export function InspectionSummary({
       </div>
 
       {/* Bảng số liệu thay thế cho phần đồ hoạ. */}
-      <details>
+      <details className="dexpandable">
         <summary>Xem bảng số liệu</summary>
-        <div className="dtable-wrap">
+        <div className="dtable-wrap dexpandable-content">
           <table className="dtable is-compact dinspection-mini-table">
             <thead>
               <tr>

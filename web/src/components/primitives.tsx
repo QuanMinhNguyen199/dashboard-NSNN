@@ -192,6 +192,7 @@ export const cx = (...parts: (string | false | null | undefined)[]) => parts.fil
 
 export function Card({
   title,
+  titleId,
   subtitle,
   unit,
   actions,
@@ -199,6 +200,13 @@ export function Card({
   className,
 }: {
   title: string;
+  /**
+   * Đặt `id` lên tiêu đề thẻ để chỗ khác đưa tiêu điểm tới được.
+   *
+   * Có `id` thì tiêu đề cũng nhận `tabIndex={-1}`: một `<h2>` không tự nhận
+   * tiêu điểm được, nên chỉ đặt `id` thôi là `focus()` gọi vào chỗ trống.
+   */
+  titleId?: string;
   subtitle?: ReactNode;
   /** Đơn vị của các con số trong thẻ, ghi MỘT lần ở đây thay vì lặp từng dòng. */
   unit?: MoneyScale;
@@ -210,7 +218,9 @@ export function Card({
     <section className={cx("dcard", className)}>
       <header className="dcard-head">
         <div className="dcard-title">
-          <h2>{title}</h2>
+          <h2 id={titleId} tabIndex={titleId ? -1 : undefined}>
+            {title}
+          </h2>
           {(subtitle || unit) && (
             <p>
               {subtitle}

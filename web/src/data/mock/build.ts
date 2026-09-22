@@ -175,7 +175,10 @@ export function waterfallOf(
   if (rest.length)
     head.push({
       id: "__other",
-      name: `Khác (${rest.length} mục)`,
+      // "khoản" chứ không phải "mục": trong mục lục ngân sách, Mục là một cấp
+      // phân loại có định nghĩa. Dùng lại đúng từ đó cho một nhóm gộp của biểu
+      // đồ là mời người đọc hiểu thành 28 Mục của mục lục.
+      name: `Khác (${rest.length} khoản)`,
       delta: rest.reduce((sum, d) => sum + d.delta, 0),
     });
 

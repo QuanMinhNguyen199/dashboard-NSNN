@@ -728,6 +728,13 @@ body.is-drag-scroll * { cursor: grabbing !important; }
   min-width: 0; padding: var(--s3) var(--s4); display: grid; align-content: center;
   gap: 1px; border-left: 1px solid var(--hairline);
 }
+.dkpis > div.is-actionable { position: relative; padding: 0; }
+.dkpi-action {
+  display: grid; align-content: center; gap: 1px; width: 100%; min-width: 0; height: 100%;
+  padding: var(--s3) var(--s4); border: 0; background: transparent; color: inherit;
+  text-align: left; font: inherit; cursor: pointer;
+}
+.dkpi-action:focus-visible { outline: 2px solid var(--focus); outline-offset: -3px; }
 .dkpis small { margin-top: 5px; }
 .dkpis > div:first-child { border-left: 0; }
 /* `> div >` chứ không phải hậu duệ bất kỳ: nhãn là span CON TRỰC TIẾP của ô, còn
@@ -735,7 +742,8 @@ body.is-drag-scroll * { cursor: grabbing !important; }
 /* Nhãn và dòng phụ từng dùng chung cả cỡ lẫn màu, chỉ khác trọng lượng — nên
    squint test cho thấy chúng nhập thành một tầng. Tách bằng MÀU (ink-2 so với
    ink-3) thay vì thêm một bậc cỡ, để thang chữ phụ vẫn đúng hai bậc. */
-.dkpis > div > span {
+.dkpis > div > span,
+.dkpis > div > .dkpi-action > span {
   color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); letter-spacing: var(--ls-label);
 }
 .dkpis strong {
@@ -851,6 +859,7 @@ body.is-drag-scroll * { cursor: grabbing !important; }
  * Dải KPI và các thanh lọc không nằm trong đây: chúng là thanh điều khiển, các
  * ô dính chung một viền, nâng một ô là làm rách dải.
  */
+@media (hover: hover) and (pointer: fine) {
 @supports selector(:has(*)) {
   .dcard:not(:has(table, .dtax-location-grid, .ddonut, .dbars, .dchart-wrap, .dforecast, .dmap, .dwaterfall)),
   .dtax-scope:not(:has(table, .dtax-location-grid, .ddonut, .dbars, .dchart-wrap, .dforecast, .dmap, .dwaterfall)) {
@@ -867,6 +876,7 @@ body.is-drag-scroll * { cursor: grabbing !important; }
        người không phân biệt được sắc độ nhạt. */
     border-color: var(--blue-100);
   }
+}
 }
 
 .dstack { display: grid; gap: var(--s4); }
@@ -895,9 +905,11 @@ button.dlink { border: 0; background: none; cursor: pointer; font-family: inheri
   border-radius: var(--r-control); background: var(--surface);
   font-size: var(--fs-caption); font-weight: var(--fw-label);
 }
-.dbtn:hover { border-color: var(--blue-250); color: var(--brand); }
 .dbtn-primary { background: var(--brand); border-color: var(--brand); color: var(--ink-on-dark); }
-.dbtn-primary:hover { background: var(--blue-550); color: var(--ink-on-dark); }
+@media (hover: hover) and (pointer: fine) {
+  .dbtn:hover { border-color: var(--blue-250); color: var(--brand); }
+  .dbtn-primary:hover { background: var(--blue-550); color: var(--ink-on-dark); }
+}
 
 /* Tên đối tượng đang xem. Đứng trên dải KPI vì mọi con số bên dưới đều là số
    CỦA NÓ — không có dòng này thì dải KPI là bốn con số không rõ thuộc về ai.
@@ -1014,7 +1026,7 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
   paint-order: stroke; filter: drop-shadow(0 0 0 var(--surface));
 }
 .ddonut-focus-ring { fill: none; stroke: var(--brand); stroke-width: 2; }
-.ddonut-segment.is-selected { stroke-width: 22; }
+.ddonut-segment.is-selected { opacity: 1; stroke-width: 22; }
 /* Tâm donut nay mang tên lát đang chọn chứ không phải chuỗi "100%" cố định, nên
    phải chịu được chuỗi dài: giới hạn bề rộng theo lỗ donut và cho xuống dòng. */
 .ddonut > span {
@@ -1222,8 +1234,22 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   top: -3px; bottom: -3px; width: 1px; background: var(--control-border);
 }
 .dwaterfall[data-two-sided="false"] .dcontrib-track::before { display: none; }
-.dcontrib-track i { position: absolute; top: 1px; height: 8px; border-radius: var(--r-bar); }
-.dcontrib-track i.pos { background: var(--pos); }
+/* ── Thanh đóng góp: ĐỘ LỚN vẽ bằng thang xanh, DẤU nói bằng chữ ──────────────
+ *
+ * Trước đây thanh dương tô `--pos` bão hoà. Ở mọi khung nhìn mặc định mọi giá
+ * trị đều dương, nên sắc xanh lá là hằng số và không mã hoá gì cả — nó là màu
+ * chuỗi trên thực tế, đúng thứ luật màu của sản phẩm cấm. Cái giá: hai tab có
+ * mảng này thì mắt rơi vào bức tường xanh trước khi rơi vào dải KPI, và thanh
+ * âm duy nhất chìm nghỉm giữa mười thanh dương.
+ *
+ * Xanh lá và đỏ lui về đúng chỗ chúng mang tin: dấu và con số ở `<strong>`.
+ * Thanh âm giữ sắc đỏ vì ở đây nó là ngoại lệ hiếm, và hiếm thì đáng nổi. */
+/* Sàn 3px theo PIXEL, không theo phần trăm: 0,6% của một rãnh 400px chỉ ra
+   2,4px, nên thanh âm duy nhất trong biểu đồ biến mất ở đúng chỗ nó đáng thấy. */
+.dcontrib-track i {
+  position: absolute; top: 1px; height: 8px; min-width: 3px; border-radius: var(--r-bar);
+}
+.dcontrib-track i.pos { background: var(--data-secondary); }
 .dcontrib-track i.neg { background: var(--neg); }
 .dcontrib strong { text-align: right; }
 .dcontrib strong.pos { color: var(--pos); }
@@ -1317,7 +1343,12 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 /* Nút sắp xếp phủ trọn ô tiêu đề và thừa kế canh lề của ô: cột số canh phải thì
    nhãn cũng phải canh phải, nếu không mũi tên chỉ hướng lại nằm lệch khỏi cột
    số nó đang nói về. Vùng bấm bằng cả ô chứ không bằng mấy chữ. */
-.dtable thead th .dsort { width: 100%; padding: 0; text-align: inherit; }
+/* Vùng chạm 24px theo WCAG 2.5.8. Đo trước khi sửa: 25×19 ở bảng Mã hạch toán
+   và bốn nút 21px ở bảng chi tiết Phân tích thu — chữ cao bao nhiêu thì nút cao
+   bấy nhiêu, nên trên điện thoại rất dễ bấm trượt sang dòng bên cạnh. */
+.dtable thead th .dsort {
+  width: 100%; min-height: 24px; padding: 0; text-align: inherit;
+}
 .dtable thead th.is-num .dsort { text-align: right; }
 .dtable .is-num { text-align: right; }
 .dtable tbody th { font-weight: var(--fw-medium); white-space: normal; }
@@ -1329,10 +1360,6 @@ button.dcontrib-row:hover { background: var(--blue-050); }
  * với `collapse` thì trình duyệt không vẽ bóng trên hàng. */
 .dtable tbody tr {
   position: relative;
-  transition:
-    transform 140ms cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 140ms ease;
 }
 /* Trỏ vào thì NỔI LÊN, và nổi lên thì không tối đi.
  *
@@ -1342,11 +1369,19 @@ button.dcontrib-row:hover { background: var(--blue-050); }
  *
  * Vòng viền vẽ bằng `box-shadow: 0 0 0 1px` chứ không phải `border`: thêm border
  * cho `<tr>` sẽ đẩy chiều cao hàng và cả bảng giật mỗi lần trỏ sang dòng khác. */
-.dtable tbody tr:hover {
-  background: var(--surface);
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 1px var(--blue-100), var(--shadow-hover);
-  z-index: 1;
+@media (hover: hover) and (pointer: fine) {
+  .dtable tbody tr {
+    transition:
+      transform 140ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 140ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 140ms ease;
+  }
+  .dtable tbody tr:hover {
+    background: var(--surface);
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px var(--blue-100), var(--shadow-hover);
+    z-index: 1;
+  }
 }
 .dtable.is-compact th, .dtable.is-compact td { padding: 6px 8px; }
 
@@ -1846,6 +1881,112 @@ button.dcontrib-row:hover { background: var(--blue-050); }
    tách khỏi vùng cột động bằng một đường kẻ chứ không trôi lẫn vào đó. */
 .dreport-total { border-right: 1px solid var(--divider); font-weight: var(--fw-medium); }
 .dreport-table thead th[scope="colgroup"] { text-align: left; border-bottom: 1px solid var(--divider); }
+/* ══ Khổ hẹp: thẻ nhóm và trang chi tiết ══════════════════════════════════
+ *
+ * Bảng xếp chồng bằng CSS cho ra bốn cặp nhãn–số chạy liền thành hai dòng chữ,
+ * mọi số cùng một cỡ. Thẻ ở đây đặt ba tầng rõ rệt: tên nhóm, số thu cỡ lớn,
+ * rồi phần phụ — đọc lướt một danh sách mười mấy nhóm mới ra được thứ hạng. */
+.dgroup-cards { display: grid; gap: var(--s2); margin: 0; padding: 0; list-style: none; }
+.dgroup-cards > li > button,
+.dgroup-cards > li > div {
+  display: grid; width: 100%;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "ten mui" "so mui" "phu mui";
+  align-items: center; gap: 2px var(--s2);
+  padding: var(--s2); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+  background: var(--surface); text-align: left; font: inherit;
+}
+.dgroup-cards > li > button { cursor: pointer; }
+.dgroup-cards > li > button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+/* Thẻ không bấm được thì đừng trông như bấm được: nhạt đi và không có mũi tên. */
+.dgroup-cards > li > div { background: var(--surface-sunken); color: var(--ink-3); }
+.dgc-ten { grid-area: ten; font-weight: var(--fw-label); color: var(--ink); }
+.dgc-so {
+  grid-area: so; display: flex; align-items: baseline; gap: var(--s1);
+  font-variant-numeric: tabular-nums;
+}
+.dgc-so strong { font-size: var(--fs-metric-sm); font-weight: var(--fw-bold); color: var(--ink); }
+.dgc-so small { color: var(--ink-3); }
+.dgc-phu { grid-area: phu; font-size: var(--fs-caption); color: var(--ink-3); }
+/* Mũi tên nói thẻ MỞ RA MỘT TRANG khác, không phải bung ra tại chỗ. */
+/* impeccable-disable-next-line design-system-font-size -- glyph mũi tên, không phải bậc chữ */
+.dgc-mui { grid-area: mui; font-size: var(--fs-metric-sm); line-height: 1; color: var(--ink-3); }
+
+/* Phần dư và dòng tổng: ngoài bảng xếp hạng, ngoài phân trang, luôn thấy được. */
+.dgroup-sum { margin-top: var(--s2); border-top: 1px solid var(--divider); }
+.dgroup-sum p {
+  display: flex; justify-content: space-between; gap: var(--s2);
+  margin: 0; padding: var(--s2) 0; border-bottom: 1px solid var(--hairline);
+  font-size: var(--fs-caption); color: var(--ink-3);
+}
+.dgroup-sum p.is-total { font-weight: var(--fw-label); color: var(--ink); border-bottom: 0; }
+
+/* Trang chi tiết: thay chỗ tổng quan chứ không xếp thêm bên dưới. */
+.dtrang {
+  display: grid; gap: var(--s2);
+  animation: dmobile-detail-in 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes dmobile-detail-in {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.dtrang-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.dtrang-back {
+  display: inline-flex; align-items: center; gap: var(--s1);
+  min-height: 36px; padding: 4px var(--s2) 4px var(--s1);
+  border: 1px solid var(--control-border); border-radius: var(--r-control);
+  background: var(--surface); color: var(--brand); font: inherit;
+  font-size: var(--fs-label); font-weight: var(--fw-label); cursor: pointer;
+}
+/* impeccable-disable-next-line design-system-font-size -- glyph mũi tên, không phải bậc chữ */
+.dtrang-back span { font-size: var(--fs-insight); line-height: 1; }
+/* Cử chỉ vuốt là thứ không nhìn thấy được, nên phải nói ra một lần. */
+.dtrang-nav p { margin: 0; font-size: var(--fs-caption); color: var(--ink-3); }
+.dtrang-ten { margin: 0; font-size: var(--fs-insight); }
+.dtrang-so { display: grid; gap: 2px; margin: 0; }
+.dtrang-so strong {
+  font-size: var(--fs-metric-sm); color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.dtrang-so span { font-size: var(--fs-caption); color: var(--ink-3); }
+
+/* ── Hàng chip sắp xếp cho khổ hẹp ───────────────────────────────────────────
+ *
+ * Dưới 768px bảng xếp chồng thành thẻ và `thead` bị ẩn, nên hàng này là đường
+ * DUY NHẤT để đổi thứ tự. Chỉ dựng ở khổ hẹp (xem `useNarrow`), nên trên màn
+ * hình rộng nó không tồn tại trong DOM chứ không phải bị ẩn đi.
+ *
+ * Cuộn ngang thay vì xuống dòng: sáu cột xuống dòng chiếm ba hàng trên màn hình
+ * 390px, đẩy chính cái bảng xuống dưới nếp gấp. */
+.dsort-strip {
+  display: flex; align-items: baseline; gap: var(--s2);
+  margin-bottom: var(--s2); min-width: 0;
+}
+.dsort-strip > span {
+  flex: none; font-size: var(--fs-caption); color: var(--ink-3);
+}
+.dsort-strip > div {
+  /* `min-width: 0` là bắt buộc: thiếu nó, một ô flex nở theo nội dung thay vì
+     cuộn, và cả khung nhìn bị nới rộng ra — đo được 390px thành 407px.
+     `position: relative` cũng vậy: chữ sr-only trong chip được định vị tuyệt đối,
+     và vùng cuộn chỉ cắt được nó khi chính vùng cuộn là gốc định vị của nó. */
+  display: flex; position: relative; min-width: 0; gap: var(--s1);
+  overflow-x: auto; padding-bottom: 2px;
+  /* Chip đầu và chip cuối chạm hẳn mép thẻ khi cuộn hết cỡ, không lửng lơ. */
+  scroll-padding-inline: var(--s2);
+}
+.dsort-strip button {
+  flex: none; min-height: 32px; padding: 4px var(--s2);
+  border: 1px solid var(--control-border); border-radius: var(--r-chip);
+  background: var(--surface); color: var(--ink-2);
+  font: inherit; font-size: var(--fs-caption); white-space: nowrap; cursor: pointer;
+}
+/* Chip đang dùng: đổi cả nền lẫn viền, không chỉ mũi tên — mũi tên là một ký tự
+   nhỏ xíu, nhìn lướt qua thì cả hàng chip trông như nhau. */
+.dsort-strip button[aria-pressed="true"] {
+  border-color: var(--brand); background: var(--blue-050);
+  color: var(--brand); font-weight: var(--fw-label);
+}
+
 /* Nhãn đổi mà nút không co giãn: mọi nhãn chồng lên cùng một ô lưới, nút rộng
    bằng nhãn dài nhất. `visibility: hidden` vừa giấu khỏi mắt vừa gỡ khỏi cây
    trợ năng, nên tên của nút vẫn chỉ là nhãn đang hiện. */
@@ -1865,7 +2006,8 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   width: 210px; font-weight: var(--fw-regular);
 }
 .dexport-loc-nut > :not(svg) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dexport-loc-nut svg { flex: none; }
+.dexport-loc-nut svg { flex: none; transform: rotate(0deg); }
+.dexport-loc-nut[aria-expanded="true"] svg { transform: rotate(180deg); }
 .dexport-loc-nut[aria-expanded="true"] { border-color: var(--blue-250); color: var(--brand); }
 .dexport-loc-bang {
   position: absolute; z-index: 35; top: calc(100% + 4px); left: 0;
@@ -1892,7 +2034,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 .dexport-loc-ds button:hover { background: var(--blue-050); color: var(--brand); }
 .dexport-loc-ds button:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .dcheck {
-  flex: none; width: 15px; height: 15px; border-radius: 3px;
+  flex: none; width: 15px; height: 15px; border-radius: var(--r-chip);
   border: 1px solid var(--control-border); background: var(--surface);
 }
 [aria-checked="true"] > .dcheck { border-color: var(--brand); background: var(--brand); }
@@ -1908,6 +2050,11 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   max-width: 100%; min-height: 32px; padding: 2px 26px 2px 6px;
   border-color: transparent; background-color: transparent;
   font-size: var(--fs-label); font-weight: var(--fw-label); color: var(--ink);
+}
+/* Đứng ngoài đầu bảng thì nó là một ô lọc bình thường, nên lấy lại khung viền
+   đã bỏ đi ở trong bảng — ở ngoài không có hàng tiêu đề nào để nó đọc theo. */
+.dreport-group-pick-ngoai select {
+  max-width: 200px; border-color: var(--control-border); background-color: var(--surface);
 }
 .dreport-group-pick select:hover { border-color: var(--control-border); background-color: var(--surface); }
 .dreport-group-pick select:focus-visible { border-color: var(--control-border); background-color: var(--surface); }
@@ -1929,7 +2076,12 @@ button.dcontrib-row:hover { background: var(--blue-050); }
 }
 .dreport-table thead th:first-child { z-index: 3; }
 .dreport-table tbody tr.is-heading th:first-child { background: var(--surface-sunken); }
-.dreport-table tbody tr:hover th:first-child { background: var(--surface); }
+@media (hover: hover) and (pointer: fine) {
+  .dgroup-cards > li > button:hover { border-color: var(--blue-250); }
+  .dtrang-back:hover { border-color: var(--blue-250); }
+  .dsort-strip button:hover { border-color: var(--blue-250); color: var(--brand); }
+  .dreport-table tbody tr:hover th:first-child { background: var(--surface); }
+}
 /* Đường kẻ vẽ bằng bóng đổ chứ không phải `border`: ô dính vẽ đè lên ô kế bên,
    nên viền phải của nó bị chính nó che mất.
    Ô đầu bảng phải mang CẢ HAI bóng: vạch dọc bên phải và vạch ngang dưới đáy.
@@ -2046,7 +2198,10 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   min-height: 24px; padding: 0; text-align: left;
   font-size: var(--fs-label); font-weight: var(--fw-medium); color: inherit;
 }
-.dtms-toggle:hover { color: var(--brand); }
+.dtms-toggle-label { min-width: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .dtms-toggle:hover { color: var(--brand); }
+}
 
 .dtms-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--r-chip); }
 .dtms-toggle em {
@@ -2060,7 +2215,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   border-left: 5px solid currentColor; border-top: 4px solid transparent; border-bottom: 4px solid transparent;
   transition: transform 140ms ease;
 }
-.dtms-table tbody tr.is-open .dtms-caret { transform: rotate(90deg); }
+.dtms-toggle[aria-expanded="true"] .dtms-caret { transform: rotate(90deg); }
+
+@keyframes dreport-row-reveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .dtms-code {
   display: inline-block; margin-right: var(--s2); min-width: 3.1rem;
@@ -2072,7 +2232,32 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   background: var(--blue-050); border: 1px solid var(--blue-100);
   font-size: var(--fs-label); color: var(--ink-2); white-space: nowrap;
 }
+/* ── Ba vai của chip, ba kiểu ────────────────────────────────────────────────
+ *
+ * Trước đây `is-review` gánh cả ba, nên trong bảng Kết quả kiểm tra năm dòng
+ * "Đang thực hiện" và một dòng "Chậm tiến độ" hiện ra y hệt nhau: cả cột là một
+ * khối hổ phách đều, và dòng DUY NHẤT cần ai đó xử lý biến mất giữa năm dòng
+ * không cần. Chip xuất xứ — tín hiệu trung thực quan trọng nhất của sản phẩm —
+ * cũng bị hạ giá thành viên chip chung chung.
+ *
+ *   · `is-review`  xuất xứ, và việc đang chờ người xác nhận  → hổ phách
+ *   · `is-running` đang chạy đúng tiến độ, không cần ai làm gì → trung tính
+ *   · `is-alert`   đã lệch tiến độ, cần người xử lý            → hổ phách + dấu
+ */
 .dtag.is-review { background: var(--note-surface); border-color: var(--note-line); color: var(--note-ink); }
+/* Trạng thái KHÔNG cần ai làm gì thì không đeo viên nào: chữ mờ là đủ.
+   Một viên có viền đứng một mình trong ô bảng đọc ra như ô nhập đã khoá, và khi
+   năm trên sáu dòng đều đeo nó thì cột trạng thái thành một dãy hộp rỗng. */
+.dtag.is-running {
+  padding-inline: 0; background: none; border-color: transparent; color: var(--ink-3);
+}
+.dtag.is-alert {
+  background: var(--note-surface); border-color: var(--note-ink); color: var(--note-ink);
+  font-weight: var(--fw-label);
+}
+/* Dấu dẫn để trạng thái sống sót khi in đen trắng — đối tượng này vẫn in ra
+   giấy, và ở đó hổ phách với trắng là hai sắc xám gần nhau. */
+.dtag.is-alert::before { content: "!"; margin-right: 4px; font-weight: var(--fw-bold); }
 /* Chip trạng thái chờ: trung tính, KHÔNG mang màu của nhãn nó đang thay. Nhãn
    thật nói số này thuộc kỳ nào hoặc là số mô phỏng; trong lúc chờ thì chưa ai
    biết, nên chip phải nói đúng chừng đó. */
@@ -2436,6 +2621,14 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dkpis > div:nth-child(odd) { border-left: 0; }
   .dkpis[data-columns="5"] > div:last-child { grid-column: 1 / -1; }
   .dkpis > div { padding: 11px 15px; }
+  .dkpis > div.is-actionable { padding: 0; }
+  .dkpi-action { position: relative; padding: 11px 34px 11px 15px; }
+  .dkpi-action::after {
+    content: ""; position: absolute; top: 14px; right: 15px; width: 7px; height: 7px;
+    border-right: 1.5px solid var(--brand); border-bottom: 1.5px solid var(--brand);
+    transform: rotate(-45deg);
+  }
+  .dkpi-action:active { background: var(--blue-050); }
 }
 
 @media (max-width: 1023px) {
@@ -2711,33 +2904,165 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 
 /* Bộ chọn loại báo cáo. Đứng riêng một dải phía trên thanh lọc của từng chế độ,
    vì nó quyết định CHẾ ĐỘ chứ không phải một tham số của chế độ đang xem. */
-.dreport-modebar {
-  padding: 13px 15px;
-  background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+/* Trên desktop thanh chọn loại báo cáo không còn là một thẻ: nó là hàng điều
+   hướng cấp hai, nên nó không mang nền trắng, viền hay bo góc nào. Bỏ vỏ thẻ ở
+   đây cắt một trong ba bề mặt trắng giống hệt nhau xếp trước con số đầu tiên. */
+.dreport-modebar { padding: 0; }
+.dreport-modenav { margin-bottom: 0; }
+@media (max-width: 767px) {
+  .dreport-modebar {
+    padding: 13px 15px;
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
+  }
 }
 .dreport-mode { display: grid; gap: 5px; min-width: 0; }
 .dreport-mode > span { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
 .dreport-mobile-switch, .dreport-table-jump { display: none; }
 .dreport-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--s2); }
 @media (max-width: 767px) {
-  .dreport-modebar { padding: 11px 12px; }
-  .dreport-mode select { width: 100%; }
+  /* Trên khổ hẹp, ba quyết định liên tiếp — loại báo cáo, chiều phân tích và
+     lớp nội dung — là một tác vụ. Ghép chúng thành một cụm thay vì ba card rời
+     giúp người dùng hiểu thứ tự và lấy lại gần 40px khoảng đệm/viền lặp. */
+  .dreport-workspace[data-report-mode="nsnn"] { gap: 0; }
+  .dreport-workspace[data-report-mode="nsnn"] > .dreport-modebar {
+    padding: 9px 12px;
+    border-radius: var(--r-surface) var(--r-surface) 0 0;
+    box-shadow: none;
+  }
+  .dreport-mode {
+    grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--s3);
+  }
+  .dreport-mode > span { white-space: nowrap; }
+  .dreport-mode select { width: 100%; min-width: 0; }
+
+  .dreport-workspace[data-report-mode="nsnn"] > .dreport-settings-toggle {
+    border-radius: 0; border-top: 0; box-shadow: none;
+    padding: 8px 12px; background: var(--surface);
+  }
+  .dreport-workspace[data-report-mode="nsnn"] > .dreport-settings-toggle strong {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  /* Chevron vẽ bằng CSS để cùng trọng lượng với icon hệ thống và không phụ
+     thuộc glyph của font trên Android/iOS. */
+  .dreport-settings-toggle::after {
+    content: ""; flex: 0 0 auto; width: 7px; height: 7px;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg); transition: transform 120ms ease;
+  }
+  .dreport-settings-toggle[aria-expanded="true"]::after { transform: rotate(225deg); }
+  .dreport-workspace[data-report-mode="nsnn"] > .dreport-bar {
+    grid-template-columns: 1fr; gap: var(--s3); padding: 10px 12px 12px;
+    border-top: 0; border-radius: 0; box-shadow: none;
+  }
+
   .dreport-mobile-switch {
     display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px;
     background: var(--surface-sunken); border: 1px solid var(--hairline); border-radius: var(--r-control);
+  }
+  .dreport-workspace[data-report-mode="nsnn"] > .dreport-mobile-switch {
+    padding: 6px; border-top: 0;
+    border-radius: 0 0 var(--r-surface) var(--r-surface);
+    background: var(--surface);
   }
   .dreport-mobile-switch button {
     min-height: 44px; padding: 0 var(--s3); border: 0; border-radius: var(--r-control);
     background: transparent; color: var(--ink-2); font: inherit; font-weight: var(--fw-label); cursor: pointer;
   }
-  .dreport-mobile-switch button.is-active { background: var(--surface); color: var(--brand); box-shadow: var(--shadow-control); }
+  .dreport-mobile-switch button.is-active { background: var(--blue-050); color: var(--brand); box-shadow: none; }
   .dreport-summary-pane[data-mobile-active="false"],
   .dreport-table-pane[data-mobile-active="false"] { display: none; }
+  .dreport-summary-pane, .dreport-table-pane { margin-top: var(--s3); }
+  .dreport-summary-pane { display: grid; gap: var(--s3); }
+  /* Nguồn là metadata của KPI, không phải một card ngang hàng. */
+  .dreport-summary-pane .dfresh {
+    width: 100%; padding: 2px 1px; border: 0; border-radius: 0; background: transparent;
+  }
+  .dreport-summary-pane .dfresh dl { gap: var(--s2) var(--s3); }
+  .dreport-summary-pane .dfresh-note { padding-left: var(--s3); }
   .dreport-table-pane .dtable-wrap { max-height: none; overflow: visible; }
-  .dreport-table-jump { display: inline-flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; }
-  .dreport-actions { width: 100%; justify-content: stretch; }
+  .dreport-actions { display: grid; width: 100%; gap: var(--s2); justify-content: stretch; }
   .dreport-actions .dexport, .dreport-actions .dexport .dbtn { width: 100%; }
   .dreport-actions .dexport .dbtn { justify-content: center; }
+  .dreport-page {
+    display: grid; grid-template-columns: 1fr auto 1fr; width: 100%; gap: var(--s2);
+  }
+  .dreport-page .dbtn { width: 100%; min-width: 0; padding-inline: var(--s2); }
+  .dreport-page em { text-align: center; }
+
+  /* Mỗi chỉ tiêu là một đơn vị đọc. Khung nhúng hẹp vẫn dùng lưới hai cột;
+     Mobile host được tổ chức lại riêng ở cuối khối này vì mỗi trang mobile
+     chỉ có ba địa bàn và không nên để ô cuối rơi thành một hàng lẻ. */
+  .dreport-table tbody { display: grid; }
+  .dreport-table tbody tr {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0; padding: 0; align-items: stretch;
+  }
+  .dreport-table tbody th {
+    grid-column: 1 / -1; width: auto; min-width: 0; padding-top: 10px; padding-bottom: 9px;
+  }
+  .dreport-table tbody th:first-child { width: auto; }
+  .dreport-table .dtms-toggle { align-items: flex-start; min-height: 36px; }
+  .dreport-table .dtms-toggle-label { flex: 1 1 auto; }
+  .dreport-table tbody tr.is-open th { background: var(--blue-050); }
+  .dreport-table tbody tr[data-revealed="true"],
+  .dbudget-table tbody tr[data-revealed="true"] {
+    animation: dreport-row-reveal 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dreport-table tbody td {
+    display: grid; align-content: start; gap: 2px; min-width: 0;
+    padding: 8px 10px; border-top: 1px solid var(--divider);
+    text-align: left; font-variant-numeric: tabular-nums;
+  }
+  .dreport-table tbody td:nth-of-type(even) { border-left: 1px solid var(--divider); }
+  .dreport-table tbody td.dreport-total {
+    grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--s3); background: var(--blue-050); border-right: 0;
+    color: var(--ink); font-weight: var(--fw-label);
+  }
+  .dreport-table tbody td:empty { display: none; }
+  .dreport-table tbody td::before {
+    display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+    color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-regular);
+    line-height: var(--lh-dense); white-space: nowrap;
+  }
+  .dreport-table tbody td.dreport-total::before { flex: 1 1 auto; }
+
+  /* Mobile host: tên chỉ tiêu và tổng cùng một dải đầu, ba địa bàn cùng một
+     hàng. Scope theo host để iframe và trình duyệt desktop co hẹp không bị đổi
+     cấu trúc theo một yêu cầu chỉ dành cho ứng dụng mobile. */
+  .dapp[data-host="mobile"] .dreport-table tbody tr {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody th {
+    grid-column: 1 / span 2;
+    display: flex; align-items: center;
+    min-height: 56px; padding-top: 8px; padding-bottom: 8px;
+    background: var(--blue-050);
+  }
+  .dapp[data-host="mobile"] .dreport-table .dtms-toggle {
+    align-items: center; min-height: 44px;
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody td.dreport-total {
+    grid-column: 3;
+    display: grid; align-content: center; justify-items: end; gap: 1px;
+    min-height: 56px; padding: 8px 10px;
+    border-top: 0; border-left: 1px solid var(--divider);
+    text-align: right;
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody td.dreport-total::before {
+    flex: none; font-size: var(--fs-caption);
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody td:not(.dreport-total) {
+    align-content: center; justify-items: center;
+    min-height: 58px; padding: 8px 5px;
+    text-align: center; font-weight: var(--fw-medium);
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody td:nth-of-type(even) {
+    border-left: 0;
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody td:not(.dreport-total) + td:not(.dreport-total) {
+    border-left: 1px solid var(--divider);
+  }
 }
 
 /* Thanh lọc cục bộ của workspace. Cùng hình dạng với `.dtms-levelbar` để người
@@ -2786,6 +3111,35 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 }
 .dofficial-snapshot[open] > summary { border-bottom: 1px solid var(--divider); }
 .dofficial-snapshot > .dstack { padding: var(--s4); }
+
+/* Mọi vùng mở rộng trong Báo cáo dùng cùng một dấu hiệu và cùng nhịp chuyển.
+   `details` mặc định chỉ bật/tắt tức thời, nên người dùng khó biết nội dung mới
+   xuất hiện thuộc nút nào, nhất là trên màn hình hẹp. */
+@media (max-width: 767px) {
+.dexpandable > summary {
+  display: flex; align-items: center; gap: var(--s2); min-height: 40px;
+  cursor: pointer; color: var(--brand); font-weight: var(--fw-label);
+  list-style: none;
+}
+.dexpandable > summary::-webkit-details-marker { display: none; }
+.dexpandable > summary::after {
+  content: ""; flex: none; width: 7px; height: 7px; margin-left: auto;
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg); transition: transform 140ms ease;
+}
+.dexpandable[open] > summary::after { transform: rotate(225deg); }
+.dexpandable[open] > .dexpandable-content {
+  animation: dexpandable-in 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top;
+}
+@keyframes dexpandable-in {
+  from { opacity: 0; transform: translateY(-6px) scaleY(.98); }
+  to { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+}
+
+.dsection-target { scroll-margin-top: calc(var(--s6) + var(--s6)); }
+.dsection-target:focus { outline: none; }
 
 /* Ô tìm kiếm đứng ở hàng tiêu đề thẻ, dùng chung cho mọi tab.
    Tên đặt theo CHỖ NÓ ĐỨNG, không theo tab nào gọi nó: tab thứ hai cần đúng
@@ -2865,6 +3219,8 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 
 .dforecast { display: grid; gap: var(--s3); }
 .dforecast svg { width: 100%; height: auto; }
+/* Đường lưới ngang: đủ thấy để đọc độ lớn, đủ nhạt để không cạnh tranh với đường số liệu. */
+.dforecast-grid { stroke: var(--hairline); stroke-width: 1; }
 .dforecast-axis { stroke: var(--hairline); stroke-width: 1; }
 .dforecast-cross { stroke: var(--control-border); stroke-width: 1; stroke-dasharray: 3 3; }
 .dforecast-tick { fill: var(--ink-3); font-size: var(--fs-label); }
@@ -2874,6 +3230,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4);
   margin: 0; padding: 0; list-style: none;
   color: var(--ink-2); font-size: var(--fs-label);
+}
+/* Nhãn chú giải không được xuống dòng: "Thực hiện" gãy thành "Thực / hiện" đọc
+   ra như hai mục, và chú giải ba đường trông thành sáu. */
+.dforecast-legend li {
+  display: inline-flex; align-items: center; gap: var(--s1);
+  flex: none; white-space: nowrap;
 }
 .dforecast-legend li { display: flex; align-items: center; gap: var(--s2); }
 .dforecast summary { cursor: pointer; color: var(--brand); font-size: var(--fs-label); font-weight: var(--fw-label); }
@@ -3064,6 +3426,22 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dhead-tools .dbtn { width: 100%; justify-content: center; }
   .dpager { flex-direction: column; align-items: stretch; }
   .dpager .dbtn { width: 100%; }
+
+  /* Quản lý thu trên Mobile dùng hai hành động đối xứng ở cuối danh sách.
+     Nút của hướng không còn trang bị bỏ khỏi bố cục: ở trang đầu chỉ còn
+     Trang sau bên phải; từ trang hai mới xuất hiện Trang trước bên trái. */
+  .dapp[data-host="mobile"] .dpager-management {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center; gap: var(--s3); width: 100%;
+  }
+  .dapp[data-host="mobile"] .dpager-management .dhint { display: none; }
+  .dapp[data-host="mobile"] .dpager-management .dbtn {
+    width: 100%; min-height: 44px; justify-content: center;
+  }
+  .dapp[data-host="mobile"] .dpager-management .dbtn:first-child { grid-column: 1; }
+  .dapp[data-host="mobile"] .dpager-management .dbtn:last-child { grid-column: 2; }
+  .dapp[data-host="mobile"] .dpager-management .dbtn:disabled { display: none; }
+  .dapp[data-host="mobile"] .dpager-management:not(:has(.dbtn:not(:disabled))) { display: none; }
 }
 
 /* ─────────────── Tắt chuyển động nhô (đặt cuối tệp có chủ ý) ─────────────── */
@@ -3075,7 +3453,13 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
    cách chỉ ra khối đang trỏ tới; bỏ nốt thì mất hẳn tín hiệu chứ không phải
    làm nó tĩnh lại. */
 @media (prefers-reduced-motion: reduce) {
-  .dcard, .dtax-scope, .dtable tbody tr, .dtax-location-grid li { transition: none; }
+  .dcard, .dtax-scope, .dtable tbody tr, .dtax-location-grid li,
+  .dtms-caret,
+  .dexpandable > summary::after { transition: none; }
   .dcard:hover, .dtax-scope:hover,
   .dtable tbody tr:hover, .dtax-location-grid li:hover { transform: none; }
+  .dreport-table tbody tr[data-revealed="true"],
+  .dbudget-table tbody tr[data-revealed="true"],
+  .dexpandable[open] > .dexpandable-content,
+  .dtrang, .dreport-detail { animation: none; }
 }

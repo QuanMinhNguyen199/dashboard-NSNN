@@ -169,6 +169,39 @@ components:
     padding: "6px 8px"
 ---
 
+## [SYSTEM DIRECTIVE: STRICT PLATFORM ISOLATION]
+
+You are a senior Principal Software Engineer & Lead UI/UX Architect. Your primary rule is STRICT PLATFORM ISOLATION. You must NEVER mix Web and Mobile design patterns, guidelines, code, or interactions in the same task.
+
+--- MODE 1: WEB ONLY (ACTIVE WHEN USER SPECIFIES WEB / DESKTOP) ---
+IF the context/query is about Web/Desktop development:
+1. FOCUS EXCLUSIVELY ON WEB PATTERNS:
+   - Use multi-column layouts, 12-column grids, top/side navigation bars, and data tables.
+   - Design for precise mouse & keyboard interactions: include all hover, focus-visible, active, and disabled states.
+   - Utilize desktop keyboard shortcuts (e.g., Cmd/Ctrl + K for command palettes).
+2. HARD PROHIBITIONS (DO NOT USE/RECOMMEND):
+   - ABSOLUTELY NO mobile-specific concepts: Bottom Navigation Bars, Pull-to-refresh, Bottom Sheets, Swipe actions, or Mobile Touch Target hacks (like min-height: 48px unless relevant to accessibility).
+   - DO NOT write code using React Native, Flutter, Swift, Kotlin, or mobile-specific frameworks.
+   - DO NOT use CSS media queries meant for mobile devices unless specifically asked for a responsive breakpoint task.
+
+--- MODE 2: MOBILE ONLY (ACTIVE WHEN USER SPECIFIES MOBILE / APP) ---
+IF the context/query is about the Mobile host or the mobile preview:
+1. FOCUS EXCLUSIVELY ON MOBILE PATTERNS:
+   - Treat Mobile as a dedicated host presentation of the same dashboard data, not as a shrunken desktop page.
+   - Use a single reading column, compact 2×2 KPI grids and native vertical scrolling.
+   - Enforce a minimum 44×44px touch target for every interactive control.
+   - Use tap, horizontal native scrolling and explicit back navigation. Do not depend on mouse precision.
+   - Scope Mobile-only layout and interaction rules to the Mobile host. A narrow desktop window or iframe must not inherit a Mobile-only redesign by accident.
+2. HARD PROHIBITIONS (DO NOT USE/RECOMMEND):
+   - Do not expose hover-only affordances, hover lift, hover shadow or pointer tooltips on Mobile.
+   - Do not add explanatory CTA copy such as “Xem chi tiết” or “Thu gọn” inside compact KPI cards and expandable report rows; use a small chevron and `aria-expanded` instead.
+   - Do not copy a desktop multi-column table into Mobile. Recompose each row into a readable card or label–value grid.
+   - Do not change Web/Desktop or iframe behavior while implementing a Mobile-only request.
+
+--- OUTPUT INSTRUCTIONS ---
+- Before generating code or design specs, explicitly declare the active target: [TARGET PLATFORM: WEB ONLY] or [TARGET PLATFORM: MOBILE ONLY].
+- Provide clean, production-ready code/specs adhering strictly to the active platform.
+
 # Design System: Tổng quan Thu ngân sách Nhà nước Hà Nội
 
 ## Overview
@@ -406,6 +439,34 @@ mỗi mốc là chỗ một thứ cụ thể vỡ, không phải kích thước 
 | 767px | Web responsive; thanh lọc chuyển thành hai nhóm tóm tắt và lưới điều khiển khi mở |
 | 699px | Hết chỗ cho hai cột, xếp chồng toàn bộ |
 
+### Mobile host
+
+Mobile dùng cùng dữ liệu và cùng thứ tự nghiệp vụ, nhưng tổ chức lại thành một
+luồng đọc dọc. Trong tab Báo cáo, ba quyết định `Loại báo cáo` → `Chiều báo cáo`
+→ `Tóm tắt/Bảng báo cáo` nằm trong một cụm điều khiển liền mạch. KPI xếp 2×2;
+  bảng nhiều cột chuyển thành từng khối chỉ tiêu. Vì mỗi trang mobile giới hạn ba
+  địa bàn, tên chỉ tiêu và tổng chia dải đầu theo tỷ lệ 2/3–1/3; ba địa bàn nằm
+  cùng một hàng ba cột để không tạo ô lẻ và không kéo dài trang.
+
+  Card KPI có drill-down dùng toàn bộ bề mặt làm vùng chạm và chỉ đặt một chevron
+nhỏ ở mép phải. Không thêm dòng CTA vì nó làm card cao hơn, lặp lại cùng một ý
+bốn lần và chiếm mất không gian cho số liệu. Hàng báo cáo có con dùng caret ở
+  đầu tên; caret xoay khi mở, còn tên hàng không đổi thành “Xem chi tiết/Thu gọn”.
+
+  Trong Quản lý thu, phân trang danh sách dùng một hàng hai nửa. Trang đầu chỉ
+  hiện `Trang sau` ở bên phải; từ trang hai mới hiện `Trang trước` ở bên trái.
+  Nút không khả dụng được bỏ khỏi bố cục thay vì để trạng thái mờ chiếm chỗ.
+
+**The Mobile Host Boundary Rule.** Một thay đổi chỉ dành cho Mobile phải được
+khóa theo ngữ cảnh Mobile host trước khi dùng breakpoint. Không dùng
+`max-width` một mình nếu thay đổi đó không được phép xuất hiện ở Web hẹp hoặc
+iframe.
+
+**The Touch Has No Hover Rule.** Mobile không có hover. Hiệu ứng nhấc card,
+dịch hàng, đổi bóng hoặc giữ màu do `:hover` chỉ được khai trong
+`@media (hover: hover) and (pointer: fine)`. Phản hồi chạm dùng `:active` tức
+thời, focus-visible và thay đổi trạng thái nội dung.
+
 **The Pairs Before Stacking Rule.** Dưới 1280px, cặp widget **nới tỷ lệ** trước,
 xếp chồng sau. Xếp chồng sớm cho thẻ rộng 912px chứa danh sách năm dòng — thừa
 chiều ngang mà trang dài gấp đôi.
@@ -445,6 +506,11 @@ theo thứ tự mảng. Thang đơn sắc tồn tại để "đậm = nhiều"; 
 mảng thì thứ tự dữ liệu quyết định độ đậm, và biểu đồ nói ngược lại chính con số
 nó đang mã hoá — donut ba nhóm nội địa từng cho lát 18,3% màu đậm hơn lát 30,2%.
 Thứ tự *lát* vẫn theo danh mục nghiệp vụ; chỉ bậc màu được xếp lại.
+
+**The Donut Selection Rule.** Khi donut có lựa chọn, lát được chọn giữ opacity
+100% và các lát ngoài lựa chọn giảm còn 28%. Hover hoặc focus bổ sung lát đang
+tương tác vào tập nổi bật thay vì làm mờ lựa chọn hiện tại; nếu nghiệp vụ giữ
+nhiều lát cùng lúc thì tất cả các lát trong tập đó đều phải giữ màu đầy đủ.
 
 **The Unknown Is Not A Step Rule.** Nhóm "chưa xác định" không bao giờ nhận một
 bậc của thang xanh. Thang xanh mã hoá ĐỘ LỚN; nhóm chưa xác định nói rằng chưa
@@ -574,6 +640,9 @@ một `value: number`, vì có ô in tiền, có ô in phần trăm, có ô in m
 - **Ba tầng chữ:** nhãn 12px/650 `ink-2` · giá trị 23px/700 `ink` · dòng phụ 12px/400 **`ink-3`**. Nhãn và dòng phụ từng dùng chung cả cỡ lẫn màu, chỉ khác trọng lượng — squint test cho thấy chúng nhập thành một tầng. Tách bằng **màu** chứ không thêm bậc cỡ, để thang chữ phụ vẫn đúng hai bậc.
 - **Nhịp:** khe nhãn→giá trị `1px`, khe giá trị→dòng phụ `5px`. Nhãn và giá trị là **một** đơn vị — tên của số và chính con số; dòng phụ là lời chú nên tách xa hơn.
 - **Insight:** ô cuối có nền phụ, câu 16px/1.35 màu theo mức độ. Dưới 1180px dải chuyển thành 2×2.
+- **Mobile:** KPI có drill-down là một button phủ trọn ô, vùng chạm tối thiểu
+  44px và chevron nhỏ ở góc phải. Không đặt thêm “Xem chi tiết”, “Mở bảng” hay
+  “Thu gọn”; nhãn, giá trị và ghi chú vẫn là ba tầng duy nhất của card.
 
 **The Three Tier Rule.** Ô chỉ số có đúng ba vai trò và phải đọc ra đủ ba khi làm
 mờ: nhãn, giá trị, lời chú. Hai vai trò dùng chung cả cỡ lẫn màu là hai vai trò
@@ -590,6 +659,15 @@ tỷ lệ cố định áp lên bốn tập nội dung khác nhau thì đúng đ
 - **Header:** padding `15px 16px 8px`; tiêu đề 15px/700, mô tả 12px màu muted kèm nhãn đơn vị. Header **phải** `flex-wrap: wrap` và `.dcard-actions` phải co được — tiêu đề cộng ô tìm kiếm rộng hơn thẻ 317px ở 1024px.
 - **Content:** danh sách dùng divider rất nhạt; biểu đồ dùng xanh hiện tại, xám dashed cho năm trước và khoảng trống thật cho dữ liệu chưa có.
 - **Interaction:** hàng có drill-down là button đầy đủ; hàng chỉ hiển thị bị disabled và không giả vờ có tương tác.
+- **Mobile interaction:** card và hàng bảng không có hover lift hoặc hover
+  shadow. Hàng mở rộng dùng caret và `aria-expanded`; phần con xuất hiện bằng
+  chuyển động reveal ngắn, còn hàng cha giữ nguyên vị trí để người dùng không
+  mất điểm đọc.
+
+**The Disclosure Direction Rule.** Caret của cây phân cấp chỉ sang phải khi
+hàng đang đóng và xoay xuống khi hàng đang mở. Chevron của dropdown hoặc
+accordion chỉ xuống khi đang đóng và xoay lên khi đang mở. Mũi tên điều hướng
+sang màn hình khác luôn chỉ sang phải và không đổi hướng theo trạng thái.
 
 **Thẻ thực thể** (`entity-card`) — thẻ cơ quan thuế ở màn Mã hạch toán, và mọi
 thẻ "một thực thể kèm một con số" sau này. Nền trắng kèm `--shadow-control` để
@@ -610,6 +688,8 @@ mã trước rồi mới đi tìm thứ mình cần.
 - **Text action:** chữ xanh 12px/650, gạch chân có offset 3px.
 - **Comparison chip:** nền xanh nhạt, chữ xanh đậm, radius 6px; dấu × nằm sau nhãn.
 - **State:** focus-visible luôn dùng outline chuẩn. Chuyển màu nền/chữ/viền trong 120ms để thao tác có xác nhận; không animation trang trí.
+- **Mobile state:** không dùng `:hover`. `:active` có thể đổi nền tức thời;
+  focus-visible vẫn bắt buộc khi thiết bị có bàn phím hỗ trợ.
 
 ### Ranked bars and change indicators
 
@@ -666,6 +746,10 @@ thế là xong.
 Dưới `hover: none`, affordance dựa vào nền `:hover` là vô hình — hàng bấm được
 mang một mũi chevron thường trực thay thế.
 
+Trong Mobile, chevron là dấu hiệu tương tác duy nhất cần thêm vào card KPI và
+hàng có drill-down. Không bổ sung helper text hoặc CTA lặp lại. Trạng thái mở
+được truyền bằng hướng caret, `aria-expanded` và nội dung con đang hiện.
+
 **The Pointer Not Width Rule.** Kích thước đích chạm chốt theo loại con trỏ. Mọi
 quy tắc chạm gắn vào `max-width` đều sai ở cả hai chiều.
 
@@ -681,6 +765,14 @@ phục vụ phản hồi và tính liên tục, không phải biểu diễn.
 - **Tính liên tục** (260ms, `cubic-bezier(0.16, 1, 0.3, 1)`): drawer trượt 16px từ đúng cạnh nó neo vào. Chỗ **duy nhất** chuyển động làm việc giải thích quan hệ không gian. Scrim mờ dần 200ms.
 - **Bản đồ** (250–450ms, d3): đổi màu bậc và phóng tới địa bàn đang chọn.
 - **Biểu đồ** (420ms, Recharts): vẽ đường khi vào.
+- **Mobile reveal** (180–240ms, `cubic-bezier(0.16, 1, 0.3, 1)`): chỉ dùng khi
+  bung dòng con, mở bảng phụ hoặc chuyển sang trang chi tiết. Không áp dụng
+  hover transition cho card, KPI hay dòng bảng trên thiết bị cảm ứng.
+
+**The State Change, Not Hover Rule.** Trên Mobile, chuyển động chỉ bắt đầu sau
+một thay đổi trạng thái có chủ ý như mở hàng, đổi phần Tóm tắt/Bảng hoặc đi vào
+trang chi tiết. Việc chạm rồi giữ một trạng thái hover giả lập không được làm
+card nhô lên, đổ bóng hoặc dịch chuyển.
 
 **The Reduced Motion Keeps Feedback Rule.** Giảm chuyển động nghĩa là **bớt**
 chuyển động, không phải **tắt** phản hồi. Chặn theo *thuộc tính*: các thuộc tính
@@ -717,6 +809,10 @@ thêm mới đều phải đi qua hook đó.
 - **Do** giới hạn mọi đoạn văn ở 72ch và đo lại bằng bề rộng chữ "0" của chính phông đó.
 - **Do** khai kiểu điều khiển theo element, một chỗ duy nhất, rồi ghi đè bằng selector cụ thể hơn khi cần.
 - **Do** để bộ lọc và tiêu đề phạm vi NGOÀI vùng tải lại; chỉ phần số bên dưới mới đợi mạng.
+- **Do** khóa thay đổi Mobile theo host context và kiểm tra riêng ở 390px trước
+  khi xác nhận rằng Web/Desktop và iframe không đổi.
+- **Do** dùng chevron, caret và `aria-expanded` để biểu thị drill-down trên
+  Mobile; giữ card KPI chỉ gồm nhãn, giá trị và ghi chú.
 
 ### Don't:
 
@@ -735,3 +831,9 @@ thêm mới đều phải đi qua hook đó.
 - **Don't** để hai đơn vị tiền khác nhau trong cùng một cột số.
 - **Don't** đặt `transition-duration: 0.01ms` cho toàn bộ dưới reduced-motion; chặn theo thuộc tính di chuyển và giữ phản hồi màu.
 - **Don't** gắn quy tắc vùng chạm vào `max-width`; bề rộng màn hình không nói được thiết bị nhập liệu.
+- **Don't** dùng hover animation, hover lift, hover shadow hoặc tooltip phụ
+  thuộc con trỏ trên Mobile.
+- **Don't** thêm “Xem chi tiết/Thu gọn” vào KPI hoặc hàng báo cáo Mobile khi
+  chevron và trạng thái mở đã truyền đạt cùng một hành động.
+- **Don't** để một yêu cầu Mobile-only thay đổi layout, hành vi hoặc motion của
+  Web/Desktop và iframe.

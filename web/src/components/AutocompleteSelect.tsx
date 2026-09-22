@@ -74,7 +74,24 @@ export function AutocompleteSelect({
         </svg>
       </div>
       {open && (
-        <div id={listId} className="dautocomplete-list" role="listbox" aria-label={label}>
+        <div
+          id={listId}
+          className="dautocomplete-list"
+          role="listbox"
+          aria-label={label}
+          /*
+            `tabIndex={-1}` để danh sách không thành một điểm dừng của Tab.
+
+            Chrome tự cho một vùng cuộn được nhận tiêu điểm bàn phím khi vùng đó
+            không có con nào focus được — mà ở đây mọi lựa chọn đều mang
+            `tabIndex={-1}` vì chúng được điều khiển bằng phím mũi tên. Hệ quả:
+            Tab từ ô nhập rơi vào chính cái khung cuộn, `blur` của ô nhập đóng
+            danh sách, khung vừa nhận tiêu điểm biến mất, và tiêu điểm rơi về
+            `<body>` — vẽ viền 3px quanh cả trang. Phải nhấn Tab lần nữa mới tới
+            được ô kế tiếp.
+          */
+          tabIndex={-1}
+        >
           {matches.length ? matches.map((option, index) => (
             <button
               id={`${listId}-${index}`}

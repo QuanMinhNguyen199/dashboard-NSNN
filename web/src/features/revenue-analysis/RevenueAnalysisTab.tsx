@@ -316,6 +316,7 @@ function BreakdownTable({ data }: { data: RevenueAnalysisData }) {
     <th scope="col" className={numeric ? "is-num" : undefined} aria-sort={sort.key === key ? (sort.desc ? "descending" : "ascending") : "none"}>
       <button
         type="button"
+        className="dsort"
         onClick={() => setSort((current) => ({ key, desc: current.key === key ? !current.desc : true }))}
       >
         {label}

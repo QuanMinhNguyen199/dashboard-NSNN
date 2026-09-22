@@ -198,11 +198,24 @@ export function buildBudgetForecast(
  * ĐỨT ở đó. Nối liền qua khoảng trống là vẽ ra một tháng đã thu 0 đồng.
  */
 function budgetTrend(filters: DashboardFilters): BudgetTrendPoint[] {
-  const covered = new Set(monthsOf(filters));
+  /**
+   * Đường thực hiện chạy TỚI kỳ đang chọn, không chỉ đúng một tháng.
+   *
+   * Trước đây chỗ này lấy `monthsOf(filters)` làm phạm vi. Với `Cách tính:
+   * Trong kỳ` thì hàm đó trả về đúng một tháng, nên đường "Thực hiện" của cả
+   * biểu đồ 12 tháng chỉ có MỘT điểm — mà một điểm thì `<path>` chỉ ra một lệnh
+   * `moveto` và không vẽ nét nào. Kết quả: chú giải hứa ba đường, màn hình vẽ
+   * hai, không một dòng nào báo. Đây là biểu đồ dự toán so thực hiện; đường
+   * thực hiện là chủ ngữ của nó.
+   *
+   * Chặn trên vẫn là kỳ đang chọn, không phải "mọi tháng có số": chọn Tháng 3
+   * mà biểu đồ vẽ tới Tháng 8 là biểu đồ nói khác bộ lọc ngay phía trên nó.
+   */
+  const denThang = Math.max(...monthsOf(filters));
   return Array.from({ length: 12 }, (_, i) => {
     const month = i + 1;
     const a = sumOf({ ...filters, periodType: "MONTH", period: month, accumulation: "PERIOD" });
-    const inScope = covered.has(month);
+    const inScope = month <= denThang;
     const actual = inScope ? a : null;
     return {
       month,

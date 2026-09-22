@@ -58,23 +58,33 @@ export function ReportModePicker({
       </label>
     );
 
+  /*
+    Trên desktop đây là ĐIỀU HƯỚNG cấp hai, không phải một ô lọc thứ ba.
+
+    Nó thay toàn bộ nội dung trang giữa bốn báo cáo khác nhau — quyết định lớn
+    nhất của cả tab. Nhưng bản cũ vẽ nó thành một rãnh phân đoạn xám trong một
+    thẻ trắng, giống hệt ô `Cách xem` bên dưới và mờ hơn ô lọc kỳ bên trên: ba
+    bề mặt trắng như nhau cho ba thứ có tầm quan trọng giảm dần rõ rệt.
+
+    Dùng lại `.dsubnav` — đúng ngôn ngữ mà tab Phân tích thu đã dùng cho chuyển
+    chế độ cấp hai — nên nó đọc ra là điều hướng, và bỏ luôn một thẻ trắng khỏi
+    chồng điều khiển. `aria-current="page"` thay cho `aria-pressed`: đây là đang
+    ở đâu, không phải một nút đang bật.
+  */
   return (
-    <div className="dfield dreport-mode">
-      <span id="report-mode-label">Loại báo cáo</span>
-      <div className="dseg" role="group" aria-labelledby="report-mode-label">
-        {REPORT_MODES.map((mode) => (
-          <button
-            key={mode.id}
-            type="button"
-            className={value === mode.id ? "is-active" : undefined}
-            aria-pressed={value === mode.id}
-            title={mode.question}
-            onClick={() => onChange(mode.id)}
-          >
-            {mode.label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <nav className="dsubnav dreport-modenav" aria-label="Loại báo cáo">
+      {REPORT_MODES.map((mode) => (
+        <button
+          key={mode.id}
+          type="button"
+          className={value === mode.id ? "is-active" : undefined}
+          aria-current={value === mode.id ? "page" : undefined}
+          title={mode.question}
+          onClick={() => onChange(mode.id)}
+        >
+          {mode.label}
+        </button>
+      ))}
+    </nav>
   );
 }

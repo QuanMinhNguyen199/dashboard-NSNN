@@ -47,6 +47,7 @@ export function Pager({
   total,
   noun,
   onChange,
+  className,
 }: {
   current: number;
   pages: number;
@@ -56,9 +57,11 @@ export function Pager({
   /** Danh từ đếm được, ví dụ "doanh nghiệp" hoặc "nhóm". */
   noun: string;
   onChange: (page: number) => void;
+  /** Lớp ngữ cảnh để một workspace có thể đổi bố cục mà không ảnh hưởng bảng khác. */
+  className?: string;
 }) {
   return (
-    <div className="dpager">
+    <div className={["dpager", className].filter(Boolean).join(" ")}>
       <button
         type="button"
         className="dbtn"

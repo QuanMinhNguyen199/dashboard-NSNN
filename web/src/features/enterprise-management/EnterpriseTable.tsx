@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Pager, usePage } from "@/components/Pager";
-import { SortHeader, sortRows, useSort } from "@/components/SortableHeader";
+import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
 import { Change, columnLabel, inScale, type MoneyScale } from "@/components/primitives";
 import type { EnterpriseRevenueRow } from "@/domain/workspaces";
 
@@ -54,30 +54,21 @@ export function EnterpriseTable({
     return row.displayName.endsWith(suffix) ? row.displayName.slice(0, -suffix.length) : row.displayName;
   };
 
+    const cot: SortCol<SortKey>[] = [
+    { key: "name", label: "Doanh nghiệp" },
+    { key: "amount", label: columnLabel("Số thu", unit), numeric: true, className: "dcol-money" },
+    { key: "change", label: "So cùng kỳ", numeric: true, className: "dcol-change" },
+  ];
+
   return (
     <>
+      <SortStrip cot={cot} sort={sort} onSort={toggle} nhan="danh sách doanh nghiệp" />
       <div className="dtable-wrap">
         <table className="dtable dent-list">
           <caption className="sr-only">Doanh nghiệp mô phỏng trong nhóm đang chọn</caption>
           <thead>
             <tr>
-              <SortHeader sortKey="name" label="Doanh nghiệp" sort={sort} onSort={toggle} />
-              <SortHeader
-                sortKey="amount"
-                label={columnLabel("Số thu", unit)}
-                numeric
-                className="dcol-money"
-                sort={sort}
-                onSort={toggle}
-              />
-              <SortHeader
-                sortKey="change"
-                label="So cùng kỳ"
-                numeric
-                className="dcol-change"
-                sort={sort}
-                onSort={toggle}
-              />
+              <SortHeaders cot={cot} sort={sort} onSort={toggle} />
             </tr>
           </thead>
           <tbody>
@@ -100,6 +91,7 @@ export function EnterpriseTable({
       </div>
 
       <Pager
+        className="dpager-management"
         current={page.current}
         pages={page.pages}
         from={page.from}

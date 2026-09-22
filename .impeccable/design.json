@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-17T00:00:00Z",
+  "generatedAt": "2026-09-22T09:01:25.409Z",
   "title": "Design System: Tổng quan Thu ngân sách Nhà nước Hà Nội",
   "extensions": {
     "colorMeta": {
@@ -730,6 +730,21 @@
         "name": "pin-flash",
         "value": "700ms ease",
         "purpose": "Nhịp sáng ở vị trí mới sau khi ghim. GIỮ khi reduced-motion vì nó chỉ đổi màu, không di chuyển."
+      },
+      {
+        "name": "mobile-row-reveal",
+        "value": "180ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Mobile host: làm rõ quan hệ cha–con khi bung một hàng báo cáo. Không dùng cho hover."
+      },
+      {
+        "name": "mobile-panel-reveal",
+        "value": "220ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Mobile host: mở bảng phụ hoặc vùng details sau một thao tác chạm có chủ ý."
+      },
+      {
+        "name": "mobile-detail-transition",
+        "value": "240ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Mobile host: chuyển từ danh sách sang trang chi tiết và giữ liên tục không gian."
       }
     ],
     "breakpoints": [
@@ -784,6 +799,18 @@
         "name": "ls-code",
         "value": "0.02em",
         "purpose": "mã số, chữ in hoa nhỏ"
+      }
+    ],
+    "platformScopes": [
+      {
+        "name": "mobile-host",
+        "selector": "[data-host=\"mobile\"]",
+        "purpose": "Khóa thiết kế chỉ dành cho Mobile; không để Web/Desktop hoặc iframe kế thừa ngoài ý muốn."
+      },
+      {
+        "name": "mouse-hover",
+        "media": "(hover: hover) and (pointer: fine)",
+        "purpose": "Hover lift, hover shadow và chuyển động theo con trỏ chỉ tồn tại khi thiết bị thật sự có chuột."
       }
     ]
   },
@@ -843,6 +870,20 @@
       "description": "Trạng thái của một mã. Chip trong ô bảng được phép xuống dòng vì nó mang cả câu.",
       "html": "<div class=\"ds-chips\"><span class=\"ds-tag\">Đã có hướng dẫn</span><span class=\"ds-tag is-review\">Cần xác nhận</span></div>",
       "css": ".ds-chips{display:flex;gap:8px;flex-wrap:wrap}.ds-tag{display:inline-block;padding:1px 7px;border-radius:4px;background:var(--blue-050);border:1px solid var(--blue-100);font:12px system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink-2)}.ds-tag.is-review{background:var(--note-surface);border-color:var(--note-line);color:var(--note-ink)}"
+    },
+    {
+      "name": "Mobile actionable KPI",
+      "kind": "card",
+      "description": "KPI có drill-down trên Mobile. Toàn card là vùng chạm; chevron thay cho CTA chữ và không có hover.",
+      "html": "<button class=\"ds-mobile-kpi\"><span>Tổng thu trong phạm vi</span><strong>56.117 <i>tỷ</i></strong><small>Toàn thành phố</small><b aria-hidden=\"true\"></b></button>",
+      "css": ".ds-mobile-kpi{position:relative;display:grid;gap:1px;width:180px;min-height:92px;padding:11px 34px 11px 15px;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--hairline);border-radius:10px;font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.ds-mobile-kpi>span{color:var(--ink-2);font-size:12px;font-weight:650}.ds-mobile-kpi>strong{font-size:19px;line-height:1.3;font-variant-numeric:tabular-nums}.ds-mobile-kpi i{font-style:normal;font-size:.7em;color:var(--ink-3)}.ds-mobile-kpi>small{margin-top:5px;color:var(--ink-3);font-size:12px}.ds-mobile-kpi>b{position:absolute;top:15px;right:15px;width:7px;height:7px;border-right:1.5px solid var(--brand);border-bottom:1.5px solid var(--brand);transform:rotate(-45deg)}.ds-mobile-kpi:active{background:var(--blue-050)}.ds-mobile-kpi:focus-visible{outline:2px solid var(--brand);outline-offset:-3px}"
+    },
+    {
+      "name": "Mobile expandable report row",
+      "kind": "custom",
+      "description": "Hàng báo cáo Mobile có dữ liệu con. Caret và aria-expanded thể hiện trạng thái; không thêm Xem chi tiết/Thu gọn.",
+      "html": "<button class=\"ds-mobile-row\" aria-expanded=\"false\"><b aria-hidden=\"true\"></b><span>TỔNG THU NỘI ĐỊA (I+II+III)</span></button>",
+      "css": ".ds-mobile-row{display:flex;align-items:flex-start;gap:8px;width:100%;min-height:44px;padding:10px;text-align:left;background:var(--surface);color:var(--ink);border:0;font:650 12px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif}.ds-mobile-row>b{flex:none;width:0;height:0;margin-top:5px;border-left:5px solid currentColor;border-top:4px solid transparent;border-bottom:4px solid transparent;transition:transform 140ms ease}.ds-mobile-row[aria-expanded='true']>b{transform:rotate(90deg)}.ds-mobile-row:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}@media (prefers-reduced-motion:reduce){.ds-mobile-row>b{transition:none}}"
     }
   ],
   "narrative": {
@@ -855,7 +896,8 @@
       "Màu xanh dành cho điều hướng, thao tác và dữ liệu; xanh lá/đỏ chỉ biểu đạt chiều biến động.",
       "Khoảng trống, trạng thái thiếu dữ liệu và nguồn mô phỏng luôn được nói rõ, không được ngụy trang thành số 0.",
       "Một đơn vị tiền cho cả ứng dụng; đơn vị ghi ở đầu cột chứ không bám từng giá trị.",
-      "Chuyển động chỉ phục vụ phản hồi và tính liên tục; giảm chuyển động vẫn giữ phản hồi."
+      "Chuyển động chỉ phục vụ phản hồi và tính liên tục; giảm chuyển động vẫn giữ phản hồi.",
+      "Mobile host dùng luồng đọc một cột, vùng chạm 44px, chevron thường trực và không kế thừa hover của desktop."
     ],
     "rules": [
       {
@@ -1052,6 +1094,26 @@
         "name": "The JS Motion Reads The Flag Rule",
         "body": "Media query trong CSS **không** với tới hoạt ảnh do JavaScript điều khiển. d3 và Recharts là vòng lặp `requestAnimationFrame` thuần; chúng nhận cờ qua `useReducedMotion()` phía TypeScript. Mọi hoạt ảnh JS thêm mới đều phải đi qua hook đó.",
         "section": "general"
+      },
+      {
+        "name": "The Mobile Host Boundary Rule",
+        "body": "Một thay đổi chỉ dành cho Mobile phải được khóa theo ngữ cảnh Mobile host trước khi dùng breakpoint. Không dùng max-width một mình nếu thay đổi đó không được phép xuất hiện ở Web hẹp hoặc iframe.",
+        "section": "layout"
+      },
+      {
+        "name": "The Touch Has No Hover Rule",
+        "body": "Mobile không có hover. Hiệu ứng nhấc card, dịch hàng, đổi bóng hoặc giữ màu do :hover chỉ được khai trong @media (hover: hover) and (pointer: fine).",
+        "section": "layout"
+      },
+      {
+        "name": "The State Change, Not Hover Rule",
+        "body": "Trên Mobile, chuyển động chỉ bắt đầu sau một thay đổi trạng thái có chủ ý như mở hàng, đổi phần Tóm tắt/Bảng hoặc đi vào trang chi tiết.",
+        "section": "components"
+      },
+      {
+        "name": "The Disclosure Direction Rule",
+        "body": "Caret của cây phân cấp chỉ sang phải khi hàng đang đóng và xoay xuống khi hàng đang mở. Chevron của dropdown hoặc accordion chỉ xuống khi đang đóng và xoay lên khi đang mở. Mũi tên điều hướng sang màn hình khác luôn chỉ sang phải và không đổi hướng theo trạng thái.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -1067,7 +1129,9 @@
       "Do đưa nguồn API/MCP/mock qua hợp đồng typed và validation runtime trước khi render.",
       "Do giới hạn mọi đoạn văn ở 72ch và đo lại bằng bề rộng chữ \"0\" của chính phông đó.",
       "Do khai kiểu điều khiển theo element, một chỗ duy nhất, rồi ghi đè bằng selector cụ thể hơn khi cần.",
-      "Do để bộ lọc và tiêu đề phạm vi NGOÀI vùng tải lại; chỉ phần số bên dưới mới đợi mạng."
+      "Do để bộ lọc và tiêu đề phạm vi NGOÀI vùng tải lại; chỉ phần số bên dưới mới đợi mạng.",
+      "Do khóa thay đổi Mobile theo host context và kiểm tra riêng ở 390px trước khi xác nhận Web/Desktop và iframe không đổi.",
+      "Do dùng chevron, caret và aria-expanded để biểu thị drill-down trên Mobile; giữ card KPI chỉ gồm nhãn, giá trị và ghi chú."
     ],
     "donts": [
       "Don't thêm gradient, glassmorphism, bóng thẻ đậm hoặc màu nhấn trang trí vào workspace phân tích.",
@@ -1084,7 +1148,10 @@
       "Don't dùng bậc \"nghìn tỷ\" hay mã ISO `VND`; thang tiền dừng ở \"tỷ đồng\".",
       "Don't để hai đơn vị tiền khác nhau trong cùng một cột số.",
       "Don't đặt `transition-duration: 0.01ms` cho toàn bộ dưới reduced-motion; chặn theo thuộc tính di chuyển và giữ phản hồi màu.",
-      "Don't gắn quy tắc vùng chạm vào `max-width`; bề rộng màn hình không nói được thiết bị nhập liệu."
+      "Don't gắn quy tắc vùng chạm vào `max-width`; bề rộng màn hình không nói được thiết bị nhập liệu.",
+      "Don't dùng hover animation, hover lift, hover shadow hoặc tooltip phụ thuộc con trỏ trên Mobile.",
+      "Don't thêm “Xem chi tiết/Thu gọn” vào KPI hoặc hàng báo cáo Mobile khi chevron và trạng thái mở đã truyền đạt cùng một hành động.",
+      "Don't để một yêu cầu Mobile-only thay đổi layout, hành vi hoặc motion của Web/Desktop và iframe."
     ]
   }
 }

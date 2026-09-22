@@ -1,4 +1,4 @@
-import { SortHeader, sortRows, useSort } from "@/components/SortableHeader";
+import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
 import { columnLabel, inScale, pct, type MoneyScale } from "@/components/primitives";
 import { INSPECTION_STATUS_LABEL, type InspectionUnitRow } from "@/domain/workspaces";
 
@@ -42,47 +42,24 @@ export function InspectionReportTable({
     paidAmount: units.reduce((s, u) => s + u.paidAmount, 0),
   };
 
+  const cot: SortCol<SortKey>[] = [
+    { key: "name", label: "Đơn vị" },
+    { key: "cases", label: "Số cuộc", numeric: true, className: "dcol-pct" },
+    { key: "completion", label: "Hoàn thành", numeric: true, className: "dcol-pct" },
+    { key: "processed", label: columnLabel("Số tiền xử lý", unit), numeric: true, className: "dcol-money" },
+    { key: "paid", label: columnLabel("Đã nộp", unit), numeric: true, className: "dcol-money" },
+    { key: "paidRate", label: "Tỷ lệ nộp", numeric: true, className: "dcol-pct" },
+  ];
+
   return (
+    <>
+    <SortStrip cot={cot} sort={sort} onSort={toggle} nhan="kết quả kiểm tra" />
     <div className="dtable-wrap">
       <table className="dtable dinspect-table">
         <caption className="sr-only">Kết quả kiểm tra theo đơn vị</caption>
         <thead>
           <tr>
-            <SortHeader sortKey="name" label="Đơn vị" sort={sort} onSort={toggle} />
-            <SortHeader sortKey="cases" label="Số cuộc" numeric className="dcol-pct" sort={sort} onSort={toggle} />
-            <SortHeader
-              sortKey="completion"
-              label="Hoàn thành"
-              numeric
-              className="dcol-pct"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader
-              sortKey="processed"
-              label={columnLabel("Số tiền xử lý", unit)}
-              numeric
-              className="dcol-money"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader
-              sortKey="paid"
-              label={columnLabel("Đã nộp", unit)}
-              numeric
-              className="dcol-money"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader
-              sortKey="paidRate"
-              label="Tỷ lệ nộp"
-              numeric
-              className="dcol-pct"
-              sort={sort}
-              onSort={toggle}
-            />
-            <th scope="col" className="dcol-status">Trạng thái</th>
+            <SortHeaders cot={cot} sort={sort} onSort={toggle} />
           </tr>
         </thead>
         <tbody>
@@ -105,7 +82,18 @@ export function InspectionReportTable({
                 {pct(row.paidRate)}
               </td>
               <td data-label="Trạng thái">
-                <span className={row.status === "completed" ? "dtag" : "dtag is-review"}>
+                {/* "Đang thực hiện" không phải một cảnh báo; chỉ "Chậm tiến độ"
+                    mới cần ai đó làm gì. Cho cả hai cùng một sắc là giấu dòng
+                    cần xử lý giữa những dòng không cần. */}
+                <span
+                  className={
+                    row.status === "late"
+                      ? "dtag is-alert"
+                      : row.status === "completed"
+                        ? "dtag"
+                        : "dtag is-running"
+                  }
+                >
                   {INSPECTION_STATUS_LABEL[row.status]}
                 </span>
               </td>
@@ -135,5 +123,6 @@ export function InspectionReportTable({
         </tfoot>
       </table>
     </div>
+    </>
   );
 }

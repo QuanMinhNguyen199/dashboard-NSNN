@@ -240,6 +240,15 @@ export function App() {
       )}
 
       <div className="dshell">
+        {/*
+          Dải tab là ĐIỀU HƯỚNG chính, nên nó phải là một landmark.
+
+          `role="tablist"` mô tả cách bấm, không mô tả vai trò trong trang: trình
+          đọc màn hình không liệt kê nó trong danh sách vùng mốc. Hệ quả đo được:
+          liên kết "Bỏ qua điều hướng" nhảy TỚI nội dung nhưng không có vùng mốc
+          nào để nhảy GIỮA — bốn trên năm trang không có `nav` nào cả.
+        */}
+        <nav aria-label="Khu vực phân tích">
         <div
           className="dtabs"
           role="tablist"
@@ -271,6 +280,7 @@ export function App() {
             </button>
           ))}
         </div>
+        </nav>
 
         <FilterBar />
 

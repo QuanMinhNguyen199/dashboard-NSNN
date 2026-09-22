@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { TmsRow, TmsSectionRow } from "@/domain/types";
 import type { Pinned } from "@/components/usePinned";
-import { SortHeader, sortRows, useSort } from "@/components/SortableHeader";
+import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
 import { share } from "@/domain/metrics";
 import { Change, columnLabel, inScale, moneyScale, pct, type MoneyScale } from "@/components/primitives";
 
@@ -85,9 +85,25 @@ export function PinStar({
   );
 }
 
-/** Trạng thái là một nhãn có chữ, không phải một chấm màu. */
-function StatusTag({ row }: { row: { status: "confirmed" | "needsReview"; reviewNote?: string } }) {
-  if (row.status === "confirmed") return <span className="dtag">Đã có hướng dẫn</span>;
+/**
+ * Trạng thái là một nhãn có chữ, không phải một chấm màu.
+ *
+ * `chung` = mọi dòng cùng nhóm đều mang đúng trạng thái này. Khi đó viên chip
+ * biến mất khỏi từng dòng: đo được 13 trên 14 dòng con của Mục 1750 đeo "Cần
+ * xác nhận", và một dấu cảnh báo gắn lên 93% danh sách không còn là dấu cảnh
+ * báo, nó là màu nền — nhất là khi nó nằm cạnh mấy dòng tên "Chưa có tên trong
+ * danh mục", khiến cả khối đọc ra thành "dữ liệu hỏng" thay vì "hai mục này
+ * cần chú ý".
+ */
+function StatusTag({
+  row,
+  chung = false,
+}: {
+  row: { status: "confirmed" | "needsReview"; reviewNote?: string };
+  chung?: boolean;
+}) {
+  if (chung) return null;
+  if (row.status === "confirmed") return <span className="dtag is-running">Đã có hướng dẫn</span>;
   return (
     <span className="dtag is-review" title={row.reviewNote}>
       Cần xác nhận
@@ -136,26 +152,25 @@ export function SectionTable({
   if (!sections.length)
     return <p className="dempty">Cấp này không có mã nào trong điều kiện báo cáo hiện hành.</p>;
 
+  const cotMuc: SortCol<SectionSort>[] = [
+    { key: "name", label: "Mục" },
+    { key: "amount", label: columnLabel("Số tiền", scale), numeric: true, className: "dcol-money" },
+    { key: "share", label: "Tỷ trọng", numeric: true, className: "dcol-pct" },
+    { key: "change", label: "So cùng kỳ", numeric: true, className: "dcol-change" },
+    { key: "status", label: "Trạng thái", className: "dcol-status" },
+  ];
+
   return (
+    <>
+    <SortStrip cot={cotMuc} sort={sort} onSort={toggle} nhan="bảng Mục và Tiểu mục" />
     <div className="dtable-wrap">
       <table className="dtable dtms-table">
         <caption className="sr-only">Mục và Tiểu mục nằm trong điều kiện báo cáo của cấp quản lý đang chọn</caption>
         <thead>
           <tr>
-            <SortHeader sortKey="name" label="Mục" sort={sort} onSort={toggle} />
             {/* Mỗi đầu cột tự khai vai trò để CSS đặt bề rộng theo đó — xem
                 khối `.dcol-*`. Ghim theo vị trí thì luật rơi nhầm bảng. */}
-            <SortHeader
-              sortKey="amount"
-              label={columnLabel("Số tiền", scale)}
-              numeric
-              className="dcol-money"
-              sort={sort}
-              onSort={toggle}
-            />
-            <SortHeader sortKey="share" label="Tỷ trọng" numeric className="dcol-pct" sort={sort} onSort={toggle} />
-            <SortHeader sortKey="change" label="So cùng kỳ" numeric className="dcol-change" sort={sort} onSort={toggle} />
-            <SortHeader sortKey="status" label="Trạng thái" className="dcol-status" sort={sort} onSort={toggle} />
+            <SortHeaders cot={cotMuc} sort={sort} onSort={toggle} />
           </tr>
         </thead>
         {ordered.map((section) => {
@@ -173,7 +188,9 @@ export function SectionTable({
                   >
                     <span aria-hidden="true" className="dtms-caret" />
                     {section.name}
-                    <em>{section.subItems.length} Tiểu mục</em>
+                    {/* "mã" chứ không phải "Tiểu mục": một phần trong số này
+                        chưa có dòng tên trong danh mục, xem ô KPI bên trên. */}
+                    <em>{section.subItems.length} mã</em>
                   </button>
                 </th>
                 <td className="is-num" data-label="Số tiền"><Amount value={section.amount} scale={scale} /></td>
@@ -184,7 +201,13 @@ export function SectionTable({
                 <td><StatusTag row={section} /></td>
               </tr>
               {expanded &&
-                section.subItems.map((sub) => (
+                (() => {
+                  /* Mọi dòng con cùng một trạng thái thì trạng thái đó thuộc về
+                     dòng Mục, không thuộc về từng dòng con. */
+                  const trangThaiChung =
+                    section.subItems.length > 1 &&
+                    section.subItems.every((x) => x.status === section.subItems[0].status);
+                  return section.subItems.map((sub) => (
                   <tr key={sub.id} className="is-child">
                     <th scope="row">
                       <span className="dtms-code">{sub.id}</span>
@@ -195,14 +218,16 @@ export function SectionTable({
                     <td className="is-num" data-label="So cùng kỳ">
                       <Change current={sub.amount} previous={sub.previous} label="" />
                     </td>
-                    <td><StatusTag row={sub} /></td>
+                    <td><StatusTag row={sub} chung={trangThaiChung} /></td>
                   </tr>
-                ))}
+                  ));
+                })()}
             </tbody>
           );
         })}
       </table>
     </div>
+    </>
   );
 }
 
@@ -307,26 +332,25 @@ export function CodeTable({
     </tr>
   );
 
+  // Cột hiện có phụ thuộc tham số, nên lọc ngay tại đây thay vì cắm `&&` vào
+  // hàng tiêu đề: chip và đầu bảng phải thấy đúng một tập cột.
+  const cotMa: SortCol<CodeSort>[] = [
+    { key: "name", label: caption },
+    ...(showAmount
+      ? [{ key: "amount" as const, label: columnLabel("Số tiền", scale), numeric: true, className: "dcol-money" }]
+      : []),
+    ...(lastHeader ? [{ key: "meta" as const, label: lastHeader, className: "dcol-meta" }] : []),
+  ];
+
   return (
+    <>
+    <SortStrip cot={cotMa} sort={sort} onSort={sortBy} nhan={caption} />
     <div className="dtable-wrap">
       <table className="dtable dtms-table">
         <caption className="sr-only">{caption}</caption>
         <thead>
           <tr>
-            <SortHeader sortKey="name" label={caption} sort={sort} onSort={sortBy} />
-            {showAmount && (
-              <SortHeader
-                sortKey="amount"
-                label={columnLabel("Số tiền", scale)}
-                numeric
-                className="dcol-money"
-                sort={sort}
-                onSort={sortBy}
-              />
-            )}
-            {lastHeader && (
-              <SortHeader sortKey="meta" label={lastHeader} className="dcol-meta" sort={sort} onSort={sortBy} />
-            )}
+            <SortHeaders cot={cotMa} sort={sort} onSort={sortBy} />
             {pinned && <th scope="col" className="dpin-cell"><span className="sr-only">Ghim</span></th>}
           </tr>
         </thead>
@@ -362,5 +386,6 @@ export function CodeTable({
         <tbody>{restRows.map((row) => line(row))}</tbody>
       </table>
     </div>
+    </>
   );
 }

@@ -15,6 +15,8 @@ import {
 } from "@/domain/workspaces";
 import { InspectionSummary } from "./InspectionSummary";
 import { InspectionReportTable } from "./InspectionReportTable";
+import { revealSection } from "@/components/sectionNavigation";
+import { useNarrow } from "@/components/useNarrow";
 
 const CYCLES: { id: InspectionCycle; label: string }[] = [
   { id: "week", label: "Theo tuần" },
@@ -66,6 +68,7 @@ export function InspectionReportView() {
 }
 
 function InspectionBody({ data, status }: { data: InspectionData; status: InspectionStatus }) {
+  const narrow = useNarrow();
   const units = useMemo(
     () => (status === "all" ? data.units : data.units.filter((u) => u.status === status)),
     [data.units, status],
@@ -88,17 +91,17 @@ function InspectionBody({ data, status }: { data: InspectionData; status: Inspec
       <DataFreshnessBar freshness={data.freshness} />
 
       <KpiStrip columns={4} label={`Kiểm tra · ${data.meta.scopeLabel} · ${data.meta.periodLabel}`}>
-        <Kpi label="Tổng số cuộc kiểm tra">{data.summary.totalCases}</Kpi>
-        <Kpi label="Đã hoàn thành" note={`${pct(completionRate)} tổng số cuộc`}>
+        <Kpi label="Tổng số cuộc kiểm tra" onActivate={narrow ? () => revealSection("inspection-results") : undefined} controls="inspection-results">{data.summary.totalCases}</Kpi>
+        <Kpi label="Đã hoàn thành" note={`${pct(completionRate)} tổng số cuộc`} onActivate={narrow ? () => revealSection("inspection-results") : undefined} controls="inspection-results">
           {data.summary.completedCases}
         </Kpi>
         {/* Tên trung tính có chủ ý. Biên bản họp ghi "tiền chi thu" và chưa ai
             xác nhận nó có phải "tiền truy thu" hay không — đặt tên theo phỏng
             đoán rồi dựng số theo tên đó là cách nhanh nhất để báo cáo sai nghĩa. */}
-        <Kpi label="Số tiền xử lý qua kiểm tra" note="Tên chỉ tiêu chờ cơ quan thuế xác nhận">
+        <Kpi label="Số tiền xử lý qua kiểm tra" note="Tên chỉ tiêu chờ cơ quan thuế xác nhận" onActivate={narrow ? () => revealSection("inspection-results") : undefined} controls="inspection-results">
           <Money value={data.summary.processedAmount} scale={unit} />
         </Kpi>
-        <Kpi label="Số tiền đã nộp" note={`${pct(paidRate)} số tiền xử lý`}>
+        <Kpi label="Số tiền đã nộp" note={`${pct(paidRate)} số tiền xử lý`} onActivate={narrow ? () => revealSection("inspection-results") : undefined} controls="inspection-results">
           <Money value={data.summary.paidAmount} scale={unit} />
         </Kpi>
       </KpiStrip>
@@ -118,7 +121,7 @@ function InspectionBody({ data, status }: { data: InspectionData; status: Inspec
         </div>
 
         <div className="dinspection-column">
-          <div className="dinspection-results">
+          <div className="dinspection-results dsection-target" id="inspection-results" tabIndex={-1}>
             <Card
               title="Kết quả theo đơn vị"
               subtitle={

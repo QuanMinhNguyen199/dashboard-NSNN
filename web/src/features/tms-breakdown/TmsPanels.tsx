@@ -258,9 +258,9 @@ export function QualityPanel({ data }: { data: TmsBreakdownData }) {
           <dd className={check.tone === "ok" ? "is-ok" : "is-warn"}>{check.text}</dd>
         </div>
         <div>
-          <dt>Mã chưa có tên trong danh mục</dt>
+          <dt>Mã tham chiếu chưa có tên trong danh mục</dt>
           <dd className={data.quality.subItemsWithoutName + data.quality.chaptersWithoutLevel > 0 ? "is-warn" : "is-ok"}>
-            {data.quality.subItemsWithoutName} Tiểu mục, {data.quality.chaptersWithoutLevel} Chương
+            {data.quality.subItemsWithoutName} mã bốn chữ số, {data.quality.chaptersWithoutLevel} mã Chương
           </dd>
         </div>
         <div>

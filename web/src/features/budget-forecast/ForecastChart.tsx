@@ -12,6 +12,23 @@ import type { BudgetTrendPoint } from "@/domain/workspaces";
  * Tháng chưa có thực hiện thì đường thực hiện **đứt** ở đó. Nối liền qua khoảng
  * trống là vẽ ra một tháng đã thu, và đó là loại sai không ai kiểm lại.
  */
+/**
+ * Mốc trục tròn số giữa `min` và `max`, cùng quy tắc với biểu đồ xu hướng.
+ *
+ * Giữ đáy ở 0 khi số nhỏ, và chỉ cắt đáy khi dải dữ liệu nằm cao — cắt đáy luôn
+ * phóng đại biến động, nên nó phải đổi lại được bằng độ phân giải thật sự thu về.
+ */
+function niceTicks(max: number, min: number, count = 4): number[] {
+  if (!(max > min)) return [min, max];
+  const day = min > max * 0.3 ? min : 0;
+  const rough = (max - day) / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((v) => v >= rough) ?? 10 * mag;
+  const out: number[] = [];
+  for (let v = Math.floor(day / step) * step; v <= max + step / 2; v += step) out.push(v);
+  return out;
+}
+
 export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; unit: MoneyScale }) {
   const id = useId();
   const [hover, setHover] = useState<number | null>(null);
@@ -20,13 +37,32 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
   if (!values.length) return <p className="dempty">Kỳ đang chọn chưa có số để vẽ.</p>;
 
   const max = Math.max(...values);
-  const min = Math.min(0, ...values);
+  /**
+   * Đáy THẬT của dữ liệu, không ép về 0.
+   *
+   * `Math.min(0, ...)` làm đáy luôn bằng 0, nên phép cắt trục bên dưới không
+   * bao giờ chạy và gần một nửa khung cao là vùng trắng: chuỗi ngân sách chạy
+   * trong dải 36.000–64.000, còn trục thì bắt đầu từ 0.
+   */
+  const min = Math.min(...values);
   const W = 720;
   const H = 220;
-  const padL = 8;
+  /**
+   * Chừa chỗ bên trái cho nhãn trục.
+   *
+   * Trước đây `padL` là 8 và biểu đồ không có trục dọc nào: cả SVG chỉ có mười
+   * hai nhãn `T1`–`T12`, nên người đọc thấy ba đường mà không đọc được độ lớn
+   * của điểm nào. Một biểu đồ dự toán so thực hiện mà không đọc được số thì
+   * không trả lời được câu hỏi duy nhất nó sinh ra để trả lời.
+   */
+  const padL = 56;
+  const padR = 8;
   const padB = 24;
-  const x = (i: number) => padL + (i * (W - padL * 2)) / Math.max(1, points.length - 1);
-  const y = (v: number) => H - padB - ((v - min) / Math.max(1, max - min)) * (H - padB - 10);
+  const ticks = niceTicks(max, min);
+  const truc = { day: ticks[0], dinh: ticks[ticks.length - 1] };
+  const x = (i: number) => padL + (i * (W - padL - padR)) / Math.max(1, points.length - 1);
+  const y = (v: number) =>
+    H - padB - ((v - truc.day) / Math.max(1, truc.dinh - truc.day)) * (H - padB - 10);
 
   /** Đường đứt tại điểm thiếu số thay vì nối liền qua nó. */
   const path = (pick: (p: BudgetTrendPoint) => number | null) => {
@@ -46,7 +82,13 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
 
   const series = [
     { key: "actual", name: "Thực hiện", dash: undefined, color: "var(--data-primary)", pick: (p: BudgetTrendPoint) => p.actual },
-    { key: "plan", name: "Dự toán", dash: "2 4", color: "var(--data-reference)", pick: (p: BudgetTrendPoint) => p.plan },
+    /*
+      `--data-reference` là màu DÀNH RIÊNG cho "cùng kỳ năm trước" — ba tab khác
+      dùng nó đúng nghĩa đó. Để Dự toán mượn màu ấy là người đã học nó ở Tổng
+      quan sẽ đọc dự toán thành số năm ngoái, và hai con số đó không thay thế
+      nhau được. Dự toán là một chuỗi ngang hàng, nên nó lấy một bậc của thang.
+    */
+    { key: "plan", name: "Dự toán", dash: "2 4", color: "var(--data-family)", pick: (p: BudgetTrendPoint) => p.plan },
     { key: "forecast", name: "Dự báo", dash: "8 5", color: "var(--data-secondary)", pick: (p: BudgetTrendPoint) => p.forecast },
   ];
 
@@ -59,7 +101,15 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
         role="img"
         aria-label={`Thực hiện, dự toán và dự báo theo tháng, đơn vị ${unit.unit}`}
       >
-        <line x1={padL} y1={H - padB} x2={W - padL} y2={H - padB} className="dforecast-axis" />
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1={padL} y1={y(t)} x2={W - padR} y2={y(t)} className="dforecast-grid" />
+            <text x={padL - 8} y={y(t)} dy="0.32em" textAnchor="end" className="dforecast-tick">
+              {inScale(t, unit)}
+            </text>
+          </g>
+        ))}
+        <line x1={padL} y1={H - padB} x2={W - padR} y2={H - padB} className="dforecast-axis" />
         {series.map((s) => (
           <path
             key={s.key}
@@ -71,6 +121,22 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
             strokeLinecap="round"
           />
         ))}
+        {/*
+          Chuỗi chỉ có MỘT tháng có số thì phải vẽ ra một dấu chấm.
+
+          `<path>` một điểm chỉ sinh ra một lệnh `moveto` và không vẽ gì cả, nên
+          chuỗi đó biến mất hoàn toàn trong khi chú giải vẫn liệt kê nó. Đúng một
+          điểm là trường hợp thật — tháng đầu năm, hoặc kỳ vừa mở — không phải
+          một lỗi cần chặn, nên nó phải nhìn thấy được.
+        */}
+        {series.map((s) => {
+          const co = points
+            .map((p, i) => ({ v: s.pick(p), i }))
+            .filter((d): d is { v: number; i: number } => d.v !== null);
+          return co.length === 1 ? (
+            <circle key={`d-${s.key}`} cx={x(co[0].i)} cy={y(co[0].v)} r={3.5} fill={s.color} />
+          ) : null;
+        })}
         {points.map((p, i) => (
           <rect
             key={p.month}
@@ -106,9 +172,9 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
 
       {/* Bảng số liệu thay thế: biểu đồ nào cũng phải đọc được bằng bàn phím và
           bằng trình đọc màn hình, không chỉ bằng mắt và chuột. */}
-      <details className="dforecast-table">
+      <details className="dforecast-table dexpandable">
         <summary>Xem bảng số liệu</summary>
-        <div className="dtable-wrap">
+        <div className="dtable-wrap dexpandable-content">
           <table className="dtable is-compact" id={id}>
             <thead>
               <tr>

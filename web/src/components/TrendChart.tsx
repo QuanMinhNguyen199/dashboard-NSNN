@@ -31,14 +31,35 @@ function useWidth(ref: React.RefObject<HTMLElement | null>) {
 }
 
 /** Vạch trục tròn số: 1, 2, 2,5 hoặc 5 nhân luỹ thừa 10. */
-function niceTicks(max: number, count = 4): number[] {
+function niceTicks(max: number, count = 4, min = 0): number[] {
   if (!(max > 0)) return [0];
-  const rough = max / count;
+  const span = max - min;
+  if (!(span > 0)) return [max];
+  const rough = span / count;
   const mag = Math.pow(10, Math.floor(Math.log10(rough)));
   const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => s >= rough) ?? 10 * mag;
   const out: number[] = [];
-  for (let v = 0; v <= max + step / 2; v += step) out.push(v);
+  for (let v = Math.floor(min / step) * step; v <= max + step / 2; v += step) out.push(v);
   return out;
+}
+
+/**
+ * Đáy trục: 0, hoặc một mốc tròn dưới giá trị nhỏ nhất.
+ *
+ * Chuỗi thu ngân sách chạy trong dải hẹp ở rất cao — đo trên `Xu hướng thu ngân
+ * sách`: 37.000–63.000 trên trục gốc 0, nên khoảng 45% chiều cao khung không hề
+ * có dữ liệu, còn biến động giữa các tháng bị nén vào nửa trên. Cả thẻ tồn tại
+ * để so tháng này với tháng kia, và nó đang trả một nửa độ phân giải cho một
+ * vùng trống.
+ *
+ * Cắt đáy CHỈ khi đáy thật sự cao — dưới ngưỡng đó thì phần lợi không bõ, mà
+ * trục cắt luôn phóng đại biến động. Đây là biểu đồ ĐƯỜNG, không có vùng tô, nên
+ * diện tích không mang nghĩa và mốc đáy có nhãn số ngay trên trục: người đọc
+ * thấy trục bắt đầu từ 30.000 chứ không phải từ 0.
+ */
+const NGUONG_CAT = 0.3;
+function dayTruc(trough: number, peak: number): number {
+  return trough > peak * NGUONG_CAT ? trough : 0;
 }
 
 /**
@@ -135,16 +156,24 @@ export function TrendChart({
   // người đọc đổi đơn vị khi mắt đi từ biểu đồ sang KPI ngay bên cạnh.
   const axis = moneyScale([peak]);
 
+  const trough = Math.min(
+    ...points.flatMap((p) =>
+      [p.current, p.previous].filter((v): v is number => v !== null && v !== undefined),
+    ),
+  );
+
   const geo = useMemo(() => {
     const innerW = Math.max(0, width - PAD.left - PAD.right);
     const innerH = Math.max(0, height - PAD.top - PAD.bottom);
-    const ticks = niceTicks(peak);
+    const ticks = niceTicks(peak, 4, dayTruc(Number.isFinite(trough) ? trough : 0, peak));
+    const base = ticks[0] ?? 0;
     const top = ticks[ticks.length - 1] || 1;
+    const span = top - base || 1;
     const xOf = (i: number) =>
       PAD.left + (points.length > 1 ? (innerW * i) / (points.length - 1) : innerW / 2);
-    const yOf = (v: number) => PAD.top + innerH - (innerH * v) / top;
+    const yOf = (v: number) => PAD.top + innerH - (innerH * (v - base)) / span;
     return { innerW, innerH, ticks, xOf, yOf };
-  }, [width, height, peak, points.length]);
+  }, [width, height, peak, trough, points.length]);
 
   const paths = useMemo(
     () => ({
