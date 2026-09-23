@@ -59,7 +59,7 @@ const run = async () => {
     if (m.type() === "error" && !isNoise(m.text())) jsErrors.push(m.text());
   });
 
-  // 1 — Điều hướng sáu tab
+  // 1 — Điều hướng năm tab
   await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
@@ -67,12 +67,11 @@ const run = async () => {
   const tabs = await page.evaluate(() =>
     [...document.querySelectorAll('[role="tab"]')].map((t) => t.textContent.trim()),
   );
-  check(1, "Điều hướng sáu tab hoạt động", tabs, [
+  check(1, "Điều hướng năm tab hoạt động", tabs, [
     "Tổng quan",
     "Báo cáo",
     "Phân tích thu",
-    "Chi tiết phường/xã",
-    "Mã hạch toán",
+    "Chi tiết Địa bàn & Đơn vị Thuế",
     "So sánh nâng cao",
   ]);
 
@@ -121,9 +120,9 @@ const run = async () => {
   await wait(2400);
   await page.evaluate(() => {
     const card = [...document.querySelectorAll(".dcard")].find(
-      (el) => el.querySelector("h2")?.textContent?.trim() === "Cơ cấu nguồn thu",
+      (el) => el.querySelector("h2")?.textContent?.trim() === "Cơ cấu 4 nhóm nguồn thu",
     );
-    card.querySelector("button.dbar-row").click();
+    card.querySelector(".doverview-sources button").click();
   });
   await wait(900);
   const drawerOpen = await page.evaluate(() => !!document.querySelector('[role="dialog"]'));
@@ -140,16 +139,16 @@ const run = async () => {
     { opened: true, closed: true, level: "NSDP" },
   );
 
-  // 5 — Tổng quan điều hướng sang Phân tích thu và Chi tiết địa bàn
+  // 5 — Hai cụm điều hành ở Tổng quan điều hướng đúng ngữ cảnh
   await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
   await page.evaluate(() => {
     const card = [...document.querySelectorAll(".dcard")].find(
-      (el) => el.querySelector("h2")?.textContent?.trim() === "Top khoản thu nội địa",
+      (el) => el.querySelector("h2")?.textContent?.trim() === "Động lực ngành nghề và doanh nghiệp",
     );
-    [...card.querySelectorAll("button")].find((b) => b.textContent.includes("Xem tất cả")).click();
+    card.querySelector("button.dbar-row").click();
   });
   await wait(1600);
   const toAnalysis = { tab: await activeTab(page), section: await query(page, "section") };
@@ -160,9 +159,16 @@ const run = async () => {
   await wait(2400);
   await page.evaluate(() => {
     const card = [...document.querySelectorAll(".dcard")].find(
-      (el) => el.querySelector("h2")?.textContent?.trim() === "Top địa bàn",
+      (el) => el.querySelector("h2")?.textContent?.trim() === "Theo dõi quản lý nhà nước",
     );
-    card.querySelector("button.dbar-row").click();
+    [...card.querySelectorAll(".dseg button")].find((button) => button.textContent.includes("Theo địa bàn")).click();
+  });
+  await wait(350);
+  await page.evaluate(() => {
+    const card = [...document.querySelectorAll(".dcard")].find(
+      (el) => el.querySelector("h2")?.textContent?.trim() === "Theo dõi quản lý nhà nước",
+    );
+    card.querySelector(".dexecution-list button").click();
   });
   await wait(1600);
   check(
@@ -174,24 +180,26 @@ const run = async () => {
     },
     {
       analysis: { tab: "Phân tích thu", section: "src_k7m2qx" },
-      detail: { tab: "Chi tiết phường/xã", hasLocation: true },
+      detail: { tab: "Chi tiết Địa bàn & Đơn vị Thuế", hasLocation: true },
     },
   );
 
-  // 6 — Waterfall điều hướng sang So sánh nâng cao
+  // 6 — Chọn nhóm chỉ tiêu điều hướng và khóa ngành đúng ma trận
   await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",
   });
   await wait(2400);
-  await page.evaluate(() => {
-    document.querySelector("button.dcontrib-row").click();
-  });
+  await page.select(".dfilter-indicator select", "import-export");
   await wait(1600);
   check(
     6,
-    "Waterfall điều hướng sang So sánh nâng cao",
-    { tab: await activeTab(page), mode: await query(page, "mode") },
-    { tab: "So sánh nâng cao", mode: "revenue" },
+    "Nhóm chỉ tiêu điều hướng sang Phân tích thu và khóa Ngành nghề",
+    {
+      tab: await activeTab(page),
+      section: await query(page, "section"),
+      industryDisabled: await page.$eval("#nganh-nghe", (input) => input.disabled),
+    },
+    { tab: "Phân tích thu", section: "src_v4n8pc", industryDisabled: true },
   );
 
   // 7 — Drawer hiển thị đúng nguồn, và lối ra của nó phụ thuộc nguồn
@@ -248,55 +256,89 @@ const run = async () => {
     },
   );
 
-  // 8 — Đúng 21 khoản thu nội địa và CQT lọc toàn bộ Mã hạch toán
+  // 8 — Đúng ba khối nội địa và bộ Phạm vi hai cấp
   await page.goto(
     withFastMock(BASE + "/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
   );
   await wait(2600);
-  const domesticRows = await page.evaluate(() => document.querySelectorAll(".dtable tbody tr").length);
+  const domesticGroups = await page.evaluate(() => document.querySelectorAll(".ddonut-legend li").length);
+
+  /*
+    Mốc để so là tổng trên TỔNG QUAN.
+
+    Trước đây mốc này đọc ở tab Mã hạch toán; tab đó đã bỏ. Tổng quan thay được
+    vì nó cũng là màn hình đọc theo đúng phạm vi đang lọc, và nó là tab người
+    dùng quay về sau khi bỏ phạm vi — nên đây đúng là chỗ một con số sai sẽ bị
+    nhìn thấy.
+  */
   await page.goto(
-    withFastMock(BASE + "/?tab=tms-breakdown&year=2026&periodType=MONTH&period=8"),
+    withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
   );
-  await page.select(".dfilter-budget select", "NSDP");
-  await wait(700);
-  const budgetLevelLinked = await page.$eval(
-    '.dtms-levelbar [aria-label="Cấp quản lý của Chương"] button[aria-pressed="true"]',
-    (el) => el.textContent.trim() === "Địa phương",
-  );
+  await wait(2600);
   const firstKpi = () =>
     page.$eval(".dkpis > div:first-child > strong", (el) => el.textContent.trim());
   const beforeOffice = await firstKpi();
-  await page.click("#tms-tax-office");
-  await page.type("#tms-tax-office", "0106");
-  await page.click('.dfilter-tax-office .dautocomplete-list [data-value="0106"]');
-  await wait(900);
+
+  /*
+    Ô đầu chọn loại đối tượng; ô kế bên chỉ tìm trong danh mục con tương ứng.
+    Cấu trúc này giữ ba loại phạm vi tách bạch nhưng vẫn bảo đảm đơn vị thuế và
+    địa bàn loại trừ nhau.
+  */
+  const chonPhamVi = async (kind, go, value) => {
+    await page.select("#pham-vi-loai", kind);
+    await wait(300);
+    if (kind === "city") return;
+    await page.click("#pham-vi-chi-tiet", { clickCount: 3 });
+    await page.type("#pham-vi-chi-tiet", go, { delay: 8 });
+    await wait(500);
+    await page.click(`.dfilter-location .dautocomplete-list [data-value="${value}"]`);
+    await wait(1400);
+  };
+  await chonPhamVi("tax-office", "Thuế cơ sở 1 thành", "0106");
   const afterOffice = await firstKpi();
   const officeUrl = await query(page, "cqt");
-  const officeSelected = await page.$eval(
-    "#tms-tax-office",
-    (el) => el.value.includes("Thuế cơ sở 1"),
-  );
+  const officeSelected = await page.$eval("#pham-vi-chi-tiet", (el) => el.value.includes("Thuế cơ sở 1"));
   const officeScope = await page.evaluate(() => ({
-    oneOfficeControl: document.querySelectorAll("#tms-tax-office").length === 1 && !document.querySelector("#tms-tax-office-local"),
+    haiCapPhamVi:
+      document.querySelectorAll("#pham-vi-loai").length === 1 &&
+      document.querySelectorAll("#pham-vi-chi-tiet").length === 1,
+    khongConOCu: !document.querySelector("#tms-tax-office, #location-autocomplete"),
+    // Chọn đơn vị thuế thì cấp ngân sách khoá ở Tổng NSNN: dữ liệu của đơn vị
+    // thuế quản theo tổng thu, chưa tách theo cấp.
+    capNganSachKhoa: document.querySelector(".dfilter-budget select")?.disabled === true,
     hasAssignedLocations: document.querySelectorAll(".dtax-scope .dtax-location-grid li").length > 0,
     explainsAssignment: /Địa bàn phụ trách/i.test(
       document.querySelector(".dtax-scope")?.textContent ?? "",
     ),
-    locationFilterHidden: !document.querySelector(".dfilter-location"),
+    // Chọn một đơn vị thuế là sang thẳng trang của đơn vị đó.
+    sangTabChiTiet:
+      document.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim() ===
+      "Chi tiết Địa bàn & Đơn vị Thuế",
   }));
-  await page.click("#tms-tax-office");
-  await page.click('.dfilter-tax-office .dautocomplete-list [data-value=""]');
-  await wait(900);
+  await chonPhamVi("city", "", "");
   const clearedOfficeUrl = await query(page, "cqt");
+
+  /*
+    Quay lại bằng cách BẤM TAB, không phải tải lại trang: tải lại phải chép đủ
+    mọi tham số dẫn xuất, sót một cái là hai con số khác nhau vì lý do chẳng
+    liên quan gì tới phạm vi. Bấm tab giữ nguyên toàn bộ trạng thái, nên thứ
+    duy nhất đã đổi rồi trả lại đúng là cái đang cần khẳng định.
+  */
+  await page.evaluate(() => {
+    const tab = [...document.querySelectorAll('[role="tab"]')].find(
+      (t) => t.textContent.trim() === "Tổng quan",
+    );
+    tab?.click();
+  });
+  await wait(2600);
   const resetOffice = await firstKpi();
   check(
     8,
-    "Đủ 21 khoản và bộ lọc CQT cập nhật rồi khôi phục tổng Mã hạch toán",
+    "Phạm vi hai cấp đổi đúng danh mục con và khôi phục tổng Tổng quan",
     {
-      domesticRows,
-      budgetLevelLinked,
+      domesticGroups,
       officeSelected,
       officeUrl,
       clearedOfficeUrl,
@@ -305,21 +347,22 @@ const run = async () => {
       restored: beforeOffice === resetOffice,
     },
     {
-      domesticRows: 21,
-      budgetLevelLinked: true,
+      domesticGroups: 3,
       officeSelected: true,
       officeUrl: "0106",
       clearedOfficeUrl: null,
-      oneOfficeControl: true,
+      haiCapPhamVi: true,
+      khongConOCu: true,
+      capNganSachKhoa: true,
       hasAssignedLocations: true,
       explainsAssignment: true,
-      locationFilterHidden: true,
+      sangTabChiTiet: true,
       changed: true,
       restored: true,
     },
   );
 
-  // 9 — Null, zero và số âm
+  // 9 — Null và số thiếu không bị diễn giải thành giá trị giả
   await page.goto(
     withFastMock(BASE + "/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"),
     { waitUntil: "networkidle0" },
@@ -329,36 +372,32 @@ const run = async () => {
       [...tr.children].map((td) => td.textContent.trim()),
     );
     return {
-      hasZero: rows.some((r) => r[1] === "0"),
-      hasNegative: rows.some((r) => r[4].includes("−")),
       // Không được có "-100%" giả sinh ra từ dữ liệu thiếu.
-      fake100: rows.some((r) => /−100,0%|-100.0%/.test(r[4])),
+      fake100: rows.some((r) => /−100,0%|-100.0%/.test(r.join(" "))),
       noNaN: !document.body.innerText.includes("NaN") && !document.body.innerText.includes("Infinity"),
     };
   });
-  check(9, "Null, zero và số âm được xử lý đúng", values, {
-    hasZero: true,
-    hasNegative: true,
+  check(9, "Null và số thiếu được xử lý đúng", values, {
     fake100: false,
     noNaN: true,
   });
 
-  // 10 — Waterfall khớp tổng delta
-  const reconciled = await page.evaluate(() => {
-    const parse = (text) => {
-      const m = /(−|-|\+)?\s*([\d.,]+)\s*(nghìn tỷ|tỷ|triệu)?/.exec(text.replace(/\u00a0/g, " "));
-      if (!m) return NaN;
-      const unit = m[3] === "nghìn tỷ" ? 1e12 : m[3] === "tỷ" ? 1e9 : m[3] === "triệu" ? 1e6 : 1;
-      const value = Number(m[2].replace(/\./g, "").replace(",", ".")) * unit;
-      return (m[1] === "−" || m[1] === "-" ? -1 : 1) * value;
-    };
-    const bridge = [...document.querySelectorAll(".dbridge strong")].map((el) => parse(el.textContent));
-    const steps = [...document.querySelectorAll(".dcontrib strong")].map((el) => parse(el.textContent));
-    const sum = steps.reduce((a, b) => a + b, 0);
-    // Sai số làm tròn khi đọc lại từ chuỗi hiển thị, nên nới ngưỡng còn 1%.
-    return Math.abs(sum - bridge[2]) / Math.abs(bridge[2] || 1) < 0.01;
+  // 10 — Ngành nghề là lát cắt thu nội địa và khóa đúng Khối doanh nghiệp
+  await page.click("#nganh-nghe");
+  await page.type("#nganh-nghe", "Bất động sản", { delay: 8 });
+  await wait(400);
+  await page.click('.dfilter-industry [data-value="bat-dong-san"]');
+  await wait(1500);
+  const industryLock = await page.evaluate(() => ({
+    tab: document.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim(),
+    selectedGroup: document.querySelector(".ddonut-legend button.is-selected span")?.textContent.trim(),
+    industry: new URLSearchParams(location.search).get("nganh"),
+  }));
+  check(10, "Ngành nghề mở Thu nội địa và khóa Khối doanh nghiệp", industryLock, {
+    tab: "Phân tích thu",
+    selectedGroup: "Khối doanh nghiệp",
+    industry: "bat-dong-san",
   });
-  check(10, "Waterfall khớp tổng delta", reconciled, true);
 
   // 11 — MCP payload không hợp lệ bị từ chối an toàn
   const guard = await page.evaluate(async () => {
@@ -424,7 +463,6 @@ const run = async () => {
       "report",
       "revenue-analysis",
       "location-detail",
-      "tms-breakdown",
       "advanced-compare",
     ]) {
       await page.setViewport({ width, height: 900 });

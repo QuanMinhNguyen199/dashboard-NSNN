@@ -20,7 +20,8 @@ import {
   type SourceCode,
 } from "@/domain/catalog";
 import { periodCount } from "@/domain/metrics";
-import { TAX_OFFICE_ENTITY_BY_CODE, type ManagementLevelFilter } from "@/domain/tms";
+import { TAX_OFFICE_ENTITY_BY_CODE } from "@/domain/tms";
+import { gridMembersOf } from "@/domain/report";
 import { groupFromUrl, groupUrlId, sourceFromUrl, sourceUrlId } from "@/domain/urlIds";
 import type {
   AdvancedComparisonMode,
@@ -43,7 +44,6 @@ const TABS: TabId[] = [
   "report",
   "revenue-analysis",
   "location-detail",
-  "tms-breakdown",
   "advanced-compare",
 ];
 const REPORT_MODES: ReportMode[] = ["nsnn", "budget", "taxpayer", "inspection"];
@@ -66,10 +66,6 @@ const LEGACY_TAB_TO_REPORT: Record<string, ReportMode> = {
   inspection: "inspection",
 };
 
-/* `huyen` đã bỏ khỏi danh sách: URL cũ mang `mgmt=huyen` sẽ rơi về mặc định
-   "all" qua `one()`, đúng hơn là dựng một màn hình cho một cấp không còn. */
-const MANAGEMENT_LEVELS_URL = ["all", "trung-uong", "dia-phuong", "tinh", "xa"] as const;
-
 const MODES: AdvancedComparisonMode[] = ["period", "revenue", "location"];
 const VIEWS = ["overview", "ranking", "waterfall"] as const;
 export type AnalysisView = (typeof VIEWS)[number];
@@ -84,9 +80,7 @@ export interface DashboardUrlState {
   group: DomesticGroupId;
   /** Tab Chi tiết địa bàn */
   location: string | null;
-  /** Tab Mã hạch toán — bộ lọc cấp quản lý của Chương, không phải bậc danh mục. */
-  managementLevel: ManagementLevelFilter;
-  /** Tab Mã hạch toán — mã cơ quan thuế đang lọc. */
+  /** Đơn vị thuế đang lọc ở ô `Phạm vi`; loại trừ nhau với `location`. */
   taxOfficeCode: string | null;
   /** Drawer xem nhanh nguồn thu */
   panelSource: SourceCode | null;
@@ -104,10 +98,28 @@ export const DEFAULT_FILTERS: DashboardFilters = {
   year: 2026,
   periodType: "MONTH",
   period: 8,
-  accumulation: "PERIOD",
+  accumulation: "YTD",
   indicator: "tong-so",
   budgetLevel: "NSNN",
+  industry: null,
 };
+
+/**
+ * Đặc tả 23-09 chỉ dùng ngành nghề ở Tổng quan và view PHƯỜNG/XÃ.
+ *
+ * View CQT trong cùng tab Chi tiết không có khối ngành; ba tab còn lại cũng
+ * không nêu chiều này. Dùng chung một hàm cho URL, điều hướng và thanh lọc để
+ * không có trạng thái "lọc ngầm" sau khi ô đã biến mất.
+ */
+export const supportsIndustryFilter = (
+  tab: TabId,
+  location: string | null,
+  taxOfficeCode: string | null,
+  section: SourceCode = "domestic",
+) =>
+  tab === "overview" ||
+  (tab === "revenue-analysis" && section === "domestic") ||
+  (tab === "location-detail" && location !== null && taxOfficeCode === null);
 
 /** Kỳ mới nhất thực sự có dữ liệu — không bao giờ mặc định vào kỳ tương lai. */
 function clampPeriod(filters: DashboardFilters): DashboardFilters {
@@ -145,6 +157,12 @@ function readUrl(search: string): DashboardUrlState {
       DEFAULT_FILTERS.indicator,
     ),
     budgetLevel: one("level", ["NSNN", "NSTW", "NSDP"] as const, DEFAULT_FILTERS.budgetLevel),
+    // Mã ngành lạ đưa về `null` thay vì giữ nguyên chuỗi: một mã không có trong
+    // danh mục sẽ lọc ra rỗng, và màn hình trống không nói được vì sao trống.
+    industry: (() => {
+      const raw = q.get("nganh");
+      return raw && gridMembersOf("industry").some((m) => m.id === raw) ? raw : null;
+    })(),
   });
 
   const locationOf = (key: string) => {
@@ -156,23 +174,39 @@ function readUrl(search: string): DashboardUrlState {
   const rawTab = q.get("tab") ?? "";
   const legacyMode = LEGACY_TAB_TO_REPORT[rawTab];
 
+  const tab = legacyMode ? "report" : one("tab", TABS, "overview");
+  /*
+    Cùng luật với `setTab`, áp cả cho đường dẫn dán thẳng vào thanh địa chỉ.
+
+    Một liên kết cũ dạng `?tab=report&nganh=dich-vu` mà chỉ giấu ô lọc thì cả
+    tab Báo cáo đang bày số của một ngành, không chỗ nào nói ra, không chỗ nào
+    tắt được. `writeUrl` viết lại URL ngay sau đó nên đường dẫn cũng thôi nói
+    sai. Tổng quan tương tự: nó luôn là toàn thành phố.
+  */
+  const location = tab === "overview" ? null : locationOf("location");
+  const taxOfficeCode = (() => {
+    // Đường dẫn cũ có thể mang mã phụ (0127, 0151…). Quy về mã đại diện thay
+    // vì trả null: người dùng đã lưu đường dẫn đó, và bỏ lọc im lặng thì họ
+    // đọc số toàn thành phố như số của một cơ quan.
+    if (tab === "overview") return null;
+    const code = q.get("cqt");
+    return code ? (TAX_OFFICE_ENTITY_BY_CODE[code] ?? null) : null;
+  })();
+  const section = sourceFromUrl(q.get("section"), "domestic");
+  const scopedFilters = supportsIndustryFilter(tab, location, taxOfficeCode, section)
+    ? filters
+    : { ...filters, industry: null };
+
   return {
-    tab: legacyMode ? "report" : one("tab", TABS, "overview"),
+    tab,
     // Giá trị ngoài danh sách đóng luôn về mặc định, không giữ nguyên chuỗi lạ.
     reportMode: legacyMode ?? one("report", REPORT_MODES, "nsnn"),
-    filters,
-    section: sourceFromUrl(q.get("section"), "domestic"),
+    filters: scopedFilters,
+    section,
     view: one("view", VIEWS, "overview"),
     group: groupFromUrl(q.get("group"), "sxkd"),
-    location: locationOf("location"),
-    managementLevel: one("mgmt", MANAGEMENT_LEVELS_URL, "all"),
-    taxOfficeCode: (() => {
-      // Đường dẫn cũ có thể mang mã phụ (0127, 0151…). Quy về mã đại diện thay
-      // vì trả null: người dùng đã lưu đường dẫn đó, và bỏ lọc im lặng thì họ
-      // đọc số toàn thành phố như số của một cơ quan.
-      const code = q.get("cqt");
-      return code ? (TAX_OFFICE_ENTITY_BY_CODE[code] ?? null) : null;
-    })(),
+    location,
+    taxOfficeCode,
     panelSource: q.get("panel") === "revenue-preview" ? sourceFromUrl(q.get("source"), "domestic") : null,
     mode: one("mode", MODES, "period"),
     periodA: q.get("periodA") ?? "2025m8",
@@ -213,18 +247,19 @@ function writeUrl(state: DashboardUrlState): string {
     if (state.section === "domestic") q.set("group", groupUrlId(state.group));
   }
   /**
-   * Địa bàn vào URL ở MỌI tab đọc nó, không riêng Chi tiết phường/xã.
+   * `Phạm vi` vào URL ở MỌI tab, vì nó là bộ lọc DÙNG CHUNG.
    *
-   * Tab Mã hạch toán cũng lọc theo địa bàn, nên bỏ tham số ở đó nghĩa là tải lại
-   * trang thì phạm vi biến mất còn thanh lọc thì vẫn vẽ ra nó — và liên kết gửi
-   * cho người khác mở ra một phạm vi khác với cái người gửi đang nhìn.
+   * Trước đây địa bàn chỉ được ghi ở hai tab và cơ quan thuế chỉ ở một tab, vì
+   * chúng là hai ô riêng của riêng tab đó. Giờ cả hai là hai nhánh của cùng một
+   * ô trên thanh lọc chung: bỏ tham số ở tab nào thì tải lại trang là phạm vi
+   * biến mất trong khi thanh lọc vẫn vẽ ra nó, và liên kết gửi cho người khác mở
+   * ra một phạm vi khác với cái người gửi đang nhìn.
+   *
+   * Hai nhánh loại trừ nhau, nên không bao giờ có cả `location` lẫn `cqt`.
    */
-  if (state.location && (state.tab === "location-detail" || state.tab === "tms-breakdown"))
-    q.set("location", state.location);
-  if (state.tab === "tms-breakdown") {
-    q.set("mgmt", state.managementLevel);
-    if (state.taxOfficeCode) q.set("cqt", state.taxOfficeCode);
-  }
+  if (state.filters.industry) q.set("nganh", state.filters.industry);
+  if (state.location) q.set("location", state.location);
+  if (state.taxOfficeCode) q.set("cqt", state.taxOfficeCode);
   if (state.tab === "advanced-compare") {
     q.set("mode", state.mode);
     if (state.mode === "period") {
@@ -257,7 +292,6 @@ interface DashboardContextValue extends DashboardUrlState {
   selectLocation: (id: string | null) => void;
   /** Đổi phạm vi địa bàn mà KHÔNG đổi tab; dùng ở tab tự đọc được địa bàn. */
   setLocationScope: (id: string | null) => void;
-  setManagementLevel: (level: ManagementLevelFilter) => void;
   setTaxOfficeCode: (code: string | null) => void;
   openPreview: (source: SourceCode) => void;
   closePreview: () => void;
@@ -305,9 +339,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           return {
             ...current,
             filters: clampPeriod(merged),
-            // Cấp ngân sách hưởng và cấp quản lý của Chương là hai chiều độc
-            // lập. Đổi NSTW/NSĐP không được tự đổi bộ lọc Chương.
-            managementLevel: current.managementLevel,
             panelSource: null,
           };
         }),
@@ -320,30 +351,73 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
           ...current,
           filters: { ...DEFAULT_FILTERS },
           location: null,
-          managementLevel: "all",
           taxOfficeCode: null,
           tab: current.tab === "location-detail" ? "overview" : current.tab,
           panelSource: null,
         })),
-      // Về Tổng quan là về phạm vi toàn thành phố, nên bỏ luôn địa bàn đang chọn:
-      // ô lọc "Chi tiết địa bàn" và tab đang đứng nói về CÙNG một thứ — phạm vi
-      // đang xem — nên để chúng lệch nhau là bày ra hai câu trả lời cho một câu hỏi.
+      /*
+        Vào một tab thì bộ lọc phải đúng với tab đó.
+
+        · **Tổng quan** luôn là toàn thành phố, nên bỏ CẢ HAI nhánh của ô
+          `Phạm vi` — địa bàn và đơn vị thuế. Trước đây chỉ bỏ địa bàn, nên đi
+          từ trang một đơn vị thuế về Tổng quan thì ô lọc vẫn ghi tên đơn vị đó
+          trong khi màn hình bày số toàn thành phố: hai câu trả lời cho một câu
+          hỏi, và con số là cái người đọc tin.
+        · **Ngành nghề** chỉ có ở Tổng quan và view phường/xã theo đặc tả
+          23-09. Sang tab khác hoặc view CQT phải xoá giá trị luôn chứ không chỉ
+          giấu ô; nếu không số vẫn bị lọc mà màn hình không có cách tắt.
+      */
       setTab: (tab) =>
+        setState((current) => {
+          const location = tab === "overview" ? null : current.location;
+          const taxOfficeCode = tab === "overview" ? null : current.taxOfficeCode;
+          return {
+            ...current,
+            tab,
+            location,
+            taxOfficeCode,
+            filters: supportsIndustryFilter(tab, location, taxOfficeCode, current.section)
+              ? current.filters
+              : { ...current.filters, industry: null },
+            panelSource: null,
+          };
+        }),
+      setSection: (section) =>
         setState((current) => ({
           ...current,
-          tab,
-          location: tab === "overview" ? null : current.location,
-          panelSource: null,
+          section,
+          filters:
+            section === "domestic"
+              ? current.filters
+              : { ...current.filters, industry: null },
         })),
-      setSection: (section) => patch({ section }),
       setReportMode: (reportMode) => patch({ reportMode }),
       setView: (view) => patch({ view }),
       setGroup: (group) => patch({ group }),
-      setManagementLevel: (managementLevel) => patch({ managementLevel }),
-      setTaxOfficeCode: (taxOfficeCode) => patch({ taxOfficeCode }),
+      setTaxOfficeCode: (taxOfficeCode) =>
+        setState((current) => ({
+          ...current,
+          taxOfficeCode,
+          filters: taxOfficeCode
+            ? { ...current.filters, industry: null, budgetLevel: "NSNN" }
+            : current.filters,
+        })),
       selectLocation: (location) =>
-        setState((current) => ({ ...current, location, tab: location ? "location-detail" : current.tab })),
-      setLocationScope: (location) => patch({ location }),
+        setState((current) => ({
+          ...current,
+          location,
+          taxOfficeCode: location ? null : current.taxOfficeCode,
+          tab: location ? "location-detail" : current.tab,
+          filters: location ? current.filters : { ...current.filters, industry: null },
+        })),
+      setLocationScope: (location) =>
+        setState((current) => ({
+          ...current,
+          location,
+          filters: location || current.tab === "overview"
+            ? current.filters
+            : { ...current.filters, industry: null },
+        })),
       openPreview: (panelSource) => {
         pushNext.current = true;
         patch({ panelSource });
@@ -376,6 +450,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
             setState((current) => ({
               ...current,
               tab: "revenue-analysis",
+              filters: { ...current.filters, industry: null },
               section: action.sourceId as SourceCode,
               view: action.view ?? "overview",
               panelSource: null,
@@ -386,6 +461,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
               ...current,
               tab: "location-detail",
               location: action.locationId,
+              taxOfficeCode: null,
               panelSource: null,
             }));
             break;
@@ -393,11 +469,12 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
             setState((current) => {
               const [a, b] = action.entityIds;
               if (action.mode === "location")
-                return { ...current, tab: "advanced-compare", mode: "location", locationA: a ?? null, locationB: b ?? null, panelSource: null };
+                return { ...current, tab: "advanced-compare", filters: { ...current.filters, industry: null }, mode: "location", locationA: a ?? null, locationB: b ?? null, panelSource: null };
               if (action.mode === "revenue")
                 return {
                   ...current,
                   tab: "advanced-compare",
+                  filters: { ...current.filters, industry: null },
                   mode: "revenue",
                   compareSource: (a as SourceCode) ?? current.compareSource,
                   compareSourceB: (b as SourceCode) ?? current.compareSourceB,
@@ -406,6 +483,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
               return {
                 ...current,
                 tab: "advanced-compare",
+                filters: { ...current.filters, industry: null },
                 mode: "period",
                 periodA: a ?? current.periodA,
                 periodB: b ?? current.periodB,

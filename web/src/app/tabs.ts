@@ -21,11 +21,10 @@ export const TABS: TabDef[] = [
     question: "Số thu chia theo địa bàn, cơ quan thuế hoặc ngành nghề thế nào?",
   },
   { id: "revenue-analysis", label: "Phân tích thu", question: "Nguồn hoặc khoản thu nào tạo ra kết quả đó?" },
-  { id: "location-detail", label: "Chi tiết phường/xã", question: "Một địa bàn cụ thể đang hoạt động ra sao?" },
   {
-    id: "tms-breakdown",
-    label: "Mã hạch toán",
-    question: "Số thu phân theo cơ quan thuế, Chương, Mục và Tiểu mục thế nào?",
+    id: "location-detail",
+    label: "Chi tiết Địa bàn & Đơn vị Thuế",
+    question: "Một phường/xã hoặc một đơn vị thuế cụ thể đang hoạt động ra sao?",
   },
   { id: "advanced-compare", label: "So sánh nâng cao", question: "Hai kỳ, nguồn thu hoặc địa bàn khác nhau thế nào?" },
 ];

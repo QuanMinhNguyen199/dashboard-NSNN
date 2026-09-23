@@ -9,7 +9,6 @@ import { AdvancedCompareTab } from "@/features/advanced-compare/AdvancedCompareT
 import { LocationDetailTab } from "@/features/location-detail/LocationDetailTab";
 import { OverviewTab } from "@/features/overview/OverviewTab";
 import { RevenueAnalysisTab } from "@/features/revenue-analysis/RevenueAnalysisTab";
-import { TmsBreakdownTab } from "@/features/tms-breakdown/TmsBreakdownTab";
 import { ReportTab } from "@/features/report/ReportTab";
 import { FilterBar } from "@/components/FilterBar";
 import { RevenuePreviewDrawer } from "@/features/revenue-preview/RevenuePreviewDrawer";
@@ -296,7 +295,6 @@ export function App() {
           {tab === "report" && <ReportTab />}
           {tab === "revenue-analysis" && <RevenueAnalysisTab />}
           {tab === "location-detail" && <LocationDetailTab />}
-          {tab === "tms-breakdown" && <TmsBreakdownTab />}
           {tab === "advanced-compare" && <AdvancedCompareTab />}
         </main>
       </div>

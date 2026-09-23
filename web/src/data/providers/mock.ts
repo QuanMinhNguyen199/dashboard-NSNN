@@ -156,7 +156,8 @@ export class MockDashboardProvider implements DashboardDataProvider {
       throw new NoDataError(
         "Kỳ đang chọn chưa có giao dịch nội địa nào để phân rã theo Chương và Tiểu mục.",
       );
-    return envelope(validateTmsBreakdown(data), filters, { tab: "tms-breakdown" });
+    // Tab Mã hạch toán đã bỏ; endpoint này giờ chỉ nuôi trang chi tiết đơn vị thuế.
+    return envelope(validateTmsBreakdown(data), filters, { tab: "location-detail" });
   }
 
   async getReportGrid(

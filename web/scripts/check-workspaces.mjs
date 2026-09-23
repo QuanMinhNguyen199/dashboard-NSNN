@@ -261,6 +261,9 @@ check(
 );
 
 /* ── 4. URL cũ vẫn mở đúng nội dung ──────────────────────────────────────── */
+/* `tms-breakdown` ở lại danh sách dù tab đó đã bỏ, và đó mới là điểm chính của
+   phép kiểm: đường dẫn người dùng đã lưu phải rơi về Tổng quan chứ không ra
+   trang trắng. */
 const legacy = [];
 for (const tab of [
   "overview",
@@ -281,12 +284,12 @@ for (const tab of [
     ),
   );
 }
-check("URL cũ: sáu workspace cũ vẫn mở đúng tab", legacy, [
+check("URL cũ: năm tab cũ mở đúng, tab đã bỏ rơi về Tổng quan", legacy, [
   "overview",
   "report",
   "revenue-analysis",
   "location-detail",
-  "tms-breakdown",
+  "overview",
   "advanced-compare",
 ]);
 
@@ -320,7 +323,7 @@ check(
   ],
 );
 
-/* ── 5b. Sáu tab cấp cao, bốn chế độ báo cáo ─────────────────────────────── */
+/* ── 5b. Năm tab cấp cao, bốn chế độ báo cáo ─────────────────────────────── */
 await page.goto(`${BASE}/?tab=report&${P}`, { waitUntil: "networkidle0" });
 await wait(2600);
 check(
@@ -332,9 +335,9 @@ check(
   ["NAV", "Loại báo cáo"],
 );
 check(
-  "Thanh điều hướng có đúng sáu tab, không có tab thứ bảy",
+  "Thanh điều hướng có đúng năm tab, không có tab thứ sáu",
   await page.evaluate(() => document.querySelectorAll('[role="tab"]').length),
-  6,
+  5,
 );
 // Bám vào VAI TRÒ chứ không bám vào lớp trình bày: loại báo cáo giờ là điều
 // hướng cấp hai (`<nav>`), không còn là một rãnh phân đoạn trong thẻ trắng.

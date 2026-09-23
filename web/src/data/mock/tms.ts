@@ -19,10 +19,19 @@ import {
   sectionOfSubItem,
   type ManagementLevelFilter,
 } from "@/domain/tms";
-import type { DashboardFilters, TmsBreakdownData, TmsRow, TmsSectionRow } from "@/domain/types";
+import type {
+  AmountRow,
+  DashboardFilters,
+  TaxOfficeDetailBlock,
+  TmsBreakdownData,
+  TmsRow,
+  TmsSectionRow,
+  TrendPoint,
+} from "@/domain/types";
+import { ALL_PERIODS, latestMonth } from "@/domain/catalog";
 import { share } from "@/domain/metrics";
 import { sumOf } from "./observations";
-import { metaOf } from "./build";
+import { duToanCuaCqt, metaOf } from "./build";
 
 /**
  * Phân rã theo mã hạch toán: cấp quản lý của Chương → Mục → Tiểu mục.
@@ -243,6 +252,96 @@ const rowOf = (id: string, name: string, bucket: Bucket, extra?: string): TmsRow
 const byAmountDesc = (a: { amount: number | null }, b: { amount: number | null }) =>
   (b.amount ?? 0) - (a.amount ?? 0);
 
+/** Gom số của các cặp về từng ĐƠN VỊ thuế (đã gộp mã nguồn trùng đơn vị). */
+function gomTheoCqt(pairs: PairAmount[]): Map<string, { amount: number; previous: number | null }> {
+  const out = new Map<string, { amount: number; previous: number | null }>();
+  for (const pair of pairs) {
+    const id = taxOfficeEntityOf(pair.taxOfficeCode);
+    const bucket = out.get(id) ?? { amount: 0, previous: null };
+    bucket.amount += pair.amount;
+    bucket.previous = addPrevious(bucket.previous, pair.previous);
+    out.set(id, bucket);
+  }
+  return out;
+}
+
+/**
+ * Tổng theo từng đơn vị thuế trên TOÀN phạm vi lọc, không tách cấp quản lý.
+ *
+ * Tồn tại để tab Tổng quan không tự dựng một phép chia theo cơ quan thuế thứ
+ * hai: hai phép chia độc lập thì chỉ cần lệch một trọng số là cùng một đơn vị
+ * hiện hai con số trên hai tab, và không có gì trên màn hình nói cái nào đúng.
+ */
+export function taxOfficeTotalsOf(
+  filters: DashboardFilters,
+): Map<string, { amount: number; previous: number | null }> {
+  return gomTheoCqt(pairAmounts(filters));
+}
+
+/**
+ * Chỉ số của MỘT đơn vị thuế: trong kỳ, lũy kế, dự toán và xu hướng 12 tháng.
+ *
+ * Mỗi con số là một lượt chia lại theo cơ quan thuế trên đúng khung thời gian
+ * của nó, không phải một tỷ lệ chung nhân ra. Nhân một tỷ lệ thì rẻ hơn nhưng
+ * nó khẳng định tỷ trọng của đơn vị không đổi suốt năm — một điều không ai đo
+ * và cũng không đúng. Đo thật tốn 40ms cho mười hai tháng, nên không có lý do
+ * gì phải đoán.
+ */
+function chiTietCqtOf(filters: DashboardFilters, code: string): TaxOfficeDetailBlock | null {
+  const soCua = (f: DashboardFilters) => taxOfficeTotalsOf(f).get(code)?.amount ?? null;
+  const namTruoc = (f: DashboardFilters) => ({ ...f, year: f.year - 1 });
+
+  const trongKy = { ...filters, accumulation: "PERIOD" as const };
+  const luyKe = { ...filters, accumulation: "YTD" as const };
+  const soTrongKy = soCua(trongKy);
+  const soLuyKe = soCua(luyKe);
+  if (soTrongKy === null || soLuyKe === null) return null;
+
+  // Mẫu số suy từ CẢ NĂM TRƯỚC — xem chú thích của `duToanCuaCqt`. Lấy số cả
+  // năm hiện tại thì năm mới có tám tháng, dự toán co theo và tháng 8 đã hiện
+  // "hoàn thành trên 100%".
+  const caNamTruoc = soCua({
+    ...filters,
+    year: filters.year - 1,
+    period: ALL_PERIODS,
+    accumulation: "YTD",
+  });
+  const plan = duToanCuaCqt(caNamTruoc ?? 0, code, filters.year);
+
+  const kpiPeriod: AmountRow = {
+    id: "period",
+    name: "Thu trong kỳ",
+    amount: soTrongKy,
+    previous: soCua(namTruoc(trongKy)),
+  };
+  const kpiYtd: AmountRow = {
+    id: "ytd",
+    name: "Lũy kế từ đầu năm",
+    amount: soLuyKe,
+    previous: soCua(namTruoc(luyKe)),
+  };
+
+  const diem = (year: number, month: number): number | null => {
+    if (month > latestMonth(year)) return null;
+    return soCua({ ...filters, year, periodType: "MONTH", period: month });
+  };
+  const trend: TrendPoint[] = Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    label: `T${i + 1}`,
+    current: diem(filters.year, i + 1),
+    previous: diem(filters.year - 1, i + 1),
+  }));
+
+  return {
+    kpiPeriod,
+    kpiYtd,
+    plan,
+    completionRate: plan === 0 ? null : (soLuyKe / plan) * 100,
+    planOrigin: "mock",
+    trend,
+  };
+}
+
 export function buildTmsBreakdown(
   filters: DashboardFilters,
   level: ManagementLevelFilter,
@@ -260,19 +359,11 @@ export function buildTmsBreakdown(
   if (!pairs.length) return null;
 
   const scopeName = locationId ? (LOCATION_BY_ID[locationId]?.name ?? locationId) : "Toàn thành phố";
-  const officeBuckets = new Map<string, { amount: number; previous: number | null }>();
   // Số trên bộ chọn phải cùng cấp quản lý với KPI ngay bên dưới. Danh mục CQT
   // không đổi theo cấp, nhưng đóng góp hiển thị là lát cắt của cấp đang xem.
-  const officeScopePairs = allPairs.filter((pair) =>
-    matchesLevel(level, levelOfChapter(pair.chapterCode)),
+  const officeBuckets = gomTheoCqt(
+    allPairs.filter((pair) => matchesLevel(level, levelOfChapter(pair.chapterCode))),
   );
-  for (const pair of officeScopePairs) {
-    const id = taxOfficeEntityOf(pair.taxOfficeCode);
-    const bucket = officeBuckets.get(id) ?? { amount: 0, previous: null };
-    bucket.amount += pair.amount;
-    bucket.previous = addPrevious(bucket.previous, pair.previous);
-    officeBuckets.set(id, bucket);
-  }
   const periodLabel =
     filters.periodType === "MONTH"
       ? `${filters.year}-${String(filters.period).padStart(2, "0")}`
@@ -507,6 +598,7 @@ export function buildTmsBreakdown(
     chapters: chapterRows,
     // Danh sách luôn giữ toàn bộ cơ quan để người dùng đổi bộ lọc mà không mất
     // ngữ cảnh. Số được chia từ cùng các lát mock nên cộng khớp phạm vi tuyệt đối.
+    taxOfficeDetail: taxOfficeCode ? chiTietCqtOf(filters, taxOfficeCode) : null,
     taxOfficeScopes,
     taxOffices: taxOfficeScopes.offices.map((office) => ({
       id: office.code,

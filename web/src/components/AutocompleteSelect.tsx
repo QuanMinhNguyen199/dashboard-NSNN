@@ -1,9 +1,18 @@
-import { useId, useRef, useState } from "react";
+import { Fragment, useId, useRef, useState } from "react";
 
 export interface AutocompleteOption {
   value: string;
   label: string;
   search?: string;
+  /**
+   * Tên phân nhóm; các lựa chọn cùng `group` phải nằm liền nhau trong mảng.
+   *
+   * Cần vì ô `Phạm vi` trộn ba loại đối tượng khác hẳn nhau — toàn thành phố,
+   * 28 cơ quan thuế, 126 phường/xã — vào một danh sách 155 dòng. Không có tiêu
+   * đề nhóm thì "Thuế cơ sở 1" và "Ba Đình" nằm cạnh nhau như hai thứ cùng loại,
+   * và người dùng không biết mình đang chọn một đơn vị thu hay một địa bàn.
+   */
+  group?: string;
 }
 
 const fold = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLocaleLowerCase("vi");
@@ -16,6 +25,7 @@ export function AutocompleteSelect({
   options,
   onChange,
   placeholder,
+  disabled = false,
 }: {
   id: string;
   label: string;
@@ -23,6 +33,7 @@ export function AutocompleteSelect({
   options: AutocompleteOption[];
   onChange: (value: string) => void;
   placeholder: string;
+  disabled?: boolean;
 }) {
   const listId = useId();
   const input = useRef<HTMLInputElement>(null);
@@ -50,6 +61,7 @@ export function AutocompleteSelect({
           ref={input}
           id={id}
           type="text"
+          disabled={disabled}
           role="combobox"
           autoComplete="off"
           aria-autocomplete="list"
@@ -58,7 +70,7 @@ export function AutocompleteSelect({
           aria-activedescendant={open && matches[active] ? `${listId}-${active}` : undefined}
           value={open ? query : (selected?.label ?? "")}
           placeholder={placeholder}
-          onFocus={() => { setOpen(true); setQuery(""); setActive(0); }}
+          onFocus={() => { if (!disabled) { setOpen(true); setQuery(""); setActive(0); } }}
           onBlur={() => { setOpen(false); setQuery(""); }}
           onChange={(event) => { setQuery(event.target.value); setActive(0); setOpen(true); }}
           onKeyDown={(event) => {
@@ -73,7 +85,7 @@ export function AutocompleteSelect({
           <path d="m12.7 12.7 4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
       </div>
-      {open && (
+      {open && !disabled && (
         <div
           id={listId}
           className="dautocomplete-list"
@@ -93,9 +105,14 @@ export function AutocompleteSelect({
           tabIndex={-1}
         >
           {matches.length ? matches.map((option, index) => (
+            <Fragment key={option.value}>
+              {/* Tiêu đề nhóm chỉ in khi nhóm ĐỔI, nên nó không lặp lại ở từng
+                  dòng và vẫn bám đúng vị trí khi danh sách bị lọc ngắn lại. */}
+              {option.group && option.group !== matches[index - 1]?.group && (
+                <p className="dautocomplete-group" role="presentation">{option.group}</p>
+              )}
             <button
               id={`${listId}-${index}`}
-              key={option.value}
               type="button"
               role="option"
               aria-selected={option.value === value}
@@ -106,6 +123,7 @@ export function AutocompleteSelect({
               onMouseEnter={() => setActive(index)}
               onClick={() => choose(option.value)}
             >{option.label}</button>
+            </Fragment>
           )) : <p>Không tìm thấy kết quả phù hợp.</p>}
         </div>
       )}

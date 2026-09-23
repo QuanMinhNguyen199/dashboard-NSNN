@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LOCATION_BY_ID, ALL_PERIODS, LOCATIONS, YEARS, latestMonth } from "@/domain/catalog";
 import { TAX_OFFICE_ENTITIES, taxOfficeCodeLabel } from "@/domain/tms";
+import { gridMembersOf } from "@/domain/report";
 import { periodCount } from "@/domain/metrics";
 import { DEFAULT_FILTERS, useDashboardState } from "@/state/DashboardState";
 import { useHostContext } from "@/host/HostContext";
@@ -8,24 +9,29 @@ import type { AccumulationMode, DashboardFilters, PeriodType } from "@/domain/ty
 import { Segmented } from "@/components/primitives";
 import { AutocompleteSelect } from "@/components/AutocompleteSelect";
 
-const taxOfficeOptions = [
-  { value: "", label: "Tất cả cơ quan thuế" },
-  // Một dòng cho mỗi CƠ QUAN, không phải mỗi mã. Nhãn giữ đủ mã nguồn để người
-  // dùng đối chiếu được với chứng từ bên TMS mà không phải đoán số đã gộp.
-  ...[...TAX_OFFICE_ENTITIES]
+type ScopeKind = "city" | "tax-office" | "location";
+
+/** Danh mục con tách riêng để ô thứ hai chỉ chứa đúng một loại đối tượng. */
+const taxOfficeScopeOptions = [...TAX_OFFICE_ENTITIES]
     .sort((a, b) => {
       const aNumber = Number(a.name.match(/cơ sở\s+(\d+)/i)?.[1] ?? Infinity);
       const bNumber = Number(b.name.match(/cơ sở\s+(\d+)/i)?.[1] ?? Infinity);
       return aNumber - bNumber || a.id.localeCompare(b.id);
     })
-    .map((office) => ({ value: office.id, label: `${taxOfficeCodeLabel(office.id)} · ${office.name}` })),
-];
-const locationOptions = [
-  { value: "", label: "Toàn thành phố" },
-  ...[...LOCATIONS]
+    .map((office) => ({
+      value: office.id,
+      label: office.name,
+      search: taxOfficeCodeLabel(office.id),
+    }));
+const locationScopeOptions = [...LOCATIONS]
     .sort((a, b) => a.name.localeCompare(b.name, "vi"))
-    .map((item) => ({ value: item.id, label: item.name })),
-];
+    .map((item) => ({
+      value: item.id,
+      label: item.name,
+      search: item.id,
+    }));
+const cityScopeOptions = [{ value: "city", label: "Toàn thành phố" }];
+
 
 /**
  * Bộ lọc chung, giữ nguyên khi chuyển tab.
@@ -34,7 +40,7 @@ const locationOptions = [
  * tương lai rồi diễn giải dữ liệu thiếu thành 0.
  */
 export function FilterBar() {
-  const { tab, filters, location, managementLevel, taxOfficeCode, resetFilters, setFilters, setTab, setManagementLevel, setTaxOfficeCode, dispatchIntent } =
+  const { tab, section, filters, location, taxOfficeCode, resetFilters, setFilters, setTab, setSection, setTaxOfficeCode, setLocationScope, dispatchIntent } =
     useDashboardState();
   const { host, embedded, postToHost } = useHostContext();
   const count = periodCount(filters);
@@ -42,6 +48,9 @@ export function FilterBar() {
   const periodLabel = filters.periodType === "MONTH" ? "Tháng" : "Quý";
   const allPeriods = filters.period === ALL_PERIODS;
   const [open, setOpen] = useState(false);
+  const [scopeKind, setScopeKind] = useState<ScopeKind>(
+    taxOfficeCode ? "tax-office" : location ? "location" : "city",
+  );
   const compact = embedded || host.source === "mobile";
   const usesHostFilter = host.source === "mobile" && host.capabilities.openFilterModal;
   // Năm đã đủ mười hai tháng thì gọi đúng tên là "Cả năm"; năm đang chạy thì
@@ -62,51 +71,46 @@ export function FilterBar() {
     : filters.accumulation === "YTD"
       ? "Lũy kế"
       : "Trong kỳ";
+  // Một ô `Phạm vi` cho cả ba nhóm, nên dòng phụ cũng đọc theo đúng thứ tự đó:
+  // đơn vị thuế, rồi phường/xã, rồi toàn thành phố.
   const selectedTaxOffice = TAX_OFFICE_ENTITIES.find((office) => office.id === taxOfficeCode) ?? null;
   const scopeLine =
-    tab === "tms-breakdown"
-      ? (selectedTaxOffice?.name ?? "Tất cả cơ quan thuế")
-      : (location ? (LOCATION_BY_ID[location]?.name ?? location) : "Toàn thành phố");
+    selectedTaxOffice?.name ??
+    (location ? (LOCATION_BY_ID[location]?.name ?? location) : "Toàn thành phố");
+
+  // Đồng bộ khi phạm vi đổi từ URL, card hoặc điều hướng. Khi người dùng vừa
+  // chọn một LOẠI mới mà chưa chọn giá trị con, giữ nguyên loại đó để họ hoàn
+  // tất ở ô kế bên.
+  useEffect(() => {
+    if (taxOfficeCode) setScopeKind("tax-office");
+    else if (location) setScopeKind("location");
+    else if (tab === "overview") setScopeKind("city");
+  }, [location, tab, taxOfficeCode]);
 
   // Địa bàn tính vào "đã đổi" vì nó là một ô trong chính thanh lọc này. Bỏ sót
   // nó thì chọn một phường xong nút vẫn xám, và người dùng đọc ra là nút hỏng.
   const isDefaultFilter =
     location === null &&
-    managementLevel === "all" &&
-    (tab !== "tms-breakdown" || taxOfficeCode === null) &&
+    taxOfficeCode === null &&
+    scopeKind === "city" &&
     (Object.keys(DEFAULT_FILTERS) as (keyof DashboardFilters)[]).every(
       (key) => filters[key] === DEFAULT_FILTERS[key],
     );
 
-  /**
-   * `data-keep` = ô này Ở LẠI khi panel lọc thu gọn.
-   *
-   * Ô nào ở lại phụ thuộc vào TAB, vì mỗi tab có một chiều điều khiển chính
-   * khác nhau, và thanh lọc này đã đổi thành phần theo tab sẵn rồi: Mã hạch
-   * toán thay cặp địa bàn + cấp quản lý bằng ô cơ quan thuế. Danh sách cũ nằm
-   * trong CSS và kể tên từng lớp, nên ở tab đó **không ô nào** được miễn — thu
-   * gọn panel là mất luôn ô cơ quan thuế, đúng thứ cả tab xoay quanh.
-   *
-   * Đánh dấu ở đây chứ không kể tên lớp trong CSS: quyết định "ô nào quan trọng
-   * ở tab nào" nằm cùng chỗ với logic tab, và thêm một tab mới thì không phải
-   * nhớ sang sửa một danh sách ở tệp khác.
-   */
-  /** Chọn địa bàn là lối điều hướng sang tab chi tiết; tab Mã hạch toán đi từ CQT xuống địa bàn phụ trách. */
-  const locationField = (
-    <div className="dfilter-location" data-keep="">
-      <AutocompleteSelect
-        id="location-autocomplete"
-        label="Chi tiết địa bàn"
-        value={location ?? ""}
-        options={locationOptions}
-        placeholder="Tìm phường, xã"
-        onChange={(id) => {
-          if (id) dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: id });
-          else setTab("overview");
-        }}
-      />
-    </div>
-  );
+  const showIndustryFilter =
+    tab === "overview" ||
+    tab === "revenue-analysis" ||
+    (tab === "location-detail" && location !== null && taxOfficeCode === null);
+  const industryDisabled = tab === "revenue-analysis" && section !== "domestic";
+  const revenueGroup = tab === "revenue-analysis" ? section : "all";
+  const industryOptions = [
+    { value: "", label: "Tất cả ngành nghề" },
+    ...gridMembersOf("industry").map((member) => ({ value: member.id, label: member.name })),
+  ];
+
+  const scopeValue = scopeKind === "tax-office" ? (taxOfficeCode ?? "") : scopeKind === "location" ? (location ?? "") : "city";
+  const scopeOptions = scopeKind === "tax-office" ? taxOfficeScopeOptions : scopeKind === "location" ? locationScopeOptions : cityScopeOptions;
+  const scopePlaceholder = scopeKind === "tax-office" ? "Tìm mã hoặc tên đơn vị thuế" : scopeKind === "location" ? "Tìm mã hoặc tên phường/xã" : "Toàn thành phố";
 
   return (
     <section
@@ -127,8 +131,7 @@ export function FilterBar() {
             <span>Phạm vi</span>
             <strong title={budgetLabel}>{budgetLabel}</strong>
             {/* Dòng phụ nói phạm vi ĐỊA LÝ đang xem. Trước đây nó đọc nhãn cấp
-                quản lý, nhưng cấp quản lý không còn là ô của thanh lọc chung —
-                nó thuộc về tab Mã hạch toán, nơi có thanh riêng của nó. */}
+                quản lý — một chiều đã bỏ cùng tab phân rã mã hạch toán. */}
             <small title={scopeLine}>{scopeLine}</small>
           </div>
         </div>
@@ -212,23 +215,72 @@ export function FilterBar() {
         />
       </div>
 
-      {/* Mã hạch toán đi từ CQT xuống địa bàn được phân công quản lý.
-          Không đặt ô địa bàn ở đây vì nó đảo ngược luồng và làm người dùng
-          tưởng một địa bàn chỉ thuộc một CQT. */}
-      {tab !== "tms-breakdown" && locationField}
+      <label className="dfilter-scope-kind">
+        <span>Loại phạm vi</span>
+        <select
+          id="pham-vi-loai"
+          value={scopeKind}
+          onChange={(event) => {
+            const next = event.target.value as ScopeKind;
+            setScopeKind(next);
+            setTaxOfficeCode(null);
+            setLocationScope(null);
+            setFilters({ industry: null });
+            if (next === "city") setTab("overview");
+          }}
+        >
+          <option value="city">Toàn thành phố</option>
+          <option value="tax-office">Đơn vị thuế</option>
+          <option value="location">Địa bàn hành chính</option>
+        </select>
+      </label>
+
+      {/*
+        Toàn thành phố thì KHÔNG có ô chi tiết.
+
+        Trước đây ô này vẫn hiện, chỉ bị khoá. Một ô xám nằm giữa thanh lọc vẫn
+        chiếm chỗ của một điều khiển và vẫn mời người dùng thử bấm vào; nó chỉ
+        có nghĩa cho hai lựa chọn kia của `Loại phạm vi`, nên khi không ở hai
+        lựa chọn đó thì nó không có việc gì để làm ở trên màn hình.
+      */}
+      {scopeKind !== "city" && (
+      <div className="dfilter-location dfilter-scope-value">
+        <AutocompleteSelect
+          id="pham-vi-chi-tiet"
+          label="Chi tiết phạm vi"
+          value={scopeValue}
+          options={scopeOptions}
+          placeholder={scopePlaceholder}
+          onChange={(value) => {
+            if (scopeKind === "tax-office") {
+              setLocationScope(null);
+              setTaxOfficeCode(value);
+              setTab("location-detail");
+              return;
+            }
+            if (scopeKind === "location") {
+              setTaxOfficeCode(null);
+              setFilters({ industry: null });
+              dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: value });
+            }
+          }}
+        />
+      </div>
+      )}
 
       <label className="dfilter-budget">
         <span>Cấp ngân sách</span>
         <select
+          disabled={taxOfficeCode !== null}
+          title={
+            taxOfficeCode !== null
+              ? "Cơ quan thuế quản lý và giao chỉ tiêu theo tổng số thu thực tế phát sinh."
+              : undefined
+          }
           value={filters.budgetLevel}
           onChange={(event) => {
             const budgetLevel = event.target.value as typeof filters.budgetLevel;
             setFilters({ budgetLevel });
-            if (tab === "tms-breakdown") {
-              setManagementLevel(
-                budgetLevel === "NSTW" ? "trung-uong" : budgetLevel === "NSDP" ? "dia-phuong" : "all",
-              );
-            }
           }}
         >
           <option value="NSNN">Tổng NSNN</option>
@@ -237,32 +289,72 @@ export function FilterBar() {
         </select>
       </label>
 
-      {tab === "tms-breakdown" && (
-        <div className="dfilter-tax-office" data-keep="">
+      <label className="dfilter-indicator">
+        <span>Nhóm chỉ tiêu</span>
+        <select
+          disabled={location !== null || taxOfficeCode !== null}
+          title={
+            location !== null
+              ? "Địa bàn cơ sở được xem theo toàn bộ nguồn thu nội địa phát sinh."
+              : taxOfficeCode !== null
+                ? "Đơn vị thuế được xem theo tổng số thu quản lý."
+                : undefined
+          }
+          value={revenueGroup}
+          onChange={(event) => {
+            const value = event.target.value as "all" | "domestic" | "import-export" | "other";
+            if (value === "all") {
+              setFilters({ industry: null });
+              if (location === null && taxOfficeCode === null) setTab("overview");
+              return;
+            }
+            setSection(value);
+            setFilters({ industry: value === "domestic" ? filters.industry : null });
+            setTab("revenue-analysis");
+          }}
+        >
+          <option value="all">Tất cả</option>
+          <option value="domestic">Thu nội địa không kể dầu thô</option>
+          <option value="import-export">Thu xuất nhập khẩu</option>
+          <option value="other">Thu khác</option>
+        </select>
+      </label>
+
+      {/*
+        Ngành nghề là lát cắt MÔ PHỎNG, và màn hình phải nói ra điều đó.
+
+        Kho quan sát không mang thuộc tính ngành trên từng giao dịch; danh bạ có
+        ngành nhưng cho số DÒNG chứ không cho số tiền. Nên chọn một ngành là chia
+        tất định từ tổng thật xuống, không phải lọc. Ghi thẳng vào nhãn chứ không
+        giấu trong `title`: người đọc con số phải thấy điều này cùng lúc với con
+        số, không phải khi rê chuột.
+      */}
+      {/* Đặc tả 23-09 chỉ nêu ngành nghề ở Tổng quan và view phường/xã. View
+          CQT cùng tab Chi tiết không có khối ngành, nên cũng không hiện ô này. */}
+      {showIndustryFilter && (
+        <div
+          className="dfilter-industry"
+          title={industryDisabled ? "Thu xuất nhập khẩu và Thu khác không có mã ngành TMS." : undefined}
+        >
           <AutocompleteSelect
-            id="tms-tax-office"
-            label="Cơ quan thuế"
-            value={taxOfficeCode ?? ""}
-            options={taxOfficeOptions}
-            placeholder="Tìm mã hoặc tên cơ quan"
-            onChange={(code) => setTaxOfficeCode(code || null)}
+            id="nganh-nghe"
+            label="Ngành nghề kinh doanh"
+            value={filters.industry ?? ""}
+            options={industryOptions}
+            placeholder="Tìm mã hoặc tên ngành"
+            disabled={industryDisabled}
+            onChange={(industry) => {
+              const next = industry || null;
+              setFilters({ industry: next });
+              if (next && !(tab === "location-detail" && location !== null)) {
+                setSection("domestic");
+                setTab("revenue-analysis");
+              }
+            }}
           />
+          <em className="dfilter-mock">Tạm thời</em>
         </div>
       )}
-
-      {/* Ở TAB Mã hạch toán thì ô này không hiện.
-       *
-       * Tab đó có thanh phân đoạn "Cấp quản lý của Chương" buộc vào đúng cùng
-       * một state, cách ô này chừng 100px — cùng bộ lựa chọn, cùng kết quả, hai
-       * điều khiển. Và bản trong tab tốt hơn: nó tách hai bậc (địa phương rồi
-       * mới tới tỉnh/huyện/xã) thay vì trộn thành một danh sách phẳng, và nó
-       * mang được câu giải thích "cấp của Chương, không phải cấp của địa bàn" —
-       * thứ ô chọn trong thanh lọc chỉ nhét được vào `title`.
-       *
-       * Ô này vẫn giữ ở các tab khác, nơi nó làm việc KHÁC: chọn một cấp là
-       * điều hướng sang Mã hạch toán. Nghịch lý là chính thành công của nó lại
-       * thả người dùng vào màn hình có bản sao của nó — nên đúng ở đó thì nó
-       * lui. */}
 
       {/* Render ở mọi ngữ cảnh. Trước đây điều kiện `open` khiến nút chỉ tồn tại
           ở bản thu gọn, nên desktop rộng — nơi bày cả sáu điều khiển cùng lúc và
@@ -272,9 +364,12 @@ export function FilterBar() {
           <button
             type="button"
             className="dfilters-reset"
-            onClick={resetFilters}
+            onClick={() => {
+              setScopeKind("city");
+              resetFilters();
+            }}
             disabled={isDefaultFilter}
-            title="Đặt lại về Tháng 8/2026, Trong kỳ, Tổng NSNN, toàn thành phố và tất cả cấp quản lý"
+            title="Đặt lại về Tháng 8/2026, Lũy kế, Tổng NSNN và toàn thành phố"
           >
             Đặt lại bộ lọc
           </button>
