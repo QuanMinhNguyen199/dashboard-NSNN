@@ -58,6 +58,7 @@ export function DonutChart({
   selectedId,
   selectedIds = [],
   onSelect,
+  disabledIds = [],
   labels = "legend",
   getCalloutLabel = (row) => row.name,
 }: {
@@ -67,6 +68,15 @@ export function DonutChart({
   /** Dùng khi một phép so sánh cần giữ nhiều lát nổi bật đồng thời. */
   selectedIds?: readonly string[];
   onSelect?: (id: string) => void;
+  /**
+   * Lát KHÔNG chọn được trong ngữ cảnh hiện tại.
+   *
+   * Tồn tại vì chặn cú bấm ở phía người gọi là chưa đủ: lát vẫn mang
+   * `role="button"`, vẫn sáng lên khi rê chuột, vẫn đổi con trỏ — tức là vẫn mời
+   * người ta bấm rồi không làm gì. Khai báo ở đây thì cả cung, chú giải và nhãn
+   * nổi cùng thuốc tính cho trình đọc màn hình đều nói cùng một điều.
+   */
+  disabledIds?: readonly string[];
   labels?: "legend" | "callout";
   getCalloutLabel?: (row: AmountRow) => string;
 }) {
@@ -84,6 +94,10 @@ export function DonutChart({
   );
   const emphasizedIds = new Set(selectedSet);
   if (hoveredId && visibleIds.has(hoveredId)) emphasizedIds.add(hoveredId);
+
+  const khoa = new Set(disabledIds);
+  /** Có `onSelect` mà lát này không bị khoá thì mới thực sự bấm được. */
+  const bamDuoc = (id: string) => Boolean(onSelect) && !khoa.has(id);
 
   const callout = labels === "callout";
   const centerX = callout ? 170 : 60;
@@ -145,7 +159,7 @@ export function DonutChart({
             const segment = (
               <circle
                 key={row.id}
-                className={`ddonut-segment${onSelect ? " is-interactive" : ""}${selectedSet.has(row.id) ? " is-selected" : ""}${hoveredId === row.id ? " is-hovered" : ""}${emphasizedIds.size > 0 && !emphasizedIds.has(row.id) ? " is-muted" : ""}`}
+                className={`ddonut-segment${bamDuoc(row.id) ? " is-interactive" : ""}${khoa.has(row.id) ? " is-locked" : ""}${selectedSet.has(row.id) ? " is-selected" : ""}${hoveredId === row.id ? " is-hovered" : ""}${emphasizedIds.size > 0 && !emphasizedIds.has(row.id) ? " is-muted" : ""}`}
                 cx={centerX}
                 cy={centerY}
                 r={radius}
@@ -153,18 +167,24 @@ export function DonutChart({
                 strokeDasharray={`${length} ${circumference - length}`}
                 strokeDashoffset={-offset}
                 transform={`rotate(-90 ${centerX} ${centerY})`}
-                role={onSelect ? "button" : undefined}
-                tabIndex={onSelect ? 0 : undefined}
-                aria-pressed={onSelect ? selectedSet.has(row.id) : undefined}
+                role={bamDuoc(row.id) ? "button" : undefined}
+                tabIndex={bamDuoc(row.id) ? 0 : undefined}
+                aria-pressed={bamDuoc(row.id) ? selectedSet.has(row.id) : undefined}
                 data-segment-id={row.id}
-                aria-label={onSelect ? `${row.name}, ${pct((row.amount / total) * 100)}. Chọn để xem chi tiết` : undefined}
+                aria-label={
+                  bamDuoc(row.id)
+                    ? `${row.name}, ${pct((row.amount / total) * 100)}. Chọn để xem chi tiết`
+                    : khoa.has(row.id)
+                      ? `${row.name}, ${pct((row.amount / total) * 100)}. Không chọn được trong ngữ cảnh này`
+                      : undefined
+                }
                 onPointerEnter={() => setHoveredId(row.id)}
                 onPointerLeave={() => setHoveredId(null)}
-                onClick={onSelect ? () => onSelect(row.id) : undefined}
-                onKeyDown={onSelect ? (event) => {
+                onClick={bamDuoc(row.id) ? () => onSelect!(row.id) : undefined}
+                onKeyDown={bamDuoc(row.id) ? (event) => {
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
-                    onSelect(row.id);
+                    onSelect!(row.id);
                   }
                 } : undefined}
               >
@@ -207,10 +227,10 @@ export function DonutChart({
                 </>
               );
               const style = { left: `${position.left}%`, top: `${position.top}%` };
-              return onSelect ? (
+              return bamDuoc(row.id) ? (
                 <button key={row.id} type="button"
                   className={`ddonut-float-label${selectedSet.has(row.id) ? " is-selected" : ""}`}
-                  style={style} aria-pressed={selectedSet.has(row.id)} onClick={() => onSelect(row.id)} title={row.name}>
+                  style={style} aria-pressed={selectedSet.has(row.id)} onClick={() => onSelect!(row.id)} title={row.name}>
                   {content}
                 </button>
               ) : (
@@ -232,10 +252,10 @@ export function DonutChart({
           );
           return (
             <li key={row.id} onPointerEnter={() => setHoveredId(row.id)} onPointerLeave={() => setHoveredId(null)}>
-              {onSelect ? (
+              {bamDuoc(row.id) ? (
                 <button type="button" className={selectedSet.has(row.id) ? "is-selected" : undefined}
                   aria-pressed={selectedSet.has(row.id)} aria-describedby={tooltipId}
-                  onFocus={() => setHoveredId(row.id)} onBlur={() => setHoveredId(null)} onClick={() => onSelect(row.id)}>
+                  onFocus={() => setHoveredId(row.id)} onBlur={() => setHoveredId(null)} onClick={() => onSelect!(row.id)}>
                   {content}
                 </button>
               ) : (

@@ -37,7 +37,6 @@ export const TABS_ALLOWED: TabId[] = [
   "report",
   "revenue-analysis",
   "location-detail",
-  "tms-breakdown",
   "advanced-compare",
 ];
 const TMS_LEVELS_ALLOWED = ["all", "trung-uong", "dia-phuong", "tinh", "xa"];
@@ -124,9 +123,54 @@ export function validateOverview(value: unknown): OverviewData {
     value.scopeTotal,
     "Overview",
   );
+  validateIndustries(value.industries, value.scopeTotal, "Overview");
+  validateTaxOfficeProgress(value.taxOfficeProgress, "Overview");
+  validateTopTaxpayers(value.topTaxpayers, "Overview");
   validateEstimate(value.estimate, "Overview");
   validateWaterfall(value.waterfall, "Overview");
   return value as unknown as OverviewData;
+}
+
+/**
+ * Cơ cấu ngành là một phép PHÂN RÃ của tổng phạm vi, nên phải cộng lại bằng nó.
+ *
+ * Kiểm ở biên dữ liệu vì đây đúng là chỗ từng sai: một phép chia làm tròn riêng
+ * từng lát cho ra biểu đồ trông vẫn đẹp mà tổng thì lệch, và trên màn hình
+ * không có gì tố giác. Mảng rỗng là hợp lệ — đó là lúc đang khoá một ngành.
+ */
+function validateIndustries(value: unknown, totalValue: unknown, where: string): void {
+  assert(Array.isArray(value), `${where}.industries: phải là mảng.`);
+  const rows = value as unknown[];
+  if (!rows.length) return;
+  for (const row of rows) validateAmountRow(row, `${where}.industries`);
+  assert(
+    isRecord(totalValue) && isFinite_(totalValue.amount),
+    `${where}.industries: thiếu tổng phạm vi để đối soát.`,
+  );
+  const sum = (rows as { amount: number }[]).reduce((a, row) => a + row.amount, 0);
+  const total = (totalValue as { amount: number }).amount;
+  assert(
+    Math.abs(sum - total) < 0.5,
+    `${where}.industries: cộng đủ các ngành phải bằng tổng phạm vi (lệch ${sum - total}).`,
+  );
+}
+
+/** Tiến độ theo cơ quan thuế: mẫu số phải khai nguồn, không để giao diện tự đoán. */
+function validateTaxOfficeProgress(value: unknown, where: string): void {
+  assert(Array.isArray(value), `${where}.taxOfficeProgress: phải là mảng.`);
+  for (const row of value as unknown[]) {
+    validateAmountRow(row, `${where}.taxOfficeProgress`);
+    assert(isRecord(row), `${where}.taxOfficeProgress: dòng rỗng.`);
+    assert(isFinite_(row.plan), `${where}.taxOfficeProgress: thiếu dự toán.`);
+    assert(
+      row.completionRate === null || isFinite_(row.completionRate),
+      `${where}.taxOfficeProgress: tỷ lệ hoàn thành phải là số hoặc null.`,
+    );
+    assert(
+      row.planOrigin === "api" || row.planOrigin === "mock",
+      `${where}.taxOfficeProgress: planOrigin phải là "api" hoặc "mock".`,
+    );
+  }
 }
 
 /**
@@ -204,6 +248,14 @@ export function validateRevenueAnalysis(value: unknown): RevenueAnalysisData {
   assert(Array.isArray(value.breakdown), "Phân tích thu: thiếu bảng chi tiết.");
   for (const row of value.breakdown as unknown[]) validateAmountRow(row, "Phân tích thu.breakdown");
   validateTrend(value.trend, "Phân tích thu");
+  validateTrend(value.monthlyTrend, "Phân tích thu.monthlyTrend");
+  validateTrend(value.cumulativeTrend, "Phân tích thu.cumulativeTrend");
+  validateEstimate(value.estimate, "Phân tích thu");
+  for (const key of ["byTaxOffice", "byIndustry"] as const) {
+    assert(Array.isArray(value[key]), `Phân tích thu.${key}: phải là mảng.`);
+    for (const row of value[key] as unknown[]) validateAmountRow(row, `Phân tích thu.${key}`);
+  }
+  validateTopTaxpayers(value.topTaxpayers, "Phân tích thu");
   validateGroups(value.groups, value.scope as string, "Phân tích thu");
   validateWaterfall(value.waterfall, "Phân tích thu");
   return value as unknown as RevenueAnalysisData;
@@ -248,8 +300,73 @@ function validateGroups(value: unknown, scope: string, where: string): void {
     assert(items.length > 0, `${where}.groups[].items: nhóm rỗng không vẽ được.`);
     for (const item of items) validateAmountRow(item, `${where}.groups[].items`);
     members += items.length;
+    /*
+      `taxItems` la CUNG MOT TONG cat theo mot chieu khac, nen no phai cong lai
+      bang dung `amount` cua nhom. Kiem o bien vi giao dien bay hai cach cat do
+      canh nhau qua mot nut chuyen: lech mot dong thi bam nut la tong doi, ma
+      khong co gi tren man hinh noi rang no vua doi.
+    */
+    const taxItems = (group as { taxItems?: unknown }).taxItems;
+    if (taxItems !== null && taxItems !== undefined) {
+      assert(Array.isArray(taxItems), `${where}.groups[].taxItems: phai la mang hoac null.`);
+      const rows = taxItems as unknown[];
+      assert(rows.length > 0, `${where}.groups[].taxItems: mang rong thi phai tra null.`);
+      for (const item of rows) validateAmountRow(item, `${where}.groups[].taxItems`);
+      const sum = (rows as { amount: number }[]).reduce((a, r) => a + r.amount, 0);
+      const total = (group as { amount: number }).amount;
+      assert(
+        Math.abs(sum - total) < 0.5,
+        `${where}.groups[].taxItems: cong lai phai bang tong cua nhom (lech ${sum - total}).`,
+      );
+    }
   }
   assert(members === 21, `${where}.groups: ba nhóm phải phủ đủ 21 khoản nội địa, đang có ${members}.`);
+}
+
+/**
+ * Bóc tách theo cơ quan đã thu là một phép PHÂN RÃ, nên phải cộng lại bằng tổng
+ * của địa bàn.
+ *
+ * Kiểm ở biên dữ liệu vì ba dòng này đứng ngay dưới ô KPI mang chính tổng đó:
+ * lệch một đồng thì màn hình bày hai con số khác nhau cho cùng một đại lượng,
+ * cách nhau vài chục pixel, và không có gì nói lên điều đó.
+ */
+function validateCollectedBy(value: unknown, totalValue: unknown, where: string): void {
+  assert(isRecord(value), `${where}.collectedBy: thiếu khối bóc tách theo cơ quan thu.`);
+  assert(
+    value.origin === "api" || value.origin === "mock",
+    `${where}.collectedBy: origin phải là "api" hoặc "mock".`,
+  );
+  assert(Array.isArray(value.rows), `${where}.collectedBy.rows: phải là mảng.`);
+  const rows = value.rows as unknown[];
+  if (!rows.length) return;
+  for (const row of rows) validateAmountRow(row, `${where}.collectedBy`);
+  assert(
+    isRecord(totalValue) && isFinite_(totalValue.amount),
+    `${where}.collectedBy: thiếu tổng địa bàn để đối soát.`,
+  );
+  const sum = (rows as { amount: number }[]).reduce((a, row) => a + row.amount, 0);
+  const total = (totalValue as { amount: number }).amount;
+  assert(
+    Math.abs(sum - total) < 0.5,
+    `${where}.collectedBy: ba nhóm cộng lại phải bằng tổng địa bàn (lệch ${sum - total}).`,
+  );
+}
+
+/** Người nộp thuế: tên và nhóm ngành là chỗ giao diện hiển thị, nên chúng bắt buộc. */
+function validateTopTaxpayers(value: unknown, where: string): void {
+  assert(isRecord(value), `${where}.topTaxpayers: thiếu khối người nộp thuế.`);
+  assert(
+    value.origin === "api" || value.origin === "mock",
+    `${where}.topTaxpayers: origin phải là "api" hoặc "mock".`,
+  );
+  assert(Array.isArray(value.rows), `${where}.topTaxpayers.rows: phải là mảng.`);
+  for (const row of value.rows as unknown[]) {
+    assert(isRecord(row), `${where}.topTaxpayers: dòng rỗng.`);
+    assert(typeof row.name === "string" && row.name.length > 0, `${where}.topTaxpayers: thiếu tên.`);
+    assert(typeof row.industry === "string", `${where}.topTaxpayers: thiếu nhóm ngành.`);
+    assert(isFinite_(row.amount), `${where}.topTaxpayers: thiếu số tiền.`);
+  }
 }
 
 export function validateLocationDetail(value: unknown): LocationDetailData {
@@ -260,7 +377,23 @@ export function validateLocationDetail(value: unknown): LocationDetailData {
     "Chi tiết địa bàn: mã địa bàn không nằm trong danh mục 126 phường/xã.",
   );
   validateAmountRow(value.kpiPeriod, "Chi tiết địa bàn.kpiPeriod");
+  validateAmountRow(value.kpiYtd, "Chi tiết địa bàn.kpiYtd");
   validateTrend(value.trend, "Chi tiết địa bàn");
+  validateEstimate(value.estimate, "Chi tiết địa bàn");
+  for (const key of ["taxGroups", "industries"] as const) {
+    assert(Array.isArray(value[key]), `Chi tiết địa bàn.${key}: phải là mảng.`);
+    for (const row of value[key] as unknown[]) validateAmountRow(row, `Chi tiết địa bàn.${key}`);
+  }
+  validateAmountRow(value.scopeTotal, "Chi tiết địa bàn.scopeTotal");
+  /*
+    Đối soát với `scopeTotal`, KHÔNG phải `kpiPeriod`.
+
+    `kpiPeriod` cố định ở khung trong kỳ còn các khối phân rã đi theo `Cách tính`,
+    nên so với nó là so hai khung thời gian khác nhau.
+  */
+  validateCollectedBy(value.collectedBy, value.scopeTotal, "Chi tiết địa bàn");
+  validateIndustries(value.industries, value.scopeTotal, "Chi tiết địa bàn");
+  validateTopTaxpayers(value.topTaxpayers, "Chi tiết địa bàn");
   return value as unknown as LocationDetailData;
 }
 
@@ -303,6 +436,38 @@ function sumOrNull(rows: { amount: number | null }[]): number | null {
  * đủ số thì so **khớp tuyệt đối**, không cho sai số. Đây là phép chia lại cùng
  * một tổng nên mọi đồng đều phải về đúng một nhóm, kể cả nhóm chưa xác định.
  */
+/**
+ * Khối chỉ số của một đơn vị thuế.
+ *
+ * Ràng buộc quan trọng nhất là ràng buộc CÓ MẶT: khối này phải xuất hiện đúng
+ * khi payload đang lọc theo một cơ quan. Thiếu nó thì trang chi tiết đơn vị
+ * hiện một dải KPI trống mà không có lỗi nào; thừa nó khi không lọc cơ quan
+ * nghĩa là một chỉ số của "ai đó" đang chờ được gán nhầm cho toàn thành phố.
+ */
+function validateTaxOfficeDetail(value: unknown, codeValue: unknown, where: string): void {
+  const coCode = typeof codeValue === "string" && codeValue.length > 0;
+  if (value === null || value === undefined) {
+    // Lọc theo cơ quan mà kỳ đó không có chứng từ thì cả payload đã là `null`
+    // từ builder, nên tới được đây mà thiếu khối này là sai hợp đồng.
+    assert(!coCode, `${where}.taxOfficeDetail: đang lọc theo một cơ quan thì phải có khối chỉ số.`);
+    return;
+  }
+  assert(coCode, `${where}.taxOfficeDetail: không lọc cơ quan nào thì không được có khối chỉ số.`);
+  assert(isRecord(value), `${where}.taxOfficeDetail: phải là một đối tượng.`);
+  validateAmountRow(value.kpiPeriod, `${where}.taxOfficeDetail.kpiPeriod`);
+  validateAmountRow(value.kpiYtd, `${where}.taxOfficeDetail.kpiYtd`);
+  assert(isFinite_(value.plan), `${where}.taxOfficeDetail: thiếu dự toán.`);
+  assert(
+    value.completionRate === null || isFinite_(value.completionRate),
+    `${where}.taxOfficeDetail: tỷ lệ hoàn thành phải là số hoặc null.`,
+  );
+  assert(
+    value.planOrigin === "api" || value.planOrigin === "mock",
+    `${where}.taxOfficeDetail: planOrigin phải là "api" hoặc "mock".`,
+  );
+  validateTrend(value.trend, `${where}.taxOfficeDetail`);
+}
+
 export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
   assert(isRecord(value), "Mã hạch toán: payload rỗng.");
   validateMeta(value.meta, "Mã hạch toán");
@@ -326,6 +491,7 @@ export function validateTmsBreakdown(value: unknown): TmsBreakdownData {
 
   validateTmsRow(value.scopeTotal, "Mã hạch toán.scopeTotal");
   validateTmsRow(value.levelTotal, "Mã hạch toán.levelTotal");
+  validateTaxOfficeDetail(value.taxOfficeDetail, value.taxOfficeCode, "Mã hạch toán");
   /**
    * Quan hệ giữa số TMS và số Kho bạc KHÔNG phải điều kiện hợp lệ của payload.
    *

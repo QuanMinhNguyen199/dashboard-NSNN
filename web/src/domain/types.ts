@@ -18,7 +18,6 @@ export type TabId =
   | "report"
   | "revenue-analysis"
   | "location-detail"
-  | "tms-breakdown"
   | "advanced-compare";
 
 /**
@@ -40,6 +39,18 @@ export interface DashboardFilters {
   accumulation: AccumulationMode;
   indicator: IndicatorSlug;
   budgetLevel: BudgetLevel | "NSNN";
+  /**
+   * Nhóm ngành nghề đang lọc; `null` là tất cả.
+   *
+   * **Số của lát này là số MÔ PHỎNG.** Kho quan sát không mang thuộc tính ngành
+   * trên từng giao dịch — ngành chỉ có trong danh bạ, và danh bạ cho số DÒNG
+   * chứ không cho số tiền. Nên thu hẹp theo ngành hiện là một phép chia tất định
+   * từ tổng thật xuống, không phải một phép lọc.
+   *
+   * Hệ quả bắt buộc: mọi màn hình đang lọc theo ngành phải nói ra điều đó. Chia
+   * mà không nói là trộn số thật với số mô phỏng mà không có nhãn.
+   */
+  industry: string | null;
 }
 
 /**
@@ -151,9 +162,41 @@ export interface OverviewData {
   centralBudgetSources: AmountRow[];
   /** Phân rã NSĐP; tổng ba dòng phải khớp đúng dòng NSĐP phía trên. */
   localBudgetLevels: AmountRow[];
+  /**
+   * Cơ cấu thu theo nhóm ngành nghề của danh bạ.
+   *
+   * Rỗng khi bộ lọc đang khoá vào MỘT ngành: lúc đó cả màn hình đã là lát cắt
+   * của ngành đó, nên vẽ lại "cơ cấu" chỉ còn một cột chiếm 100% — một biểu đồ
+   * không nói gì thêm và mời người đọc hiểu nhầm là ngành đó chiếm toàn bộ.
+   */
+  industries: AmountRow[];
+  /**
+   * Tiến độ thu của từng đơn vị thuế.
+   *
+   * Dự toán ở đây CHƯA phải số nghiệp vụ: xem `TaxOfficeProgressRow.planOrigin`.
+   */
+  taxOfficeProgress: TaxOfficeProgressRow[];
+  /** Top doanh nghiệp dùng để duyệt luồng TMS; tên và số tiền đều mang nguồn mock. */
+  topTaxpayers: OriginList<TaxpayerRow>;
   /** `null` khi không có dự toán cho phạm vi đang lọc. */
   estimate: BudgetEstimate | null;
   waterfall: Waterfall;
+}
+
+/**
+ * Một dòng "thực hiện trên dự toán" của một đơn vị thuế.
+ *
+ * `planOrigin` tách hẳn nguồn của MẪU SỐ khỏi nguồn của tử số, vì hai vế đang
+ * đến từ hai chỗ khác nhau: số thu chia theo tỷ trọng quan sát được, còn dự
+ * toán giao cho từng cơ quan thuế thì chưa tồn tại — chỉ có dự toán theo địa
+ * bàn. Giao diện phải đọc trường này để gắn nhãn, không được tự đoán.
+ */
+export interface TaxOfficeProgressRow extends AmountRow {
+  /** Dự toán được giao trong kỳ. */
+  plan: number;
+  /** Thực hiện trên dự toán, tính theo phần trăm; `null` khi dự toán bằng 0. */
+  completionRate: number | null;
+  planOrigin: "api" | "mock";
 }
 
 /**
@@ -166,6 +209,17 @@ export interface OverviewData {
 export interface RevenueGroupRow extends AmountRow {
   /** Các khoản thu thuộc nhóm, đã xếp giảm dần. */
   items: AmountRow[];
+  /**
+   * Cùng một tổng, cắt theo SẮC THUẾ thay vì theo khối kinh tế.
+   *
+   * `null` ở nhóm nào thì nhóm đó không có nút chuyển cơ sở phân rã — giao
+   * diện đọc thẳng trường này chứ không tự giữ một danh sách mã nhóm riêng.
+   *
+   * Là **số mô phỏng**: kho quan sát không mang sắc thuế trên từng khoản, nên
+   * đây là phép chia lại đúng tổng của nhóm theo tỷ lệ lấy từ đặc tả 23-09.
+   * Tổng các dòng bằng đúng `amount` của nhóm, và biên dữ liệu kiểm điều đó.
+   */
+  taxItems: AmountRow[] | null;
 }
 
 /**
@@ -190,12 +244,22 @@ export interface RevenueAnalysisData {
   scope: RevenueScope;
   kpis: { total: AmountRow; share: number | null; contribution: number };
   trend: TrendPoint[];
+  /** Số phát sinh riêng từng tháng, dùng cho cột của combo chart. */
+  monthlyTrend: TrendPoint[];
+  /** Tiến độ cộng dồn, dùng cho hai đường của combo chart. */
+  cumulativeTrend: TrendPoint[];
+  /** Dự toán của nguồn đang phân tích; null khi không đủ mẫu số. */
+  estimate: BudgetEstimate | null;
   breakdown: AmountRow[];
   /** Chỉ nguồn nội địa: ba nhóm lớn, mỗi nhóm mang khoản con của nó. */
   groups: RevenueGroupRow[] | null;
   /** Chỉ nguồn XNK: tổng gộp, hoàn/khấu trừ và thu ròng. */
   netReconciliation: { gross: number; deductions: AmountRow[]; net: number } | null;
   byLocation: AmountRow[];
+  /** Hai góc nhìn TMS/DNL của Detail Inspector. */
+  byTaxOffice: AmountRow[];
+  byIndustry: AmountRow[];
+  topTaxpayers: OriginList<TaxpayerRow>;
   waterfall: Waterfall;
 }
 
@@ -205,11 +269,69 @@ export interface LocationDetailData {
   kpiPeriod: AmountRow;
   /** Lũy kế từ đầu năm của chính địa bàn — đối xứng với dải KPI Tổng quan. */
   kpiYtd: AmountRow;
+  /**
+   * Tổng của đúng địa bàn VÀ đúng khung thời gian đang lọc — có tính `Cách tính`.
+   *
+   * Là MẪU SỐ của mọi khối phân rã trên trang. Tách hẳn khỏi `kpiPeriod` vì ô đó
+   * cố định ở khung trong kỳ; lấy nó làm mẫu số thì chọn Lũy kế là tỷ trọng phồng
+   * lên theo đúng số tháng đang cộng.
+   */
+  scopeTotal: AmountRow;
   rank: { position: number; total: number } | null;
   shareOfCity: number | null;
   trend: TrendPoint[];
   sources: AmountRow[];
   topItems: AmountRow[];
+  /** Dự toán của chính địa bàn; `null` khi chưa suy được. */
+  estimate: BudgetEstimate | null;
+  /** Ba khối sắc thuế địa bàn thu: doanh nghiệp, nhà đất, phí lệ phí và khoản khác. */
+  taxGroups: AmountRow[];
+  /**
+   * Số thu phát sinh trên địa bàn, bóc theo CƠ QUAN ĐÃ THU.
+   *
+   * Trả lời câu "tiền thu trên phường này do ai thu": Chi cục Doanh nghiệp lớn
+   * và Văn phòng Cục quản người nộp thuế lớn trên khắp thành phố, nên một phần
+   * đáng kể số thu của phường không do Thuế cơ sở phụ trách phường đó thu.
+   */
+  collectedBy: OriginList<AmountRow>;
+  /** Cơ cấu ngành trên địa bàn; rỗng khi bộ lọc đang khoá vào một ngành. */
+  industries: AmountRow[];
+  /** Người nộp thuế lớn nhất trên địa bàn. */
+  topTaxpayers: OriginList<TaxpayerRow>;
+}
+
+/**
+ * Một danh sách kèm nguồn của chính nó.
+ *
+ * Tách `origin` ra khỏi từng dòng vì nó là tính chất của CẢ phép tính, không
+ * phải của một dòng: giao diện cần đúng một chỗ để quyết định có gắn nhãn mô
+ * phỏng hay không, và nó tự tắt khi provider trả `api` mà không phải sửa dòng nào.
+ */
+export interface OriginList<T> {
+  rows: T[];
+  origin: "api" | "mock";
+}
+
+/**
+ * Một người nộp thuế trong bảng xếp hạng của địa bàn.
+ *
+ * KHÔNG có mã số thuế, và đó là chủ ý: khi `origin` là `mock` thì mọi dòng đều
+ * là số giả định, mà một dãy mười chữ số trông y hệt một MST thật thì người đọc
+ * hoàn toàn có thể tra nó ra một doanh nghiệp có thật rồi gán nhầm con số này
+ * cho họ. Tên đã đủ để bảng làm việc của nó, và tên chữ cái thì không ai nhầm.
+ */
+export interface TaxpayerRow {
+  id: string;
+  name: string;
+  /** Nhóm ngành của danh bạ, hiện làm chú thích cạnh tên. */
+  industry: string;
+  amount: number;
+  previous: number | null;
+  share: number | null;
+  /** Token hiển thị, không phải mã số thuế thật. */
+  displayCode?: string;
+  /** Đơn vị thuế mô phỏng đang quản lý dòng này. */
+  taxOffice?: string;
 }
 
 /**
@@ -221,6 +343,32 @@ export interface LocationDetailData {
  * phải một giá trị đặc biệt của số tiền.
  */
 export type TmsRowStatus = "confirmed" | "needsReview";
+
+/**
+ * Chỉ số của MỘT đơn vị thuế, chỉ tồn tại khi payload đang lọc theo một cơ quan.
+ *
+ * Nằm trong cùng payload phân rã chứ không thành một endpoint riêng: cả trang
+ * chi tiết đơn vị thuế đọc từ một lượt gọi, nên không có cửa nào cho dải KPI và
+ * danh sách địa bàn ngay dưới nó mô tả hai kỳ khác nhau.
+ */
+export interface TaxOfficeDetailBlock {
+  /** Thu trong kỳ do đơn vị quản lý — luôn là riêng kỳ, không đổi theo `Cách tính`. */
+  kpiPeriod: AmountRow;
+  /** Lũy kế từ đầu năm do đơn vị quản lý. */
+  kpiYtd: AmountRow;
+  /** Dự toán được giao trong năm. Xem `planOrigin` trước khi trích dẫn. */
+  plan: number;
+  /**
+   * LŨY KẾ trên dự toán, phần trăm; `null` khi dự toán bằng 0.
+   *
+   * Tử số là lũy kế chứ không phải số trong kỳ — đặc tả 23-09 ghi rõ, và đó là
+   * cách duy nhất con số này có nghĩa: dự toán là số giao cho cả năm, đem chia
+   * cho nó số của một tháng thì ra một tỷ lệ không nói lên điều gì.
+   */
+  completionRate: number | null;
+  planOrigin: "api" | "mock";
+  trend: TrendPoint[];
+}
 
 /**
  * Dòng TMS KHÔNG kế thừa `AmountRow` vì `amount` của nó có thể chưa tồn tại.
@@ -334,6 +482,8 @@ export interface TmsBreakdownData {
   sections: TmsSectionRow[];
   /** Chương có phát sinh trong cấp đang chọn — để tra cứu, không phải bậc chọn. */
   chapters: TmsRow[];
+  /** Chỉ số của đơn vị đang lọc; `null` khi payload không lọc theo cơ quan nào. */
+  taxOfficeDetail: TaxOfficeDetailBlock | null;
   /**
    * Cơ quan thuế quản lý chứng từ trong phạm vi.
    *

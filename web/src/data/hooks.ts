@@ -114,8 +114,10 @@ function useAsyncResource<T>(
   return { resource, pending, retry: useCallback(() => setNonce((n) => n + 1), []) };
 }
 
+// Ngành nằm trong khoá: thiếu nó thì đổi ngành không sinh khoá mới, hook trả lại
+// đúng kết quả đã ghi nhớ, và màn hình đứng im trong khi nhãn nói đã lọc.
 const filterKey = (f: DashboardFilters) =>
-  `${f.year}|${f.periodType}|${f.period}|${f.accumulation}|${f.indicator}|${f.budgetLevel}`;
+  `${f.year}|${f.periodType}|${f.period}|${f.accumulation}|${f.indicator}|${f.budgetLevel}|${f.industry ?? "*"}`;
 
 export function useOverview(filters: DashboardFilters) {
   return useAsyncResource<OverviewData>(
@@ -138,7 +140,9 @@ export function useLocationDetail(filters: DashboardFilters, locationId: string 
     `location|${locationId}|${filterKey(filters)}`,
     (signal) => provider.getLocationDetail(filters, locationId!, signal),
     !!locationId,
-    "Chọn một phường, xã ở ô “Chi tiết địa bàn” phía trên, hoặc bấm một vùng trên bản đồ.",
+    // Tên ô lọc phải là tên ĐANG hiện trên màn hình: "Chi tiết địa bàn" đã gộp
+    // vào ô "Phạm vi", và ô đó giờ chọn được cả đơn vị thuế.
+    "Chọn một phường, xã hoặc một đơn vị thuế ở ô “Phạm vi” phía trên, hoặc bấm một vùng trên bản đồ.",
     true,
   );
 }

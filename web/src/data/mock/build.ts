@@ -21,6 +21,16 @@ import {
   levelsOf,
   sumOf,
 } from "./observations";
+import { TAX_OFFICE_ENTITIES } from "@/domain/tms";
+import { allocate, hash } from "./deterministic";
+import { gridMembersOf } from "@/domain/report";
+/*
+  build ↔ tms nhập lẫn nhau: `tms` lấy `metaOf` ở đây, còn đây lấy phép chia
+  theo cơ quan thuế ở `tms`. Vòng này an toàn vì cả hai chiều chỉ dùng hàm lúc
+  GỌI, không có dòng nào ở tầng module cần export của phía bên kia khi nạp.
+  Thêm một hằng tầng module phụ thuộc chéo thì vòng này vỡ, nên đừng thêm.
+*/
+import { taxOfficeTotalsOf } from "./tms";
 import {
   monthsOf,
   parsePeriodToken,
@@ -33,6 +43,9 @@ import type {
   AdvancedComparisonData,
   AdvancedComparisonFilters,
   AmountRow,
+  OriginList,
+  TaxOfficeProgressRow,
+  TaxpayerRow,
   BudgetEstimate,
   Coverage,
   DashboardFilters,
@@ -111,14 +124,15 @@ function rowOf(
  */
 const ESTIMATE_GROWTH = 1.08;
 
-function estimateOf(filters: DashboardFilters): BudgetEstimate | null {
+function estimateOf(filters: DashboardFilters, locationIds?: string[]): BudgetEstimate | null {
+  const scope = locationIds ? { locationIds } : {};
   const wholeYear = { ...filters, period: ALL_PERIODS, accumulation: "YTD" as const };
-  const lastYear = sumOf({ ...wholeYear, year: prevYear(filters) });
+  const lastYear = sumOf({ ...wholeYear, year: prevYear(filters) }, scope);
   if (lastYear === null || lastYear <= 0) return null;
 
   // Làm tròn tới tỷ: dự toán là con số giao bằng văn bản, không phải kết quả đo.
   const annual = Math.round((lastYear * ESTIMATE_GROWTH) / 1e9) * 1e9;
-  const ytd = sumOf(filters, { months: monthsOf({ ...filters, accumulation: "YTD" }) });
+  const ytd = sumOf(filters, { ...scope, months: monthsOf({ ...filters, accumulation: "YTD" }) });
   return {
     annual,
     progress: ytd === null || annual <= 0 ? null : ytd / annual,
@@ -202,6 +216,110 @@ export function waterfallOf(
 }
 
 /* ─────────────────────────────── Tổng quan ─────────────────────────────── */
+
+/**
+ * Dự toán giao cho MỘT cơ quan thuế, cho CẢ NĂM.
+ *
+ * Suy tất định từ số đã thu, **không phải dự toán nghiệp vụ**: hiện chỉ có dự
+ * toán theo địa bàn, chưa có số giao cho từng cơ quan thuế. Số này tồn tại để
+ * ô "% hoàn thành" có mẫu số mà hiện và để duyệt được mọi nhánh giao diện;
+ * chừng nào chưa có số thật thì mọi chỗ dùng nó phải mang nhãn mô phỏng —
+ * `planOrigin` là chỗ giao diện đọc ra điều đó.
+ *
+ * Mẫu số lấy từ CẢ NĂM TRƯỚC, cùng cách `estimateOf` làm cho toàn thành phố.
+ * Bản đầu suy từ số cả năm HIỆN TẠI, và năm hiện tại mới có tám tháng dữ liệu
+ * — nên dự toán co lại còn cỡ tám tháng và tháng 8 đã hiện "hoàn thành 106,7%".
+ * Một con số như thế đọc thành "đã vượt dự toán", tức là màn hình đang nói một
+ * điều sai về nghiệp vụ chỉ vì mẫu số chọn nhầm khung thời gian.
+ *
+ * Ở đúng một chỗ này, không nhân bản sang màn hình: hai công thức "dự toán
+ * mô phỏng" thì hai tab hiện hai tỷ lệ hoàn thành khác nhau cho cùng đơn vị.
+ */
+const BIEN_DO = 0.36;
+
+/** Băm chuỗi thành [0,1) — cùng mã cơ quan luôn cho cùng hệ số. */
+function bam(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 100000) / 100000;
+}
+
+/** `thucHienNamTruoc` là số CẢ NĂM N−1 của chính đơn vị đó. */
+export const duToanCuaCqt = (thucHienNamTruoc: number, code: string, year: number) => {
+  const heSo = ESTIMATE_GROWTH + (bam(`du-toan|${code}|${year}`) - 0.5) * BIEN_DO;
+  // Làm tròn tới tỷ: dự toán là con số giao bằng văn bản, không phải kết quả đo.
+  return Math.round((thucHienNamTruoc * heSo) / 1e9) * 1e9;
+};
+
+/**
+ * Tiến độ của từng cơ quan thuế: LŨY KẾ trên dự toán năm.
+ *
+ * Cả tử và mẫu đều là đại lượng cả năm — đúng định nghĩa ở đặc tả 23-09 và
+ * cũng là cách duy nhất tỷ lệ này so được giữa các đơn vị. Lấy số trong kỳ chia
+ * cho dự toán năm thì mọi đơn vị đều hiện một con số bé tí, và nó đổi theo
+ * tháng đang xem chứ không theo kết quả của đơn vị.
+ */
+function tienDoCqt(filters: DashboardFilters, total: number): TaxOfficeProgressRow[] {
+  const luyKe = taxOfficeTotalsOf({ ...filters, accumulation: "YTD" });
+  if (luyKe.size === 0) return [];
+  const caNamTruoc = taxOfficeTotalsOf({
+    ...filters,
+    year: prevYear(filters),
+    period: ALL_PERIODS,
+    accumulation: "YTD",
+  });
+  return TAX_OFFICE_ENTITIES.map((office) => {
+    const bucket = luyKe.get(office.id) ?? { amount: 0, previous: null };
+    const plan = duToanCuaCqt(caNamTruoc.get(office.id)?.amount ?? 0, office.id, filters.year);
+    return {
+      id: office.id,
+      name: office.name,
+      amount: bucket.amount,
+      previous: bucket.previous,
+      share: share(bucket.amount, total),
+      plan,
+      // Dự toán 0 thì "hoàn thành" không có nghĩa; trả `null` chứ không trả 0,
+      // vì 0% đọc là "chưa thu được đồng nào" — một câu khác hẳn.
+      completionRate: plan === 0 ? null : (bucket.amount / plan) * 100,
+      planOrigin: "mock",
+    } satisfies TaxOfficeProgressRow;
+  }).sort((a, b) => b.amount - a.amount);
+}
+
+/**
+ * Cơ cấu thu theo nhóm ngành nghề.
+ *
+ * Rỗng khi đang khoá vào một ngành: xem chú thích `OverviewData.industries`.
+ */
+function coCauNganh(filters: DashboardFilters, total: number): AmountRow[] {
+  if (filters.industry !== null) return [];
+  return gridMembersOf("industry")
+    .map((member) => {
+      const scoped = { ...filters, industry: member.id };
+      const amount = sumOf(scoped) ?? 0;
+      return {
+        id: member.id,
+        name: member.name,
+        amount,
+        /*
+          KHÔNG có cùng kỳ theo ngành, và đây không phải chỗ bỏ sót.
+
+          Phép chia theo ngành là nhân một tỷ lệ cố định, nên năm nay và năm
+          ngoái cùng co theo đúng một hệ số: %YoY của MỌI ngành sẽ bằng đúng
+          %YoY của tổng. Trả số đó ra thì bảng hiện mười bốn dòng tăng trưởng
+          giống hệt nhau — một cột không phân biệt được dòng nào với dòng nào,
+          mà lại đọc như một phát hiện. Chừng nào chưa nối được mã số thuế sang
+          danh bạ thì cùng kỳ theo ngành là thứ chưa biết, không phải bằng nhau.
+        */
+        previous: null,
+        share: share(amount, total),
+      } satisfies AmountRow;
+    })
+    .sort((a, b) => b.amount - a.amount);
+}
 
 export function buildOverview(filters: DashboardFilters): OverviewData | null {
   if (filters.period !== ALL_PERIODS && (filters.period < 1 || filters.period > periodCount(filters)))
@@ -348,6 +466,9 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     unclassifiedBudget: null,
     centralBudgetSources,
     localBudgetLevels,
+    industries: coCauNganh(filters, total),
+    taxOfficeProgress: tienDoCqt(filters, total),
+    topTaxpayers: topNguoiNopThue("toan-thanh-pho", total),
     estimate: estimateOf(filters),
     waterfall: waterfallOf(sources, {
       start: `Cùng kỳ ${prevYear(filters)}`,
@@ -392,6 +513,45 @@ function insightOf(
 
 /* ────────────────────────────── Phân tích thu ───────────────────────────── */
 
+/*
+  Khối doanh nghiệp cắt theo SẮC THUẾ — số mô phỏng.
+
+  Kho quan sát không mang sắc thuế trên từng khoản, nên đây là phép chia lại
+  ĐÚNG TỔNG của nhóm chứ không sinh tiền mới. Tỷ lệ lấy từ chính đặc tả
+  23-09 (TNDN 145.489 · GTGT 70.316 · TTĐB 8.051 · môn bài 414 tỷ).
+
+  KỲ TRƯỚC dùng bộ trọng số LỆCH MỘT CHÚT, không phải cùng bộ. Dùng cùng bộ
+  thì cả bốn dòng có %YoY bằng đúng %YoY của nhóm — một cột không phân biệt
+  được dòng nào với dòng nào mà lại đọc như một phát hiện. Lệch trọng số là
+  tất định theo mã sắc thuế, và hai tổng vẫn khớp tuyệt đối vì `allocate` chia
+  theo phần dư lớn nhất.
+*/
+const SAC_THUE_KHOI_DN = [
+  { id: "sac-tndn", name: "Thu\u1ebf thu nh\u1eadp doanh nghi\u1ec7p", w: 145489 },
+  { id: "sac-gtgt", name: "Thu\u1ebf gi\u00e1 tr\u1ecb gia t\u0103ng", w: 70316 },
+  { id: "sac-ttdb", name: "Thu\u1ebf ti\u00eau th\u1ee5 \u0111\u1eb7c bi\u1ec7t", w: 8051 },
+  { id: "sac-mon-bai", name: "L\u1ec7 ph\u00ed m\u00f4n b\u00e0i", w: 414 },
+] as const;
+
+function sacThueCuaKhoiDn(group: AmountRow): AmountRow[] {
+  const w = SAC_THUE_KHOI_DN.map((x) => x.w);
+  const nay = allocate(group.amount, w);
+  const truoc =
+    group.previous === null
+      ? null
+      : allocate(
+          group.previous,
+          SAC_THUE_KHOI_DN.map((x) => x.w * (0.9 + hash("sac-thue-yoy", x.id) * 0.2)),
+        );
+  return SAC_THUE_KHOI_DN.map((x, i) => ({
+    id: x.id,
+    name: x.name,
+    amount: nay[i] ?? 0,
+    previous: truoc ? (truoc[i] ?? 0) : null,
+    share: share(nay[i] ?? 0, group.amount),
+  }));
+}
+
 export function buildRevenueAnalysis(
   filters: DashboardFilters,
   scope: SourceCode,
@@ -418,6 +578,9 @@ export function buildRevenueAnalysis(
           return {
             ...row,
             meta: group.note,
+            // Chi khoi doanh nghiep co nut chuyen co so phan ra; hai khoi kia
+            // khong co sac thue rieng de cat nen tra `null`.
+            taxItems: group.id === "sxkd" ? sacThueCuaKhoiDn(row) : null,
             items: members
               .map((item) => rowOf(item.code, item.name, filters, { items: [item] }, groupTotal))
               .sort((a, b) => b.amount - a.amount),
@@ -447,6 +610,54 @@ export function buildRevenueAnalysis(
         .sort((a, b) => b.amount - a.amount)
         .slice(0, 10);
 
+  const byIndustry =
+    scope === "domestic"
+      ? gridMembersOf("industry")
+          .map((member) => {
+            const amount = sumOf({ ...filters, industry: member.id }, { items }) ?? 0;
+            const previousByIndustry = sumOf(
+              { ...filters, industry: member.id },
+              { items, year: prevYear(filters) },
+            );
+            return {
+              id: member.id,
+              name: member.name,
+              amount,
+              previous: previousByIndustry,
+              share: share(amount, total),
+            } satisfies AmountRow;
+          })
+          .sort((a, b) => b.amount - a.amount)
+      : [];
+
+  const officeWeights = TAX_OFFICE_ENTITIES.map(
+    (office) => 0.35 + hash("phan-tich-cqt", scope, office.id) * 1.65,
+  );
+  const officeAmounts = allocate(total, officeWeights);
+  const officePrevious = allocate(previous ?? 0, officeWeights);
+  const byTaxOffice = TAX_OFFICE_ENTITIES.map((office, index) => ({
+    id: office.id,
+    name: office.name,
+    amount: officeAmounts[index] ?? 0,
+    previous: previous === null ? null : (officePrevious[index] ?? 0),
+    share: share(officeAmounts[index] ?? 0, total),
+  })).sort((a, b) => b.amount - a.amount);
+
+  const previousWholeYear = sumOf(
+    { ...filters, year: prevYear(filters), period: ALL_PERIODS, accumulation: "YTD" },
+    { items },
+  );
+  const annual = previousWholeYear && previousWholeYear > 0
+    ? Math.round((previousWholeYear * ESTIMATE_GROWTH) / 1e9) * 1e9
+    : 0;
+  const ytd = sumOf(
+    { ...filters, accumulation: "YTD" },
+    { items, months: monthsOf({ ...filters, accumulation: "YTD" }) },
+  );
+  const estimate: BudgetEstimate | null = annual > 0
+    ? { annual, progress: ytd === null ? null : ytd / annual, origin: "mock" }
+    : null;
+
   return {
     meta: metaOf(filters, source.cityOnly ? "Toàn thành phố (không phân bổ theo địa bàn)" : "Toàn thành phố Hà Nội"),
     scope,
@@ -457,9 +668,15 @@ export function buildRevenueAnalysis(
       contribution: total - (previous ?? total),
     },
     trend: trendOf(filters, { items }),
+    monthlyTrend: trendOf({ ...filters, accumulation: "PERIOD" }, { items }),
+    cumulativeTrend: trendOf({ ...filters, accumulation: "YTD" }, { items }),
+    estimate,
     breakdown,
     netReconciliation,
     byLocation,
+    byTaxOffice,
+    byIndustry,
+    topTaxpayers: topNguoiNopThue(`phan-tich-${scope}-${filters.industry ?? "all"}`, total),
     waterfall: waterfallOf(breakdown, {
       start: `Cùng kỳ ${prevYear(filters)}`,
       end: periodLabel(filters),
@@ -468,6 +685,138 @@ export function buildRevenueAnalysis(
 }
 
 /* ───────────────────────────── Chi tiết địa bàn ─────────────────────────── */
+
+/* --------------- Bon khoi bo sung cua trang chi tiet dia ban -------------- */
+
+/** Ma don vi cua hai co quan thu tren khap thanh pho, tra theo TEN trong danh muc. */
+const maCua = (khop: RegExp) => TAX_OFFICE_ENTITIES.find((o) => khop.test(o.name))?.id ?? null;
+
+/**
+ * So thu tren mot dia ban, boc theo co quan da thu.
+ *
+ * **La phan bo mo phong, va khong the khac.** Bang phan cong chi noi Thue co so
+ * nao phu trach phuong nao; Chi cuc Doanh nghiep lon va Van phong Cuc khong
+ * duoc gan phuong nao ca - ho quan nguoi nop thue lon tren khap thanh pho. Nen
+ * phan ho thu tren mot phuong cu the chi co chung tu moi tra loi duoc.
+ *
+ * Trong rang buoc do, phep chia nay giu hai tinh chat: ty trong ba nhom lay tu
+ * TY TRONG THAT cua ba nhom do tren toan thanh pho, va ba dong cong lai bang
+ * dung tong cua dia ban - `allocate` chia theo phan du lon nhat nen khong sinh
+ * ra dong nao va cung khong danh roi dong nao.
+ */
+function thuTheoCoQuan(filters: DashboardFilters, total: number): OriginList<AmountRow> {
+  const theoCqt = taxOfficeTotalsOf(filters);
+  const maDnl = maCua(/doanh nghiệp lớn/i);
+  const maCuc = maCua(/^thuế tp hà nội$/i);
+  const toanBo = [...theoCqt.values()].reduce((sum, b) => sum + b.amount, 0);
+  const soCua = (ma: string | null) => (ma ? (theoCqt.get(ma)?.amount ?? 0) : 0);
+
+  const dnl = soCua(maDnl);
+  const cuc = soCua(maCuc);
+  const coSo = toanBo - dnl - cuc;
+  // Trong so am khong chia duoc; khi do phep boc tach khong co nghia nen bo han
+  // khoi nay thay vi ve mot co cau co lat am.
+  if (toanBo <= 0 || dnl < 0 || cuc < 0 || coSo < 0) return { rows: [], origin: "mock" };
+
+  /*
+    `allocate` tra ve so NGUYEN, nen tong cua chung bang `Math.round(total)`.
+    Khi dang loc mot nganh thi `total` la so thuc (phep chia theo nganh nhan mot
+    ty le), va phan le do day muc lech len 0,499 dong - sat mep dung sai 0,5
+    cua bo kiem payload. Mot dia ban co phan le dung 0,5 se lam ca trang bi tu
+    choi. Nen tra phan le cho dong lon nhat: tong khop tuyet doi.
+  */
+  const phan = allocate(Math.round(total), [dnl, cuc, coSo]);
+  const iLonNhat = phan.indexOf(Math.max(...phan));
+  phan[iLonNhat] += total - phan.reduce((a, b) => a + b, 0);
+  const ten = [
+    ["dnl", "Do Chi c\u1ee5c Doanh nghi\u1ec7p l\u1edbn thu"],
+    ["cuc", "Do V\u0103n ph\u00f2ng C\u1ee5c Thu\u1ebf H\u00e0 N\u1ed9i thu"],
+    ["co-so", "Do Thu\u1ebf c\u01a1 s\u1edf ph\u1ee5 tr\u00e1ch \u0111\u1ecba b\u00e0n thu"],
+  ] as const;
+  return {
+    rows: ten.map(([id, name], i) => ({
+      id,
+      name,
+      amount: phan[i] ?? 0,
+      previous: null,
+      share: share(phan[i] ?? 0, total),
+    })),
+    origin: "mock",
+  };
+}
+
+/** Co cau nganh TREN MOT DIA BAN; rong khi dang khoa vao mot nganh. */
+function nganhTrenDiaBan(
+  filters: DashboardFilters,
+  locationId: string,
+  total: number,
+): AmountRow[] {
+  if (filters.industry !== null) return [];
+  return gridMembersOf("industry")
+    .map((member) => {
+      const scoped = { ...filters, industry: member.id };
+      const amount = sumOf(scoped, { locationIds: [locationId] }) ?? 0;
+      return {
+        id: member.id,
+        name: member.name,
+        amount,
+        // Xem chu thich o `coCauNganh`: phep chia theo nganh la nhan mot ty le
+        // co dinh nen %YoY moi nganh bang nhau, tuc la khong noi gi.
+        previous: null,
+        share: share(amount, total),
+      } satisfies AmountRow;
+    })
+    .sort((a, b) => b.amount - a.amount);
+}
+
+/*
+  Nguoi nop thue lon tren dia ban - TEN LA TEN GIA DINH.
+
+  Prototype khong co du lieu muc nguoi nop thue: khong MST, khong so nop theo
+  tung don vi. Bang nay dung de duyet duoc luong va bo cuc, nen ten phai trong
+  ro rang la ten dat ra. Chu cai A, B, C lam dung viec do; mot cai ten nghe nhu
+  that thi nguoi doc hoan toan co the di tra no, va luc ay man hinh da gan mot
+  con so bia cho mot doanh nghiep co that.
+
+  Ty trong: nhom nay chiem mot phan cua dia ban chu khong phai toan bo, nen
+  `TY_TRONG_TOP` cat lay phan do roi moi chia cho muoi lam dong.
+*/
+const SO_NGUOI_NOP = 15;
+const TY_TRONG_TOP = 0.46;
+const LOAI_HINH = ["C\u00f4ng ty CP", "C\u00f4ng ty TNHH", "T\u1ed5ng c\u00f4ng ty", "C\u00f4ng ty TNHH MTV"];
+const CHU_CAI = "ABCDEFGHIJKLMNO";
+
+export function topNguoiNopThue(
+  locationId: string,
+  total: number,
+  /** Ep moi dong ve mot nhom nganh - dung khi danh sach dang duoc loc theo nganh. */
+  epNganh?: string,
+): OriginList<TaxpayerRow> {
+  if (total <= 0) return { rows: [], origin: "mock" };
+  const nganh = gridMembersOf("industry");
+  const trongSo = Array.from({ length: SO_NGUOI_NOP }, (_, i) =>
+    // Giam dan theo hang roi nhieu nhe tat dinh, de bang khong thanh mot cap so
+    // cong hoan hao - thu khong du lieu that nao co.
+    (1 / (i + 1.6)) * (0.82 + hash("top-nnt", locationId, i) * 0.36),
+  );
+  const phan = allocate(Math.round(total * TY_TRONG_TOP), trongSo);
+  const tongNhom = phan.reduce((a, b) => a + b, 0);
+  return {
+    rows: phan.map((amount, i) => ({
+      id: `nnt-${locationId}-${i}`,
+      name: `${LOAI_HINH[Math.floor(hash("nnt-loai", locationId, i) * LOAI_HINH.length)]} ${CHU_CAI[i]}`,
+      industry: epNganh ?? nganh[Math.floor(hash("nnt-nganh", locationId, i) * nganh.length)]?.name ?? "Kh\u00e1c",
+      displayCode: `DN-${String(i + 1).padStart(3, "0")}`,
+      taxOffice: TAX_OFFICE_ENTITIES[
+        Math.floor(hash("nnt-cqt", locationId, i) * TAX_OFFICE_ENTITIES.length)
+      ]?.name,
+      amount,
+      previous: null,
+      share: share(amount, tongNhom),
+    })),
+    origin: "mock",
+  };
+}
 
 export function buildLocationDetail(
   filters: DashboardFilters,
@@ -487,6 +836,19 @@ export function buildLocationDetail(
   const previous = sumOf(filters, { ...scope, months: periodMonths, year: prevYear(filters) });
   const cityTotal = sumOf(filters);
 
+  /*
+    MẪU SỐ của mọi phép phân rã trên trang này.
+
+    KHÔNG dùng `amount` được: `amount` cố định ở khung TRONG KỲ (ô "Thu trong
+    kỳ" không được đổi nghĩa theo `Cách tính`), trong khi từ số của mọi khối
+    phân rã lại đi theo đúng `Cách tính`. Hai vế lệch khung thời gian thì tỷ
+    trọng sai theo đúng tỷ lệ số tháng: đo ở Ba Đình, Lũy kế tháng 8 cho một
+    thanh ghi 454,2% và tổng tỷ trọng 781%. Mà Lũy kế là mặc định của app.
+
+    Cùng lý do và cùng cách gọi tên với `OverviewData.scopeTotal`.
+  */
+  const scopeTotal = sumOf(filters, scope) ?? 0;
+
   const ytdMonths = monthsOf({ ...filters, accumulation: "YTD" });
   const kpiYtd: AmountRow = {
     id: "ytd",
@@ -503,25 +865,50 @@ export function buildLocationDetail(
   const position = ranked.findIndex((row) => row.id === locationId);
 
   const sources = SOURCES.filter((s) => !s.cityOnly).map((s) =>
-    rowOf(s.code, s.shortName, filters, { items: itemsOfSource(s.code), ...scope }, amount),
+    rowOf(s.code, s.shortName, filters, { items: itemsOfSource(s.code), ...scope }, scopeTotal),
   );
 
   const topItems = DOMESTIC_ITEMS.map((item) =>
-    rowOf(item.code, item.name, filters, { items: [item], ...scope }, amount),
+    rowOf(item.code, item.name, filters, { items: [item], ...scope }, scopeTotal),
   )
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 8);
+
+  // Ba khoi sac thue lay tu `item.group` - nguon duy nhat, nen them mot khoan
+  // moi vao danh muc la no tu vao dung khoi.
+  const taxGroups = DOMESTIC_GROUPS.map((group) =>
+    rowOf(
+      group.id,
+      group.name,
+      filters,
+      { items: DOMESTIC_ITEMS.filter((item) => item.group === group.id), ...scope },
+      scopeTotal,
+    ),
+  ).sort((a, b) => b.amount - a.amount);
 
   return {
     meta: metaOf(filters, location.name),
     location,
     kpiPeriod: { id: location.id, name: location.name, amount, previous },
     kpiYtd,
+    scopeTotal: {
+      id: "scope-total",
+      name: "Tổng theo phạm vi đang lọc",
+      amount: scopeTotal,
+      previous: sumOf({ ...filters, year: prevYear(filters) }, scope),
+    },
     rank: position < 0 ? null : { position: position + 1, total: ranked.length },
-    shareOfCity: share(amount, cityTotal),
+    // Hai vế cùng khung thời gian: `amount` là số trong kỳ còn `cityTotal` đi
+    // theo `Cách tính`, nên chia thẳng hai số đó là chia nhầm mẫu số.
+    shareOfCity: share(scopeTotal, cityTotal),
     trend: trendOf(filters, scope),
     sources,
     topItems,
+    estimate: estimateOf(filters, [locationId]),
+    taxGroups,
+    collectedBy: thuTheoCoQuan(filters, scopeTotal),
+    industries: nganhTrenDiaBan(filters, locationId, scopeTotal),
+    topTaxpayers: topNguoiNopThue(locationId, scopeTotal),
   };
 }
 
@@ -537,6 +924,8 @@ export function buildAdvancedComparison(
     accumulation: filters.accumulation,
     indicator: filters.indicator,
     budgetLevel: filters.budgetLevel,
+    // So sánh nâng cao không có ô ngành riêng; nó so hai kỳ hoặc hai phạm vi.
+    industry: null,
   };
 
   let sideA: DashboardFilters;

@@ -9,6 +9,8 @@ import {
 } from "@/domain/catalog";
 import type { DashboardFilters } from "@/domain/types";
 import { monthsOf } from "@/domain/metrics";
+import { gridMembersOf } from "@/domain/report";
+import { weightOf } from "./deterministic";
 
 /**
  * Kho quan sát gốc.
@@ -179,6 +181,35 @@ export function itemsForIndicator(indicator: DashboardFilters["indicator"], item
   return items;
 }
 
+/**
+ * Phần của một ngành trong một tổng — một TỶ LỆ, không phải một phép chia.
+ *
+ * Chỗ này từng dùng `allocate` phần dư lớn nhất để cộng mọi ngành lại bằng đúng
+ * tổng, không lệch một đồng. Nhưng `sumOf` được gọi ĐỘC LẬP cho từng lát —
+ * NSNN một lần, NSTW một lần, NSĐP một lần — nên làm tròn riêng từng lần phá vỡ
+ * đẳng thức `NSTW + NSĐP = Tổng NSNN`. Bộ kiểm payload bắt đúng lỗi đó: hai
+ * ngành làm cả dải KPI biến mất.
+ *
+ * Nhân theo tỷ lệ thì phép thu hẹp là TUYẾN TÍNH, nên mọi đẳng thức cộng của
+ * sản phẩm tự giữ nguyên. Đổi lại, cộng đủ mười bốn ngành chỉ bằng tổng tới sai
+ * số của số thực — cỡ 1e-3 đồng trên 1e13 — và không màn hình nào bày đủ mười
+ * bốn ngành cùng lúc để thấy chênh đó. Giữ đẳng thức người dùng nhìn thấy quan
+ * trọng hơn giữ một đẳng thức không ai nhìn.
+ *
+ * KHÔNG làm tròn ở đây: làm tròn từng lát là đúng thứ vừa gây ra lỗi. Các tầng
+ * hiển thị đều đã làm tròn về tỷ đồng.
+ *
+ * Trọng số chỉ phụ thuộc mã ngành, nên cùng bộ lọc luôn cho cùng kết quả.
+ */
+const NGANH = gridMembersOf("industry");
+const TRONG_SO = NGANH.map((m) => weightOf(0.2, 2, "nganh", m.id));
+const TONG_TRONG_SO = TRONG_SO.reduce((a, b) => a + b, 0);
+export function phanTheoNganh(total: number, industry: string | null): number {
+  if (industry === null) return total;
+  const i = NGANH.findIndex((m) => m.id === industry);
+  return i < 0 ? total : (total * TRONG_SO[i]) / TONG_TRONG_SO;
+}
+
 interface SumOptions {
   items?: ItemDef[];
   locationIds?: string[];
@@ -202,13 +233,17 @@ export function sumOf(filters: DashboardFilters, options: SumOptions = {}): numb
     (options.months ?? monthsOf(filters)).join(","),
     options.items ? options.items.map((i) => i.code).join(",") : "*",
     options.locationIds ? options.locationIds.join(",") : "*",
+    filters.industry ?? "*",
   ].join("|");
   const cached = sumCache.get(cacheKey);
   if (cached !== undefined) return cached;
   const result = computeSum(filters, options);
+  // Một chỗ nghẽn duy nhất: mọi màn hình đều tổng hợp qua `sumOf`, nên thu hẹp
+  // ở đây thì tổng cha và tổng con cùng co lại theo đúng một tỷ lệ.
+  const scoped = result === null ? null : phanTheoNganh(result, filters.industry);
   if (sumCache.size > 4000) sumCache.clear();
-  sumCache.set(cacheKey, result);
-  return result;
+  sumCache.set(cacheKey, scoped);
+  return scoped;
 }
 
 function computeSum(filters: DashboardFilters, options: SumOptions): number | null {
