@@ -9,5 +9,8 @@
     "typecheck": "npm --prefix web run typecheck",
     "acceptance": "npm --prefix web run acceptance",
     "postinstall": "npm --prefix web install"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0"
   }
 }

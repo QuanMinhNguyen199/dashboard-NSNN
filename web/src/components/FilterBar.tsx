@@ -53,6 +53,25 @@ export function FilterBar() {
   );
   const compact = embedded || host.source === "mobile";
   const usesHostFilter = host.source === "mobile" && host.capabilities.openFilterModal;
+  useEffect(() => {
+    if (!open || host.source !== "mobile" || usesHostFilter) return;
+    const media = window.matchMedia("(max-width: 767px)");
+    const previousOverflow = document.body.style.overflow;
+    const syncScroll = () => {
+      document.body.style.overflow = media.matches ? "hidden" : previousOverflow;
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    syncScroll();
+    media.addEventListener("change", syncScroll);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      media.removeEventListener("change", syncScroll);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, host.source, usesHostFilter]);
   // Năm đã đủ mười hai tháng thì gọi đúng tên là "Cả năm"; năm đang chạy thì
   // nói rõ mới có bao nhiêu tháng, không gọi là cả năm cho một phần năm.
   const months = latestMonth(filters.year);
@@ -113,6 +132,10 @@ export function FilterBar() {
   const scopePlaceholder = scopeKind === "tax-office" ? "Tìm mã hoặc tên đơn vị thuế" : scopeKind === "location" ? "Tìm mã hoặc tên phường/xã" : "Toàn thành phố";
 
   return (
+    <>
+    {open && host.source === "mobile" && !usesHostFilter && (
+      <div className="dfilters-backdrop" aria-hidden="true" onClick={() => setOpen(false)} />
+    )}
     <section
       className="dfilters"
       data-open={open}
@@ -376,5 +399,6 @@ export function FilterBar() {
         </div>
       )}
     </section>
+    </>
   );
 }

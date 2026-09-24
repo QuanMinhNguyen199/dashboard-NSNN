@@ -373,9 +373,12 @@ function IndustryHeatmap({ rows, selected, onSelect }: {
   const ratios = [0.38, 0.42, 0.08, 0.12];
   const max = Math.max(...rows.flatMap((row) => ratios.map((ratio) => row.amount * ratio)), 1);
   const unit = moneyScale([max]);
-  return <div className="dheatmap" style={{ gridTemplateColumns: `minmax(150px, 1.6fr) repeat(${HEAT_TAXES.length}, minmax(68px, 1fr))` }}>
+  return <div className="dheatmap" style={{ /* San 190px chu khong phai 150px: nhan dai nhat cua danh muc nganh la
+          "Tai chinh, Ngan hang, Bao hiem" - do duoc 178px chu + 8px dem. San 150
+          cho cot 159px nen no thieu 19px va bi cat cut. */
+        gridTemplateColumns: `minmax(190px, 1.6fr) repeat(${HEAT_TAXES.length}, minmax(68px, 1fr))` }}>
     <span />{HEAT_TAXES.map((tax) => <b key={tax}>{tax}</b>)}
-    {rows.map((row) => <div className="dheatmap-row" key={row.id} style={{ display: "contents" }}><strong title={row.name}>{row.name}</strong>{HEAT_TAXES.map((tax, index) => {
+    {rows.map((row) => <div className="dheatmap-row" key={row.id} style={{ display: "contents" }}><strong title={row.name}><span>{row.name}</span></strong>{HEAT_TAXES.map((tax, index) => {
       const amount = row.amount * ratios[index];
       const active = selected?.industry === row.name && selected.tax === tax;
       return <button key={tax} type="button" className={active ? "is-active" : undefined} onClick={() => onSelect({ industry: row.name, tax, amount })} style={{ "--heat": Math.max(amount / max, 0.08) } as CSSProperties}><span>{inScale(amount, unit)}</span></button>;

@@ -14,7 +14,8 @@
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:docs": "node scripts/check-docs.mjs",
     "check:data": "node scripts/check-data-integrity.mjs",
-    "check:mobile": "node scripts/check-mobile.mjs"
+    "check:mobile": "node scripts/check-mobile.mjs",
+    "build:figma": "node scripts/build-figma.mjs"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",
