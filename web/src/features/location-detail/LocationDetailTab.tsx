@@ -202,9 +202,9 @@ function LocationBody({ data, map }: { data: LocationDetailData; map: ReactNode 
                 {data.topTaxpayers.rows.map((row) => (
                   <tr key={row.id}>
                     <th scope="row">{row.name}</th>
-                    <td>{row.industry}</td>
-                    <td className="is-num">{inScale(row.amount, taxpayerScale)}</td>
-                    <td className="is-num">{pct(row.share)}</td>
+                    <td data-label="Ngành nghề">{row.industry}</td>
+                    <td className="is-num" data-label="Số thu">{inScale(row.amount, taxpayerScale)}</td>
+                    <td className="is-num" data-label="Tỷ trọng">{pct(row.share)}</td>
                   </tr>
                 ))}
               </tbody>

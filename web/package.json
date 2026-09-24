@@ -13,7 +13,8 @@
     "check:report-ui": "node scripts/check-report-ui.mjs",
     "check:tokens": "node scripts/check-tokens.mjs",
     "check:docs": "node scripts/check-docs.mjs",
-    "check:data": "node scripts/check-data-integrity.mjs"
+    "check:data": "node scripts/check-data-integrity.mjs",
+    "check:mobile": "node scripts/check-mobile.mjs"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",
