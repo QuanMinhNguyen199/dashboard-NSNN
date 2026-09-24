@@ -158,7 +158,7 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
         <Kpi label={filters.accumulation === "YTD" ? "% tiến độ dự toán" : "% hoàn thành kế hoạch tháng"} note={data.estimate ? `Dự toán năm ${money(data.estimate.annual)}` : "Chưa có dữ liệu dự toán"}>{data.estimate?.progress == null ? "—" : pct(data.estimate.progress * 100)}</Kpi>
       </KpiStrip>
 
-      <Card title={`Xu hướng và nhịp độ ${sourceLabel.toLowerCase()}`} subtitle="Cột là số phát sinh tháng; đường là tiến độ lũy kế và cùng kỳ">
+      <Card title={`Xu hướng và nhịp độ ${sourceLabel.toLowerCase()}`} subtitle="Cột: phát sinh tháng · Đường: lũy kế năm nay và cùng kỳ">
         <RevenueComboChart monthly={data.monthlyTrend} cumulative={data.cumulativeTrend} year={filters.year} onSelectMonth={(period) => setFilters({ periodType: "MONTH", period, accumulation: "PERIOD" })} />
       </Card>
 
@@ -261,67 +261,9 @@ function mocTruc(dinh: number, divisor: number, soBuoc = 4) {
 }
 
 /**
- * Một khung vẽ: trục Y riêng, lưới riêng, nội dung do người gọi đưa vào.
- *
- * Tách ra thành component vì hai khung phải cùng một hình học tuyệt đối — cùng
- * máng trục bên trái, cùng mép phải. Lệch một pixel là cột tháng 7 không còn
- * thẳng hàng với điểm tháng 7 của đường ngay trên nó.
- */
-function KhungVe({
-  nhan,
-  phu,
-  mocs,
-  tran,
-  unit,
-  cao,
-  children,
-}: {
-  /** Tên đại lượng của KHUNG NÀY — xem chú thích ở `RevenueComboChart`. */
-  nhan: string;
-  /** Noi dung phu canh phai hang nhan - chu giai cua CHINH khung nay. */
-  phu?: ReactNode;
-  mocs: number[];
-  tran: number;
-  unit: ReturnType<typeof moneyScale>;
-  cao: number;
-  children: ReactNode;
-}) {
-  return (
-    <section className="drevenue-combo-panel" aria-label={`${nhan}, đơn vị ${unit.unit}`}>
-      <p className="drevenue-combo-cap">
-        <b>{nhan}</b>
-        <small>{unit.unit}</small>
-        {phu}
-      </p>
-      <div className="drevenue-combo-plot" style={{ height: `${cao}px` }}>
-      <div className="drevenue-combo-axis" aria-hidden="true">
-        {mocs.map((m) => (
-          <span key={m} style={{ bottom: `${(m / tran) * 100}%` }}>
-            <b>{inScale(m, unit)}</b>
-          </span>
-        ))}
-      </div>
-        {children}
-      </div>
-    </section>
-  );
-}
-
-/**
- * Xu hướng và nhịp độ: HAI KHUNG chồng nhau, dùng chung trục X.
- *
- * Lũy kế tám tháng lớn gấp ~9,6 lần số phát sinh một tháng, và đó là quan hệ
- * SỐ HỌC chứ không phải một lựa chọn của số liệu: lũy kế chính là tổng của
- * các tháng, nên không đổi mock nào kéo hai đại lượng này về gần nhau được.
- *
- * Nhồi cả hai vào một khung thì chỉ còn hai đường ra:
- *   · một thang chung — cột dẹp xuống còn mười phần trăm khung;
- *   · hai thang giấu — cột trông ngang đường nhưng thực ra bằng một phần
- *     hai mươi, và không có gì trên màn hình nói điều đó. Đây là bản cũ.
- *
- * Hai khung thì MỖI khung một thang, và cả hai thang đều được vẽ ra. Cột cao
- * hết khung của nó, trục của nó mang số nhỏ đọc được, và không ai bị mời so
- * chiều cao cột với độ cao của đường nữa.
+ * Combo chart đúng đặc tả: cột phát sinh tháng và hai đường lũy kế nằm trong
+ * cùng một vùng vẽ. Hai trục Y được ghi rõ ở hai mép để người đọc không so
+ * trực tiếp chiều cao của hai đại lượng có quy mô khác nhau.
  */
 function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
   monthly: TrendPoint[];
@@ -333,10 +275,17 @@ function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
   const giaTriLuyKe = cumulative.flatMap((p) => [p.current ?? 0, p.previous ?? 0]);
   const unit = moneyScale([...giaTriThang, ...giaTriLuyKe]);
 
-  // Ba buoc cho ca hai khung: voi dinh 56.816 thi buoc 2 cho tran 100.000 va
-  // cot chi cao 57% khung; buoc 3 cho tran 60.000, cot cao gan het khung.
+  // Ba bước giúp các mốc tròn và giữ cột tháng đủ cao để đọc.
   const lk = mocTruc(Math.max(...giaTriLuyKe, 1), unit.divisor, 3);
   const th = mocTruc(Math.max(...giaTriThang, 1), unit.divisor, 3);
+  const ticks = Array.from({ length: 4 }, (_, index) => {
+    const ratio = index / 3;
+    return {
+      ratio,
+      monthly: th.tran * ratio,
+      cumulative: lk.tran * ratio,
+    };
+  });
 
   const line = (key: "current" | "previous") => cumulative
     .map((point, index) => {
@@ -346,71 +295,71 @@ function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
         X nằm giữa Ô THÁNG, không phải `index / 11`.
 
         Lưới cột chia 12 ô đều và đặt cột ở tâm ô, tức (i + 0,5) / 12.
-        `index / 11` đặt điểm đầu sát mép trái và điểm cuối sát mép phải, nên
-        điểm tháng 7 của đường không nằm trên cột tháng 7 — hai khung chồng
-        nhau mà trục X lệch thì việc chồng chúng lên mất hết ý nghĩa.
+        Vì vậy điểm đường của mỗi tháng nằm đúng giữa cột tương ứng.
       */
       return `${((index + 0.5) / 12) * 100},${100 - (value / lk.tran) * 100}`;
     })
     .filter(Boolean).join(" ");
 
-  return <div className="drevenue-combo">
-    {/* Chu giai nam o CHINH khung cua no. De o day thi mat khoang cach tu net ve
-        toi cai ten cua no chi con mot hang; de o day trang thi nguoi doc phai
-        nho mau tu duoi len. */}
-    <KhungVe
-      nhan="Tiến độ lũy kế"
-      phu={
-        <span className="drevenue-combo-keys">
-          <i className="is-current" />Lũy kế {year}
-          <i className="is-previous" />Cùng kỳ {year - 1}
+  return <section
+    className="drevenue-combo"
+    aria-label={`Biểu đồ kết hợp phát sinh tháng và lũy kế, đơn vị ${unit.unit}`}
+  >
+    <div className="drevenue-combo-inner">
+      <div className="drevenue-combo-head">
+        <span className="drevenue-combo-axis-title">Phát sinh tháng · {unit.short}</span>
+        <span className="drevenue-combo-keys" aria-hidden="true">
+          <span><i className="is-monthly" />Phát sinh tháng</span>
+          <span><i className="is-current" />Lũy kế {year}</span>
+          <span><i className="is-previous" />Cùng kỳ {year - 1}</span>
         </span>
-      }
-      mocs={lk.mocs}
-      tran={lk.tran}
-      unit={unit}
-      cao={168}
-    >
+        <span className="drevenue-combo-axis-title is-right">Lũy kế · {unit.short}</span>
+      </div>
+
+      <div className="drevenue-combo-plot">
+        <div className="drevenue-combo-axis" aria-hidden="true">
+          {ticks.map(({ ratio, monthly: monthlyTick, cumulative: cumulativeTick }) => (
+            <span key={ratio} style={{ bottom: `${ratio * 100}%` }}>
+              <b>{inScale(monthlyTick, unit)}</b>
+              <i />
+              <em>{inScale(cumulativeTick, unit)}</em>
+            </span>
+          ))}
+        </div>
+
+        <div className="drevenue-combo-bars">
+          {monthly.map((point) => (
+            <button
+              key={point.month}
+              type="button"
+              disabled={point.current === null}
+              onClick={() => onSelectMonth(point.month)}
+              title={`${point.label}: ${point.current === null ? "chưa có số liệu" : `${inScale(point.current, unit)} ${unit.short}`}`}
+            >
+              {point.current !== null && (
+                <i style={{ height: `${Math.max((point.current / th.tran) * 100, 1)}%` }} />
+              )}
+              <span>{point.label}</span>
+            </button>
+          ))}
+        </div>
+
       <div className="drevenue-combo-area">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <polyline className="is-previous" points={line("previous")} />
           <polyline className="is-current" points={line("current")} />
         </svg>
       </div>
-    </KhungVe>
-
-    <KhungVe nhan="Phát sinh từng tháng" mocs={th.mocs} tran={th.tran} unit={unit} cao={150}>
-      <div className="drevenue-combo-bars">
-        {monthly.map((point) => (
-          <button
-            key={point.month}
-            type="button"
-            /* Tháng chưa có số thì KHÔNG bấm được. `clampPeriod` vốn đã chặn ở
-               tầng state, nhưng chặn im lặng thì người dùng bấm xong không thấy gì
-               đổi và không biết tại sao. */
-            disabled={point.current === null}
-            onClick={() => onSelectMonth(point.month)}
-            title={`${point.label}: ${point.current === null ? "chưa có số liệu" : `${inScale(point.current, unit)} ${unit.short}`}`}
-          >
-            {/* Tháng chưa có số thì không vẽ gì: để `<i>` cao 0 thì viền 1px vẫn
-                hiện ra thành một vạch, đọc như "có phát sinh nhưng rất nhỏ". */}
-            {point.current !== null && (
-              <i style={{ height: `${Math.max((point.current / th.tran) * 100, 1)}%` }} />
-            )}
-            <span>{point.label}</span>
-          </button>
-        ))}
       </div>
-    </KhungVe>
-
-  </div>;
+    </div>
+  </section>;
 }
 
 function InspectorTable({ rows }: { rows: AmountRow[] }) {
   const unit = moneyScale(rows.flatMap((row) => [row.amount, row.previous, row.amount - (row.previous ?? 0)]));
   return <div className="dtable-wrap"><table className="dtable dinspector-finance"><thead><tr><th>Khoản mục / Đối tượng</th><th className="is-num">Kỳ này</th><th className="is-num">Cùng kỳ</th><th className="is-num">Chênh lệch</th><th className="is-num">Tăng trưởng</th><th className="is-num">Tỷ trọng</th></tr></thead><tbody>{rows.map((row) => {
     const delta = row.amount - (row.previous ?? 0);
-    return <tr key={row.id}><th scope="row">{row.name}</th><td className="is-num">{inScale(row.amount, unit)}</td><td className="is-num">{row.previous === null ? "—" : inScale(row.previous, unit)}</td><td className={`is-num ${delta >= 0 ? "tone-pos" : "tone-neg"}`}>{row.previous === null ? "—" : `${delta >= 0 ? "+" : "−"}${inScale(Math.abs(delta), unit)}`}</td><td className="is-num"><Change current={row.amount} previous={row.previous} /></td><td className="is-num"><span className="dshare-cell"><i><em style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0)}%` }} /></i>{pct(row.share)}</span></td></tr>;
+    return <tr key={row.id}><th scope="row">{row.name}</th><td className="is-num" data-label="Kỳ này">{inScale(row.amount, unit)}</td><td className="is-num" data-label="Cùng kỳ">{row.previous === null ? "—" : inScale(row.previous, unit)}</td><td className={`is-num ${delta >= 0 ? "tone-pos" : "tone-neg"}`} data-label="Chênh lệch">{row.previous === null ? "—" : `${delta >= 0 ? "+" : "−"}${inScale(Math.abs(delta), unit)}`}</td><td className="is-num" data-label="Tăng trưởng"><Change current={row.amount} previous={row.previous} /></td><td className="is-num" data-label="Tỷ trọng"><span className="dshare-cell"><i><em style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0)}%` }} /></i>{pct(row.share)}</span></td></tr>;
   })}</tbody></table></div>;
 }
 
@@ -444,7 +393,7 @@ function TaxpayerTable({ rows, onSelect }: { rows: TaxpayerRow[]; onSelect: (row
     nên một con số một chữ số chiếm 305px trong khi sáu cột còn lại chia đều
     90px, và tên doanh nghiệp phải xuống ba dòng.
   */
-  return <div className="dtable-wrap"><table className="dtable dtaxpayer-table"><thead><tr><th className="dcol-rank">STT</th><th className="dcol-code">Mã hiển thị</th><th>Người nộp thuế</th><th className="dcol-meta">Ngành nghề chính</th><th className="dcol-office">Đơn vị quản lý</th><th className="is-num dcol-money">Số đã nộp</th><th className="is-num dcol-pct">Tỷ trọng</th></tr></thead><tbody>{rows.map((row, index) => <tr key={row.id} onClick={() => onSelect(row)}><td className="dcol-rank">{index + 1}</td><td className="dcol-code"><button type="button" className="dlink" onClick={(event) => { event.stopPropagation(); onSelect(row); }}>{row.displayCode}</button></td><th scope="row" title={row.name}>{row.name}</th><td className="dcol-meta" title={row.industry}>{row.industry}</td><td className="dcol-office" title={row.taxOffice}>{row.taxOffice}</td><td className="is-num dcol-money">{inScale(row.amount, unit)}</td><td className="is-num dcol-pct">{pct(row.share)}</td></tr>)}</tbody></table></div>;
+  return <div className="dtable-wrap"><table className="dtable dtaxpayer-table"><thead><tr><th className="dcol-rank">STT</th><th className="dcol-code">Mã hiển thị</th><th>Người nộp thuế</th><th className="dcol-meta">Ngành nghề chính</th><th className="dcol-office">Đơn vị quản lý</th><th className="is-num dcol-money">Số đã nộp</th><th className="is-num dcol-pct">Tỷ trọng</th></tr></thead><tbody>{rows.map((row, index) => <tr key={row.id} onClick={() => onSelect(row)}><td className="dcol-rank" data-label="STT">{index + 1}</td><td className="dcol-code" data-label="Mã hiển thị"><button type="button" className="dlink" onClick={(event) => { event.stopPropagation(); onSelect(row); }}>{row.displayCode}</button></td><th scope="row" title={row.name}>{row.name}</th><td className="dcol-meta" data-label="Ngành nghề chính" title={row.industry}>{row.industry}</td><td className="dcol-office" data-label="Đơn vị quản lý" title={row.taxOffice}>{row.taxOffice}</td><td className="is-num dcol-money" data-label="Số đã nộp">{inScale(row.amount, unit)}</td><td className="is-num dcol-pct" data-label="Tỷ trọng">{pct(row.share)}</td></tr>)}</tbody></table></div>;
 }
 
 function DomesticGroupStructure({

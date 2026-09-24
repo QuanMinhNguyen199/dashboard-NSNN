@@ -2592,13 +2592,56 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dheader { padding: 12px 15px; }
   .dheader h1 { font-size: var(--fs-insight); }
   .dheader p, .dheader-frame { display: none; }
-  .dshell { padding: 0 10px 32px; }
-  .dtabs {
-    gap: var(--s4); padding-right: var(--s6);
-    -webkit-mask-image: linear-gradient(to right, var(--ink) 0, var(--ink) calc(100% - 28px), transparent 100%);
-    mask-image: linear-gradient(to right, var(--ink) 0, var(--ink) calc(100% - 28px), transparent 100%);
+  .dshell { padding: 0 10px; }
+  /* ĐIỀU HƯỚNG ĐÁY — thay dải tab cuộn ngang ở đỉnh.
+     Dải cuộn ngang giấu mất tab thứ tư và năm sau một lớp mask, và nó nằm ở
+     đỉnh màn hình — xa vùng ngón cái nhất. Đáy thì năm tab hiện cùng lúc và
+     nằm đúng tầm với. `env(safe-area-inset-bottom)` chừa chỗ cho thanh home. */
+  /* Thanh KINH MỜ (sticky glass).
+     Bản trước nền trắng ĐẶC, trùng đúng màu thẻ ngay phía trên, nên năm
+     nhãn ở đáy đọc như chữ rơi cuối trang chứ không ra một thanh điều hướng
+     — đường kẻ 1px và bóng đổ không đủ tách hai mặt phẳng cùng một màu.
+     Nền trong mờ có làm mờ thì nội dung chạy phía sau, và chính chuyển động
+     đó mới nói rằng thanh nằm TRÊN mặt phẳng khác. */
+  /* Áp dụng cho cả Mobile WebView (`data-host="mobile"`) và trình duyệt thật
+     đang ở viewport điện thoại. Iframe web giữ nguyên điều hướng phía trên. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dshell > nav {
+    position: fixed; inset: auto 0 0 0; z-index: 60;
+    background: color-mix(in srgb, var(--surface) 68%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+    backdrop-filter: blur(18px) saturate(1.7);
+    border-top: 1px solid var(--hairline);
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: var(--shadow-overlay);
   }
-  .dtabs button { font-size: var(--fs-caption); min-height: 48px; }
+  /* Không có `backdrop-filter` thì nền trong mờ thành chữ chồng lên chữ.
+     Trả về nền đặc — xấu hơn nhưng đọc được, và đọc được là điều kiện. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dshell > nav { background: var(--surface); }
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dtabs {
+    position: static; margin: 0; gap: 0; min-height: 0;
+    border-bottom: 0; background: transparent; overflow: visible;
+    display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+    padding-inline: max(4px, env(safe-area-inset-left)) max(4px, env(safe-area-inset-right));
+  }
+  /* `.dshell nav` chu khong phai `.dtabs`: co mot luat nen `.dshell button
+     { min-height: 44px }` o khoi 767 phia duoi, cung do uu tien ma dung sau
+     nen no thang. San 44px do la dung chuan cham; thanh day thi can 56px theo
+     thong le nen tang do uu tien thay vi ha san chung xuong. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dshell nav .dtabs button {
+    min-height: 56px; padding: 8px 4px;
+    font-size: var(--fs-label); line-height: var(--lh-dense); white-space: normal;
+    border-bottom: 0; border-top: 3px solid transparent;
+    text-align: center;
+  }
+  /* Cung do uu tien voi luat dat `border-top` o tren. Viet thap hon thi shorthand
+     `border-top: 3px solid transparent` thang longhand nay va vach chi bao khong
+     bao gio hien - mau chu van doi nen loi di qua mat rat de. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dshell nav .dtabs button.is-active { border-bottom-color: transparent; border-top-color: var(--brand); }
+  /* Chừa chỗ cho thanh đáy: thiếu dòng này thì thẻ cuối mọi trang nằm dưới
+     thanh điều hướng và không cách nào đọc được. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dshell { padding-bottom: calc(56px + 24px + env(safe-area-inset-bottom)); }
   /* Sáu bộ lọc trên lưới cố định: hai cột ở điện thoại, ba cột khi còn đủ rộng
      để bớt một hàng chiếm chỗ phía trên nội dung. */
   .dfilters { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); padding: 12px; }
@@ -2659,8 +2702,32 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dfilters .dseg button { flex: 1 1 0; min-height: 38px; padding: 3px 6px; }
   .dkpis strong { font-size: var(--fs-metric-sm); }
   .dbar-row { grid-template-columns: 20px minmax(0, 1fr); }
-  .dbar-row > .dchange { grid-column: 2; }
+  /* Danh sách số liệu mobile dùng một đường neo cố định ở mép phải. Tên có
+     thể xuống hai dòng nhưng số tiền, tỷ lệ và biến động không trôi theo độ
+     dài của tên — mắt chỉ cần quét thẳng một cột. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dbar-label {
+    display: grid; grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: start; gap: 2px var(--s3);
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dbar-label > b { grid-column: 1; }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dbar-label > .dbar-value {
+    grid-column: 2; margin-left: 0; justify-self: end; text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dbar-row > :is(.dchange, .dbar-trail) {
+    grid-column: 2; justify-self: end; text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) button.dbar-row {
+    position: relative; padding-right: 14px;
+  }
+  /* Dấu điều hướng là affordance của cả hàng, nên neo nó ở mép phải thay vì
+     để pseudo-element tự rơi xuống một ô lưới mới bên dưới số thứ tự. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) button.dbar-row::after {
+    position: absolute; right: 1px; top: 50%; margin: 0;
+  }
   .dcontrib-row { grid-template-columns: 1fr auto; }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dcontrib-row > strong {
+    justify-self: end; text-align: right;
+  }
   .dcontrib-track { grid-row: 2; grid-column: 1 / -1; }
   .ddrawer { width: 100vw; height: 100dvh; padding: var(--s4); }
   /* Bảng chi tiết ở màn hình hẹp: bỏ hai cột phụ để bốn cột còn lại đọc được
@@ -2740,6 +2807,16 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   /* `.dskip` là khối, cần căn giữa chữ theo chiều dọc sau khi nâng chiều cao. */
   .dskip { display: inline-flex; align-items: center; }
 
+  /* 12 tháng cần đủ bề rộng chạm. Cuộn toàn bộ combo để cột và điểm đường
+     luôn giữ chung một trục X. */
+  /* `min-width: 0` la thu lam cho `overflow-x` co tac dung.
+     Grid/flex item mac dinh `min-width: auto` = min-content, nen o day no lay
+     640px cua khung ve lam be rong toi thieu va NONG ca the ra - the tran noi
+     dung 325px o 390px, do duoc o tieu chi 16. Vung cuon chi cuon duoc khi
+     chinh no duoc phep hep hon noi dung. */
+  .drevenue-combo { min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; }
+  .drevenue-combo-inner { min-width: 680px; }
+
   /* Ô trong bảng dùng `table-layout: fixed`; `min-height` trên nút bên trong ô
      không nâng được chiều cao hàng, phải nới bằng đệm dọc. */
   .dtable thead th { padding: 0; }
@@ -2763,6 +2840,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
      con trỏ chuột, hai đích sát nhau là nguồn bấm nhầm. */
   .dlist-tools, .dactions, .dcard-actions { gap: var(--s3); }.dmap-zoom { gap: 6px; }
 }
+
+/* Khung xem thử mobile vẫn dùng chuột nên không khớp `pointer: coarse`. */
+.dapp[data-host="mobile"] .drevenue-combo {
+  overflow-x: auto; overscroll-behavior-x: contain;
+}
+.dapp[data-host="mobile"] .drevenue-combo-inner { min-width: 680px; }
 
 /*
  * Thiết bị không hover được thì mọi affordance chỉ hiện khi hover đều vô hình.
@@ -3092,71 +3175,63 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   display: grid; grid-template-columns: minmax(320px, 5fr) minmax(0, 7fr); gap: var(--s4); align-items: stretch;
 }
 .drevenue-master-detail > *, .drevenue-drivers > * { min-width: 0; }
-/* Khe GIUA hai khung phai lon hon khe giua cac moc trong mot khung, neu khong
-   thi cot moc ben trai doc thanh mot day lien: 600.000 / 400.000 / 200.000 /
-   0 / 60.000 / 40.000 ... - mot truc khong ton tai. Do duoc o ban truoc: hai
-   khung cach nhau 12px trong khi hai moc trong khung cach 38px. */
-.drevenue-combo { display: grid; gap: var(--s5); }
-.drevenue-combo-panel { display: grid; gap: 6px; }
-/* Nhan khung la thu noi "day la mot thang RIENG". Khong co no thi hai khung
-   chi la mot bieu do bi ke ngang mot duong. */
-.drevenue-combo-cap {
-  display: flex; align-items: baseline; gap: var(--s2);
-  margin: 0; padding-left: 56px;
-  color: var(--ink-2); font-size: var(--fs-label);
+/* Combo chart dùng chung một vùng vẽ. Trục trái là phát sinh tháng, trục phải
+   là lũy kế; hai thang được ghi cùng một đường lưới để không bị hiểu là cùng
+   đơn vị tỷ lệ. */
+.drevenue-combo { min-width: 0; }
+.drevenue-combo-inner { display: grid; gap: var(--s2); min-width: 0; }
+/* Cuon ngang buoc theo BE RONG, khong theo loai con tro.
+   Ban truoc dat luat nay trong `@media (pointer: coarse)`, nen trinh duyet
+   khong gia lap cham thi no khong ap: o 390px khung ve 680px tran ra ngoai
+   the 325px va khong co gi de cuon lai. Chuot hay ngon tay khong lien quan -
+   thu quyet dinh la khung co du cho hay khong. */
+@media (max-width: 767px) {
+  .drevenue-combo { overflow-x: auto; overscroll-behavior-x: contain; }
+  .drevenue-combo-inner { min-width: 680px; }
 }
-.drevenue-combo-cap > b { font-weight: var(--fw-label); }
-.drevenue-combo-cap > small { color: var(--ink-3); font-size: inherit; }
-/* Chu giai cua khung: day sang mep phai cua chinh hang nhan. */
-.drevenue-combo-keys { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
-.drevenue-combo-keys > i { width: 20px; height: 2px; background: var(--brand); }
-.drevenue-combo-keys > i + i, .drevenue-combo-keys > i:not(:first-child) { margin-left: var(--s3); }
-.drevenue-combo-keys > i.is-previous { background: repeating-linear-gradient(90deg, var(--data-reference) 0 5px, transparent 5px 9px); }
-/* Chua cho truc Y ben trai bang `padding-left`: dat `left` cho tung lop ben
-   trong thi moi lop phai nho mot con so, sot mot cai la cot lech khoi luoi. */
-/* Chieu cao do component dat (`style`), vi hai khung khac nhau. Chi khung DUOI
-   co duong day: khung tren khong co nhan thang nen mot duong ke o do chi la
-   mot net thua giua hai khung. */
-.drevenue-combo-plot { position: relative; padding-left: 56px; }
-.drevenue-combo-panel:last-of-type .drevenue-combo-plot { border-bottom: 1px solid var(--hairline); }
-/* Khung tren khong co hang nhan 26px, nen day cua no sat mep duoi. */
-.drevenue-combo-panel:first-of-type .drevenue-combo-axis,
-.drevenue-combo-panel:first-of-type .drevenue-combo-area { inset: 8px 1.6% 0 0; }
-.drevenue-combo-panel:first-of-type .drevenue-combo-area { left: 56px; }
-/* Truc Y: moc so + duong luoi. Luoi la `::after` cua chinh moc nen khong bao
-   gio lech khoi con so dang ghi no. */
-.drevenue-combo-axis { position: absolute; inset: 8px 1.6% 26px 0; }
+.drevenue-combo-head {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: var(--s3); min-height: 24px;
+  color: var(--ink-3); font-size: var(--fs-label);
+}
+.drevenue-combo-axis-title { white-space: nowrap; }
+.drevenue-combo-axis-title.is-right { text-align: right; }
+.drevenue-combo-keys {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: var(--s2) var(--s4); color: var(--ink-2);
+}
+.drevenue-combo-keys > span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.drevenue-combo-keys i { display: inline-block; width: 20px; height: 2px; background: var(--brand); }
+.drevenue-combo-keys i.is-monthly {
+  width: 12px; height: 8px;
+  background: color-mix(in srgb, var(--data-secondary) 28%, transparent);
+  border: 1px solid var(--data-secondary);
+}
+.drevenue-combo-keys i.is-previous { background: repeating-linear-gradient(90deg, var(--data-reference) 0 5px, transparent 5px 9px); }
+.drevenue-combo-plot { position: relative; height: 224px; }
+.drevenue-combo-axis { position: absolute; inset: 8px 58px 22px 52px; }
 .drevenue-combo-axis > span {
-  position: absolute; left: 0; right: 0; height: 0;
-  display: flex; align-items: center;
+  position: absolute; left: -52px; right: -58px; height: 0;
+  display: grid; grid-template-columns: 46px minmax(0, 1fr) 52px; align-items: center;
 }
-.drevenue-combo-axis > span > b {
-  flex: 0 0 48px; padding-right: 8px; text-align: right;
-  color: var(--ink-3); font-size: var(--fs-label); font-weight: var(--fw-regular);
-  font-variant-numeric: tabular-nums; transform: translateY(-0.5px);
+.drevenue-combo-axis > span > b,
+.drevenue-combo-axis > span > em {
+  color: var(--ink-3); font-size: var(--fs-label); font-style: normal;
+  font-weight: var(--fw-regular); font-variant-numeric: tabular-nums;
+  transform: translateY(-0.5px);
 }
-.drevenue-combo-axis > span::after {
-  content: ""; flex: 1 1 auto; height: 1px; background: var(--divider);
-}
+.drevenue-combo-axis > span > b { padding-right: 6px; text-align: right; }
+.drevenue-combo-axis > span > em { padding-left: 6px; text-align: left; }
+.drevenue-combo-axis > span > i { height: 1px; background: var(--divider); }
 .dchart-unit { color: var(--ink-3); }
-/* Hop ve duong: CUNG `inset` voi truc Y nen duong va luoi luon cham nhau. */
-.drevenue-combo-area { position: absolute; inset: 8px 1.6% 26px 56px; pointer-events: none; }
+.drevenue-combo-area { position: absolute; inset: 8px 58px 22px 52px; pointer-events: none; }
 .drevenue-combo-area > svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .drevenue-combo-area polyline { fill: none; vector-effect: non-scaling-stroke; stroke-width: 2; }
 .drevenue-combo-area polyline.is-current { stroke: var(--brand); }
 .drevenue-combo-area polyline.is-previous { stroke: var(--data-reference); stroke-dasharray: 5 4; }
-/* CUNG inset voi `.drevenue-combo-area` de hai khung trung truc X tuyet doi. */
-/* CUNG inset voi `.drevenue-combo-area` de hai khung trung truc X tuyet doi.
-   `gap: 0` la bat buoc: 11 khe x 8px keo tam cot lech khoi (i+0,5)/12 toi 4px
-   o hai dau - do duoc, va do la do lech giua cot thang 1 va diem thang 1 cua
-   duong ngay tren no. Cot da hep hon o (`width: min(62%, 34px)`) nen bo khe
-   khong lam chung dinh nhau. */
-.drevenue-combo-bars { position: absolute; inset: 0 1.6% 0 56px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 0; }
+.drevenue-combo-bars { position: absolute; inset: 8px 58px 0 52px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 0; }
 .drevenue-combo-bars button { display: grid; grid-template-rows: 1fr 22px; align-items: end; height: 100%; min-width: 0; }
 .drevenue-combo-bars button i { display: block; width: min(62%, 34px); min-height: 0; margin-inline: auto; background: color-mix(in srgb, var(--data-secondary) 28%, transparent); border: 1px solid var(--data-secondary); border-bottom: 0; }
-/* Nhan thang ghim o HANG 2. Thang chua co so khong ve `<i>`, nen neu khong
-   ghim thi nhan roi vao hang 1 va troi len giua khung ve - T9..T12 nam lung
-   lo giua bieu do. */
 .drevenue-combo-bars button:disabled { cursor: default; }
 .drevenue-combo-bars button:disabled span { color: var(--nodata); }
 .drevenue-combo-bars button span { grid-row: 2; align-self: center; color: var(--ink-3); font-size: var(--fs-label); }
@@ -3176,8 +3251,21 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
    này là lý do một ô bị thiếu chỗ không bao giờ biến mất trong im lặng nữa. */
 .drevenue-drivers > .dcard:first-child .dcard-body { overflow-x: auto; }
 .dheatmap > b { padding: 5px; color: var(--ink-2); font-size: var(--fs-label); text-align: center; }
-.dheatmap-row > strong { align-self: center; min-width: 0; padding: 6px 8px 6px 0; overflow: hidden; font-size: var(--fs-label); text-overflow: ellipsis; white-space: nowrap; }
-.dheatmap-row > button { min-height: 42px; padding: 4px; border: 1px solid var(--hairline); border-radius: var(--r-chip); /* Dải màu DẮN Ở 55%, không chạy hết tới màu thương hiệu.
+/* Nhan hang DINH TRAI khi luoi cuon ngang.
+   Khong dinh thi cuon 200px la nhan ra khoi khung (do duoc: -187px) va con lai
+   mot luoi so khong biet thuoc nganh nao - dung thu ma luoi nhiet sinh ra de
+   noi. O kho rong khong co cuon nao nen `sticky` la mot luat khong lam gi. */
+.dheatmap-row > strong {
+  position: sticky; left: 0; z-index: 1;
+  align-self: stretch; display: flex; align-items: center;
+  min-width: 0; padding: 6px 8px 6px 0;
+  background: var(--surface);
+  overflow: hidden; font-size: var(--fs-label); text-overflow: ellipsis; white-space: nowrap;
+}
+/* Cot goc cua hang dau cung phai dinh, neu khong thi tieu de sac thue truot
+   qua duoi nhan hang dang dinh. */
+.dheatmap > span:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); }
+.dheatmap-row > button { min-height: 44px; padding: 4px; border: 1px solid var(--hairline); border-radius: var(--r-chip); /* Dải màu DẮN Ở 55%, không chạy hết tới màu thương hiệu.
      Số nằm TRÊN nền, nên nền càng đậm thì chữ càng chìm: đo được 7/24 ô dưới
      chuẩn AA 4,5:1, thấp nhất 2,15:1. Đổi sang chữ trắng cũng không cứu được:
      trong khoảng pha 0,65–0,79 thì KHÔNG màu chữ nào đạt 4,5 — chữ tối còn
@@ -3274,17 +3362,211 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .doverview-sources { grid-template-columns: 1fr; }
   .doverview-sources button { min-height: 76px; border-right: 0; border-top: 1px solid var(--hairline); }
   .doverview-sources button:first-child { border-top: 0; }
-  .drevenue-combo-plot { height: 180px; }
+  /* Các danh sách điều hành khác dùng cùng cột neo số liệu. Chỉ áp dụng cho
+     Mobile WebView và mobile web độc lập; iframe web khổ hẹp vẫn giữ bố cục
+     báo cáo của desktop. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) :is(
+    .dlist-amount,
+    .dexecution-list button > strong,
+    .dtaxpayer-list button > strong,
+    .dtax-card-amount,
+    .dcqt-num,
+    .dledger li > strong:last-child,
+    .dbudget-value
+  ) {
+    justify-self: end; margin-left: auto; text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > span {
+    grid-column: 1; grid-row: 1; align-self: center;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > strong {
+    grid-column: 2; grid-row: 1; justify-self: end; padding-right: var(--s4); text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > small {
+    grid-column: 2; grid-row: 2; justify-self: end; padding-right: var(--s4); text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dtax-location-grid .dtax-card-amount {
+    width: 100%;
+  }
+  .drevenue-combo-inner { min-width: 680px; }
   .drevenue-combo-bars { gap: 3px; }
   .drevenue-combo-bars button i { width: 72%; }
   .drevenue-master-detail, .drevenue-drivers { gap: var(--s3); }
-  .dheatmap { min-width: 600px; }
-  .drevenue-drivers > .dcard:first-child .dcard-body { overflow-x: auto; }
-  .dinspector-finance thead, .dtaxpayer-table thead { display: none; }
-  .dinspector-finance tbody tr, .dtaxpayer-table tbody tr { display: grid; grid-template-columns: 1fr 1fr; gap: 4px var(--s3); padding: 9px var(--s2); border-bottom: 1px solid var(--divider); }
-  .dinspector-finance tbody th, .dtaxpayer-table tbody th { grid-column: 1 / -1; }
-  .dinspector-finance tbody td, .dtaxpayer-table tbody td { padding: 0; border: 0; text-align: left; }
-  .dtaxpayer-table tbody td:nth-child(1), .dtaxpayer-table tbody td:nth-child(2), .dtaxpayer-table tbody td:nth-child(5) { display: none; }
+  /* Heatmap desktop đặt tên ngành ở cột đầu rồi mới đến bốn sắc thuế. Trên
+     mobile, cấu trúc đó cần tối thiểu 600px và khiến hai cột đầu trượt khuất
+     dưới tên ngành đang sticky. Xếp tên ngành thành tiêu đề của từng hàng số:
+     bốn sắc thuế luôn nằm trọn trong card, không còn trạng thái nhìn thấy số
+     nhưng không biết thuộc cột nào. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dheatmap {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 4px; min-width: 0;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dheatmap > span:first-child { display: none; }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dheatmap > b {
+    min-width: 0; padding: 4px 2px 6px;
+    line-height: var(--lh-dense); overflow-wrap: anywhere;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dheatmap-row > strong {
+    position: static; grid-column: 1 / -1; z-index: auto;
+    min-height: 0; padding: 10px 0 3px; border-top: 1px solid var(--divider);
+    overflow: visible; white-space: normal; text-overflow: clip;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dheatmap-row > button {
+    min-width: 0; padding-inline: 2px; text-align: center;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .drevenue-drivers > .dcard:first-child .dcard-body {
+    overflow-x: visible;
+  }
+  /* BỘ LỌC -> BOTTOM SHEET.
+     Mở ra thì panel bọ vào đáy màn hình trong tầm ngón cái thay vì đẩy nội
+     dung xuống: ở khổ 390px, sáu ô lọc mở ra chiếm gần nửa màn hình và đẩy
+     chính con số người dùng đang xem ra khỏi tầm nhìn. Đóng lại thì nó về làm
+     một dải tóm tắt — dải này NÓI RA bộ lọc đang áp, thứ một nút tròn không
+     nói được, nên nó vừa là nút mở vừa là trạng thái. */
+  .dapp[data-host="mobile"] .dfilters[data-open="true"] {
+    position: fixed; inset: auto 0 0 0; z-index: 80;
+    max-height: 78dvh; overflow-y: auto; overscroll-behavior: contain;
+    border-radius: var(--r-surface) var(--r-surface) 0 0;
+    box-shadow: var(--shadow-overlay);
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  /* Màn chắn: bấm ra ngoài để đóng vẫn do nút trong panel lo, nhưng lớp tối
+     này là thứ nói rằng phần phía sau đang tạm không dùng được. */
+  .dapp[data-host="mobile"] .dfilters[data-open="true"]::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; background: var(--scrim);
+  }
+  /* Dải tóm tắt khi đóng: dính đỉnh để luôn với tới được khi cuộn dài. */
+  /* Dải tóm tắt dính đỉnh cũng là một mặt phẳng nổi trên nội dung, nên dùng
+     cùng ngôn ngữ kính mờ với thanh đáy. Hai mặt phẳng nổi mà khác chất
+     liệu thì người dùng phải học hai lần. */
+  .dapp[data-host="mobile"] .dfilters[data-open="false"] {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--surface) 76%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    backdrop-filter: blur(16px) saturate(1.6);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .dapp[data-host="mobile"] .dfilters[data-open="false"] { background: var(--surface); }
+  }
+
+  /* CTA chính -> dính đáy, ngay trên thanh điều hướng.
+     `.dactions` là hàng hành động cuối mỗi trang chi tiết; ở đáy trang thì
+     phải cuộn qua 4.300px mới tới. */
+  .dapp[data-host="mobile"] .dactions {
+    position: sticky; z-index: 50;
+    bottom: calc(56px + env(safe-area-inset-bottom));
+    margin-inline: calc(var(--s2) * -1);
+    padding: var(--s2);
+    background: var(--surface);
+    border-top: 1px solid var(--hairline);
+  }
+  .dapp[data-host="mobile"] .dactions .dbtn { width: 100%; }
+
+  /* BANG -> CARD LIST. Moi hang thanh mot the hai cot nhan/gia tri.
+     KHONG an cot nao. Ban truoc co `.dtaxpayer-table tbody td:nth-child(1),
+     (2), (5) { display: none }` - ba field STT, Ma hien thi va Don vi quan ly
+     bien mat han o dien thoai, khong loi vao nao. Du lieu co tren web thi phai
+     co tren mobile; het cho thi xuong dong, khong phai bo di. */
+  .dinspector-finance thead,
+  .dtaxpayer-table thead,
+  .dlocation-taxpayers thead { display: none; }
+  .dinspector-finance tbody tr,
+  .dtaxpayer-table tbody tr,
+  .dlocation-taxpayers tbody tr {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px var(--s3);
+    padding: 10px var(--s2); border-bottom: 1px solid var(--divider);
+  }
+  .dinspector-finance tbody th,
+  .dtaxpayer-table tbody th,
+  .dlocation-taxpayers tbody th {
+    /* `order: -1` dua TEN len dau the. Thu tu DOM la thu tu cot cua bang, nen
+       trong the thi STT va ma dung truoc ten - the mo dau bang mot con so thu
+       tu thay vi bang cai ten phan biet no voi the khac. */
+    order: -1; grid-column: 1 / -1; font-size: var(--fs-caption); font-weight: var(--fw-label);
+  }
+  .dinspector-finance tbody td,
+  .dtaxpayer-table tbody td,
+  .dlocation-taxpayers tbody td {
+    padding: 0; border: 0; text-align: left;
+    /* KHONG cat chu trong the. O `Ty trong` chua nhan + thanh ty le + phan
+       tram, dai hon nua o nen bi ellipsis an mat chinh con so - do duoc o
+       `Ty trong ...`. Trong the thi xuong dong, khong cat. */
+    overflow: visible; text-overflow: clip; white-space: normal;
+  }
+  /* Vach ke duoi ten chi tieu la vien cua `th` trong bang that. Trong the no
+     thanh mot net cut lung lo giua noi dung. */
+  /* Tien to `.dtable` la BAT BUOC, khong phai cho dep.
+     `.dtable th:first-child { width: 36% }` co do uu tien (0,2,1); viet
+     `.dinspector-finance tbody th` chi duoc (0,1,2) - dem class thang, nen ten
+     chi tieu van bi bop 130px va xuong ba dong trong khi nua the ben phai bo
+     trong. Bang NNT thoat vi o do `th` khong phai con dau. */
+  .dtable.dinspector-finance tbody th,
+  .dtable.dtaxpayer-table tbody th,
+  .dtable.dlocation-taxpayers tbody th { border-bottom: 0; width: auto; }
+  /* O nao chua thanh ty le thi chiem tron be ngang the: thanh + phan tram +
+     nhan khong vua nua o. */
+  .dinspector-finance tbody td:has(.dshare-cell),
+  .dtaxpayer-table tbody td:has(.dshare-cell) { grid-column: 1 / -1; }
+  /* Nhan field di kem gia tri: trong the khong con hang dau cot de tra nghia. */
+  .dinspector-finance tbody td[data-label]::before,
+  .dtaxpayer-table tbody td[data-label]::before,
+  .dlocation-taxpayers tbody td[data-label]::before {
+    content: attr(data-label) " "; color: var(--ink-3); font-weight: var(--fw-regular);
+  }
+  /* Cot so trong the khong can bang chieu rong nua. */
+  .dtaxpayer-table tbody td, .dlocation-taxpayers tbody td { width: auto; }
+  /* San `min-width` cua `.dtable` sinh ra cho bang THAT, de bang co cho cuon
+     ngang thay vi bop chu. Bang da thanh the thi san do chi con la mot vung
+     cuon ngang khong co gi de cuon - moi the van phai vuot sang phai. */
+  .dinspector-finance, .dtaxpayer-table, .dlocation-taxpayers { min-width: 0; }
+  /* Trong THE thi chu XUONG DONG, khong cat. Ellipsis sinh ra cho bang that,
+     noi be rong cot la co dinh; trong the thi the cao them mot dong con hon la
+     mat chu, va "Thue co so 13 thanh pho Ha Noi" bi cat thi mat dung phan phan
+     biet no voi don vi khac. */
+  .dtable.dtaxpayer-table tbody th,
+  .dtable.dtaxpayer-table td.dcol-meta,
+  .dtable.dtaxpayer-table td.dcol-office,
+  .dlocation-taxpayers tbody th {
+    overflow: visible; text-overflow: clip; white-space: normal;
+  }
+  /* Khi bảng đã chuyển thành card list, mỗi trường số trở thành một hàng
+     nhãn-trái / giá-trị-phải. Nếu tiếp tục để các ô tự co theo nội dung thì
+     số nằm ở nhiều vị trí khác nhau giữa các card, đúng lỗi dò mắt của danh
+     sách thanh phía trên. */
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) :is(
+    .dbudget-table,
+    .dent-table,
+    .dent-list,
+    .dinspect-table,
+    .dreport-table,
+    .drecon-table,
+    .dinspector-finance,
+    .dtaxpayer-table,
+    .dlocation-taxpayers
+  ) :is(tbody, tfoot) td.is-num[data-label] {
+    display: grid; grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: baseline; gap: var(--s3); flex: 1 1 100%;
+    grid-column: 1 / -1; width: 100%; text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) :is(
+    .dbudget-table,
+    .dent-table,
+    .dent-list,
+    .dinspect-table,
+    .dreport-table,
+    .drecon-table,
+    .dinspector-finance,
+    .dtaxpayer-table,
+    .dlocation-taxpayers
+  ) td.is-num[data-label]::before {
+    justify-self: start; text-align: left;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) td.is-num[data-label] > * {
+    justify-self: end;
+  }
   .dtaxpayer-drawer { padding: var(--s3); }
   .dtaxpayer-meta { grid-template-columns: 1fr; }
 }

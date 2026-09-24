@@ -4,6 +4,7 @@ import type { DashboardFilters, TabId } from "@/domain/types";
 import { useHostContext } from "@/host/HostContext";
 import { useDragScroll } from "@/host/useDragScroll";
 import { useDashboardState } from "@/state/DashboardState";
+import { useNarrow } from "@/components/useNarrow";
 import { TABS } from "./tabs";
 import { AdvancedCompareTab } from "@/features/advanced-compare/AdvancedCompareTab";
 import { LocationDetailTab } from "@/features/location-detail/LocationDetailTab";
@@ -16,6 +17,7 @@ import { RevenuePreviewDrawer } from "@/features/revenue-preview/RevenuePreviewD
 
 export function App() {
   const { tab, setTab, filters, setFilters } = useDashboardState();
+  const narrow = useNarrow();
   const { host, embedded, commands, postToHost } = useHostContext();
   const tablistRef = useRef<HTMLDivElement | null>(null);
   const tabDrag = useRef({
@@ -269,13 +271,23 @@ export function App() {
               aria-controls="workspace"
               tabIndex={tab === item.id ? 0 : -1}
               title={item.question}
+              /* Nhan day du nam o `aria-label` de trinh doc man hinh khong mat
+                 gi khi khung hep chi ve nhan ngan. */
+              aria-label={item.label}
               className={tab === item.id ? "is-active" : undefined}
               onClick={() => {
                 if (tabDrag.current.suppressClick) return;
                 setTab(item.id);
               }}
             >
-              {item.label}
+              {/* MOT nhan trong DOM, chon bang `useNarrow`.
+                 Ban truoc de ca hai nhan roi cho CSS an mot cai. `display: none`
+                 khong loai chu khoi `textContent`, nen moi cho doc ten tab deu
+                 nhan "Phan tich thuPhan tich" - bo kiem tut tu 18/18 xuong 12/18
+                 va bat dung loi do.
+                 Chi rut gon o HOST MOBILE: ban nhung trong iframe giu dung bo
+                 cuc web, va o do dai tab cuon ngang nen nhan dai van doc duoc. */}
+              {mobileHost && narrow ? item.short : item.label}
             </button>
           ))}
         </div>
