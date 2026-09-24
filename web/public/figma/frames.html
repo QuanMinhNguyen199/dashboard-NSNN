@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<title>Artboard · Thu NSNN Hà Nội</title>
+<link rel="stylesheet" href="/src/styles/dashboard.css" />
+<style>
+  body { margin: 0; background: var(--canvas); color: var(--ink);
+    font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+  .fg-wrap { padding: 28px 24px 80px; }
+  h1 { margin: 0 0 4px; font-size: var(--fs-display); }
+  .fg-lead { margin: 0 0 8px; color: var(--ink-2); max-width: 70ch; }
+  .fg-note { margin: 0 0 28px; padding: 12px 14px; background: var(--note-surface); border-left: 3px solid var(--note-line); color: var(--note-ink); font-size: var(--fs-label); max-width: 80ch; }
+  h2 { margin: 36px 0 12px; font-size: var(--fs-title); }
+  .fg-strip { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+  .fg-frame { margin: 0; }
+  .fg-frame figcaption { margin-bottom: 6px; color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }
+  .fg-frame iframe { display: block; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface); }
+</style>
+</head>
+<body>
+<div class="fg-wrap">
+  <h1>Artboard · Thu ngân sách TP Hà Nội</h1>
+  <p class="fg-lead">
+    9 màn hình × 3 khổ = 27 artboard.
+    Mỗi khung là app THẬT chạy trong iframe, không phải ảnh chụp — nên nó không bao giờ cũ hơn sản phẩm.
+  </p>
+  <p class="fg-note">
+    Khổ <strong>Điện thoại</strong> mang <code>host=mobile</code>; khổ <strong>Nhúng iframe</strong> thì không.
+    Hai khổ này cùng hẹp nhưng khác bố cục: chỉ bản mobile mới có thanh điều hướng đáy,
+    bộ lọc dạng bottom sheet và bảng chuyển thành thẻ. Bản nhúng giữ nguyên bố cục web.
+  </p>
+  <h2>Desktop · 1440px</h2><div class="fg-strip">
+      <figure class="fg-frame" data-frame="tong-quan--desktop">
+        <figcaption>Tổng quan · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Tổng quan Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=overview&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-nsnn--desktop">
+        <figcaption>Báo cáo · Thu NSNN · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Báo cáo · Thu NSNN Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=report&report=nsnn&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-budget--desktop">
+        <figcaption>Báo cáo · Dự toán &amp; dự báo · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Báo cáo · Dự toán &amp; dự báo Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=report&report=budget&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-taxpayer--desktop">
+        <figcaption>Báo cáo · Quản lý thu · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Báo cáo · Quản lý thu Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=report&report=taxpayer&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-inspection--desktop">
+        <figcaption>Báo cáo · Kết quả kiểm tra · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Báo cáo · Kết quả kiểm tra Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=report&report=inspection&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="phan-tich-thu--desktop">
+        <figcaption>Phân tích thu · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Phân tích thu Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="chi-tiet-dia-ban--desktop">
+        <figcaption>Chi tiết · Phường/xã · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Chi tiết · Phường/xã Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=location-detail&location=00004&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="chi-tiet-cqt--desktop">
+        <figcaption>Chi tiết · Đơn vị thuế · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="Chi tiết · Đơn vị thuế Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=location-detail&cqt=0106&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="so-sanh--desktop">
+        <figcaption>So sánh nâng cao · Desktop · 1440×1024</figcaption>
+        <iframe
+          title="So sánh nâng cao Desktop"
+          width="1440" height="1024" loading="lazy"
+          src="/?tab=advanced-compare&mode=period&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure></div>
+  <h2>Nhúng iframe · 500px</h2><div class="fg-strip">
+      <figure class="fg-frame" data-frame="tong-quan--iframe">
+        <figcaption>Tổng quan · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Tổng quan Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=overview&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-nsnn--iframe">
+        <figcaption>Báo cáo · Thu NSNN · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Báo cáo · Thu NSNN Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=report&report=nsnn&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-budget--iframe">
+        <figcaption>Báo cáo · Dự toán &amp; dự báo · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Báo cáo · Dự toán &amp; dự báo Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=report&report=budget&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-taxpayer--iframe">
+        <figcaption>Báo cáo · Quản lý thu · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Báo cáo · Quản lý thu Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=report&report=taxpayer&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-inspection--iframe">
+        <figcaption>Báo cáo · Kết quả kiểm tra · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Báo cáo · Kết quả kiểm tra Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=report&report=inspection&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="phan-tich-thu--iframe">
+        <figcaption>Phân tích thu · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Phân tích thu Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="chi-tiet-dia-ban--iframe">
+        <figcaption>Chi tiết · Phường/xã · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Chi tiết · Phường/xã Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=location-detail&location=00004&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="chi-tiet-cqt--iframe">
+        <figcaption>Chi tiết · Đơn vị thuế · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="Chi tiết · Đơn vị thuế Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=location-detail&cqt=0106&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="so-sanh--iframe">
+        <figcaption>So sánh nâng cao · Nhúng iframe · 500×900</figcaption>
+        <iframe
+          title="So sánh nâng cao Nhúng iframe"
+          width="500" height="900" loading="lazy"
+          src="/?tab=advanced-compare&mode=period&year=2026&periodType=MONTH&period=8"></iframe>
+      </figure></div>
+  <h2>Điện thoại · 390px</h2><div class="fg-strip">
+      <figure class="fg-frame" data-frame="tong-quan--mobile">
+        <figcaption>Tổng quan · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Tổng quan Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=overview&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-nsnn--mobile">
+        <figcaption>Báo cáo · Thu NSNN · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Báo cáo · Thu NSNN Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=report&report=nsnn&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-budget--mobile">
+        <figcaption>Báo cáo · Dự toán &amp; dự báo · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Báo cáo · Dự toán &amp; dự báo Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=report&report=budget&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-taxpayer--mobile">
+        <figcaption>Báo cáo · Quản lý thu · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Báo cáo · Quản lý thu Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=report&report=taxpayer&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="bao-cao-inspection--mobile">
+        <figcaption>Báo cáo · Kết quả kiểm tra · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Báo cáo · Kết quả kiểm tra Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=report&report=inspection&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="phan-tich-thu--mobile">
+        <figcaption>Phân tích thu · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Phân tích thu Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=revenue-analysis&section=domestic&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="chi-tiet-dia-ban--mobile">
+        <figcaption>Chi tiết · Phường/xã · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Chi tiết · Phường/xã Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=location-detail&location=00004&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="chi-tiet-cqt--mobile">
+        <figcaption>Chi tiết · Đơn vị thuế · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="Chi tiết · Đơn vị thuế Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=location-detail&cqt=0106&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure>
+      <figure class="fg-frame" data-frame="so-sanh--mobile">
+        <figcaption>So sánh nâng cao · Điện thoại · 390×844</figcaption>
+        <iframe
+          title="So sánh nâng cao Điện thoại"
+          width="390" height="844" loading="lazy"
+          src="/?tab=advanced-compare&mode=period&year=2026&periodType=MONTH&period=8&host=mobile&platform=ios"></iframe>
+      </figure></div>
+</div>
+</body>
+</html>

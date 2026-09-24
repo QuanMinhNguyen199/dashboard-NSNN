@@ -395,6 +395,7 @@ table { border-collapse: collapse; width: 100%; }
   padding: 13px 15px; margin-bottom: var(--s4);
   background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface);
 }
+.dfilters-backdrop { display: none; }
 .dfilters label, .dfield { display: grid; gap: 5px; min-width: 0; }
 /* Nhãn của mọi ô điều khiển dùng CHUNG một kiểu.
  *
@@ -3260,7 +3261,14 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   align-self: stretch; display: flex; align-items: center;
   min-width: 0; padding: 6px 8px 6px 0;
   background: var(--surface);
-  overflow: hidden; font-size: var(--fs-label); text-overflow: ellipsis; white-space: nowrap;
+  font-size: var(--fs-label);
+}
+/* Ellipsis phai nam o phan tu BEN TRONG, khong phai o chinh o.
+   `text-overflow` chi an voi bo cuc khoi co chu la noi dung inline; dat len
+   mot flex container thi no khong lam gi - "Tai chinh, Ngan hang, Bao hiem"
+   bi cat cut khong dau ba cham, doc thanh mot cai ten khac. */
+.dheatmap-row > strong > span {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 /* Cot goc cua hang dau cung phai dinh, neu khong thi tieu de sac thue truot
    qua duoi nhan hang dang dinh. */
@@ -3294,14 +3302,20 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
 /* Một dòng một chiều cao. Trước đó tên dài xuống ba dòng còn tên ngắn một
    dòng, nên mười hàng có ba chiều cao khác nhau (44 / 54 / 73px) và mắt
    không dò ngang được nữa. */
-.dtaxpayer-table tbody th, .dtaxpayer-table tbody td { height: 44px; }
-/* Đủ độ ưu tiên để thắng `.dtable td.dcol-meta { white-space: normal }` ở phía
-   dưới. Luật đó viết cho bảng cần câu chữ xuống dòng; bảng này thì mỗi dòng
-   xuống thêm là một hàng cao hơn các hàng khác 10px. */
+/* 58px chu khong phai 44px: cot nganh nghe co the xuong hai dong, va khoa
+   chieu cao o day thi hang nao cung bang nhau du co xuong dong hay khong. */
+.dtaxpayer-table tbody th, .dtaxpayer-table tbody td { height: 58px; }
+/* Cot nganh nghe XUONG DONG, hai cot kia giu mot dong.
+   Tong be rong CAN cua bay cot la 894px tren mot bang rong 848px - khong cot
+   nao con du, nen khong co cach nao hien het chu tren mot dong. "Cong nghiep
+   che bien, che tao" can 182px ma cot chi co 136px. Xuong dong thi chu hien
+   du; chieu cao hang duoc khoa o duoi nen cac hang van bang nhau. */
 .dtable.dtaxpayer-table tbody th,
-.dtable.dtaxpayer-table td.dcol-meta,
 .dtable.dtaxpayer-table td.dcol-office {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dtable.dtaxpayer-table td.dcol-meta {
+  white-space: normal; line-height: var(--lh-dense);
 }
 
 .dtaxpayer-scrim { position: fixed; inset: 0; z-index: 90; display: flex; justify-content: flex-end; background: var(--scrim); }
@@ -3426,17 +3440,33 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
      chính con số người dùng đang xem ra khỏi tầm nhìn. Đóng lại thì nó về làm
      một dải tóm tắt — dải này NÓI RA bộ lọc đang áp, thứ một nút tròn không
      nói được, nên nó vừa là nút mở vừa là trạng thái. */
-  .dapp[data-host="mobile"] .dfilters[data-open="true"] {
+  .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="true"] {
     position: fixed; inset: auto 0 0 0; z-index: 80;
     max-height: 78dvh; overflow-y: auto; overscroll-behavior: contain;
+    margin: 0; background: var(--surface);
     border-radius: var(--r-surface) var(--r-surface) 0 0;
     box-shadow: var(--shadow-overlay);
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
-  /* Màn chắn: bấm ra ngoài để đóng vẫn do nút trong panel lo, nhưng lớp tối
-     này là thứ nói rằng phần phía sau đang tạm không dùng được. */
-  .dapp[data-host="mobile"] .dfilters[data-open="true"]::before {
-    content: ""; position: fixed; inset: 0; z-index: -1; background: var(--scrim);
+  /* Màn chắn là lớp riêng phía sau panel, không phủ lên nền trắng của nó. */
+  .dapp[data-host="mobile"] .dfilters-backdrop {
+    display: block; position: fixed; inset: 0; z-index: 79; background: var(--scrim);
+  }
+  .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="true"] .dfilter-scope-kind {
+    grid-column: span 6;
+  }
+  .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="true"] > .dfilter-location {
+    grid-column: 1 / -1; margin-top: 0;
+  }
+  .dapp[data-host="mobile"] .dfilters[data-open="true"] .dfilters-summary {
+    position: sticky; top: -9px; z-index: 4;
+    padding-block: var(--s2); background: var(--surface);
+  }
+  .dapp[data-host="mobile"] .dfilters[data-embedded="true"][data-open="true"] .dfilters-toggle {
+    width: auto; min-width: 76px; padding-inline: 11px;
+  }
+  .dapp[data-host="mobile"] .dfilters .dautocomplete input {
+    min-height: 44px;
   }
   /* Dải tóm tắt khi đóng: dính đỉnh để luôn với tới được khi cuộn dài. */
   /* Dải tóm tắt dính đỉnh cũng là một mặt phẳng nổi trên nội dung, nên dùng

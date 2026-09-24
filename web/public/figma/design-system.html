@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Design system · Thu NSNN Hà Nội</title>
+<link rel="stylesheet" href="/src/styles/dashboard.css" />
+<style>
+  /* App dat font o .dapp chu khong o body - nen trang nay phai tu khai,
+     neu khong no rot ve serif mac dinh va bang thang chu dang do mot bo
+     chu khac han bo chu cua san pham. */
+  body { margin: 0; background: var(--canvas); color: var(--ink);
+    font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+  .fg-wrap { max-width: 1160px; margin: 0 auto; padding: 32px 24px 80px; }
+  .fg-wrap h1 { margin: 0 0 4px; font-size: var(--fs-display); }
+  .fg-wrap > p.fg-lead { margin: 0 0 32px; color: var(--ink-2); }
+  .fg-sec { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--hairline); }
+  .fg-sec > h2 { margin: 0 0 4px; font-size: var(--fs-title); }
+  .fg-sec > p { margin: 0 0 16px; color: var(--ink-3); font-size: var(--fs-label); }
+  .fg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .fg-swatch { margin: 0; }
+  .fg-chip { display: block; height: 56px; border: 1px solid var(--hairline); border-radius: var(--r-control); }
+  .fg-swatch figcaption, .fg-type, .fg-space, .fg-radius, .fg-shadow { display: grid; gap: 1px; margin-top: 6px; }
+  code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: var(--fs-label); color: var(--ink); }
+  small { color: var(--ink-3); font-size: var(--fs-label); }
+  .fg-type p { margin: 0; max-width: 100%; overflow-wrap: anywhere; }
+  .fg-type { min-width: 0; overflow: hidden; }
+  .fg-space > span { display: block; height: 14px; background: var(--brand); border-radius: 2px; }
+  .fg-radius > span { display: block; height: 56px; background: var(--blue-100); border: 1px solid var(--brand); }
+  .fg-shadow > span { display: block; height: 56px; background: var(--surface); border-radius: var(--r-surface); }
+  .fg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .fg-demo { padding: 16px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-surface); }
+</style>
+</head>
+<body>
+<div class="fg-wrap">
+  <h1>Design system · Thu ngân sách TP Hà Nội</h1>
+  <p class="fg-lead">
+    Sinh tự động từ <code>src/styles/dashboard.css</code> — 84 biến.
+    Sửa biến trong stylesheet rồi chạy lại <code>npm run build:figma</code>; đừng sửa tay trang này.
+  </p>
+
+  <section class="fg-sec">
+    <h2>Bảng màu</h2>
+    <p>46 biến màu. Tên biến là tên layer nên dùng trong Figma.</p>
+    <div class="fg-grid">
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--canvas)"></span>
+        <figcaption><code>--canvas</code><small>#f2f5f9</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--surface)"></span>
+        <figcaption><code>--surface</code><small>#ffffff</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--surface-sunken)"></span>
+        <figcaption><code>--surface-sunken</code><small>#f7f9fc</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--hairline)"></span>
+        <figcaption><code>--hairline</code><small>#dbe3ed</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--divider)"></span>
+        <figcaption><code>--divider</code><small>#eaeff6</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--focus)"></span>
+        <figcaption><code>--focus</code><small>#1657a8</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--data-family)"></span>
+        <figcaption><code>--data-family</code><small>#86b6ef</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--frame-stage)"></span>
+        <figcaption><code>--frame-stage</code><small>#888ca3</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--tooltip-surface)"></span>
+        <figcaption><code>--tooltip-surface</code><small>#111c2ce6</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--control-border)"></span>
+        <figcaption><code>--control-border</code><small>#c6d2e0</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--scrollbar-thumb)"></span>
+        <figcaption><code>--scrollbar-thumb</code><small>#c3cedd</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--scrollbar-thumb-hover)"></span>
+        <figcaption><code>--scrollbar-thumb-hover</code><small>#9aa9bd</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--ink-on-dark)"></span>
+        <figcaption><code>--ink-on-dark</code><small>#ffffff</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--on-dark-fill)"></span>
+        <figcaption><code>--on-dark-fill</code><small>#ffffff14</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--on-dark-fill-hover)"></span>
+        <figcaption><code>--on-dark-fill-hover</code><small>#ffffff26</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--on-dark-line)"></span>
+        <figcaption><code>--on-dark-line</code><small>#ffffff3d</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--on-dark-line-hover)"></span>
+        <figcaption><code>--on-dark-line-hover</code><small>#ffffff66</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--on-dark-hairline)"></span>
+        <figcaption><code>--on-dark-hairline</code><small>#ffffff12</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--scrim)"></span>
+        <figcaption><code>--scrim</code><small>#0e2a4780</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--ink)"></span>
+        <figcaption><code>--ink</code><small>#16263c</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--ink-2)"></span>
+        <figcaption><code>--ink-2</code><small>#485666</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--ink-3)"></span>
+        <figcaption><code>--ink-3</code><small>#63707f</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--navy)"></span>
+        <figcaption><code>--navy</code><small>#0e2a47</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--navy-ink)"></span>
+        <figcaption><code>--navy-ink</code><small>#d3e1f0</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-050)"></span>
+        <figcaption><code>--blue-050</code><small>#eef4fc</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-100)"></span>
+        <figcaption><code>--blue-100</code><small>#dbe8f8</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-250)"></span>
+        <figcaption><code>--blue-250</code><small>#86b6ef</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-350)"></span>
+        <figcaption><code>--blue-350</code><small>#5598e7</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-450)"></span>
+        <figcaption><code>--blue-450</code><small>#2a78d6</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-550)"></span>
+        <figcaption><code>--blue-550</code><small>#1c5cab</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--blue-700)"></span>
+        <figcaption><code>--blue-700</code><small>#0d366b</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--brand)"></span>
+        <figcaption><code>--brand</code><small>#1657a8</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--data-primary)"></span>
+        <figcaption><code>--data-primary</code><small>var(--brand)</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--data-secondary)"></span>
+        <figcaption><code>--data-secondary</code><small>#3987e5</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--data-reference)"></span>
+        <figcaption><code>--data-reference</code><small>#75869b</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--donut-1)"></span>
+        <figcaption><code>--donut-1</code><small>#0d366b</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--donut-2)"></span>
+        <figcaption><code>--donut-2</code><small>#1657a8</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--donut-3)"></span>
+        <figcaption><code>--donut-3</code><small>#3987e5</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--donut-4)"></span>
+        <figcaption><code>--donut-4</code><small>#6f93c4</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--data-track)"></span>
+        <figcaption><code>--data-track</code><small>#e7edf5</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--nodata)"></span>
+        <figcaption><code>--nodata</code><small>#646c77</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--pos)"></span>
+        <figcaption><code>--pos</code><small>#187044</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--neg)"></span>
+        <figcaption><code>--neg</code><small>#b3352f</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--note-ink)"></span>
+        <figcaption><code>--note-ink</code><small>#7a5a12</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--note-surface)"></span>
+        <figcaption><code>--note-surface</code><small>#fdf5dd</small></figcaption>
+      </figure>
+      <figure class="fg-swatch">
+        <span class="fg-chip" style="background: var(--note-line)"></span>
+        <figcaption><code>--note-line</code><small>#eeddad</small></figcaption>
+      </figure></div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Chữ</h2>
+    <p>Cỡ, độ đậm, giãn dòng và giãn chữ.</p>
+    <div class="fg-grid">
+      <div class="fg-type">
+        <p style="font-size: var(--fs-display)">Thu ngân sách 1.234</p>
+        <code>--fs-display</code><small>32px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-metric)">Thu ngân sách 1.234</p>
+        <code>--fs-metric</code><small>23px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-headline)">Thu ngân sách 1.234</p>
+        <code>--fs-headline</code><small>20px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-metric-sm)">Thu ngân sách 1.234</p>
+        <code>--fs-metric-sm</code><small>19px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-insight)">Thu ngân sách 1.234</p>
+        <code>--fs-insight</code><small>16px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-title)">Thu ngân sách 1.234</p>
+        <code>--fs-title</code><small>15px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-body)">Thu ngân sách 1.234</p>
+        <code>--fs-body</code><small>14px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-caption)">Thu ngân sách 1.234</p>
+        <code>--fs-caption</code><small>13px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-size: var(--fs-label)">Thu ngân sách 1.234</p>
+        <code>--fs-label</code><small>12px</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-weight: var(--fw-regular)">Thu ngân sách 1.234</p>
+        <code>--fw-regular</code><small>400</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-weight: var(--fw-medium)">Thu ngân sách 1.234</p>
+        <code>--fw-medium</code><small>500</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-weight: var(--fw-label)">Thu ngân sách 1.234</p>
+        <code>--fw-label</code><small>650</small>
+      </div>
+      <div class="fg-type">
+        <p style="font-weight: var(--fw-bold)">Thu ngân sách 1.234</p>
+        <code>--fw-bold</code><small>700</small>
+      </div>
+      <div class="fg-type">
+        <p style="line-height: var(--lh-metric); max-width: 30ch">Thu ngân sách 1.234 Thu ngân sách 1.234</p>
+        <code>--lh-metric</code><small>1.25</small>
+      </div>
+      <div class="fg-type">
+        <p style="line-height: var(--lh-dense); max-width: 30ch">Thu ngân sách 1.234 Thu ngân sách 1.234</p>
+        <code>--lh-dense</code><small>1.3</small>
+      </div>
+      <div class="fg-type">
+        <p style="line-height: var(--lh-body); max-width: 30ch">Thu ngân sách 1.234 Thu ngân sách 1.234</p>
+        <code>--lh-body</code><small>1.55</small>
+      </div>
+      <div class="fg-type">
+        <p style="letter-spacing: var(--ls-display)">Thu ngân sách 1.234</p>
+        <code>--ls-display</code><small>-0.03em</small>
+      </div>
+      <div class="fg-type">
+        <p style="letter-spacing: var(--ls-metric)">Thu ngân sách 1.234</p>
+        <code>--ls-metric</code><small>-0.025em</small>
+      </div>
+      <div class="fg-type">
+        <p style="letter-spacing: var(--ls-tight)">Thu ngân sách 1.234</p>
+        <code>--ls-tight</code><small>-0.02em</small>
+      </div>
+      <div class="fg-type">
+        <p style="letter-spacing: var(--ls-title)">Thu ngân sách 1.234</p>
+        <code>--ls-title</code><small>-0.01em</small>
+      </div>
+      <div class="fg-type">
+        <p style="letter-spacing: var(--ls-label)">Thu ngân sách 1.234</p>
+        <code>--ls-label</code><small>0.01em</small>
+      </div>
+      <div class="fg-type">
+        <p style="letter-spacing: var(--ls-code)">Thu ngân sách 1.234</p>
+        <code>--ls-code</code><small>0.02em</small>
+      </div>
+      <div class="fg-type">
+        <p style="max-width: var(--measure); display: block">Thu ngân sách 1.234 Thu ngân sách 1.234 Thu ngân sách 1.234 Thu ngân sách 1.234</p>
+        <code>--measure</code><small>72ch</small>
+      </div></div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Nhịp giãn</h2>
+    <div class="fg-grid">
+      <div class="fg-space">
+        <span style="width: var(--s1)"></span>
+        <code>--s1</code><small>4px</small>
+      </div>
+      <div class="fg-space">
+        <span style="width: var(--s2)"></span>
+        <code>--s2</code><small>8px</small>
+      </div>
+      <div class="fg-space">
+        <span style="width: var(--s3)"></span>
+        <code>--s3</code><small>12px</small>
+      </div>
+      <div class="fg-space">
+        <span style="width: var(--s4)"></span>
+        <code>--s4</code><small>16px</small>
+      </div>
+      <div class="fg-space">
+        <span style="width: var(--s5)"></span>
+        <code>--s5</code><small>24px</small>
+      </div>
+      <div class="fg-space">
+        <span style="width: var(--s6)"></span>
+        <code>--s6</code><small>32px</small>
+      </div></div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Bo góc</h2>
+    <div class="fg-grid">
+      <div class="fg-radius">
+        <span style="border-radius: var(--r-surface)"></span>
+        <code>--r-surface</code><small>10px</small>
+      </div>
+      <div class="fg-radius">
+        <span style="border-radius: var(--r-control)"></span>
+        <code>--r-control</code><small>6px</small>
+      </div>
+      <div class="fg-radius">
+        <span style="border-radius: var(--r-chip)"></span>
+        <code>--r-chip</code><small>4px</small>
+      </div>
+      <div class="fg-radius">
+        <span style="border-radius: var(--r-bar)"></span>
+        <code>--r-bar</code><small>2px</small>
+      </div></div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Bóng đổ</h2>
+    <div class="fg-grid">
+      <div class="fg-shadow">
+        <span style="box-shadow: var(--shadow-control)"></span>
+        <code>--shadow-control</code>
+      </div>
+      <div class="fg-shadow">
+        <span style="box-shadow: var(--shadow-overlay)"></span>
+        <code>--shadow-overlay</code>
+      </div>
+      <div class="fg-shadow">
+        <span style="box-shadow: var(--shadow-frame)"></span>
+        <code>--shadow-frame</code>
+      </div>
+      <div class="fg-shadow">
+        <span style="box-shadow: var(--shadow-tip)"></span>
+        <code>--shadow-tip</code>
+      </div>
+      <div class="fg-shadow">
+        <span style="box-shadow: var(--shadow-hover)"></span>
+        <code>--shadow-hover</code>
+      </div></div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Nút</h2>
+    <p>Mọi vùng chạm tối thiểu 44×44px ở khổ hẹp.</p>
+    <div class="fg-demo fg-row">
+      <button type="button" class="dbtn dbtn-primary">Nút chính</button>
+      <button type="button" class="dbtn">Nút thường</button>
+      <button type="button" class="dbtn is-secondary">Nút phụ</button>
+      <button type="button" class="dbtn" disabled>Không dùng được</button>
+      <button type="button" class="dlink">Liên kết trong thẻ</button>
+    </div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Rãnh phân đoạn</h2>
+    <div class="fg-demo fg-row">
+      <div class="dseg" role="group" aria-label="Cách tính">
+        <button type="button" class="is-active">Trong kỳ</button>
+        <button type="button">Lũy kế</button>
+      </div>
+      <div class="dseg" role="group" aria-label="Chu kỳ">
+        <button type="button" class="is-active">Tháng</button>
+        <button type="button">Quý</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Nhãn trạng thái</h2>
+    <p>Nhãn <code>is-review</code> là chỗ màn hình nói ra rằng số đang là số mô phỏng.</p>
+    <div class="fg-demo fg-row">
+      <span class="dtag is-review">Số mô phỏng</span>
+      <span class="dtag is-running">Đang chạy</span>
+      <span class="dtag is-alert">Cần chú ý</span>
+    </div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Biến động</h2>
+    <div class="fg-demo fg-row">
+      <span class="dchange up">▲ +15,4%</span>
+      <span class="dchange down">▼ −3,9%</span>
+      <span class="dchange flat">0,0%</span>
+    </div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Thẻ và chỉ số</h2>
+    <div class="dcard">
+      <div class="dcard-head">
+        <div class="dcard-title">
+          <h3>Tiêu đề thẻ</h3>
+          <p>Câu phụ đề giải thích thẻ đang nói về cái gì</p>
+        </div>
+        <span class="dtag is-review">Số mô phỏng</span>
+      </div>
+      <div class="dcard-body">
+        <div class="dkpis">
+          <div><span>Thu trong kỳ</span><strong>56.117 <small>tỷ</small></strong><em>▲ +15,4% so cùng kỳ</em></div>
+          <div><span>Lũy kế từ đầu năm</span><strong>434.710 <small>tỷ</small></strong><em>▲ +13,2% so cùng kỳ</em></div>
+          <div><span>Hoàn thành dự toán</span><strong>66,7%</strong><em>Lũy kế trên dự toán</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Bảng</h2>
+    <div class="dcard"><div class="dcard-body">
+      <div class="dtable-wrap">
+        <table class="dtable">
+          <thead><tr><th>Khoản mục</th><th class="is-num">Kỳ này</th><th class="is-num">Cùng kỳ</th><th class="is-num">Tăng trưởng</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Khu vực kinh tế ngoài quốc doanh</th><td class="is-num">96.697</td><td class="is-num">79.912</td><td class="is-num"><span class="dchange up">▲ +21,0%</span></td></tr>
+            <tr><th scope="row">Doanh nghiệp nhà nước trung ương</th><td class="is-num">55.734</td><td class="is-num">50.731</td><td class="is-num"><span class="dchange up">▲ +9,9%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="fg-sec">
+    <h2>Trạng thái rỗng</h2>
+    <div class="dcard"><div class="dcard-body">
+      <p class="dempty">Không có mục nào khớp bộ lọc hiện tại.</p>
+    </div></div>
+  </section>
+</div>
+</body>
+</html>
