@@ -764,6 +764,18 @@ body.is-drag-scroll * { cursor: grabbing !important; }
 .dkpis strong em { color: var(--ink-2); font-size: var(--fs-body); font-style: normal; font-weight: var(--fw-medium); }
 .dkpis strong.is-code { font-size: var(--fs-metric-sm); letter-spacing: var(--ls-code); }
 .dkpis small { color: var(--ink-3); font-size: var(--fs-label); line-height: var(--lh-body); }
+/* Ô KPI đang là chỉ số chính của chế độ số liệu.
+   Chỉ một vạch nhấn ở mép trên cộng nhãn đậm màu thương hiệu — KHÔNG đổi nền.
+   Đổi nền sẽ tranh chấp với ô Nhận định vốn đã dùng nền lõm để nói "đây là kết
+   luận, không phải số", và dải KPI sẽ có hai ô cùng đòi được chú ý. */
+.dkpis > div.is-lead { position: relative; }
+.dkpis > div.is-lead::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: var(--brand);
+}
+.dkpis > div.is-lead > span,
+.dkpis > div.is-lead > .dkpi-action > span { color: var(--brand); }
+
 .dkpi-insight { background: var(--surface-sunken); }
 .dkpi-insight strong { font-size: var(--fs-insight); line-height: var(--lh-dense); letter-spacing: var(--ls-title); }
 .dkpi-insight.tone-positive strong { color: var(--pos); }
@@ -1223,6 +1235,14 @@ strong.dcqt-num { font-weight: var(--fw-label); }
 /* Vế A của một phép so sánh là một chuỗi ngang hàng, không phải mốc nền: nét
    liền, cùng họ lam, chỉ nhạt hơn một bậc để phân biệt khỏi vế B. */
 .dchart-line.is-peer { stroke: var(--data-family); stroke-width: 2.5; }
+/* Kế hoạch: CHẤM, không phải gạch.
+   Nét gạch `--data-reference` đã mang nghĩa "cùng kỳ năm trước" ở khắp bốn tab;
+   dùng lại nó cho kế hoạch thì hai thứ khác hẳn nhau trông y như nhau. Chấm
+   thưa và màu hổ phách của `--note-ink` tách bạch hẳn, lại không kéo thêm một
+   sắc mới vào bảng màu. */
+.dchart-line.is-plan {
+  stroke: var(--note-ink); stroke-width: 2; stroke-dasharray: 2 5; stroke-linecap: round;
+}
 .dchart-dot {
   fill: var(--surface); stroke: var(--data-primary); stroke-width: 2;
   transition: r 120ms ease;
@@ -1268,6 +1288,7 @@ strong.dcqt-num { font-weight: var(--fw-label); }
 .dlegend i { width: 17px; border-top: 2px dashed var(--data-reference); }
 .dlegend i.solid { border-top: 2px solid var(--data-primary); }
 .dlegend i.is-peer { border-top: 2px solid var(--data-family); }
+.dlegend i.is-plan { border-top: 2px dotted var(--note-ink); }
 
 .dbridge {
   display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--s2) var(--s5);
@@ -3016,8 +3037,8 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   }
   .dreport-table tbody td.dreport-total::before { flex: 1 1 auto; }
 
-  /* Mobile host: tên chỉ tiêu và tổng cùng một dải đầu, ba địa bàn cùng một
-     hàng. Scope theo host để iframe và trình duyệt desktop co hẹp không bị đổi
+  /* Mobile host: tên chỉ tiêu và tổng cùng một dải đầu, mỗi thành viên là một
+     dòng nhãn–giá trị bên dưới. Scope theo host để iframe co hẹp không bị đổi
      cấu trúc theo một yêu cầu chỉ dành cho ứng dụng mobile. */
   .dapp[data-host="mobile"] .dreport-table tbody tr {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3027,6 +3048,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
     display: flex; align-items: center;
     min-height: 56px; padding-top: 8px; padding-bottom: 8px;
     background: var(--blue-050);
+    position: static; box-shadow: none;
   }
   .dapp[data-host="mobile"] .dreport-table .dtms-toggle {
     align-items: center; min-height: 44px;
@@ -3042,15 +3064,20 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
     flex: none; font-size: var(--fs-caption);
   }
   .dapp[data-host="mobile"] .dreport-table tbody td:not(.dreport-total) {
-    align-content: center; justify-items: center;
-    min-height: 58px; padding: 8px 5px;
-    text-align: center; font-weight: var(--fw-medium);
+    grid-column: 1 / -1;
+    display: grid; grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: baseline; align-content: center; gap: var(--s3);
+    min-height: 44px; padding: 8px 10px;
+    text-align: right; font-weight: var(--fw-medium);
+  }
+  .dapp[data-host="mobile"] .dreport-table tbody td:not(.dreport-total)::before {
+    text-align: left; white-space: normal; overflow: visible;
   }
   .dapp[data-host="mobile"] .dreport-table tbody td:nth-of-type(even) {
     border-left: 0;
   }
   .dapp[data-host="mobile"] .dreport-table tbody td:not(.dreport-total) + td:not(.dreport-total) {
-    border-left: 1px solid var(--divider);
+    border-left: 0;
   }
 }
 
@@ -3139,20 +3166,50 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   cursor: not-allowed; background: var(--surface-sunken); color: var(--ink-3); opacity: 1;
 }
 
+.doverview-sources-card { --head-min: auto; }
+.doverview-sources-card .dcard-head { padding-bottom: var(--s3); }
 .doverview-sources {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   border: 1px solid var(--hairline); border-radius: var(--r-control); overflow: hidden;
 }
 .doverview-sources button {
-  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline; gap: 3px var(--s2); min-height: 92px; padding: var(--s3);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name arrow"
+    "value value"
+    "share share"
+    "track track";
+  align-content: start; align-items: center;
+  gap: var(--s2) var(--s3); min-height: 124px; padding: 14px var(--s4) var(--s3);
   border-right: 1px solid var(--hairline); background: var(--surface); text-align: left;
+  transition: background-color 120ms ease, color 120ms ease;
 }
 .doverview-sources button:last-child { border-right: 0; }
-.doverview-sources button > span { grid-column: 1 / -1; color: var(--ink-2); font-weight: var(--fw-label); }
-.doverview-sources button > strong { color: var(--ink); font-size: var(--fs-insight); }
-.doverview-sources button > small { color: var(--ink-3); font-size: var(--fs-label); }
-.doverview-sources button > i { position: absolute; right: var(--s3); bottom: var(--s3); color: var(--brand); font-style: normal; }
+.doverview-source-name {
+  grid-area: name; min-width: 0;
+  color: var(--ink-2); font-weight: var(--fw-label); line-height: var(--lh-dense);
+}
+.doverview-source-arrow { grid-area: arrow; color: var(--brand); }
+.doverview-sources button > strong {
+  grid-area: value;
+  color: var(--ink); font-size: var(--fs-metric-sm); line-height: var(--lh-metric);
+  letter-spacing: var(--ls-tight); font-variant-numeric: tabular-nums;
+}
+.doverview-sources button > small {
+  grid-area: share; display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2);
+  color: var(--ink-2); font-size: var(--fs-label); line-height: var(--lh-dense);
+  font-variant-numeric: tabular-nums;
+}
+.doverview-sources button > small > span { color: var(--ink-3); font-weight: var(--fw-regular); }
+.doverview-source-track {
+  grid-area: track; display: block; height: 4px; overflow: hidden;
+  border-radius: var(--r-bar); background: var(--data-track);
+}
+.doverview-source-track > i {
+  display: block; height: 100%; min-width: 2px;
+  border-radius: inherit; background: var(--data-secondary);
+}
 .doverview-inline-control { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s2); margin-bottom: var(--s2); }
 
 .dexecution-list, .dtaxpayer-list { display: grid; margin: 0; padding: 0; list-style: none; }
@@ -3374,7 +3431,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dfilters[data-embedded="true"][data-open="true"] .dfilter-indicator,
   .dfilters[data-embedded="true"][data-open="true"] .dfilter-industry { grid-column: 1 / -1; }
   .doverview-sources { grid-template-columns: 1fr; }
-  .doverview-sources button { min-height: 76px; border-right: 0; border-top: 1px solid var(--hairline); }
+  .doverview-sources button { min-height: 104px; border-right: 0; border-top: 1px solid var(--hairline); }
   .doverview-sources button:first-child { border-top: 0; }
   /* Các danh sách điều hành khác dùng cùng cột neo số liệu. Chỉ áp dụng cho
      Mobile WebView và mobile web độc lập; iframe web khổ hẹp vẫn giữ bố cục
@@ -3391,16 +3448,25 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
     justify-self: end; margin-left: auto; text-align: right;
   }
   :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button {
-    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-columns: minmax(0, 1fr) max-content 16px;
+    grid-template-areas:
+      "name value arrow"
+      ". share arrow";
+    gap: 3px var(--s3); min-height: 76px;
   }
-  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > span {
-    grid-column: 1; grid-row: 1; align-self: center;
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-source-name {
+    grid-area: name; align-self: center;
   }
   :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > strong {
-    grid-column: 2; grid-row: 1; justify-self: end; padding-right: var(--s4); text-align: right;
+    grid-area: value; justify-self: end; text-align: right;
   }
   :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > small {
-    grid-column: 2; grid-row: 2; justify-self: end; padding-right: var(--s4); text-align: right;
+    grid-area: share; display: block; justify-self: end; text-align: right;
+  }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-sources button > small > span,
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-source-track { display: none; }
+  :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .doverview-source-arrow {
+    grid-area: arrow; align-self: center;
   }
   :is(.dapp[data-host="mobile"], .dapp[data-embedded="false"]) .dtax-location-grid .dtax-card-amount {
     width: 100%;
@@ -3576,7 +3642,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
     .dinspector-finance,
     .dtaxpayer-table,
     .dlocation-taxpayers
-  ) :is(tbody, tfoot) td.is-num[data-label] {
+  ):not(.dapp[data-host="mobile"] .dreport-table) :is(tbody, tfoot) td.is-num[data-label] {
     display: grid; grid-template-columns: minmax(0, 1fr) max-content;
     align-items: baseline; gap: var(--s3); flex: 1 1 100%;
     grid-column: 1 / -1; width: 100%; text-align: right;

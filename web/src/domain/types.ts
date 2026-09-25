@@ -100,6 +100,14 @@ export interface TrendPoint {
   label: string;
   current: number | null;
   previous: number | null;
+  /**
+   * Đường kế hoạch — tiến độ ĐÁNG LẼ phải đạt tới tháng này.
+   *
+   * Khác hai trường trên ở chỗ nó phủ CẢ 12 THÁNG, kể cả tháng chưa có thực
+   * hiện: đó chính là việc của một đường kế hoạch — cho thấy đích cuối năm và
+   * khoảng cách còn lại. `null` khi chưa có dự toán để phân bổ.
+   */
+  plan?: number | null;
 }
 
 export interface WaterfallStep {
@@ -236,6 +244,22 @@ export interface BudgetEstimate {
   annual: number;
   /** Lũy kế thực hiện trên dự toán, 0..1; `null` khi dự toán không hợp lệ. */
   progress: number | null;
+  /**
+   * Tiến độ CÙNG KỲ năm trước, 0..1.
+   *
+   * Một tỷ lệ tiến độ đứng một mình không nói được nó nhanh hay chậm: 79% ở
+   * tháng 8 là vượt tiến độ, nhưng 79% ở tháng 11 là hụt. Chỉ khi đặt cạnh
+   * tiến độ cùng kỳ năm trước thì con số mới đọc ra được chiều.
+   */
+  priorProgress: number | null;
+  /**
+   * Kế hoạch của RIÊNG kỳ đang chọn — mẫu số khi gạt `Trong kỳ`.
+   *
+   * Ở chế độ `Trong kỳ`, đo số phát sinh một tháng trên dự toán CẢ NĂM cho ra
+   * một tỷ lệ vô nghĩa quanh 8%. Mẫu số phải là kế hoạch của chính kỳ đó.
+   * `null` ở chế độ `Lũy kế`, vì khi đó mẫu số là `annual`.
+   */
+  periodPlan: number | null;
   origin: "mock" | "api";
 }
 
