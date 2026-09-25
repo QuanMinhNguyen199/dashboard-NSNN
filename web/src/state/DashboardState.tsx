@@ -98,7 +98,17 @@ export const DEFAULT_FILTERS: DashboardFilters = {
   year: 2026,
   periodType: "MONTH",
   period: 8,
-  accumulation: "YTD",
+  /*
+    Mở lên là `Trong kỳ`, không phải `Lũy kế`.
+
+    Đặc tả 25-09 ghi `Lũy kế` là mặc định; người dùng chọn ngược lại. Câu hỏi
+    đầu tiên khi mở dashboard là "tháng này thu được bao nhiêu", còn lũy kế là
+    câu hỏi thứ hai — và chỉ cách một cú gạt.
+
+    Kéo theo: thẻ KPI nổi bật là "Tổng thu trong kỳ", và thẻ thứ tư đo trên kế
+    hoạch của riêng kỳ chứ không trên dự toán cả năm (xem `estimateOf`).
+  */
+  accumulation: "PERIOD",
   indicator: "tong-so",
   budgetLevel: "NSNN",
   industry: null,

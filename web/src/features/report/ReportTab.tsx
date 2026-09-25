@@ -21,6 +21,7 @@ import { xuatTheoMauNganh } from "./nsnnTemplateExport";
 import reportTree from "@/domain/report-tree.json";
 import { useNarrow } from "@/components/useNarrow";
 import { revealSection } from "@/components/sectionNavigation";
+import { useHostContext } from "@/host/HostContext";
 
 const BudgetForecastView = lazy(() =>
   import("@/features/budget-forecast/BudgetForecastView").then((module) => ({ default: module.BudgetForecastView })),
@@ -72,6 +73,7 @@ export function ReportTab() {
 
 function NsnnReportView() {
   const { filters } = useDashboardState();
+  const { host } = useHostContext();
   const narrow = useNarrow();
   const [groupBy, setGroupBy] = useState<ReportDimension>("location");
   const [subGroupBy, setSubGroupBy] = useState<ReportDimension | null>(null);
@@ -94,7 +96,10 @@ function NsnnReportView() {
   const [mobileDimensionsOpen, setMobileDimensionsOpen] = useState(false);
   const openMobileTable = () => {
     setMobileSection("table");
-    revealSection("nsnn-report-table-title");
+    revealSection("nsnn-report-table-pane");
+  };
+  const showChangedDimensions = () => {
+    if (host.source === "mobile" && narrow) openMobileTable();
   };
 
   /**
@@ -186,6 +191,7 @@ function NsnnReportView() {
     if (next === subGroupBy || (subGroupBy && !subDimensionsFor(next).includes(subGroupBy)))
       setSubGroupBy(null);
     setOffset(0);
+    showChangedDimensions();
   };
 
   return (
@@ -235,6 +241,7 @@ function NsnnReportView() {
             onChange={(event) => {
               setSubGroupBy((event.target.value || null) as ReportDimension | null);
               setOffset(0);
+              showChangedDimensions();
             }}
           >
             <option value="">Không</option>
@@ -282,7 +289,7 @@ function NsnnReportView() {
         />
       </div>
 
-      <div className="dreport-table-pane" data-mobile-active={mobileSection === "table"}>
+      <div className="dreport-table-pane" id="nsnn-report-table-pane" tabIndex={-1} data-mobile-active={mobileSection === "table"}>
         {/*
           Đổi trang cột hay đổi nhóm thì KHÔNG dựng lại cả bảng.
           Hai thao tác đó chỉ thay các ô số; cây chỉ tiêu, cột Tổng và toàn bộ

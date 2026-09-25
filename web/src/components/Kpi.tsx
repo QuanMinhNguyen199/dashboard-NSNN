@@ -44,6 +44,7 @@ export function Kpi({
   note,
   code = false,
   tone,
+  lead = false,
   onActivate,
   controls,
   children,
@@ -55,6 +56,15 @@ export function Kpi({
   code?: boolean;
   /** Chiều biến động của chính giá trị. Bỏ trống khi giá trị không có chiều. */
   tone?: "pos" | "neg";
+  /**
+   * Ô đang là CHỈ SỐ CHÍNH của chế độ số liệu hiện hành.
+   *
+   * Dải KPI không đổi nội dung khi gạt `Trong kỳ | Lũy kế` — cả bốn ô vẫn đứng
+   * đó với cùng con số. Thiếu dấu hiệu này thì người dùng gạt xong không thấy
+   * gì đổi và tưởng nút hỏng, trong khi thứ đã đổi là ô nào đang trả lời câu
+   * hỏi của họ.
+   */
+  lead?: boolean;
   /** Chỉ truyền khi ô thực sự dẫn tới một vùng nội dung chi tiết. */
   onActivate?: () => void;
   controls?: string;
@@ -69,7 +79,7 @@ export function Kpi({
   );
 
   return (
-    <div className={cx(onActivate && "is-actionable")}>
+    <div className={cx(onActivate && "is-actionable", lead && "is-lead")}>
       {onActivate ? (
         <button type="button" className="dkpi-action" aria-controls={controls} onClick={onActivate}>
           {content}

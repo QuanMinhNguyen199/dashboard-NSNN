@@ -147,10 +147,18 @@ export function TrendChart({
   const nameCurrent = labelB ?? `Năm ${year} (hiện tại)`;
   const namePrevious = labelA ?? `Năm ${year - 1} (cùng kỳ)`;
   const hasGap = points.some((p) => p.current === null || p.previous === null);
+  const hasPlan = points.some((p) => p.plan != null);
 
+  /*
+    Đỉnh trục phải tính CẢ đường kế hoạch.
+
+    Kế hoạch chạy tới hết tháng 12 nên nó luôn cao hơn thực hiện tới tháng báo
+    cáo. Bỏ nó ra khỏi phép tính đỉnh thì đoạn cuối đường kế hoạch chạy vọt ra
+    ngoài khung vẽ và biến mất.
+  */
   const peak = Math.max(
     0,
-    ...points.flatMap((p) => [Math.abs(p.current ?? 0), Math.abs(p.previous ?? 0)]),
+    ...points.flatMap((p) => [Math.abs(p.current ?? 0), Math.abs(p.previous ?? 0), Math.abs(p.plan ?? 0)]),
   );
   // Cùng thang với mọi con số khác trong ứng dụng. Trục riêng một bậc sẽ buộc
   // người đọc đổi đơn vị khi mắt đi từ biểu đồ sang KPI ngay bên cạnh.
@@ -179,6 +187,7 @@ export function TrendChart({
     () => ({
       previous: segments(points.map((p) => p.previous), geo.xOf, geo.yOf).map(monotonePath),
       current: segments(points.map((p) => p.current), geo.xOf, geo.yOf).map(monotonePath),
+      plan: segments(points.map((p) => p.plan ?? null), geo.xOf, geo.yOf).map(monotonePath),
     }),
     [points, geo],
   );
@@ -241,6 +250,11 @@ export function TrendChart({
               />
             )}
 
+            {/* Kế hoạch vẽ TRƯỚC hai đường kia để nó nằm dưới cùng: nó là cái
+                nền để đo, không phải chuỗi cần đọc chính xác từng điểm. */}
+            {paths.plan.map((d, i) => (
+              <path key={`k${i}`} className="dchart-line is-plan" d={d} />
+            ))}
             {paths.previous.map((d, i) => (
               <path key={`p${i}`} className={`dchart-line ${peers ? "is-peer" : "is-previous"}`} d={d} />
             ))}
@@ -286,6 +300,13 @@ export function TrendChart({
               {namePrevious}
               <em>{active.previous === null ? "chưa có" : money(active.previous)}</em>
             </span>
+            {active.plan != null && (
+              <span>
+                <i className="is-plan" />
+                Kế hoạch
+                <em>{money(active.plan)}</em>
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -299,6 +320,12 @@ export function TrendChart({
           <i className={peers ? "is-peer" : undefined} />
           {namePrevious}
         </span>
+        {hasPlan && (
+          <span>
+            <i className="is-plan" />
+            Kế hoạch tiến độ (mô phỏng)
+          </span>
+        )}
         <span>Đơn vị trục: {axis.unit}</span>
         {hasGap && <span>Khoảng trống = chưa có số liệu</span>}
       </div>

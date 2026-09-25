@@ -124,6 +124,26 @@ function rowOf(
  */
 const ESTIMATE_GROWTH = 1.08;
 
+/**
+ * Hình mùa vụ của năm trước — tỷ trọng số thu của từng tháng, cộng lại bằng 1.
+ *
+ * Dùng chung cho đường kế hoạch trên biểu đồ và cho mẫu số `% hoàn thành kế
+ * hoạch tháng`. Hai nơi đó phải nói CÙNG một con số: nếu biểu đồ vẽ kế hoạch
+ * tháng 8 là 52.000 tỷ mà thẻ KPI lại chia cho 51.000 tỷ thì người đọc không
+ * có cách nào đối chiếu được hai thứ đang nằm cạnh nhau.
+ *
+ * Trả `null` khi năm trước không có số — thà không có kế hoạch còn hơn bịa.
+ */
+function hinhMuaVu(
+  filters: DashboardFilters,
+  options: { items?: ItemDef[]; locationIds?: string[] } = {},
+): number[] | null {
+  const thang = Array.from({ length: 12 }, (_, i) =>
+    sumOf({ ...filters, accumulation: "PERIOD" }, { ...options, year: prevYear(filters), months: [i + 1] }) ?? 0);
+  const tong = thang.reduce((a, b) => a + b, 0);
+  return tong > 0 ? thang.map((v) => v / tong) : null;
+}
+
 function estimateOf(filters: DashboardFilters, locationIds?: string[]): BudgetEstimate | null {
   const scope = locationIds ? { locationIds } : {};
   const wholeYear = { ...filters, period: ALL_PERIODS, accumulation: "YTD" as const };
@@ -132,10 +152,55 @@ function estimateOf(filters: DashboardFilters, locationIds?: string[]): BudgetEs
 
   // Làm tròn tới tỷ: dự toán là con số giao bằng văn bản, không phải kết quả đo.
   const annual = Math.round((lastYear * ESTIMATE_GROWTH) / 1e9) * 1e9;
-  const ytd = sumOf(filters, { ...scope, months: monthsOf({ ...filters, accumulation: "YTD" }) });
+  /*
+    MẪU SỐ ĐỔI THEO CHẾ ĐỘ SỐ LIỆU.
+
+    `Lũy kế` đo thực hiện từ đầu năm trên dự toán cả năm. `Trong kỳ` đo số phát
+    sinh của riêng kỳ trên KẾ HOẠCH CỦA CHÍNH KỲ ĐÓ — lấy dự toán năm phân bổ
+    theo hình mùa vụ. Nếu giữ nguyên mẫu số cả năm thì một tháng bất kỳ luôn ra
+    quanh 8%, và nhãn "% hoàn thành kế hoạch tháng" nói một đằng, con số nói
+    một nẻo.
+  */
+  const trongKy = filters.accumulation === "PERIOD";
+  const mua = trongKy ? hinhMuaVu(filters, scope) : null;
+  const tyTrongKy = mua === null
+    ? null
+    : monthsOf(filters).reduce((a, m) => a + (mua[m - 1] ?? 0), 0);
+  const periodPlan = tyTrongKy === null ? null : annual * tyTrongKy;
+
+  const thucHien = sumOf(filters, { ...scope, months: monthsOf(filters) });
+  const mauSo = trongKy ? periodPlan : annual;
+
+  /*
+    Tiến độ cùng kỳ dựng bằng ĐÚNG phép tính trên, lùi lại một năm: thực hiện
+    tới cùng tháng của năm N−1 chia cho mẫu số của năm N−1. Lấy mẫu số của năm
+    nay thì hai tỷ lệ không còn so được với nhau — chúng chia cho hai con số
+    khác nhau.
+  */
+  const namTruoc = { ...filters, year: prevYear(filters) };
+  const truocTruoc = sumOf(
+    { ...namTruoc, year: prevYear(namTruoc), period: ALL_PERIODS, accumulation: "YTD" as const },
+    scope,
+  );
+  const duToanTruoc = truocTruoc === null || truocTruoc <= 0
+    ? null
+    : Math.round((truocTruoc * ESTIMATE_GROWTH) / 1e9) * 1e9;
+  const muaTruoc = trongKy && duToanTruoc !== null ? hinhMuaVu(namTruoc, scope) : null;
+  const mauSoTruoc = !trongKy
+    ? duToanTruoc
+    : duToanTruoc === null || muaTruoc === null
+      ? null
+      : duToanTruoc * monthsOf(namTruoc).reduce((a, m) => a + (muaTruoc[m - 1] ?? 0), 0);
+  const thucHienTruoc = sumOf(namTruoc, { ...scope, months: monthsOf(namTruoc) });
+
   return {
     annual,
-    progress: ytd === null || annual <= 0 ? null : ytd / annual,
+    progress: thucHien === null || mauSo === null || mauSo <= 0 ? null : thucHien / mauSo,
+    priorProgress:
+      thucHienTruoc === null || mauSoTruoc === null || mauSoTruoc <= 0
+        ? null
+        : thucHienTruoc / mauSoTruoc,
+    periodPlan,
     origin: "mock",
   };
 }
@@ -148,7 +213,7 @@ function estimateOf(filters: DashboardFilters, locationIds?: string[]): BudgetEs
  */
 export function trendOf(
   filters: DashboardFilters,
-  options: { items?: ItemDef[]; locationIds?: string[] } = {},
+  options: { items?: ItemDef[]; locationIds?: string[]; annual?: number | null } = {},
 ): TrendPoint[] {
   const pointFor = (year: number, month: number) => {
     if (month > latestMonth(year)) return null;
@@ -158,11 +223,33 @@ export function trendOf(
         : [month];
     return sumOf(filters, { ...options, year, months });
   };
+  /*
+    Đường kế hoạch — **số mô phỏng**.
+
+    Phân bổ dự toán cả năm theo HÌNH MÙA VỤ của năm trước, chứ không chia đều
+    mười hai phần. Thu ngân sách dồn vào tháng 1, 4, 7, 10 theo kỳ quyết toán
+    thuế quý; một đường thẳng chia đều sẽ báo "chậm tiến độ" suốt tháng 2, 3
+    rồi "vượt" vào tháng 4, trong khi chẳng có gì bất thường xảy ra.
+
+    Không có dự toán, hoặc năm trước không có số để lấy hình mùa vụ, thì trả
+    `null` — thà không vẽ còn hơn vẽ một đường bịa.
+  */
+  const annual = options.annual ?? null;
+  const mua = annual === null ? null : hinhMuaVu(filters, options);
+  const keHoachThang = mua === null || annual === null ? null : mua.map((v) => annual * v);
+  const keHoachToi = (month: number) => {
+    if (!keHoachThang) return null;
+    return filters.accumulation === "YTD"
+      ? keHoachThang.slice(0, month).reduce((a, b) => a + b, 0)
+      : keHoachThang[month - 1];
+  };
+
   return Array.from({ length: 12 }, (_, i) => ({
     month: i + 1,
     label: `T${i + 1}`,
     current: pointFor(filters.year, i + 1),
     previous: pointFor(prevYear(filters), i + 1),
+    plan: keHoachToi(i + 1),
   }));
 }
 
@@ -326,6 +413,9 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     return null;
 
   const total = sumOf(filters) ?? 0;
+  /* Dựng MỘT LẦN rồi dùng cho cả thẻ KPI lẫn đường kế hoạch trên biểu đồ. Gọi
+     `estimateOf` hai lần thì hai nơi có thể lệch nhau khi luật dự toán đổi. */
+  const duToanTongQuan = estimateOf(filters);
   // Lũy kế = chính khoảng kỳ hiện tại tính từ tháng 1; để `monthsOf` lo cả
   // trường hợp "tất cả các kỳ" thay vì dựng lại công thức ở đây.
   const ytdMonths = monthsOf({ ...filters, accumulation: "YTD" });
@@ -456,7 +546,7 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
       previous: sumOf({ ...filters, year: prevYear(filters) }),
     },
     insight: insightOf(kpiPeriod, locations, coverageOf(filters)),
-    trend: trendOf(filters),
+    trend: trendOf(filters, { annual: duToanTongQuan?.annual ?? null }),
     sources,
     domesticItems,
     locations,
@@ -469,7 +559,7 @@ export function buildOverview(filters: DashboardFilters): OverviewData | null {
     industries: coCauNganh(filters, total),
     taxOfficeProgress: tienDoCqt(filters, total),
     topTaxpayers: topNguoiNopThue("toan-thanh-pho", total),
-    estimate: estimateOf(filters),
+    estimate: duToanTongQuan,
     waterfall: waterfallOf(sources, {
       start: `Cùng kỳ ${prevYear(filters)}`,
       end: periodLabel(filters),
@@ -655,7 +745,7 @@ export function buildRevenueAnalysis(
     { items, months: monthsOf({ ...filters, accumulation: "YTD" }) },
   );
   const estimate: BudgetEstimate | null = annual > 0
-    ? { annual, progress: ytd === null ? null : ytd / annual, origin: "mock" }
+    ? { annual, progress: ytd === null ? null : ytd / annual, priorProgress: null, periodPlan: null, origin: "mock" }
     : null;
 
   return {

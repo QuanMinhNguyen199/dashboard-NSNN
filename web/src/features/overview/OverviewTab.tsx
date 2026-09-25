@@ -31,6 +31,7 @@ function OverviewBody({ data, dispatch }: {
 
   const domestic = data.sources.find((row) => row.id === "domestic") ?? data.scopeTotal;
   const kpiUnit = moneyScale([data.kpiPeriod.amount, data.kpiYtd.amount, domestic.amount]);
+  const sourceUnit = moneyScale(data.sources.map((row) => row.amount));
   const budgetDetailRows = selectedBudgetLevel === "NSTW" ? data.centralBudgetSources : data.localBudgetLevels;
   const budgetDetailUnit = moneyScale(budgetDetailRows.map((row) => row.amount));
   const budgetDetailMax = Math.max(...budgetDetailRows.map((row) => Math.abs(row.amount)), 1);
@@ -59,10 +60,28 @@ function OverviewBody({ data, dispatch }: {
 
   return <>
     <KpiStrip label="Chỉ số điều hành" columns={4}>
-      <Kpi label="Tổng thu trong kỳ" note={<><Change current={data.kpiPeriod.amount} previous={data.kpiPeriod.previous} label="" /> so cùng kỳ</>}><Money value={data.kpiPeriod.amount} scale={kpiUnit} /></Kpi>
-      <Kpi label="Lũy kế đầu năm" note={<><Change current={data.kpiYtd.amount} previous={data.kpiYtd.previous} label="" /> so cùng kỳ</>}><Money value={data.kpiYtd.amount} scale={kpiUnit} /></Kpi>
+      {/* Ô nào đang trả lời câu hỏi của chế độ số liệu thì ô đó nổi lên. Gạt
+          `Trong kỳ` là hỏi "tháng này thu bao nhiêu", gạt `Lũy kế` là hỏi "từ
+          đầu năm tới giờ được bao nhiêu" — hai câu hỏi khác nhau, hai ô khác
+          nhau. Không có dấu hiệu này thì gạt xong trông như chẳng có gì đổi. */}
+      <Kpi lead={filters.accumulation === "PERIOD"} label="Tổng thu trong kỳ" note={<><Change current={data.kpiPeriod.amount} previous={data.kpiPeriod.previous} label="" /> so cùng kỳ</>}><Money value={data.kpiPeriod.amount} scale={kpiUnit} /></Kpi>
+      <Kpi lead={filters.accumulation === "YTD"} label="Lũy kế đầu năm" note={<><Change current={data.kpiYtd.amount} previous={data.kpiYtd.previous} label="" /> so cùng kỳ</>}><Money value={data.kpiYtd.amount} scale={kpiUnit} /></Kpi>
       <Kpi label="Tổng thu nội địa" note={<><Change current={domestic.amount} previous={domestic.previous} label="" /> so cùng kỳ</>}><Money value={domestic.amount} scale={kpiUnit} /></Kpi>
-      <Kpi label={filters.accumulation === "YTD" ? "% đạt dự toán thu nội địa" : "% hoàn thành kế hoạch tháng"} note={data.estimate ? `Dự toán ${money(data.estimate.annual)}` : "Chưa có dữ liệu dự toán"}>{data.estimate?.progress == null ? "—" : pct(data.estimate.progress * 100)}</Kpi>
+      {/* Mẫu số VÀ tiến độ cùng kỳ. Một tỷ lệ đứng một mình không nói được nó
+          nhanh hay chậm: 79% ở tháng 8 là vượt tiến độ, 79% ở tháng 11 là hụt. */}
+      <Kpi
+        label={filters.accumulation === "YTD" ? "% đạt dự toán thu nội địa" : "% hoàn thành kế hoạch tháng"}
+        note={data.estimate
+          ? <>{filters.accumulation === "YTD"
+              ? <>Dự toán {money(data.estimate.annual)}</>
+              /* `Trong kỳ` ẩn hẳn mẫu số cả năm: để nó lại thì người đọc lấy
+                 con số tháng chia cho dự toán năm và ra một tỷ lệ khác hẳn. */
+              : data.estimate.periodPlan == null
+                ? <>Kế hoạch kỳ chưa xác định</>
+                : <>Kế hoạch kỳ {money(data.estimate.periodPlan)}</>}
+            {data.estimate.priorProgress != null && <> · cùng kỳ {pct(data.estimate.priorProgress * 100)}</>}</>
+          : "Chưa có dữ liệu dự toán"}
+      >{data.estimate?.progress == null ? "—" : pct(data.estimate.progress * 100)}</Kpi>
     </KpiStrip>
 
     <GridRows rows={[
@@ -74,7 +93,26 @@ function OverviewBody({ data, dispatch }: {
         </Card> },
       ],
       [
-        { id: "sources", span: 12, render: () => <Card title="Cơ cấu 4 nhóm nguồn thu" subtitle="Chọn một nhóm để xem tóm tắt và đi tới phân tích liên quan" unit={moneyScale(data.sources.map((row) => row.amount))}><div className="doverview-sources">{data.sources.map((row) => <button key={row.id} type="button" onClick={() => dispatch({ type: "OPEN_REVENUE_PREVIEW", sourceId: row.id as SourceCode })}><span>{row.name}</span><strong><Money value={row.amount} /></strong><small>{pct(row.share)}</small><i aria-hidden="true">›</i></button>)}</div></Card> },
+        { id: "sources", span: 12, render: () => <Card className="doverview-sources-card" title="Cơ cấu 4 nhóm nguồn thu" subtitle="Chọn một nhóm để xem tóm tắt và đi tới phân tích liên quan" unit={sourceUnit}>
+          <div className="doverview-sources">
+            {data.sources.map((row) => <button
+              key={row.id}
+              type="button"
+              aria-label={`${row.name}: ${inScale(row.amount, sourceUnit)} ${sourceUnit.unit}, chiếm ${pct(row.share)}`}
+              onClick={() => dispatch({ type: "OPEN_REVENUE_PREVIEW", sourceId: row.id as SourceCode })}
+            >
+              <span className="doverview-source-name">{row.name}</span>
+              <svg className="doverview-source-arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="m6 3.5 4.5 4.5L6 12.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <strong>{inScale(row.amount, sourceUnit)}</strong>
+              <small><span>Tỷ trọng</span>{pct(row.share)}</small>
+              <span className="doverview-source-track" aria-hidden="true">
+                <i style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0.5)}%` }} />
+              </span>
+            </button>)}
+          </div>
+        </Card> },
       ],
       [
         { id: "management", span: 6, render: () => <Card title="Theo dõi quản lý nhà nước" subtitle="Xếp hạng thực hiện theo đơn vị thuế hoặc địa bàn" actions={<Segmented label="Góc nhìn quản lý" value={managementView} options={[{ value: "taxOffice", label: "Theo cơ quan thuế" }, { value: "location", label: "Theo địa bàn" }]} onChange={setManagementView} />}>
