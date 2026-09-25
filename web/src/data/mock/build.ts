@@ -23,7 +23,7 @@ import {
 } from "./observations";
 import { TAX_OFFICE_ENTITIES } from "@/domain/tms";
 import { allocate, hash } from "./deterministic";
-import { gridMembersOf } from "@/domain/report";
+import { GRID_UNCLASSIFIED, gridMembersOf } from "@/domain/report";
 /*
   build ↔ tms nhập lẫn nhau: `tms` lấy `metaOf` ở đây, còn đây lấy phép chia
   theo cơ quan thuế ở `tms`. Vòng này an toàn vì cả hai chiều chỉ dùng hàm lúc
@@ -883,7 +883,18 @@ export function topNguoiNopThue(
   epNganh?: string,
 ): OriginList<TaxpayerRow> {
   if (total <= 0) return { rows: [], origin: "mock" };
-  const nganh = gridMembersOf("industry");
+  /*
+    Bo "Chua xac dinh" ra khoi danh sach nganh cua NGUOI NOP THUE.
+
+    O do la mot TRANG THAI DU LIEU cua phep boc tach tong so thu: phan tien
+    chua gan duoc vao nganh nao. Mot doanh nghiep cu the thi khong o trang thai
+    do - no co nganh dang ky. Gan nhan "Chua xac dinh" cho mot dong ma chinh
+    minh vua sinh ra la tu bao cao mot khiem khuyet khong ton tai.
+
+    Phep boc tach co cau nganh (`coCauNganh`) van giu nhom do, vi o day no la
+    su that: co tien that su chua xac dinh duoc nganh.
+  */
+  const nganh = gridMembersOf("industry").filter((m) => m.id !== GRID_UNCLASSIFIED);
   const trongSo = Array.from({ length: SO_NGUOI_NOP }, (_, i) =>
     // Giam dan theo hang roi nhieu nhe tat dinh, de bang khong thanh mot cap so
     // cong hoan hao - thu khong du lieu that nao co.
