@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { cx } from "@/components/primitives";
 
 /**
@@ -32,8 +32,10 @@ export function KpiStrip({
    */
   columns?: 3 | 4 | 5 | 6;
 }) {
+  const itemCount = Children.count(children);
+
   return (
-    <section className="dkpis" data-columns={columns} aria-label={label}>
+    <section className="dkpis" data-columns={columns} data-count={itemCount} aria-label={label}>
       {children}
     </section>
   );
