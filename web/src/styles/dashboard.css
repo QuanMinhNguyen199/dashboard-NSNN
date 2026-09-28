@@ -2722,6 +2722,24 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dfilters select, .dfilters .dseg { min-height: 44px; }
   .dfilters .dseg { width: 100%; }
   .dfilters .dseg button { flex: 1 1 0; min-height: 38px; padding: 3px 6px; }
+  /* Dải KPI lẻ trên mobile phải kết thúc thành một hàng hoàn chỉnh. Nếu ô cuối
+     chỉ chiếm nửa hàng, nửa còn lại trông như một KPI bị mất và toàn khối mất
+     cân bằng. Giới hạn theo `data-host` để iframe hẹp vẫn giữ nguyên bố cục web. */
+  .dapp[data-host="mobile"] .dkpis:is([data-count="3"], [data-count="5"]) > div:last-child {
+    grid-column: 1 / -1;
+    border-left: 0;
+  }
+  /* Sáu KPI của Dự toán & dự báo không đủ chỗ cho ba cột ở 390px. Hai cột
+     giữ nhãn đọc được và cùng nhịp với mọi dải KPI mobile còn lại. */
+  .dapp[data-host="mobile"] .dkpis[data-count="6"] {
+    grid-template-columns: 1fr 1fr;
+  }
+  .dapp[data-host="mobile"] .dkpis[data-count="6"] > div {
+    border-top: 1px solid var(--hairline);
+    border-left: 1px solid var(--hairline);
+  }
+  .dapp[data-host="mobile"] .dkpis[data-count="6"] > div:nth-child(-n + 2) { border-top: 0; }
+  .dapp[data-host="mobile"] .dkpis[data-count="6"] > div:nth-child(odd) { border-left: 0; }
   .dkpis strong { font-size: var(--fs-metric-sm); }
   .dbar-row { grid-template-columns: 20px minmax(0, 1fr); }
   /* Danh sách số liệu mobile dùng một đường neo cố định ở mép phải. Tên có
