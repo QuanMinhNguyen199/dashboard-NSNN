@@ -60,7 +60,6 @@ export function Runs() {
   return <div className="page-stack">
     <PageIntro
       title="Lượt chạy dữ liệu"
-      description="Mỗi lần kéo dữ liệu về vùng thô là một lượt có tham số, số dòng đối soát và phiên bản riêng."
       actions={<Button kind="primary" icon="upload" onClick={() => notify("Bản demo chưa nối hệ nguồn nên chưa chạy thật được.")}>Chạy lại theo tham số cũ</Button>}
     />
 
