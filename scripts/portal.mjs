@@ -5,7 +5,8 @@ import { resolve } from "node:path";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const mode = process.argv[2] ?? "dev";
 if (!["dev", "build", "preview"].includes(mode)) throw new Error(`Unknown portal mode: ${mode}`);
-const env = { ...process.env, VITE_PORTAL: "true", VITE_BASE: "/" };
+const base = `/${(process.env.VITE_BASE ?? "/").split("/").filter(Boolean).join("/")}/`;
+const env = { ...process.env, VITE_PORTAL: "true", VITE_BASE: base };
 // Both applications are served by Tax Ops. NSNN assets use a relative URL on
 // the same origin, so sharing port 5174 also shares the demo login session.
 function vite(app, args, extraEnv = {}) {
@@ -19,7 +20,7 @@ function vite(app, args, extraEnv = {}) {
   });
 }
 if (mode !== "preview") {
-  await vite("web", ["build", "--outDir", "../tax-ops/public/nsnn", "--emptyOutDir"], { VITE_BASE: "/nsnn/" });
+  await vite("web", ["build", "--outDir", "../tax-ops/public/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
 }
 await vite("tax-ops", mode === "build" ? ["build"] : [
   ...(mode === "preview" ? ["preview"] : []),

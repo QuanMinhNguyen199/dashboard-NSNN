@@ -119,7 +119,7 @@ await page.evaluate(() => {
 });
 await page.click(".login-submit");
 await page.waitForSelector(".dheader, .dmobile-header");
-if (new URL(page.url()).pathname !== "/nsnn/") throw new Error("Lãnh đạo nhà nước chưa được điều hướng vào NSNN.");
+if (new URL(page.url()).pathname !== new URL(`${base}/nsnn/`).pathname) throw new Error("Lãnh đạo nhà nước chưa được điều hướng vào NSNN.");
 await page.screenshot({ path: ".impeccable/review/nsnn-mobile.png", fullPage: true });
 
 await browser.close();

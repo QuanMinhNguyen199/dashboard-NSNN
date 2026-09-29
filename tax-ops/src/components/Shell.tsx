@@ -38,7 +38,7 @@ export const navFor = (role: UserRole) => NAV.filter((item) => item.roles.includ
 const roleLabels = { OFFICER: "Cán bộ thuế", TAX_LEADER: "Lãnh đạo Thuế", STATE_LEADER: "Lãnh đạo nhà nước" } as const;
 
 const NSNN_URL =
-  import.meta.env.VITE_PORTAL === "true" ? "/nsnn/" :
+  import.meta.env.VITE_PORTAL === "true" ? `${import.meta.env.BASE_URL}nsnn/` :
   import.meta.env.VITE_NSNN_URL ??
   (import.meta.env.DEV ? "http://localhost:5173/" : "/dashboard-NSNN/");
 /* Mang theo `from=tax-ops` để Dashboard biết người dùng đến từ đâu. Với mô hình
