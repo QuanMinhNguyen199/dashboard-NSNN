@@ -110,7 +110,7 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 :where(.sidebar, .mobile-drawer, .login-context) :where(button, a, input, [tabindex]):focus-visible { outline-color: var(--focus-on-chrome); }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 8px; background: var(--scroll-thumb); background-clip: padding-box; }
+::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: var(--radius-panel); background: var(--scroll-thumb); background-clip: padding-box; }
 ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: padding-box; }
 
 .sr-only { position: absolute!important; width: 1px!important; height: 1px!important; overflow: hidden!important; clip: rect(0 0 0 0)!important; white-space: nowrap!important; }
@@ -204,11 +204,21 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 .menu-button { display: none; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); }
 
 .workspace { margin-left: 252px; padding: 18px 20px 32px; }
-.page-stack { width: min(100%, 1540px); margin: 0 auto; display: grid; gap: 18px; }
-.page-intro { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
-.page-intro h1 { font-size: 22px; font-weight: 650; line-height: 1.25; letter-spacing: -.02em; }
-.page-intro p { max-width: 72ch; margin-top: 3px; color: var(--ink-2); font-size: 13px; }
-.page-actions { flex: none; }
+/* Cột `auto` của lưới nở theo phần tử rộng nhất, và bảng nghiệp vụ có
+   `min-width: 780px`, nên ở khổ hẹp mọi khối khác bị kéo rộng theo nó rồi tràn
+   ra ngoài màn hình. `minmax(0, 1fr)` cho track quyền co lại dưới min-content;
+   bảng vẫn cuộn ngang trong vùng cuộn của chính nó. */
+.page-stack { width: min(100%, 1540px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.case-layout, .case-list, .case-detail { min-width: 0; }
+/*
+  Tên màn đã nằm ở mục điều hướng đang mở trong sidebar; in lại nó ở đầu nội
+  dung là nói hai lần và ăn mất dòng đắt nhất của trang. `h1` vẫn còn trong DOM
+  ở dạng chỉ-đọc-bằng-trình-đọc-màn-hình, vì một trang không có tiêu đề là một
+  trang mà người dùng bàn phím không biết mình đang ở đâu.
+*/
+.page-lead { max-width: 72ch; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
+.page-actions { flex: none; display: flex; align-items: center; gap: 8px; }
+.topbar-actions { flex: none; display: contents; }
 
 @media (prefers-reduced-motion: no-preference) {
   .workspace-view { animation: workspace-enter 200ms var(--ease-out) both; }
@@ -258,7 +268,37 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 .panel-head p { max-width: 72ch; margin-top: 2px; color: var(--ink-3); font-size: 12px; }
 .panel-actions { flex: none; }
 .panel-body { padding: 0 14px 12px; }
+/* Chú thích nguồn ở chân thân khối: mờ, nhỏ, và không bao giờ chạm vào chiều
+   cao đầu khối. Khối không khai nguồn thì đơn giản là không có dòng này. */
+.panel-source { margin-top: 12px; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
 .workbench-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 14px; }
+.case-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(320px, 3fr); align-items: start; gap: 14px; }
+.case-list, .case-detail { min-width: 0; }
+.case-detail { position: sticky; top: calc(var(--topbar-h) + 18px); max-height: calc(100dvh - var(--topbar-h) - 36px); overflow: auto; border-radius: var(--radius-panel); }
+.case-detail .panel-head:has(.panel-actions) { display: grid; }
+.case-detail .detail-grid, .case-detail-dialog .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.case-detail .detail-grid > div:nth-child(odd), .case-detail-dialog .detail-grid > div:nth-child(odd) { border-left: 0; }
+.case-detail .detail-grid > div:nth-child(n + 3), .case-detail-dialog .detail-grid > div:nth-child(n + 3) { border-top: 1px solid var(--line-soft); }
+.case-detail-dialog { position: fixed; inset: 0 0 0 auto; width: min(100vw, 520px); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: 18px; border: 0; background: var(--canvas); box-shadow: var(--shadow-overlay); overflow-y: auto; }
+.case-detail-dialog::backdrop { background: rgb(36 29 31 / 45%); }
+.case-detail-dialog .panel { width: 100%; }
+.case-detail-close { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 0 12px auto; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); }
+.case-detail-close:hover { background: var(--hover-surface); }
+.case-detail .approval-flow, .case-detail-dialog .approval-flow { grid-template-columns: 1fr; gap: 8px; }
+.case-detail .approval-flow > div, .case-detail-dialog .approval-flow > div { min-height: 48px; padding: 0; }
+.case-detail .approval-flow > div::after, .case-detail-dialog .approval-flow > div::after { display: none; }
+.case-detail .approval-flow small, .case-detail-dialog .approval-flow small { grid-column: 2; }
+.batch-file-list { display: grid; margin-inline: -14px; }
+.batch-file-list > div { display: grid; gap: 4px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); }
+.batch-file-list > div:last-child { border-bottom: 0; }
+.batch-file-list > div > div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.batch-file-list strong { font-size: 13px; }
+.batch-file-list code { color: var(--ink-2); font: 600 11px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+.batch-file-list small, .case-source-note { color: var(--ink-3); font-size: 12px; line-height: 1.45; }
+.case-source-note { padding-top: 12px; border-top: 1px solid var(--line-soft); }
+@media (prefers-reduced-motion: no-preference) { .case-detail-dialog[open] { animation: case-detail-enter 180ms var(--ease-out) both; } }
+@keyframes case-detail-enter { from { opacity: .7; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+@media (max-width: 1360px) { .case-layout { display: block; } .case-detail { display: none; } }
 
 .task-list { margin-inline: -14px; }
 .task-row { width: 100%; min-height: 54px; display: grid; grid-template-columns: minmax(0, 1fr) auto 16px; align-items: center; gap: 10px; padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line-soft); background: var(--surface); text-align: left; transition: background 100ms var(--ease-out); }
@@ -281,9 +321,16 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 .source-name small, .source-files small { color: var(--ink-3); font-size: 11px; }
 .source-quality > div { display: flex; justify-content: space-between; gap: 10px; color: var(--ink-3); font-size: 11px; }
 
-.notice { min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 10px 13px; border: 0; border-radius: var(--radius-control); font-size: 13px; }
-.notice strong { flex: none; font-weight: 650; }
-.notice > span { flex: 1; color: var(--ink-2); }
+/*
+  Nhãn và phần giải thích nằm cùng hàng khi còn chỗ, và XUỐNG DÒNG khi hết chỗ.
+  Trước đây nhãn để `flex: none` nên trong một cột hẹp nó giữ nguyên bề ngang
+  còn phần giải thích bị ép xuống vài chục pixel — mỗi dòng một chữ. Nhãn phải
+  co được, và phần giải thích cần một bề ngang tối thiểu để tự rớt xuống dòng
+  riêng thay vì bị bóp.
+*/
+.notice { min-height: 44px; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 3px; padding: 10px 13px; border: 0; border-radius: var(--radius-control); font-size: 13px; }
+.notice strong { flex: 0 1 auto; font-weight: 650; }
+.notice > span { flex: 1 1 22ch; min-width: 0; color: var(--ink-2); line-height: 1.5; }
 .notice.warning { color: var(--warning); background: var(--warning-bg); }
 .notice.critical { color: var(--critical); background: var(--critical-bg); }
 .notice.info { color: var(--info); background: var(--info-bg); }
@@ -330,6 +377,7 @@ td small { margin-top: 1px; color: var(--ink-3); font-size: 11px; }
 th.num, td.num { text-align: right; }
 th.center, td.center { text-align: center; }
 td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: -.01em; }
+.table-empty { height: 72px; color: var(--ink-3); text-align: center; }
 .quality-note { color: var(--critical); }
 .table-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); color: var(--ink-3); font-size: 12px; }
 
@@ -351,10 +399,13 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 .rank-list b { color: var(--ink); font-weight: 600; }
 
 .detail-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-inline: -14px; overflow: hidden; }
-.detail-grid > div { min-width: 0; min-height: 56px; display: grid; align-content: center; gap: 3px; padding: 9px 16px; border-left: 1px solid var(--line-soft); }
+/* `justify-items: start` cộng `margin: 0` trên <dd>: trình duyệt cho <dd> một
+   thụt lề mặc định 40px, nên giá trị bị đẩy sang phải trong khi nhãn ngay trên
+   nó lại sát trái. Mọi thứ trong ô căn về một mép trái duy nhất. */
+.detail-grid > div { min-width: 0; min-height: 56px; display: grid; align-content: center; justify-items: start; gap: 3px; padding: 9px 16px; border-left: 1px solid var(--line-soft); text-align: left; }
 .detail-grid > div:first-child { border-left: 0; }
-.detail-grid dt { color: var(--ink-3); font-size: 12px; font-weight: 600; }
-.detail-grid dd { color: var(--ink); font-size: 14px; font-weight: 500; }
+.detail-grid dt { margin: 0; color: var(--ink-3); font-size: 12px; font-weight: 600; }
+.detail-grid dd { margin: 0; color: var(--ink); font-size: 14px; font-weight: 500; }
 .detail-grid dd small { display: block; margin-top: 2px; color: var(--ink-3); font-size: 11px; font-weight: 400; }
 
 .timeline { padding-top: 8px; }
@@ -460,9 +511,8 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .topbar { position: static; min-height: 56px; padding: 8px 12px; gap: 10px; }
   .workspace { padding: 14px 10px 82px; }
   .page-stack { gap: 12px; }
-  .page-intro { display: grid; gap: 10px; }
-  .page-intro h1 { font-size: 18px; }
-  .page-actions, .page-actions .button { width: 100%; }
+  .page-actions { width: 100%; }
+  .page-actions .button { width: 100%; }
   
   .task-list, .source-list, .table-shell, .rank-list { margin-inline: -12px; }
   .kpi-strip, .figure-line { grid-template-columns: 1fr 1fr; }
@@ -521,7 +571,16 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 
 .topbar-context { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 16px; color: var(--ink-2); font-size: 12px; margin-right: auto; }
 .topbar > .badge { flex: none; }
-.panel-source { margin-left: 10px; color: var(--ink-3); font-size: 11px; font-weight: 400; }
+/*
+  Nhãn nguồn LUÔN nằm trên dòng riêng, không bao giờ nằm cạnh tiêu đề.
+
+  Trước đây nó là một mục flex bình thường nên chỉ xuống dòng khi tiêu đề dài:
+  "Hộ kinh doanh mô phỏng 0142" thì vừa một dòng, "Doanh nghiệp mô phỏng Trường
+  Sơn" thì đẩy nhãn xuống. Cùng một màn, cùng một loại nội dung, mà đầu khối cao
+  thấp khác nhau tuỳ tên bản ghi — mắt phải căn lại mỗi lần đổi hàng.
+  `flex-basis: 100%` làm nó xuống dòng ở mọi trường hợp, nên hình dạng đầu khối
+  không còn phụ thuộc vào độ dài của dữ liệu.
+*/
 .compact-field > span { color: var(--ink-3); font-size: 11px; font-weight: 600; }
 .workflow-details > summary { min-height: 44px; padding: 12px 0; color: var(--brand); font-weight: 600; cursor: pointer; }
 .workflow-details[open] > summary { margin-bottom: 8px; }
@@ -553,7 +612,6 @@ tbody tr:has(.row-select:not(:disabled)) { cursor: pointer; }
 
 /* Chữ số giữ màu trung tính; màu trạng thái nằm ở nhãn và thông báo. */
 .kpi > strong, .figure-line strong { color: var(--ink); }
-.panel-source { color: var(--ink-3); font-weight: 400; }
 .topbar > .badge.is-mock { color: var(--ink-2); background: var(--surface-soft); border: 1px solid var(--line); }
 .table-wrap { background: var(--surface); }
 th { background: var(--surface-soft); color: var(--ink-2); }
@@ -601,5 +659,89 @@ tbody tr.is-selected { background: var(--selected-surface); }
   .workbench-page > .figure-line { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workbench-page > .figure-line > * { min-height: 44px; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .workbench-page > .figure-line span { font-size: 11px; }
-  .workbench-page > .figure-line strong { font-size: 16px; }
+  .workbench-page > .figure-line strong { font-size: 18px; }
+}
+
+/* Mọi luật dưới đây chỉ có nghĩa khi dải HAI CỘT thật sự tồn tại. Dưới
+   1360px cột chi tiết chuyển thành hộp thoại và dải xếp thành một cột —
+   chặn chiều cao ở đó là bóp nghẹt chính bảng dữ liệu. */
+@media (min-width: 1361px) {
+  /*
+    ── Hai cột bằng nhau, phần dài hơn tự cuộn ──────────────────────────────
+    Trước đây cột chi tiết dính (sticky) và tự cao tới hết màn hình, còn cột
+    bảng dừng ở nội dung của nó, nên hai bên lệch nhau và bảng bên trái bỏ
+    trống nửa dưới. Giờ cả dải bị chặn ở một chiều cao, hai cột kéo bằng nhau,
+    và bên nào tràn thì cuộn trong thân panel của chính nó.
+  */
+  .case-layout { align-items: stretch; max-height: calc(100dvh - var(--topbar-h) - 40px); }
+  .case-list, .case-detail { display: flex; flex-direction: column; min-height: 0; gap: 14px; }
+  .case-detail { position: static; top: auto; max-height: none; overflow: visible; }
+  .case-layout .panel { display: flex; flex-direction: column; min-height: 0; }
+  .case-list > :last-child, .case-detail > :last-child { flex: 1; min-height: 0; }
+  .case-layout .panel-body { flex: 1; min-height: 0; overflow: auto; }
+  /* Bảng thôi tự giới hạn chiều cao: dải đã lo việc đó, và để nguyên trần cũ
+     thì bảng dừng sớm rồi chừa một khoảng trống bên dưới. */
+  .case-layout .table-wrap { max-height: none; }
+  /* Đầu hai panel phải cao bằng nhau, nếu không thân của chúng bắt đầu ở hai
+     độ cao khác nhau — đúng chỗ mắt bắt lỗi đầu tiên khi so hai cột. */
+  .case-layout .panel-head { min-height: 66px; }
+
+  /* Hộp thoại chi tiết ở khổ hẹp cũng theo cùng luật cuộn. */
+  .case-detail-dialog .panel { display: flex; flex-direction: column; max-height: calc(100dvh - 96px); }
+  .case-detail-dialog .panel-body { min-height: 0; overflow: auto; }
+
+  /*
+    Đầu hai panel phải nằm trên CÙNG một hàng lưới, không phải cùng một con số
+    min-height đoán trước. Đặt chiều cao cứng thì một đầu có ô tìm kiếm và một
+    đầu có dòng phụ sẽ luôn lệch; subgrid để lưới tự chọn chiều cao bằng cái cao
+    hơn, và thân của cả hai bắt đầu ở cùng một độ cao.
+
+    Chỉ đúng khi mỗi cột có đúng một panel — hiện là vậy ở cả bốn màn. Trình
+    duyệt không hỗ trợ subgrid rơi về cách cũ: hai cột vẫn bằng nhau, chỉ đầu
+    panel là có thể lệch.
+  */
+  @supports (grid-template-rows: subgrid) {
+    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) { grid-template-rows: auto minmax(0, 1fr); }
+    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) > .case-list,
+    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) > .case-detail { display: grid; grid-template-rows: subgrid; grid-row: span 2; gap: 0; }
+    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) .panel { display: grid; grid-template-rows: subgrid; grid-row: span 2; }
+  }
+}
+
+/*
+  ── Danh sách nhiều cột: một lưới, không phải N lưới rời ─────────────────
+  `.source-row`, `.task-row` và hàng của `.rank-list` mỗi hàng là một grid
+  riêng có track `auto`. Track `auto` rộng theo nội dung CỦA HÀNG ĐÓ, nên badge
+  "Sẵn sàng" và badge "Thiếu dữ liệu" đẩy các cột phía trước lệch nhau: đo được
+  cột số file bắt đầu ở 1183, 1190, 1195 và 1199 trên bốn hàng liền nhau.
+
+  Subgrid cho các hàng dùng chung đúng một bộ track do danh sách đặt, nên mọi
+  cột thẳng nhau và track cuối rộng bằng phần tử rộng nhất — không phải rộng
+  theo từng hàng. Chỉ bật từ 721px, vì dưới đó các danh sách này đổi hẳn sang
+  bố cục hai cột.
+*/
+@supports (grid-template-columns: subgrid) {
+  @media (min-width: 721px) {
+    .source-list { display: grid; grid-template-columns: minmax(105px, .75fr) max-content minmax(100px, 1fr) max-content; }
+    .task-list { display: grid; grid-template-columns: minmax(0, 1fr) max-content 16px; }
+    .rank-list { display: grid; grid-template-columns: 24px minmax(0, 1fr) max-content; }
+    .source-row, .task-row, .rank-list > div { grid-template-columns: subgrid; grid-column: 1 / -1; }
+    /* Số căn phải để các chữ số thẳng cột; nhãn dưới nó theo cùng mép. */
+    .source-files { text-align: right; }
+    /* Badge bám mép trái track của nó, nên mọi trạng thái bắt đầu cùng một x. */
+    .source-row > .badge, .task-meta { justify-self: start; }
+  }
+}
+
+/*
+  Hai khối đặt CẠNH NHAU phải có đầu khối cao bằng nhau, giống dải `case-layout`.
+  Ở Trang công việc và Hoàn thuế, một khối có nút ở đầu còn khối kia không, nên
+  đầu lệch 5–7px — đủ để mắt thấy hai mép không thẳng khi so hai cột.
+  Khối xếp DỌC thì không áp: chúng không nằm cạnh nhau để mà so.
+*/
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 1181px) {
+    .workbench-grid, .two-column { grid-template-rows: auto minmax(0, 1fr); }
+    .workbench-grid > .panel, .two-column > .panel { grid-row: span 2; display: grid; grid-template-rows: subgrid; }
+  }
 }

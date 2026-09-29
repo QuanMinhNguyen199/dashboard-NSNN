@@ -1,52 +1,52 @@
 ---
 name: Quản lý nghiệp vụ Thuế TP Hà Nội
-description: Bàn làm việc nghiệp vụ trên giấy ấm — khối có viền và bóng nhẹ, đỏ son và vàng lấy từ dấu nhận diện ngành Thuế.
+description: Bàn làm việc nghiệp vụ trên giấy ấm, khung sơn mài đỏ sẫm, bảng số dày thông tin mà vẫn tĩnh.
 colors:
-  canvas: "#f5f4f3"
+  canvas: "#f6f4f2"
   surface: "#ffffff"
-  surface-soft: "#f8f7f6"
-  line: "#dfdcda"
-  line-soft: "#eeebe9"
-  control-line: "#cec7c9"
-  control-line-hover: "#a99b9f"
-  ink: "#292526"
-  ink-2: "#565052"
-  ink-3: "#71686b"
-  brand: "#c92332"
-  brand-strong: "#a71927"
-  brand-soft: "#fff0f1"
-  brand-edge: "#efc2c7"
-  brand-gold: "#ffd348"
-  focus: "#c92332"
-  navy: "#302629"
-  positive: "#28704b"
-  positive-bg: "#eef7f1"
-  warning: "#815b1c"
-  warning-bg: "#faf4e8"
-  critical: "#b13b37"
-  critical-bg: "#fcf0ef"
-  info: "#565052"
-  info-bg: "#f2efef"
-  state-edge: "#7d8a99"
-  selection-bg: "#f7d9dd"
-  scroll-thumb: "#cfc7ca"
-  scroll-thumb-hover: "#afa2a7"
-  on-navy-1: "#d8e5f2"
-  positive-on-navy: "#7fd0a4"
+  surface-soft: "#f6f4f2"
+  surface-tint: "#fbf1f1"
+  hover-surface: "#f6f4f2"
+  selected-surface: "#f7e5e7"
+  selection-bg: "#f7dfe1"
+  line: "#e4dedc"
+  line-soft: "#f0eceb"
+  control-line: "#d8d0ce"
+  control-line-hover: "#b2a5a6"
+  state-edge: "#8a797c"
+  ink: "#241d1f"
+  ink-2: "#4f4547"
+  ink-3: "#6f6366"
+  chrome: "#3a1016"
+  seal: "#cf2333"
+  gold: "#f3c602"
+  brand: "#9a1c2a"
+  brand-strong: "#7a1521"
+  focus: "#241d1f"
+  focus-on-chrome: "#f3c602"
+  positive: "#14653a"
+  positive-bg: "#eaf4ee"
+  warning: "#7a5810"
+  warning-bg: "#fbf3df"
+  critical: "#c0261c"
+  critical-bg: "#fdefed"
+  info: "#3f5470"
+  info-bg: "#eef0f4"
+  on-chrome-1: "#f2dfe1"
+  on-chrome-2: "#d9b9bd"
+  on-chrome-3: "#b08f95"
+  on-chrome-note: "#e8c77a"
+  positive-on-chrome: "#7fd0a4"
+  scroll-thumb: "#d2c9c7"
+  scroll-thumb-hover: "#b0a3a4"
 typography:
-  headline:
+  display:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "clamp(22px, 2vw, 26px)"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.02em"
-  title:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "22px"
-    fontWeight: 650
-    lineHeight: 1.25
-    letterSpacing: "-0.02em"
-  subtitle:
+  headline:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "20px"
     fontWeight: 650
@@ -58,7 +58,7 @@ typography:
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.015em"
-  section:
+  title:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "14px"
     fontWeight: 650
@@ -70,11 +70,17 @@ typography:
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
-  row:
+  body-strong:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "13px"
     fontWeight: 600
-    lineHeight: 1.4
+    lineHeight: 1.45
+    letterSpacing: "normal"
+  lead:
+    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: 1.5
     letterSpacing: "normal"
   label:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
@@ -82,93 +88,71 @@ typography:
     fontWeight: 600
     lineHeight: 1.4
     letterSpacing: "normal"
-  micro:
+  column-head:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "11px"
-    fontWeight: 600
-    lineHeight: 1.35
+    fontWeight: 650
+    lineHeight: 1.4
     letterSpacing: "0.01em"
-  nav:
+  nav-group:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "10px"
-    fontWeight: 600
-    lineHeight: 1.3
-    letterSpacing: "normal"
-  code:
+    fontWeight: 700
+    lineHeight: 1.4
+    letterSpacing: "0.1em"
+  mono:
     fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace"
     fontSize: "12px"
     fontWeight: 600
     lineHeight: 1.4
     letterSpacing: "-0.01em"
 rounded:
-  hairline: "2px"
-  chip: "4px"
-  control: "6px"
   panel: "10px"
+  control: "6px"
+  chip: "4px"
+  nav: "4px"
+  dialog: "12px"
   circle: "50%"
 spacing:
-  xs: "6px"
+  xs: "4px"
   sm: "8px"
-  row: "10px"
-  gutter: "12px"
-  panel: "14px"
-  cell: "16px"
-  stack: "18px"
-  page: "20px"
+  md: "10px"
+  lg: "12px"
+  xl: "14px"
+  xxl: "16px"
+  xxxl: "18px"
+  gutter: "20px"
 components:
   button-primary:
     backgroundColor: "{colors.brand}"
-    textColor: "{colors.surface}"
-    typography: "{typography.row}"
+    textColor: "#ffffff"
+    typography: "{typography.body-strong}"
     rounded: "{rounded.control}"
     padding: "0 11px"
     height: "32px"
   button-primary-hover:
     backgroundColor: "{colors.brand-strong}"
-    textColor: "{colors.surface}"
-    rounded: "{rounded.control}"
-    padding: "0 11px"
-    height: "32px"
+    textColor: "#ffffff"
   button-secondary:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
-    typography: "{typography.row}"
+    typography: "{typography.body-strong}"
     rounded: "{rounded.control}"
     padding: "0 11px"
     height: "32px"
+  button-secondary-hover:
+    backgroundColor: "{colors.surface-soft}"
+    textColor: "{colors.ink}"
   button-quiet:
     backgroundColor: "transparent"
     textColor: "{colors.brand}"
-    typography: "{typography.row}"
+    typography: "{typography.body-strong}"
     rounded: "{rounded.control}"
     padding: "0 8px"
     height: "32px"
   button-quiet-hover:
-    backgroundColor: "{colors.brand-soft}"
+    backgroundColor: "{colors.surface-tint}"
     textColor: "{colors.brand}"
-    rounded: "{rounded.control}"
-    padding: "0 8px"
-    height: "32px"
-  button-touch:
-    backgroundColor: "{colors.brand}"
-    textColor: "{colors.surface}"
-    rounded: "{rounded.control}"
-    height: "44px"
-    width: "44px"
-  field:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.control}"
-    padding: "0 9px"
-    height: "32px"
-  field-touch:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.control}"
-    padding: "0 9px"
-    height: "44px"
   panel:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
@@ -177,52 +161,32 @@ components:
   panel-head:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
-    typography: "{typography.section}"
+    typography: "{typography.title}"
     padding: "13px 16px"
     height: "54px"
-  summary-cell:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    typography: "{typography.metric}"
-    padding: "9px 16px"
-    height: "56px"
-  summary-cell-with-note:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    typography: "{typography.metric}"
-    padding: "9px 16px"
-    height: "72px"
-  detail-cell:
+  input:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
     typography: "{typography.body}"
-    padding: "9px 16px"
-    height: "56px"
-  table-header-cell:
-    backgroundColor: "{colors.surface-soft}"
-    textColor: "{colors.ink-2}"
-    typography: "{typography.micro}"
-    padding: "6px 12px"
-    height: "34px"
-  table-cell:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    padding: "7px 12px"
-    height: "38px"
-  table-row-selected:
-    backgroundColor: "{colors.brand-soft}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    padding: "7px 12px"
-    height: "38px"
-  row-select:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.chip}"
-    padding: "7px 12px"
+    rounded: "{rounded.control}"
+    padding: "0 9px"
     height: "32px"
+  nav-item:
+    backgroundColor: "transparent"
+    textColor: "{colors.on-chrome-1}"
+    typography: "{typography.body}"
+    rounded: "{rounded.nav}"
+    padding: "0 10px"
+    height: "38px"
+  nav-item-hover:
+    backgroundColor: "#ffffff14"
+    textColor: "#ffffff"
+  nav-item-active:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.brand-strong}"
+    rounded: "{rounded.nav}"
+    padding: "0 10px"
+    height: "38px"
   badge-critical:
     backgroundColor: "{colors.critical-bg}"
     textColor: "{colors.critical}"
@@ -230,58 +194,21 @@ components:
     rounded: "{rounded.chip}"
     padding: "2px 7px"
   badge-mock:
-    backgroundColor: "{colors.surface-soft}"
-    textColor: "{colors.ink-2}"
+    backgroundColor: "{colors.warning-bg}"
+    textColor: "{colors.warning}"
     typography: "{typography.label}"
     rounded: "{rounded.chip}"
     padding: "2px 7px"
-  segmented-active:
-    backgroundColor: "{colors.surface}"
+  kpi:
+    backgroundColor: "transparent"
     textColor: "{colors.ink}"
-    typography: "{typography.row}"
-    rounded: "{rounded.control}"
-    padding: "0 11px"
-    height: "32px"
-  nav-item:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink-2}"
-    typography: "{typography.row}"
-    rounded: "{rounded.control}"
-    padding: "0 10px"
-    height: "40px"
-  nav-item-active:
-    backgroundColor: "{colors.brand-soft}"
-    textColor: "{colors.brand-strong}"
-    typography: "{typography.row}"
-    rounded: "{rounded.control}"
-    padding: "0 10px"
-    height: "40px"
-  nav-group-label:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink-3}"
-    typography: "{typography.micro}"
-    padding: "12px 10px 4px"
-  mobile-nav-item:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink-3}"
-    typography: "{typography.nav}"
-    padding: "5px 2px"
-    height: "62px"
-  brand-mark:
-    backgroundColor: "{colors.brand-strong}"
-    textColor: "{colors.brand-gold}"
-    rounded: "{rounded.panel}"
-    height: "30px"
-    width: "30px"
-  topbar:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    padding: "8px 20px"
-    height: "60px"
+    typography: "{typography.metric}"
+    padding: "9px 16px"
+    height: "56px"
   toast:
-    backgroundColor: "{colors.navy}"
-    textColor: "{colors.surface}"
-    typography: "{typography.row}"
+    backgroundColor: "{colors.chrome}"
+    textColor: "#ffffff"
+    typography: "{typography.body-strong}"
     rounded: "{rounded.panel}"
     padding: "9px 9px 9px 13px"
     height: "46px"
@@ -291,330 +218,256 @@ components:
 
 ## Overview
 
-**Creative North Star: "Hồ sơ giấy ấm, đóng dấu đỏ"**
+**Creative North Star: "Bàn làm việc sơn mài"**
 
-Đây là chuẩn mực của loại sản phẩm được thực thi đầy đủ, theo đúng thước đo thủ công đã chọn: dày thông tin mà vẫn tĩnh, bảng dài đọc được, số có trọng lượng, trạng thái rõ mà không ồn ào. Vị trí của điều hướng, bộ lọc và nút không đổi vì người dùng đã quen tay; thứ đổi là chất liệu.
+Hệ này là một bàn làm việc nghiệp vụ, không phải một dashboard quan sát. Mặt làm việc là giấy ấm (`--canvas #f6f4f2`) với các khối trắng đặt lên trên; khung bao quanh — sidebar, drawer, cột trái màn đăng nhập, toast, scrim — là sơn mài đỏ sẫm (`--chrome #3a1016`). Hai vật liệu đó tách bạch có chủ ý: người dùng luôn biết đâu là công cụ, đâu là nội dung. Khung sơn mài thay cho navy của bản trước, vì navy không còn liên quan gì tới con dấu cơ quan, còn nền trắng toàn phần làm hệ mất cạnh và đọc ra phần mềm quản trị chung chung.
 
-Nền là một lớp giấy **ấm** (`canvas` xám ngả hồng rất nhạt), không phải xám xanh. Trên đó, mỗi khối nội dung là một tấm trắng **có viền 1px và một bóng hai tầng rất nhẹ**, bo 10px — khối được đóng khung rõ ràng, và độ sâu do viền cộng bóng gánh chứ không chỉ do bậc nền. Đỏ son và vàng lấy từ dấu nhận diện ngành Thuế: đỏ là màu thao tác duy nhất, vàng chỉ xuất hiện đúng một chỗ là con dấu "HN".
+Bảng màu được dựng lại từ chính con dấu Thuế TP Hà Nội: đỏ `#cf2333` và vàng `#f3c602` đo trực tiếp trên file logo, không ước lượng bằng mắt. Từ đó sinh ra ba vai riêng của sắc đỏ, và việc tách ba vai này là quy tắc chi phối toàn hệ. Trung tính ngả ấm, ám đỏ rất nhạt, vì xám xanh lạnh đặt cạnh đỏ đọc ra "ghép nhầm hai bộ".
 
-Điều hướng là một sidebar **trắng** viền phải, không phải một khối màu đặc. Mục đang mở nhận nền hồng nhạt, viền hồng và chữ đỏ đậm — một tín hiệu ba lớp thay cho vạch màu bên trái, vốn đã được gỡ hẳn. Con số tổng hợp giữ màu mực trung tính; màu trạng thái sống ở nhãn và ở thông báo, không tô cả khối số. Chuyển động được dàn dựng một lần khi vào trang, và hiệu ứng nhô chỉ dành cho thứ thật sự bấm được.
-
-Palette được dựng theo ảnh tham chiếu logo do người dùng cung cấp, **không phải mã màu thương hiệu chính thức**. Khi có bộ màu chính thức, đây là chỗ đối chiếu lại.
+Mật độ cao và tĩnh. Thước đo là Stripe Dashboard: bảng dài đọc được, số có trọng lượng, trạng thái rõ mà không ồn. Sản phẩm đi theo chuẩn mực của loại sản phẩm một cách có chủ đích — đây là lựa chọn đã ghi trong PRODUCT.md, không phải mặc định do thiếu quyết định — nên quy ước phải được thực thi đầy đủ, không mỉa mai và không lén cài nét lạ. Lằn ranh người dùng đặt ra vẫn đứng: giao diện không được trông như sản phẩm tiêu dùng.
 
 **Key Characteristics:**
-
-- Giấy ấm, không xám xanh: mọi bậc trung tính đều ngả đỏ.
-- Khối có viền 1px cộng bóng hai tầng, bo 10px; khung là một phần của hệ.
-- Đỏ son là màu thao tác duy nhất; vàng chỉ dành cho con dấu nhận diện.
-- Trạng thái = chấm 6px + nhãn chữ; chip chỉ dành cho hai ngoại lệ đã ghi.
-- Số tổng hợp mang màu mực trung tính, không mang màu trạng thái.
-- Bảng là công dân hạng nhất: đầu bảng dính, hàng 38px, mỗi hàng bấm được có một đích bàn phím thật.
-- Chỉ thứ bấm được mới nhô lên khi rê chuột.
-- Từ 900px trở xuống: shell cảm ứng và cam kết 44px bắt đầu ở cùng một mốc.
+- Giấy ấm làm mặt nền, sơn mài đỏ sẫm làm khung; hai vật liệu không trộn vào nhau.
+- Ba vai của sắc đỏ tách rành mạch: dấu ấn, hành động, can thiệp.
+- Font hệ thống, không webfont; chữ số dùng `tabular-nums` trên toàn thân trang.
+- Khối nội dung có viền mảnh 1px và bóng hai lớp rất nhẹ; không có thẻ nổi.
+- Bậc chữ ngắn (10 → 22px, thêm một bậc `clamp` tới 26px ở màn đăng nhập); phân cấp do đường kẻ và cân nặng gánh.
+- Bàn phím và cảm ứng là điều kiện: focus 2px trên mọi thứ bấm được, 44px tối thiểu từ 900px trở xuống.
+- Không có tràn ngang ở bất kỳ khổ nào: mọi rãnh lưới chứa bảng đều khai báo cơ sở 0.
 
 ## Colors
 
-Bảng màu giấy ấm: năm bậc trung tính ngả đỏ, một đỏ son thao tác, một vàng nhận diện, và bốn cặp trạng thái đã được kéo về cùng độ ấm với nền.
+Bảng màu ấm, ám đỏ, một nốt lạnh duy nhất; phần lớn diện tích là trắng và giấy, màu chỉ xuất hiện khi mang nghĩa.
 
 ### Primary
-
-- **Đỏ son thao tác** (`brand`): nút chính, liên kết, caret và accent-color của ô nhập, bước duyệt hiện tại, mục bottom nav đang chọn, dải chỉ dẫn cuộn bảng, mũi tên hàng việc khi rê chuột.
-- **Đỏ son đậm** (`brand-strong`): hover của nút chính, chữ của mục điều hướng đang mở, và nền của con dấu nhận diện.
-- **Hồng giấy** (`brand-soft`): nền của mục điều hướng đang mở, hàng bảng đang chọn, hover của nút quiet, hover của mọi hàng bấm được, dải chỉ dẫn cuộn.
-- **Viền hồng** (`brand-edge`): viền của mục điều hướng đang mở và của con dấu nhận diện.
+- **Đỏ hành động** (`--brand`): đỏ mận sẫm. Dùng cho nút chính, liên kết, `caret-color`/`accent-color` của ô nhập, bước đang xử lý trong luồng duyệt, mũi tên hàng khi hover, mục điều hướng đáy đang mở. Đây là màu duy nhất được phép nói "bấm vào đây".
+- **Đỏ hành động đậm** (`--brand-strong`): hover và active của nút chính, và màu chữ của mục điều hướng đang mở khi nó lật sang nền trắng.
+- **Đỏ con dấu** (`--seal`) và **vàng con dấu** (`--gold`): hai sắc đo từ logo, là gốc của cả bảng màu. Cần nói thẳng trạng thái hiện tại của chúng trong mã: `--seal` được khai báo nhưng **chưa có một lần `var()` nào** — đỏ con dấu chỉ tồn tại trong ảnh `public/tax-logo.png`; `--gold` có đúng một tham chiếu, ở một quy tắc hiện không bắt được phần tử nào (xem mục Navigation). Sắc vàng thật sự sống trong hệ qua hai token khác: `--focus-on-chrome` và `--on-chrome-note`. Giữ `--seal` và `--gold` như hai token gốc của bảng màu, nhưng đừng coi chúng là màu đang được vẽ.
 
 ### Secondary
+- **Sơn mài đỏ sẫm** (`--chrome`): vật liệu của khung — sidebar, drawer mobile, cột trái màn đăng nhập, toast, skip-link, và màu chữ của vùng bôi chọn. Ba bậc mực trên nó (`--on-chrome-1`, `--on-chrome-2`, `--on-chrome-3`) đều ≥5,7:1, nên bậc mờ nhất vẫn dùng được cho nhãn nhóm chứ không phải chỉ để trang trí. `--on-chrome-note` là bậc vàng ấm dành riêng cho dòng vai trò và đơn vị của người đang đăng nhập.
 
-- **Vàng dấu** (`brand-gold`): **chỉ một vai trò** — chữ và viền của con dấu "HN" trên nền đỏ đậm, ở sidebar và ở màn đăng nhập. Không dùng cho trạng thái, không dùng cho nhấn mạnh, và không bao giờ làm chữ trên nền trắng.
-- **Xanh xác nhận** (`positive` / `positive-bg`): đã xong, dấu checklist, chấm timeline đã chạy, bước duyệt đã qua, icon empty state.
-- **Nâu vàng cảnh báo** (`warning` / `warning-bg`): sắp đến hạn, cần kiểm tra.
-- **Đỏ gạch can thiệp** (`critical` / `critical-bg`): quá hạn, thiếu dữ liệu, đang vướng, dải lỗi đăng nhập. Nhạt hơn và ngả gạch so với đỏ son thao tác, để hai vai trò không lẫn nhau.
-- **Xám thông tin** (`info` / `info-bg`): đang xử lý, trạng thái trung tính có chủ đích. Đây là một cặp **trung tính**, không phải một màu — trạng thái "đang chạy" không cần một màu riêng.
+### Tertiary
+Màu trạng thái, mỗi màu đi kèm một nền rất nhạt dùng cho dải `.notice` và chip:
+- **Xanh xác nhận** (`--positive` / `--positive-bg`): việc đã xong, bước đã duyệt, trạng thái rỗng lành tính. Trên nền sơn mài đổi sang `--positive-on-chrome`.
+- **Nâu vàng cảnh báo** (`--warning` / `--warning-bg`): sắp đến hạn, dữ liệu mô phỏng, điều cần biết trước khi tin con số.
+- **Đỏ can thiệp** (`--critical` / `--critical-bg`): sáng và ngả cam hơn đỏ hành động, để hai thứ không đọc thành một. Chỉ xuất hiện khi người dùng phải xử lý.
+- **Xanh thép** (`--info` / `--info-bg`): nốt lạnh duy nhất còn lại, dành cho tin trung tính không đòi hành động.
 
 ### Neutral
-
-- **Giấy nền** (`canvas`): nền toàn workspace, ấm và ngả hồng rất nhẹ.
-- **Bề mặt** (`surface`): panel, dải tổng hợp, măng sét, sidebar, drawer, control.
-- **Bề mặt chìm** (`surface-soft`): hover mục điều hướng, nền đầu bảng, ô nhập disabled, cột trái màn đăng nhập, nền nhãn "Mô phỏng" ở măng sét.
-- **Viền khối** (`line`): mép của panel, dải tổng hợp, măng sét, sidebar và drawer.
-- **Đường chia hàng** (`line-soft`): chia hàng và chia ô bên trong một khối.
-- **Ba bậc mực** (`ink` / `ink-2` / `ink-3`): kết quả, mô tả, metadata — cả ba đều ấm, không bậc nào ngả xanh.
-- **Hai bậc viền control** (`control-line` mặc định, `control-line-hover` khi rê chuột) — chỉ dùng cho control, không dùng cho nội dung.
-- **Mực gần đen** (`navy`): nền của toast và của skip link. Tên token là di sản của hệ trước; giá trị hiện tại là một nâu gần đen thuộc họ ấm, không phải navy.
-- **Bề mặt trình duyệt** (`selection-bg`, `scroll-thumb`, `scroll-thumb-hover`): vùng bôi đen hồng nhạt và thanh cuộn ấm — cũng là token, không để mặc định.
-
-**The Warm Neutral Rule.** Mọi bậc trung tính trong hệ đều ngả đỏ. Một xám trung hoà hoặc xám xanh đặt cạnh `canvas` sẽ đọc ra màu lạ ngay, kể cả khi độ sáng khớp. Thêm một bậc trung tính thì lấy sắc độ từ `ink`, đừng lấy từ một bảng xám chung.
-
-**The One Operational Red Rule.** Đỏ son là màu thao tác duy nhất: hành động, liên kết, điều hướng đang mở, tiến độ. Không có đỏ trang trí, và không có màu thao tác thứ hai.
-
-**The Gold Is a Seal Rule.** Vàng chỉ sống trên con dấu nhận diện, luôn trên nền đỏ đậm. Nó không phải một bậc nhấn tự do, và nó không đủ tương phản để làm chữ trên nền trắng. Dùng vàng ở chỗ thứ hai là biến một dấu triện thành màu trang trí và mất luôn lý do nó có mặt.
-
-**The Two Reds Don't Blur Rule.** Đỏ son thao tác và đỏ gạch can thiệp là hai vai trò tách bạch: một cái mời bấm, một cái báo hỏng. Chúng không được mượn giá trị của nhau, và đỏ can thiệp luôn đi kèm nhãn chữ đọc được.
-
-**The Numbers Stay Neutral Rule.** Con số tổng hợp mang màu `ink`, kể cả khi hàng đó đang cảnh báo. Màu trạng thái nằm ở nhãn, ở badge và ở dải thông báo. Tô cả khối số theo trạng thái làm bốn ô tổng hợp biến thành một bảng đèn, và con số thôi là con số.
-
-**The Two Hairlines Rule.** Đường kẻ có hai trọng số và chúng không thay nhau: `line` dựng mép khối, chân măng sét và viền sidebar; `line-soft` chia hàng và chia ô bên trong. Khi mọi đường trong một bảng nặng ngang nhau, mắt không còn biết đâu là mép khối.
-
-## Typography
-
-**Display Font:** không có. Hệ này không có vai trò display trang trí.
-
-**Body Font:** stack hệ thống (`system-ui`, `-apple-system`, Segoe UI).
-
-**Label/Mono Font:** `ui-monospace` / SFMono-Regular / Consolas cho mã lô và tên tài khoản mẫu.
-
-**Character:** trung tính, chặt, đọc nhanh ở 10–14px. Phân cấp đến từ trọng lượng (400 / 500 / 550 / 600 / 650) và bậc mực, không từ kích thước lớn. Trọng số 650 là giọng "đậm" của hệ; 700 chỉ còn ở nhãn nhóm điều hướng và con dấu nhận diện.
-
-### Hierarchy
-
-Thang có **chín bậc**: 10 / 11 / 12 / 13 / 14 / 18 / 20 / 22 / clamp(22–26).
-
-- **Headline** (650, `clamp(22px, 2vw, 26px)`, 1.25, -.02em): chỉ tiêu đề cột trái màn đăng nhập. Chữ lớn nhất tồn tại trong sản phẩm.
-- **Title** (650, 22px, 1.25, -.02em): tiêu đề trang trong `page-intro`; 18px dưới 720px.
-- **Subtitle** (650, 20px, 1.25, -.02em): tiêu đề form đăng nhập và tiêu đề màn từ chối quyền; 18px dưới 720px.
-- **Metric** (650, 18px, 1.25, -.015em): mọi con số tổng hợp — dải KPI, dòng cộng, luồng xử lý. Không dùng ở đâu khác.
-- **Section** (650, 14px, -.005em): tiêu đề panel.
-- **Body** (400–500, 14px, 1.5): nội dung, ô nhập, ô bảng, giá trị trong lưới chi tiết.
-- **Row** (600, 13px): nhãn nút, mục điều hướng, tên hàng việc / hàng nguồn / danh mục, mô tả trang, nội dung notice.
-- **Label** (600, 12px): nhãn của mọi ô tổng hợp và ô chi tiết, nhãn badge, mã monospace trong bảng, ngữ cảnh măng sét.
-- **Micro** (600–700, 11px): dòng phụ, metadata, đầu bảng (tracking `.01em`), nhãn control, nhãn nhóm điều hướng (700).
-- **Nav** (600, 10px): **chỉ một vai trò** — nhãn mục bottom nav trên mobile.
-
-**The Panel Title Sits Above the Row Rule.** Tiêu đề panel là 14px, cao hơn một bậc so với nội dung hàng (13px). Đầu khối phải thắng được hàng đầu tiên bên dưới nó; nếu không, cái viền quanh khối là thứ duy nhất nói rằng khối đã bắt đầu.
-
-**The Documented Floor Rule.** 10px là sàn của thang và nó được ghi nhận chứ không giấu: nó chỉ mang nhãn mục bottom nav — chuỗi ngắn, cố định, đứng ngay dưới một icon 20px và luôn đi kèm `aria-label` đầy đủ. Đừng mở bậc này cho nội dung.
-
-**The Metadata Doesn't Borrow Weight Rule.** Cỡ 18px thuộc về số tổng hợp. Giá trị trong lưới chi tiết là metadata nên dùng 14px, dù nó cũng là "một con số đứng dưới một cái nhãn". Cho metadata mượn cỡ metric là cho nó mượn trọng lượng nó không có.
-
-**The One Ramp Through the Door Rule.** Màn đăng nhập chạy cùng thang chữ với các view bên trong; trần là 26px. Cửa vào không được hứa một giọng mà sản phẩm không giữ sau khi đăng nhập.
-
-**The Tabular Number Rule.** `font-variant-numeric: tabular-nums` bật ở `body` cho toàn ứng dụng. Số trong bảng căn phải; định dạng `vi-VN`.
-
-**The System Stack Rule.** Chữ dùng stack hệ thống và không tự host. Đây là cam kết thương hiệu đã ghi trong PRODUCT.md với ba căn cứ (bề mặt Operate, dấu tiếng Việt chồng tầng, mạng nội bộ). Không đề xuất webfont.
-
-## Layout
-
-Desktop: sidebar trắng cố định 252px với viền phải `line`; măng sét và workspace đều bù trái đúng 252px. Măng sét sticky, cao 60px (`--topbar-h`, dùng chung làm mốc cho đầu bảng dính), nền trắng, chân là một đường `line` cộng một bóng 1px rất mờ. Workspace padding `18px 20px 32px`, nội dung rộng tối đa 1540px, nhịp dọc giữa các khối là **18px** — rộng hơn khoảng cách bên trong khối (14px), vì khối đã có viền riêng nên hai khối cạnh nhau cần thở hơn.
-
-Trang công việc dùng lưới `1.1fr / .9fr`; các cặp khác chia đôi. Dải tổng hợp và lưới chi tiết chia bốn cột bằng nhau; luồng phát hành bốn cột; luồng xử lý năm cột.
-
-Có ba mốc và mỗi mốc có một việc:
-
-- **1180px** — lưới hai cột thành một cột; luồng xử lý còn ba cột.
-- **900px** — mốc **shell cảm ứng**: sidebar biến mất, bỏ bù trái, bottom nav xuất hiện với mỗi mục ≥62px, mục "Thêm" mở drawer trắng ≤320px. Cùng lúc và cùng mốc: mọi control lên 44px, và dải chỉ dẫn cuộn ngang hiện ra.
-- **720px** — mốc **khổ hẹp**: măng sét thôi sticky và rút còn 56px, workspace lề 10px và chừa 82px cho bottom nav, nhịp dọc rút còn 12px, dải tổng hợp và lưới chi tiết thành 2×2, segmented đổi thành select có nhãn hiển thị, hàng bảng nở lên 44px, hai cột màn đăng nhập xếp dọc.
-
-**The Square 44 Rule.** Cam kết 44px bắt đầu ở **900px, đúng cùng mốc với shell cảm ứng**, và áp theo **cả hai chiều** — `min-height` và `min-width`. Hai mốc này phải trùng nhau: khi shell đã nói "đây là thiết bị chạm" thì mọi thứ trong shell phải chạm được, nếu không iPad dọc ở 768px sẽ chạy bottom nav và drawer mà control vẫn cỡ chuột.
-
-**The Fixed Furniture Rule.** Điều hướng, bộ lọc và nút giữ nguyên vị trí đã có. Cải thiện đi vào chất liệu và mức hoàn thiện, không đi vào việc xếp lại đồ đạc.
-
-**The Structured Overflow Rule.** Không ép bảng nghiệp vụ thành card rời trên mobile. Bảng giữ `min-width: 780px`, nằm trong vùng cuộn có `tabIndex=0` **và có tên** (`role="region"` + `aria-label`), và dải "Vuốt ngang để xem thêm" hiện từ 900px — cùng mốc bảng bắt đầu cuộn ngang. Chỉ dẫn xuất hiện muộn hơn hiện tượng nó chỉ dẫn là một lời hứa lỡ.
-
-## Elevation & Depth
-
-Hệ này **có khung và có bóng**, và đó là quyết định định nghĩa chất liệu. Panel, dải tổng hợp và dải KPI đều mang viền 1px `line` cộng `--shadow-panel` — một bóng **hai tầng**: một tầng 1px sát mép để khối có chân, một tầng 5px/16px rất loãng để khối tách khỏi giấy. Không tầng nào đủ đậm để đọc ra "thẻ nổi"; cộng lại chúng đọc ra "một tờ đặt trên một tờ".
-
-Độ sâu vì thế đến từ ba nguồn cùng lúc: viền, bóng hai tầng, và bậc giá trị trắng-trên-giấy-ấm.
-
-### Shadow Vocabulary
-
-- **Panel** (`box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 16px rgb(41 37 38 / 4%)`): mọi khối nội dung — panel, dải KPI, dòng cộng. Đây là bóng mặc định của hệ.
-- **Overlay** (`box-shadow: 0 18px 48px #29252633`): drawer điều hướng và toast. Không dùng cho nội dung.
-- **Masthead** (`box-shadow: 0 1px 3px rgb(41 37 38 / 3%)`): măng sét sticky, chỉ đủ để nội dung cuộn qua không dính vào nó.
-- **Bottom nav** (`box-shadow: 0 -6px 20px #29252612`): thanh điều hướng dưới, nơi nội dung thật sự trôi bên dưới.
-- **Control lift** (`0 1px 1px #29252614` primary, `0 1px 1px #2925260f` secondary): nút ở trạng thái nghỉ; mất khi `:active`.
-- **Nav active** (`0 1px 2px rgb(41 37 38 / 4%)`): mục điều hướng đang mở, cùng bậc với tầng sát mép của bóng panel.
-- **Segmented active** (`0 1px 2px #2925261f`): ô đang chọn trong segmented.
-- **Interactive hover** (`0 3px 8px rgb(41 37 38 / 10%)` cộng `translateY(-2px)`): xem The Lift Means Clickable Rule.
+- **Giấy ấm** (`--canvas`): nền của `html`, `body`, mặt làm việc, ngăn chi tiết và màn từ chối quyền.
+- **Trắng** (`--surface`): mặt của mọi khối nội dung, ô nhập, topbar, hàng bảng, và của mục điều hướng đang mở.
+- **Giấy mềm** (`--surface-soft`) và **giấy hồng** (`--surface-tint`): nền đầu cột bảng, nền hover của nút phụ, nền hover của nút mờ, dải nhắc cuộn ngang.
+- **Hồng chọn** (`--selected-surface`): hàng đang chọn trong bảng và tài khoản mẫu đang chọn. Nền này giữ nguyên cả khi hover, vì "đang chọn" mạnh hơn "đang trỏ tới". `--selection-bg` là nền bôi chọn văn bản.
+- **Đường kẻ** (`--line`) và **đường kẻ mờ** (`--line-soft`): hai bậc, không ba. `--line` cho ranh giới khối và vạch dưới đầu cột; `--line-soft` cho mọi vạch chia bên trong khối.
+- **Mực** (`--ink`, `--ink-2`, `--ink-3`): ba bậc. Bậc mờ nhất đạt 5,75:1 trên trắng, 5,24:1 trên giấy và 5,19:1 trên nền ám đỏ — nó là bậc nhỏ nhất được phép, không có bậc thứ tư.
+- **Viền điều khiển** (`--control-line`, hover `--control-line-hover`) và **viền mang trạng thái** (`--state-edge`, ≥3:1 với cả nền trắng lẫn đường kẻ kề nó, dùng cho vòng tròn bước và nút phân đoạn đang bật).
 
 ### Named Rules
 
-**The Framed Surface Rule.** Khối nội dung có mép được vẽ: viền 1px cộng bóng panel, bo 10px. Viền và bóng đi cùng nhau — bỏ viền để lại một khối trôi, bỏ bóng để lại một ô kẻ phẳng. Muốn tách nhóm bên trong một khối thì dùng `line-soft` hoặc khoảng trắng; đừng lồng một khối có viền vào trong một khối có viền.
+**The Three Reds Rule.** Đỏ trong hệ này mang ba việc và ba việc đó không bao giờ được nhòe vào nhau: `--seal` chỉ nhận diện, `--brand` chỉ hành động, `--critical` chỉ can thiệp. Một màu không thể vừa là thương hiệu vừa là cảnh báo — nếu nút lưu và dòng báo lỗi cùng một sắc đỏ thì người dùng hết cách phân biệt "bấm được" với "có chuyện".
 
-**The Lift Means Clickable Rule.** Hiệu ứng nhô 2px cộng bóng chỉ dành cho thứ **thật sự bấm được**: hàng bảng có `row-select`, hàng việc dạng nút, và ô tổng hợp có hành động. Selector trong build nêu đích danh ba loại đó và loại trừ `:disabled`. Ô tổng hợp chỉ đọc, hàng nguồn chỉ đọc và khối lớn không nhô. Một khối nhô lên mà bấm vào không có gì xảy ra là một lời hứa hỏng, và người ngồi cả ca phải thử lại nó nhiều lần mỗi ngày.
+**The Ink Focus Rule.** Vòng focus là mực `--focus`, không phải đỏ. Đỏ đã mang hai nghĩa, nên một vòng đỏ quanh ô đang chọn sẽ đọc thành "ô này có vấn đề". Mực là màu duy nhất không mang nghĩa nào và nó đạt 15:1 trên mọi bề mặt sáng. Trên nền sơn mài vòng mực biến mất, nên ở đó — và chỉ ở đó — focus đổi sang vàng con dấu `--focus-on-chrome` (10,18:1).
 
-**The Hover Is Not for Touch Rule.** Toàn bộ hành vi hover được bọc trong `(any-hover: hover) and (any-pointer: fine)`, và riêng phần dịch chuyển còn bọc thêm `prefers-reduced-motion: no-preference`. Trên thiết bị chạm, hiệu ứng nhô không tồn tại — nó chỉ kẹt lại sau một lần chạm.
+**The Neutral Numeral Rule.** Chữ số giữ màu mực trung tính. Màu trạng thái nằm ở nhãn, ở chip và ở dải thông báo, không nằm trong con số. Một con số đỏ đọc ra "số này sai" chứ không đọc ra "số này lớn".
 
-**The Overlay Earns the Big Shadow Rule.** Chỉ thứ thật sự phủ lên nội dung mới được bóng lớn: drawer và toast. Panel giữ bóng panel và không bao giờ mượn bóng overlay.
+**The Warm Grey Rule.** Không đưa xám xanh lạnh vào trung tính; nó phá sự liền mạch với con dấu. Trung tính ám đỏ rất nhạt đọc ra "cùng một hệ". Ngoại lệ duy nhất đã đăng ký là `--info`.
 
-**The One Rise Rule.** Đúng một khoảnh khắc chuyển động khi vào trang: cả `page-stack` nhô 4px trong 240ms với `--ease-out`, xuất phát từ opacity .55 chứ không phải 0, và chỉ khi `prefers-reduced-motion: no-preference`. Không có hiệu ứng vào theo từng khối. Ngoài nó, chỉ toast có entrance; phần còn lại chỉ có transition trạng thái 100–180ms, và không transition nào làm đổi kích thước bố cục. Cuộn lên đầu khi đổi view cũng đi qua cùng một cổng `prefers-reduced-motion`.
+## Typography
+
+**Display / Body / Label Font:** một stack duy nhất — `system-ui, -apple-system, "Segoe UI", sans-serif`.
+**Mono Font:** `ui-monospace, SFMono-Regular, Consolas, monospace`, cho mã số thuế, tên file và mã tài khoản.
+
+**Character:** Không có font chữ riêng, và đó là quyết định chứ không phải thiếu sót. PRODUCT.md ghi ba căn cứ: bề mặt tác nghiệp được phục vụ tốt bằng font hệ thống; dấu tiếng Việt chồng tầng (ế, ự, ỡ) dựng ổn định trong Segoe UI trong khi nhiều webfont subset latin-ext dựng không đều; và hệ chạy trên mạng nội bộ nơi mỗi kilobyte tải thêm là chi phí thật. Tính cách của chữ vì thế đến từ cân nặng và khoảng cách chứ không từ hình dáng: trọng lượng 650 cho tiêu đề, `letter-spacing` âm nhẹ cho số và tiêu đề, `tabular-nums` bật trên toàn `body` để các cột số thẳng hàng.
+
+### Hierarchy
+- **Display** (650, `clamp(22px, 2vw, 26px)`, 1.25, -0.02em): chỉ cột trái màn đăng nhập. Đây là chỗ duy nhất trong hệ có chữ lớn, và nó được phép lớn vì màn đăng nhập không phải màn làm việc.
+- **Headline** (650, 20px, 1.25, -0.02em): tiêu đề hộp thoại tạo báo cáo, tiêu đề form đăng nhập, tiêu đề màn từ chối quyền.
+- **Metric** (650, 18px, 1.25, -0.015em): con số trong dải tổng hợp và trong luồng trạng thái. Giữ nguyên 18px cả trên mobile — dải tổng hợp ở Trang công việc đổi khuôn hình (mỗi ô thành một hàng nhãn-số) chứ không hạ cỡ số, vì con số là thứ người dùng quét trước.
+- **Title** (650, 14px, -0.005em): tiêu đề khối `.panel-head h2`. Đây là bậc tiêu đề thường gặp nhất; tiêu đề màn ẩn nên khối chính là đơn vị người dùng đọc.
+- **Body** (400, 14px/1.5): chữ nền của `body`, nhãn điều hướng, giá trị trong ô chi tiết (nặng 500).
+- **Body-strong** (600, 13px): nhãn nút, tên hàng, tên bước, chữ trong dải thông báo, mục danh sách kiểm.
+- **Lead** (400, 13px/1.5, `max-width: 72ch`, màu `--ink-2`): dòng mô tả mở đầu mỗi màn (`.page-lead`). Đây là dòng chữ đầu tiên người dùng thấy trong nội dung, vì tiêu đề màn bị ẩn.
+- **Label** (600, 12px): nhãn ô chi tiết, nhãn dải tổng hợp, chú thích phụ, dòng phụ của hàng. Dòng phụ quan trọng đã được nâng từ 11px lên 12px và nâng đó vẫn đứng trong bản dựng.
+- **Column-head** (650, 11px, +0.01em): đầu cột bảng, sticky, nền giấy mềm, chữ `--ink-2`.
+- **Nav-group** (700, 10px, +0.1em, VIẾT HOA): nhãn nhóm điều hướng trong sidebar — bậc duy nhất viết hoa toàn bộ trong hệ, và nó được phép vì đó là tiêu đề cấu trúc, không phải đích bấm.
+
+### Named Rules
+
+**The Silent H1 Rule.** Tiêu đề trang không hiện. `PageIntro` vẫn dựng `<h1>` nhưng gắn `className="sr-only"`: tên màn đã nằm ở mục điều hướng đang mở trong sidebar, in lại nó ở đầu nội dung là nói hai lần và ăn mất dòng đắt nhất của trang. Thẻ vẫn nằm trong DOM vì một trang không có tiêu đề là một trang mà người dùng bàn phím không biết mình đang ở đâu. Không gỡ `<h1>`, và cũng không bỏ `sr-only` để "cho cân". Cùng nguyên tắc này áp xuống cấp khối — xem **The Row Already Said It Rule** ở mục Components.
+
+**The Short Ramp Rule.** Cả hệ chạy trong khoảng 10–22px với chín bậc, và không thêm bậc nào nữa. Phân cấp do đường kẻ, khoảng trắng và cân nặng gánh; nâng cỡ chữ để tạo phân cấp là cách làm của sản phẩm tiêu dùng và nó phá mật độ mà bảng dài cần.
+
+**The Tabular Number Rule.** `font-variant-numeric: tabular-nums` đặt một lần trên `body`, không rắc lẻ từng chỗ. Số tiền và số lượng đi qua `Intl.NumberFormat("vi-VN")`; cột số căn phải bằng lớp `.num`.
+
+## Layout
+
+Khung cố định, nội dung co giãn. Sidebar `position: fixed` rộng 252px; topbar `position: sticky` cao `--topbar-h 60px`, lùi trái 252px; mặt làm việc lùi trái 252px với đệm `18px 20px 32px`. Nội dung nằm trong `.page-stack`: `width: min(100%, 1540px)`, `grid-template-columns: minmax(0, 1fr)`, căn giữa, các khối cách nhau 18px. Trần 1540px giữ cho bảng không kéo dài vô tận trên màn rộng.
+
+Măng sét mang thao tác cấp trang từ 901px trở lên. Topbar có một ô cắm rỗng `.topbar-actions` (`display: contents`, nên nút cắm vào trở thành con trực tiếp của hàng flex) đặt giữa dải bối cảnh và chip mô phỏng; `PageIntro` bắn cụm `.page-actions` của nó vào đó bằng portal khi `(min-width: 901px)` khớp, và dựng tại chỗ khi không. Từ 900px xuống nút quay về trong luồng nội dung và trải hết bề ngang. `PageIntro` trả về một fragment — `<h1 class="sr-only">` cộng `.page-lead` — chứ không còn bọc trong một khối `.page-intro`; lớp đó không còn tồn tại.
+
+Nhịp khoảng cách chạy theo bậc 4 / 8 / 10 / 12 / 14 / 16 / 18 / 20. Đệm trong khối là `0 14px 12px` (12px từ 720px xuống). Các dải toàn chiều rộng bên trong khối — bảng, danh sách việc, danh sách nguồn, bảng xếp hạng, lưới chi tiết — dùng `margin-inline: -14px` để chạm hẳn mép khối trong khi phần chữ vẫn thụt vào. Hàng bảng cao 38px, ô chi tiết và ô tổng hợp cao tối thiểu 56px, hàng việc 54px, đầu khối 54px.
+
+Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-layout` chia 7fr / 3fr với cột chi tiết `position: sticky` ở `calc(var(--topbar-h) + 18px)`, cao tối đa `calc(100dvh - var(--topbar-h) - 36px)` và tự cuộn. Màn đăng nhập là lưới hai cột `minmax(340px, 42%) / minmax(0, 1fr)`: cột trái sơn mài, cột phải trắng.
+
+**Điểm ngắt.**
+- **1361px trở lên** — dải hai cột tồn tại thật, và toàn bộ luật chiều cao của nó sống trong đúng khối media này: `.case-layout` nhận `align-items: stretch` và `max-height: calc(100dvh - var(--topbar-h) - 40px)`; cột chi tiết bỏ `position: sticky` cùng trần riêng của nó; hai cột và hai khối bên trong thành hộp dọc `min-height: 0`; thân khối nhận `flex: 1; overflow: auto`; và `.case-layout .table-wrap` bỏ trần `min(62vh, 560px)` để bảng lấp đầy dải thay vì dừng sớm rồi chừa khoảng trống.
+- **1360px trở xuống** — cột chi tiết bên phải biến mất; chọn một hàng mở `<dialog>` trượt từ mép phải, rộng `min(100vw, 520px)`, cao toàn màn, nền giấy ấm. Không có luật chặn chiều cao nào áp ở đây, vì khi dải xếp thành một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
+- **901px** — ranh giới của thao tác cấp trang: trên nó nút nằm trong măng sét, dưới nó nút nằm trong nội dung.
+- **1180px** — lưới hai cột duỗi thành một; luồng trạng thái từ năm cột xuống ba.
+- **900px** — sidebar ẩn, topbar và mặt làm việc bỏ lùi trái, nút mở menu hiện, thanh điều hướng đáy hiện lên (nền `#fffffff2`, `backdrop-filter: blur(14px)`), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
+- **720px** — màn đăng nhập xếp dọc; dải tổng hợp về hai cột; nút phân đoạn đổi thành `<select>`; ô bảng cao 44px; dải thông báo xếp dọc hoàn toàn; luồng duyệt đổi trục ngang thành trục dọc.
+
+**Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`, và có một công tắc chung cắt mọi animation cùng transition xuống 0,01ms khi người dùng yêu cầu giảm chuyển động.
+
+### Named Rules
+
+**The 44px Floor Rule.** Từ 900px trở xuống, mọi thứ bấm được cao tối thiểu 44px: nút, ô tìm kiếm, `<select>`, nút phân đoạn, mục điều hướng trong drawer, nút đăng xuất, vùng chọn hàng, nút trong chân bảng. Đây là ràng buộc trong PRODUCT.md, không phải gợi ý.
+
+**The Whole Row Rule.** Hàng bảng bấm được thì cả hàng bấm được: `.row-select` kéo rộng `calc(100% + 24px)` với `margin: -7px -12px` để phủ hết ô, và `tbody tr:has(.row-select:not(:disabled))` nhận `cursor: pointer`. Không bắt người dùng ngắm một nút nhỏ nằm trong hàng.
+
+**The Zero-Basis Track Rule.** Mọi rãnh lưới có thể chứa bảng phải khai báo cơ sở 0: `.page-stack` dùng `grid-template-columns: minmax(0, 1fr)`, và `.case-layout`, `.case-list`, `.case-detail` đều mang `min-width: 0`. Rãnh `auto` mặc định nở tới bề rộng tối thiểu 780px của bảng nghiệp vụ rồi kéo mọi khối anh em vượt khung nhìn ở 390 và 768 — tràn ngang không bắt đầu ở cái bảng, nó bắt đầu ở cái rãnh chứa bảng.
+
+**The Band Owns the Height Rule.** Trong dải hai cột, chiều cao do dải quyết định, không do từng khối. Dải bị chặn ở một trần duy nhất, hai cột kéo bằng nhau, và bên nào tràn thì cuộn trong thân khối của chính nó. Hệ quả: đừng đặt trần chiều cao riêng lên bảng hay lên cột chi tiết khi đang ở trong dải — hai trần chồng nhau làm bảng dừng sớm và để lại một khoảng trống dưới đáy cột. Luật này chỉ áp từ 1361px; đem nó xuống khổ hẹp là bóp nghẹt bảng.
+
+**The Fixed Furniture Rule.** Không đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay. Sidebar trái, topbar trên, bộ lọc nằm trong đầu khối, thao tác chính nằm bên phải đầu khối — đây là lằn ranh người dùng đặt ra, và mọi màn mới thừa hưởng nó.
+
+## Elevation & Depth
+
+Hệ gần như phẳng. Độ sâu chủ yếu đến từ vật liệu — sơn mài đỏ sẫm làm khung, trắng làm mặt, giấy ấm làm nền — và từ hai bậc đường kẻ. Bóng chỉ nhận ba nhóm việc: đóng khung khối, phản hồi khi trỏ tới, và nâng lớp phủ.
+
+### Shadow Vocabulary
+- **Khối nội dung** (`box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 14px rgb(41 37 38 / 4%)`, kèm `border: 1px solid var(--line)`): áp cho `.panel`, `.kpi-strip`, `.figure-line`. Hai lớp rất nhạt, đủ để khối tách khỏi giấy mà không đọc thành thẻ nổi.
+- **Nút có nền** (`0 1px 1px #29252614` cho nút chính, `0 1px 1px #2925260f` cho nút phụ): tắt hẳn khi `:active`, kèm `translateY(.5px)` để cú bấm có trọng lượng.
+- **Mục điều hướng đang mở** (`0 2px 5px rgb(0 0 0 / 10%)`): thanh trắng nổi lên khỏi nền sơn mài.
+- **Nâng khi trỏ tới** (`0 3px 8px rgb(41 37 38 / 10%)` kèm `translateY(-2px)`): chỉ hàng bảng, hàng việc và ô tổng hợp bấm được.
+- **Nút phân đoạn đang bật** (`0 1px 2px #2925261f` kèm viền `--state-edge`): một mảnh trắng nhô lên khỏi rãnh xám.
+- **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): ngăn chi tiết, drawer mobile, toast, hộp thoại báo cáo. Nền mờ phía sau là `rgb(36 29 31 / 45%)`, scrim của drawer là `#29252680`.
+- **Mép dính** (`0 1px 3px rgb(41 37 38 / 3%)` cho topbar, `0 -6px 20px #29252612` cho thanh điều hướng đáy): gần như không thấy, chỉ để mép không trôi vào nội dung khi cuộn.
+
+### Named Rules
+
+**The Hover Belongs to Handles Rule.** Hiệu ứng nâng bị khóa sau `@media (any-hover: hover) and (any-pointer: fine)` và chỉ áp cho ba thứ thật sự bấm được: hàng bảng có vùng chọn còn bật, hàng việc dạng `<button>`, và ô tổng hợp dạng `<button>`. Một khối chỉ để đọc mà nhấc lên khi rê chuột là hứa một hành động không tồn tại.
+
+**The Two-Line Rule.** Cấu trúc bên trong khối do hai bậc đường kẻ gánh: `--line` cho ranh giới khối và vạch dưới đầu cột, `--line-soft` cho mọi vạch chia bên trong. Không thêm bậc thứ ba, và không dùng bóng để thay đường kẻ bên trong khối.
 
 ## Shapes
 
-Góc bo có năm bậc: khối và toast 10px, control 6px, chip cùng đích bấm trong ô bảng 4px, nét mảnh nhất 2px, hình tròn thật 50% (ô checklist, chấm timeline, vòng bước duyệt, chấm badge). Không có pill.
+Bốn bậc bo góc, mỗi bậc gắn với một loại vật: khối nội dung, hộp thoại chi tiết và toast dùng 10px (`--radius-panel`); nút, ô nhập, `<select>`, ô tìm kiếm, nút đóng dùng 6px (`--radius-control`); chip trạng thái và vùng chọn hàng dùng 4px (`--radius-chip`); mục điều hướng dùng 4px. Hộp thoại tạo báo cáo là ngoại lệ duy nhất với 12px. Hệ còn khai báo `--radius-hairline: 2px` nhưng không nơi nào dùng — coi đó là token cũ, đừng dựng bậc thứ năm quanh nó.
 
-Con dấu nhận diện là hình **vuông bo**, không phải hình tròn: 30px bo 8px trong sidebar, 38px bo 10px ở màn đăng nhập, chữ và viền vàng trên nền đỏ đậm. Đây là hình duy nhất trong hệ mang hai màu nhận diện cùng lúc.
+Thanh cuộn tùy biến cũng lấy bậc khối (`--radius-panel`) thay vì một con số rời, để không có bán kính nào sống ngoài thang.
 
-Viền, nơi tồn tại, luôn là 1px: viền khối, viền control, viền thẻ tài khoản mẫu, viền mục điều hướng đang mở, viền vòng tiến trình. Ngoại lệ duy nhất là chấm timeline 11px với viền 2px, vì ở kích thước đó 1px không còn đọc ra hình tròn.
+Hình tròn (`50%`) dành riêng cho dấu bước: chấm 6px mở đầu chip trạng thái, chấm 11px trên dòng thời gian, vòng 20px trong danh sách kiểm, vòng 26px trong luồng duyệt. Viền luôn 1px, trừ vòng tròn dòng thời gian (2px) và vạch trên của mục điều hướng đáy đang mở (2px).
 
-**The Dot Not Pill Rule.** Trạng thái thường trực là một chấm 6px `currentColor` cộng nhãn chữ, không nền, không viền. Hai ngoại lệ được ghi nhận và **chỉ hai**: `tone-critical` (việc cần can thiệp được phép to tiếng hơn) và cờ `mock` (cảnh báo thường trực, không phải trạng thái nghiệp vụ; nó bỏ luôn cái chấm vì nó không phải một trạng thái). Cả hai dùng chip 4px, padding `2px 7px`.
+Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn bằng `clip-path: circle(42.5% at 50% 50%)`, hiện ở ba cỡ: 46px trong sidebar và drawer, 50px trên màn từ chối quyền, 64px trên màn đăng nhập.
 
-**The Quiet Mock Chip Rule.** Nhãn "Mô phỏng" ở măng sét mang bộ trung tính — chữ `ink-2` trên `surface-soft` với viền `line` — chứ không mang màu cảnh báo. Nó phải hiện thường trực ở mọi khổ màn và ở cả màn từ chối quyền; nhưng chính vì thường trực, cho nó màu cảnh báo là đặt một cảnh báo không bao giờ tắt cạnh tiêu đề, và người dùng học cách nhìn xuyên qua nó trong một ngày.
+### Named Rules
 
-**The Selected State Is a Fill Rule.** Trạng thái "đang chọn" và "đang mở" nói bằng **nền** hồng giấy, cộng viền hồng ở nơi khối vốn đã có viền. Không có vạch màu dày quá 1px ở cạnh một khối nội dung, hàng danh sách, notice, dải lỗi hay thẻ đang chọn — kể cả khi dựng bằng `inset box-shadow`, vì đổi cách vẽ không đổi bản chất. Vạch 3px bên trái mục điều hướng của hệ trước đã được gỡ hẳn (`content: none`); đừng dựng lại nó.
+**The Emblem Not Lettermark Rule.** Khối nhận diện luôn là ảnh con dấu cộng hai dòng chữ ("Quản lý nghiệp vụ Thuế" / "Thuế TP Hà Nội"). Không thay con dấu bằng ký tự lồng hay ký hiệu viết tắt, không vẽ lại con dấu bằng SVG suy diễn, không đặt chữ đè lên nó.
+
+**The Circle Means Step Rule.** Hình tròn trong hệ này luôn có nghĩa "một bước trong chuỗi" hoặc "một chấm trạng thái". Không bo tròn nút, không dựng avatar tròn, không dùng dáng viên thuốc cho chip.
 
 ## Components
 
 ### Buttons
+- **Shape:** bo nhẹ (6px), cao 32px trên desktop và 44px từ 900px xuống, chữ 13px/600, `white-space: nowrap`, icon 17px đặt trước nhãn.
+- **Primary:** nền và viền `--brand`, chữ trắng, bóng 1px. Hover chuyển `--brand-strong`; `:active` bỏ bóng và lún nửa pixel.
+- **Secondary:** nền trắng, viền `--control-line`, chữ mực. Hover đổi viền sang `--control-line-hover` và nền sang giấy mềm.
+- **Quiet:** không nền, không viền, chữ `--brand`, đệm ngang 8px. Hover nhận nền giấy hồng `--surface-tint`. Trên mobile nó bỏ đệm ngang và căn trái trong đầu khối thay vì kéo rộng như hai loại kia.
+- **Disabled:** `opacity: .45`, bỏ bóng, bỏ dịch chuyển, `cursor: not-allowed`.
+- **Focus:** vòng mực 2px, `outline-offset: 2px`, kế thừa từ quy tắc chung chứ không định nghĩa lại.
+- **Nút gửi của màn đăng nhập** là biến thể riêng: cao 44px, chiếm trọn bề ngang form, cùng bảng màu với nút chính.
 
-- **Shape:** bo 6px, cao 32px, padding ngang 11px, chữ 13px/600, icon 17px đứng trước nhãn.
-- **Primary:** nền đỏ son, chữ trắng, viền cùng màu, bóng 1px; hover sang đỏ đậm; `:active` mất bóng và lún `.5px`.
-- **Secondary:** nền trắng, chữ mực chính, viền `control-line`, bóng 1px; hover đổi sang `control-line-hover` và nền `surface-soft`.
-- **Quiet:** không nền, chữ đỏ son, padding ngang 8px; hover nền hồng giấy.
-- **Disabled:** opacity `.45`, không bóng, không lún, `cursor: not-allowed`.
-- **Cảm ứng (≤900px):** mọi nút nở lên 44×44 tối thiểu. Dưới 720px nút trong `page-actions`, `notice` và `table-footer` rộng hết dòng.
+### Chips (Badge)
+- **Mặc định là chữ có chấm, không phải viên thuốc:** nền trong suốt, không viền, không đệm, chữ 12px/600, và một chấm tròn 6px `currentColor` đứng trước qua `::before`. Bốn tông dùng dạng này: neutral (`--ink-2`), positive, warning, info. Chấm cộng chữ nghĩa là trạng thái không bao giờ chỉ được truyền bằng màu.
+- **Hai ngoại lệ có nền:** tông `critical` và cờ "Mô phỏng" chuyển thành chip có nền nhạt, bo 4px, đệm `2px 7px` — đó là hai thứ phải nhìn thấy trước khi đọc. Chip mô phỏng bỏ chấm vì nó không phải một trạng thái trong chuỗi. Trên topbar, chip mô phỏng hạ giọng xuống nền giấy mềm với viền `--line`: nó phải hiện diện thường trực mà không cạnh tranh với nội dung.
 
-### Badges
+### Cards / Containers (Panel)
+- **Corner Style:** 10px, `overflow: hidden`.
+- **Background:** trắng trên nền giấy ấm.
+- **Border & Shadow:** có khung — viền 1px `--line` và bóng hai lớp rất nhẹ (xem Elevation & Depth). Stylesheet còn giữ một khai báo cũ hơn viết `border: 0` cho `.panel`, nhưng nó bị quy tắc muộn hơn ghi đè; trạng thái đang chạy là khối **có** viền và bóng.
+- **Đầu khối:** cao tối thiểu 54px, đệm `13px 16px`, vạch dưới `--line`. Tiêu đề 14px/650 có thể kèm `.panel-source` 11px/400 màu `--ink-3` nói dữ liệu đến từ đâu. Dòng mô tả (`max-width: 72ch`, màu `--ink-3`) là tùy chọn và **không dùng ở khối chi tiết** — xem quy tắc dưới. Khi đầu khối có vùng thao tác, nó chuyển sang lưới (`display: grid`) để thao tác xuống dòng dưới tiêu đề thay vì bóp tiêu đề; đó là lý do đầu khối chi tiết ở Nợ và Lô dữ liệu cao hơn ở Hoàn thuế và Báo cáo, chứ không phải vì còn sót dòng phụ. Chiều cao đầu khối vì thế là kết quả của nội dung, không phải một con số đặt trước — đúng lý do hàng lưới chung phải là subgrid.
+- **Internal Padding:** `0 14px 12px`, xuống `0 12px 12px` từ 720px.
+- **Trong dải hai cột:** khối thành hộp dọc, thân nhận `flex: 1; min-height: 0; overflow: auto`, và hai đầu khối nằm trên cùng một hàng lưới (xem quy tắc dưới).
 
-- **Style:** không nền, không viền, không padding. Một chấm tròn 6px `currentColor` rồi đến nhãn chữ 12px/600, gap 6px.
-- **Tones:** neutral (`ink-2`), positive, warning, info, critical — chỉ đổi màu chữ và chấm.
-- **Exceptions:** `tone-critical` giữ chip nền `critical-bg`; cờ `mock` giữ chip trung tính (xem The Quiet Mock Chip Rule). `mock` là một prop của chính `Badge`, không phải một component riêng — mọi nhu cầu "chip" mới phải đi qua đây trước khi được phép thành một họ mới.
-- **Meaning:** nhãn luôn là tiếng Việt nghiệp vụ ("Quá hạn", "Thiếu dữ liệu", "Chờ duyệt"). Màu là tầng tín hiệu thứ ba, sau chữ và hình.
+**The Row Already Said It Rule.** Đầu khối chi tiết chỉ định danh bản ghi bằng tên, còn mọi trường đã hiện trên hàng đang chọn thì ở lại trên hàng. Bốn khối chi tiết của dải (Nợ, Hoàn thuế, Báo cáo, Lô dữ liệu) đã bỏ hẳn dòng phụ vì nó lặp lại đúng các cột nằm cách đó vài trăm pixel về bên trái — mã số thuế che, đơn vị và cán bộ ở Nợ; ngày nhận và đơn vị ở Hoàn thuế; kỳ, đơn vị chủ trì và nguồn ở Báo cáo; mốc cập nhật ở Lô dữ liệu. Đọc cùng một trường hai lần trên một màn, và trả giá bằng một đầu khối cao hơn, là lỗ kép. Đây chính là **The Silent H1 Rule** áp xuống một cấp.
 
-### Cards / Containers
+Kèm theo một điều kiện, vì đây là chỗ cách làm rẻ tiền sẽ làm mất dữ liệu: con số nào chỉ có trong dòng phụ mà không có trong bảng thì phải chuyển đi đâu đó, không được bỏ. Ở Lô dữ liệu, `{thieu.length} đơn vị chưa gửi` đã chuyển vào dải cảnh báo sẵn có trong thân khối, nay đọc là "{loi.length} file cần xem lại, trong đó {thieu.length} đơn vị chưa gửi". Bỏ dòng phụ là bỏ một chỗ đặt chữ, không phải bỏ một dữ kiện.
 
-- **Corner Style:** 10px.
-- **Background:** trắng trên giấy ấm.
-- **Border:** 1px `line`. Đây là đặc điểm định nghĩa của hệ.
-- **Shadow Strategy:** `--shadow-panel`, bóng hai tầng (xem Elevation & Depth).
-- **Internal Padding:** đầu panel `13px 16px` cao 54px với chân đường `line`; thân `0 14px 12px`. Danh sách, bảng và lưới chi tiết bên trong tràn ra mép bằng `margin-inline: -14px` để hàng chạy hết chiều rộng khối (-12px dưới 720px).
-
-### Summary rows (dải tổng hợp)
-
-Một vai trò, một cách thể hiện: `KpiStrip` và `FigureLine` dùng **chung một khối luật**. Bốn ô chia bằng `line-soft` dọc trong một khối có viền và bóng panel, nhãn 12px nằm trên số 18px. Ô cao **56px**; khi có dòng phụ, `:has(small)` nâng cả hàng lên **72px** — độ cao do nội dung quyết định, không do một class modifier.
-
-Con số giữ màu `ink` bất kể tone (xem The Numbers Stay Neutral Rule). Ô có `onSelect` là `<button>`, và chỉ ô đó mới nhận hover và hiệu ứng nhô. Mobile: 2×2, đường chia chuyển sang ngang.
-
-### Detail grid (lưới chi tiết)
-
-Khối chi tiết của bản ghi đang chọn, đặt ngay dưới bảng — nơi một hàng bảng dẫn tới, thay vì dẫn tới hư không.
-
-- **Shape:** bốn cột chia bằng `line-soft` dọc, ô tối thiểu 56px, padding `9px 16px`, tràn ra mép khối như bảng. Hai cột dưới 720px, đường chia chuyển sang ngang.
-- **Type:** nhãn 12px/600 `ink-3` nằm trên giá trị **14px/500** `ink` — cỡ body, không phải cỡ metric. Dòng phụ trong giá trị là 11px/400.
-- **Nội dung:** chỉ trình bày dữ liệu đã có và quy tắc đang chi phối bản ghi. Không dựng nút hành động cho một nghiệp vụ chưa được mô tả.
-
-### Tables
-
-- **Structure:** `min-width: 780px`; vùng cuộn `table-wrap` có trần `min(62vh, 560px)` — chính trần này là điều kiện để `th` dính được, vì `panel` đã `overflow: hidden`.
-- **Naming:** mỗi vùng cuộn là một `role="region"` có `aria-label` lấy từ prop `label` của `TableWrap`. Vùng cuộn đã là điểm dừng Tab thì phải có tên.
-- **Header:** dính đỉnh vùng cuộn, cao 34px, nền `surface-soft`, chữ 11px/650 `ink-2`, chân đường `line`, mọi `th` mang `scope="col"`.
-- **Rows:** 38px, chia bằng `line-soft`, hàng cuối bỏ đường; 44px dưới 720px. Hàng đang chọn nhận nền hồng giấy và `font-weight: 500`. Chỉ hàng có `row-select` mới đổi con trỏ, đổi nền và nhô khi rê chuột.
-- **Alignment:** nhãn trái, số phải (`.num`), boolean và dấu nguồn căn giữa (`.center`). Dòng phụ 11px muted nằm dưới nội dung chính.
-- **Footer:** một hàng kết quả cộng hành động, chân là đường `line-soft` phía trên; xếp dọc dưới 720px.
-
-### Row select (đích bàn phím của hàng bảng)
-
-Nút nằm trong ô đầu tiên của mỗi hàng bấm được. Nó trông y hệt nội dung ô mà nó thay thế: nền trong suốt, `font: inherit`, bo 4px, vòng focus vẽ vào trong (`outline-offset: -2px`).
-
-- **Cách nó không làm hàng cao thêm:** margin âm `-7px -12px` cộng padding bù `7px 12px` đúng bằng padding của ô, nên nút phủ trọn ô mà chiều cao hàng không đổi một pixel. Đặt `min-height` thẳng lên nút mà không bù margin thì hàng nở ra, và đổi mật độ bảng là thứ không được phép làm.
-- **Kích thước:** 32px trên desktop — đúng chiều cao control của hệ — và 44px từ 900px xuống.
-- **Vì sao là nút chứ không phải `role="button"` trên `<tr>`:** cả hàng vẫn bấm được bằng chuột theo quy ước của người dùng, và chính `tr:has(.row-select)` là thứ cấp con trỏ, nền hover và hiệu ứng nhô cho cả hàng. Nhưng gắn role lên `<tr>` phá ngữ nghĩa bảng và làm trình đọc màn hình mất cả lưới. Hai yêu cầu này không xung đột khi đích bàn phím là một control thật bên trong ô.
+**The Shared Head Row Rule.** Đầu hai khối trong dải phải nằm trên **cùng một hàng lưới**, không phải cùng một con số đoán trước. Một đầu mang ô tìm kiếm, đầu kia mang dòng phụ — hai nội dung đó không bao giờ cao bằng nhau, nên chiều cao cứng luôn để lại một bên lệch, và thân hai khối bắt đầu ở hai độ cao khác nhau đúng chỗ mắt bắt lỗi đầu tiên khi so hai cột. Cách làm là subgrid: `.case-layout` nhận `grid-template-rows: auto minmax(0, 1fr)`, hai cột và hai khối đều thành subgrid kéo dài hai hàng. Khối `@supports (grid-template-rows: subgrid)` được gác thêm bằng `:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child)` — luật chỉ đúng khi mỗi cột có đúng một khối. Trình duyệt không hỗ trợ subgrid rơi về sàn `min-height: 66px` vẫn còn trong mã: hai cột vẫn bằng nhau, chỉ riêng đầu khối là có thể lệch. Sàn 66px đó là lưới an toàn, không phải cách làm; đừng chỉnh nó để "nắn" cho cân.
 
 ### Inputs / Fields
-
-- **Style:** cao 32px, nền trắng, viền `control-line` 1px, bo 6px; select `min-width: 150px` và padding phải 28px chừa mũi tên. 44px từ 900px xuống; ô nhập màn đăng nhập luôn 44px.
-- **Hover / Focus:** viền sang `control-line-hover`; focus dùng outline 2px, offset 2px, bo theo radius control. Ô tìm kiếm chuyển outline lên wrapper bằng `:focus-within` và làm viền trong suốt để không có hai vòng chồng nhau.
-- **Disabled:** nền `surface-soft`, chữ `ink-2`, `opacity: 1` — ô cố định vẫn phải đọc được.
-- **Browser surfaces:** `caret-color` và `accent-color` theo đỏ son; `::placeholder` dùng `ink-3` với opacity 1; `::selection` là chữ mực gần đen trên hồng nhạt; thanh cuộn 10px, thumb ấm cắt viền 3px trong suốt và có bậc hover riêng.
-
-### Segmented
-
-Track `line` bo 10px, pill trong bo 6px cao 32px (44px từ 900px xuống). Ô đang chọn nhận nền trắng, viền `state-edge` và bóng 1px — nền trắng trên track xám nhạt không tự đủ ranh giới, nên viền là phần bắt buộc chứ không phải trang trí. Dưới 720px cả nhóm đổi thành một `<select>` có nhãn **hiển thị**, không phải một nhãn ẩn.
+- **Style:** cao 32px, viền 1px `--control-line`, bo 6px, nền trắng, đệm ngang 9px. `<select>` rộng tối thiểu 150px với đệm phải 28px chừa chỗ cho mũi tên.
+- **Hover:** viền đậm lên `--control-line-hover`.
+- **Focus:** vòng mực 2px offset 2px. Ô tìm kiếm là vỏ bọc chứa icon và `<input>` không viền; vỏ bắt `:focus-within`, tự bỏ viền của mình và vẽ vòng focus quanh cả cụm — vòng focus phải bao quanh thứ người dùng thấy là một ô, không bao quanh phần tử bên trong nó.
+- **Disabled:** nền giấy mềm, viền `--line`, chữ `--ink-2`, `opacity: 1` — ô khóa vẫn phải đọc được.
+- **Nhãn** 12px/650 màu `--ink-2`, đặt trên ô, cách 6px; nhãn phụ trong hàng bộ lọc là 11px/600 màu `--ink-3`.
+- **Placeholder** màu `--ink-3` với `opacity: 1`, vì mặc định của trình duyệt làm nó tụt dưới ngưỡng đọc.
 
 ### Navigation
+- **Sidebar** rộng 252px, nền sơn mài, cuộn dọc riêng, đệm `20px 14px 14px`. Chữ làm điều hướng: mục **không có icon**, chỉ có nhãn 14px. Ba nhóm ("Điều hành" / "Nghiệp vụ" / "Dữ liệu") ngăn nhau bằng `margin-top: 24px` và một vạch `#ffffff2b`; nhãn nhóm là bậc `nav-group`, `aria-hidden` vì `role="group"` đã mang tên. Nhóm là tiêu đề cấu trúc, các mục bên dưới mới là đích điều hướng.
+- **Mục nghỉ:** chữ `--on-chrome-1` cân nặng 400, nền trong suốt, cao 38px.
+- **Hover:** nền `#ffffff14`, chữ trắng, trượt phải 3px — chỉ khi có chuột thật và không yêu cầu giảm chuyển động.
+- **Đang mở:** một tín hiệu đặc và duy nhất — mục lật thành **thanh trắng** (`background: var(--surface)`, viền cùng màu), chữ `--brand-strong` cân nặng 600, bóng nhẹ. Vạch vàng bên trái đã bị tắt bằng `::before { content: none }`. Stylesheet còn một quy tắc tô vàng cho `svg` bên trong mục đang mở, nhưng mục điều hướng hiện không dựng icon nào, nên quy tắc đó không bắt được phần tử nào — trạng thái thật là trắng-trên-sơn-mài, không có điểm vàng.
+- **Mobile:** dưới 900px sidebar ẩn, thay bằng thanh đáy tối đa sáu ô (icon 20px trên nhãn 10px; ô đang mở nhận chữ `--brand` và vạch trên 2px `--brand`) và một drawer sơn mài `min(84vw, 320px)` dùng lại đúng nội dung sidebar, có scrim, bẫy Tab, `Escape` để đóng, `inert` cắt nhánh nền khỏi cây trợ năng, và focus trả về nút đã mở nó.
+- **Skip-link** ẩn phía trên khung nhìn, bật ra khi nhận focus: nền sơn mài, chữ trắng, cao 44px, góc trên trái.
 
-- **Desktop:** sidebar trắng 252px với viền phải `line`. Nhãn nhóm 11px/700 `ink-3`, không viết hoa. Mục cao 40px bo 6px, chữ `ink-2` weight 550, viền trong suốt giữ sẵn chỗ để trạng thái chọn không làm xê dịch. Mục đang mở nhận **ba lớp cùng lúc**: nền hồng giấy, viền hồng, chữ đỏ đậm — cộng icon đỏ son và một bóng 1px. Không có vạch trái.
-- **Mobile:** bottom nav tối đa sáu cột, mỗi mục ≥62px, nhãn 10px, `aria-current="page"` ở mục đang mở; mục đang chọn đổi chữ đỏ và `border-top: 2px` đỏ. Đây là bề mặt duy nhất trong hệ dùng blur, vì nội dung thật sự cuộn bên dưới nó.
-- **Drawer là dialog thật:** drawer trắng viền phải, `role="dialog"`, `aria-modal`, khoá cuộn body, đưa focus vào nút đóng, bẫy Tab/Shift+Tab, Escape hoặc scrim để đóng, trả focus về đúng trigger. Cả hai trigger mang `aria-expanded` và `aria-haspopup="dialog"`. Khi drawer mở, sidebar, măng sét, workspace và bottom nav đều nhận `inert` — bẫy Tab bằng JS không chặn được tìm-trong-trang hay rotor của trình đọc màn hình.
-- **Skip link:** liên kết tới `#workspace`, chỉ hiện khi nhận focus, cao 44px, nền mực gần đen. Điều hướng có tám mục cộng nút đăng xuất; không có lối tắt thì mỗi lần đổi màn là chín lần Tab.
-- **Icons:** bộ icon là SVG nội tuyến một nét, `stroke-width 1.7`, viewBox 24, đầu nét tròn, mặc định 20px (17px trong nút, 15px trong ô nhỏ), `aria-hidden`. Chỉ dùng ở điều hướng và ở thao tác cần nhận diện — trang công việc đã bỏ icon cảnh báo cạnh từng hàng vì trạng thái đã có nhãn chữ. Không dùng font icon hay ký tự glyph.
+### Notice
+Dải thông báo trong khối: cao tối thiểu 44px, bo 6px, không viền, nền là bậc nhạt của màu trạng thái (`warning` / `critical` / `info` / `positive`). Nhãn in đậm 650 mang màu trạng thái; phần giải thích chuyển về màu mực `--ink-2` để đọc được, không nhuộm theo tông.
 
-### Approval flow (luồng phát hành)
+**The Notice Wraps Rule.** Nhãn và phần giải thích nằm cùng hàng khi còn chỗ và **xuống dòng** khi hết chỗ: `flex-wrap: wrap`, nhãn `flex: 0 1 auto` (co được), phần giải thích `flex: 1 1 22ch`. Trước đây nhãn để `flex: none` nên trong cột hẹp của ngăn chi tiết nó giữ nguyên bề ngang còn phần giải thích bị ép xuống vài chục pixel — mỗi dòng một chữ. Đây là lỗi đã được báo trên bản dựng, không phải phòng xa.
 
-Bốn bước chia đều, mỗi bước một vòng tròn 26px viền `state-edge` nối bằng đường `line` 1px. Bước hiện tại: vòng đặc màu đỏ son. Bước đã qua: vòng đặc và đường nối màu xác nhận. Sơ đồ đọc trạng thái của báo cáo **đang chọn** — thao tác Duyệt và Phát hành đổi trạng thái thật trong phiên, ghi thêm một phiên bản có tên người và thời điểm, rồi đẩy sơ đồ sang bước kế. Một nút chỉ phát toast mà không đổi gì là thứ dạy người dùng đừng tin toast.
+### Detail Panel (DetailGrid)
+Lưới `<dl>` bốn cột trên desktop, hai cột trong ngăn chi tiết và từ 720px xuống. Mỗi ô cao tối thiểu 56px, đệm `9px 16px`, ngăn nhau bằng `--line-soft` theo cả hai trục; nhãn là bậc `label` màu `--ink-3`, giá trị 14px/500 màu mực, dòng phụ 11px/400.
 
-Trạng thái không bao giờ chỉ nằm ở màu: bước hiện tại mang `aria-current="step"` và mỗi bước có một dòng `sr-only` nói nó đang ở đâu trong chuỗi. Toàn bộ sơ đồ nằm trong một `<details>` thu gọn; thao tác duyệt/phát hành và lịch sử phiên bản vẫn hiển thị ngoài nó. Dưới 720px sơ đồ xếp dọc và đường nối xoay đứng.
+**The Single Left Edge Rule.** Mọi thứ trong ô căn về một mép trái duy nhất: `justify-items: start`, `text-align: left`, và `margin: 0` trên cả `dt` lẫn `dd`. Trình duyệt cho `<dd>` một thụt lề mặc định 40px, nên nếu không xóa thì giá trị bị đẩy sang phải trong khi nhãn ngay trên nó lại sát trái — hai mép trong một ô là lỗi đọc, không phải phong cách.
 
-### Feedback
+### Page Intro & Page Actions
+`PageIntro` không dựng khung riêng: nó trả về `<h1 class="sr-only">` cộng dòng dẫn `.page-lead` (13px/400, `max-width: 72ch`, màu `--ink-2`), rồi gửi cụm thao tác đi nơi khác.
 
-- **Toast:** cố định góc phải dưới, nền mực gần đen, chữ trắng, bo 10px, bóng overlay, vào bằng 8px/220ms; nút đóng 30px. Hẹn giờ 4,2 giây **dừng khi rê chuột hoặc khi focus vào toast**, và huỷ khi component unmount — một thông báo ghi thời điểm và người duyệt là thứ cần đọc kỹ, không phải thứ biến mất giữa chừng. Mobile nâng lên trên bottom nav và safe area.
-- **Notice:** cao ≥44px, bo 6px, padding `10px 13px`, nền nhạt mang màu mức độ, nhãn đậm mang màu mức độ, phần giải thích dùng `ink-2`. Không viền, không vạch. Dưới 720px nhãn và nội dung xuống dòng riêng, nút rộng hết dòng.
-- **Empty state:** căn giữa, padding 28px, icon positive, một dòng kết luận và một dòng giải thích.
+**The Action Lives in the Masthead Rule.** Từ 901px trở lên, thao tác cấp trang nằm trong măng sét, không nằm trong nội dung. Khi tiêu đề màn đã ẩn, một nút đứng một mình ở đầu nội dung chiếm trọn một hàng để nói một việc — trong khi măng sét đang thừa bề ngang. Nút được bắn vào ô cắm `#page-actions-slot` bằng portal, nên nó vẫn thuộc về màn đang mở về mặt dữ liệu và vẫn nằm đúng thứ tự đọc của măng sét. Dưới 901px thì ngược lại: măng sét đã chật vì nút mở điều hướng, kỳ làm việc, phạm vi và chip mô phỏng, nên nút quay về nội dung và trải hết bề ngang. Đừng dựng lại một hàng tiêu đề chỉ để có chỗ đặt nút.
 
-### Login (cùng hệ, không phải ngoại lệ)
+### Tables
+Bảng rộng tối thiểu 780px, nằm trong vùng cuộn có trần `min(62vh, 560px)` — trần này được gỡ khi bảng nằm trong dải hai cột, vì ở đó dải đã lo chiều cao. Vùng cuộn mang `tabIndex={0}`, `role="region"` và `aria-label` — đã là điểm dừng Tab thì phải có tên, nếu không người dùng trình đọc màn hình gặp một loạt điểm dừng câm. Đầu cột sticky, nền giấy mềm, chữ `--ink-2` bậc `column-head`. Ô cao 38px (44px từ 720px), vạch dưới `--line-soft`, hàng cuối bỏ vạch. Hàng đang chọn nhận nền `--selected-surface` và chữ nặng 500. Chân bảng là một dải 12px màu `--ink-3` có vạch trên. Dưới 900px hiện dải nhắc "Vuốt ngang để xem thêm" nền giấy hồng, chữ `--brand`.
 
-Hai cột `minmax(340px, 42%) / 1fr`: cột trái nền `surface-soft` với viền phải `line`, mang con dấu nhận diện, headline ≤26px và ghi chú dữ liệu mô phỏng; cột phải trắng mang form. Không có eyebrow trên tiêu đề. Ô nhập và nút gửi cao 44px, bo 6px. Dải lỗi là nền `critical-bg` với chữ `critical`, mang `role="alert"`, **không vạch trái**. Thẻ tài khoản mẫu cao 68px (78px khi có dòng quyền), viền 1px `line` cộng bóng 1px, `aria-pressed` cho trạng thái chọn; trạng thái chọn đổi viền sang đỏ son và nền sang hồng giấy. Dưới 720px hai cột xếp dọc và cột trái rút còn dải ≥190px.
+### Figure Line
+**Dòng tổng hợp là một hàng, không phải bốn thẻ.** Bốn ô "số to, nhãn nhỏ, màu nhấn" xếp ngang là khuôn mẫu mở màn của mọi bản dựng máy sinh; ở đây bốn con số là đếm hàng đợi chứ không phải kết luận, nên chúng đọc như một dòng cộng đặt ngay dưới mô tả trang — vẫn đủ thông tin, không chiếm mất vị trí của việc cần làm. Dòng phụ được giữ lại vì nó mang dữ liệu thật; thứ bị bỏ là cái thẻ, không phải nội dung. Ô bấm được dựng bằng `<button>`, ô chỉ đọc bằng `<div>`, và chỉ ô bấm được mới có hover. Cùng khuôn hình với `KpiStrip`: bốn cột trên desktop, hai cột từ 720px, các ô ngăn nhau bằng `--line-soft` bên trong một khung chung.
 
-### No access (màn từ chối quyền)
-
-Một trạng thái hợp lệ của sản phẩm, không phải trang lỗi: khối trắng ≤560px bo 10px trên giấy ấm, dùng đúng token và thang chữ của hệ. Nó là màn giữ chỗ trong lúc vai Lãnh đạo nhà nước được chuyển sang Dashboard Thu NSNN, và là lối thoát khi chuyển hướng không tới nơi. Vì nằm ngoài Shell, nó **tự mang** con dấu nhận diện và nhãn "Mô phỏng" — màn này nêu đích danh một con người và một cơ quan, và là màn dễ bị chụp gửi đi nhất. Dòng "Đang mở Dashboard…" có `role="status"`; hai lối đi là một nút primary và một nút secondary cùng hàng.
+### Toast
+Nền sơn mài, chữ trắng, bo 10px, cố định góc phải dưới, rộng `min(420px, calc(100vw - 28px))`, bóng lớp phủ, icon xác nhận `--positive-on-chrome`, nút đóng 30px chỉ hiện nền khi hover. Trên mobile nó nhấc lên trên thanh điều hướng đáy bằng `bottom: calc(74px + env(safe-area-inset-bottom))`.
 
 ## Do's and Don'ts
 
 ### Do:
-
-- **Do** giữ mọi bậc trung tính trong họ ấm; lấy sắc độ từ `ink`, đừng lấy từ một bảng xám chung.
-- **Do** cho khối nội dung cả viền 1px lẫn bóng panel; hai thứ đó đi cùng nhau.
-- **Do** giữ đỏ son là màu thao tác duy nhất, và giữ vàng ở đúng con dấu nhận diện trên nền đỏ đậm.
-- **Do** để con số tổng hợp mang màu mực trung tính; màu trạng thái sống ở nhãn và thông báo.
-- **Do** chỉ cho hiệu ứng nhô vào thứ thật sự bấm được, và bọc nó trong `any-hover`/`any-pointer` cộng `prefers-reduced-motion`.
-- **Do** nói "đang chọn" bằng nền hồng giấy, cộng viền hồng ở nơi vốn đã có viền.
-- **Do** để độ cao ô tổng hợp chạy theo nội dung qua `:has(small)` (56px / 72px) thay vì thêm class biến thể.
-- **Do** cho bảng dài một đầu bảng dính trong chính vùng cuộn có trần chiều cao, `scope="col"` ở mọi `th`, và một `aria-label` cho vùng cuộn.
-- **Do** cho mỗi hàng bảng bấm được một đích bàn phím thật bên trong ô đầu, dựng bằng margin âm bù padding để hàng không cao thêm.
-- **Do** giữ cam kết 44px và mốc shell cảm ứng ở **cùng một breakpoint** (900px).
-- **Do** giữ đúng một khoảnh khắc chuyển động khi vào trang, và gate cả nó lẫn `scrollTo` theo `prefers-reduced-motion`.
-- **Do** theme cả những bề mặt trình duyệt vẽ hộ: selection, caret, accent, placeholder, vòng focus, thanh cuộn.
-- **Do** để trạng thái nói bằng ít nhất hai tầng: `aria-current` cộng `sr-only` bên cạnh màu, không bao giờ chỉ màu.
-- **Do** cắt nhánh nền khỏi cây trợ năng bằng `inert` khi drawer mở, ngoài bẫy Tab bằng JS.
-- **Do** giữ màn đăng nhập và màn từ chối quyền trên cùng token và cùng thang chữ với các view bên trong.
+- **Do** giữ ba vai của đỏ tách bạch: `--seal` nhận diện, `--brand` hành động, `--critical` can thiệp.
+- **Do** dùng mực `--focus` cho vòng focus, và chỉ đổi sang vàng `--focus-on-chrome` trên nền sơn mài. Quy tắc `:where(.sidebar, .mobile-drawer, .login-context) …:focus-visible` phải nằm **sau** quy tắc chung: `:where()` không cộng độ ưu tiên, đặt trước thì shorthand `outline` phía trên ghi đè lại màu.
+- **Do** căn mọi thứ trong ô chi tiết về một mép trái, kể cả `<dd>`.
+- **Do** để dải thông báo xuống dòng khi cột hẹp thay vì bóp chữ thành mỗi dòng một từ.
+- **Do** giữ `<h1>` trong DOM ở dạng `sr-only` trên mỗi màn, đúng thứ tự tiêu đề.
+- **Do** dùng chấm, nhãn hoặc icon kèm màu cho mọi tín hiệu trạng thái; màu không bao giờ là tín hiệu duy nhất.
+- **Do** đặt sàn 44px cho mọi vùng chạm từ 900px trở xuống.
+- **Do** đặt mọi animation sau `prefers-reduced-motion` và giữ công tắc cắt chung.
+- **Do** dán nhãn "Mô phỏng" ở mọi màn có số liệu, kể cả màn nằm ngoài Shell.
+- **Do** cho mỗi vùng cuộn nhận Tab một cái tên.
+- **Do** khai báo cơ sở 0 (`minmax(0, 1fr)` hoặc `min-width: 0`) cho mọi rãnh lưới có thể chứa bảng.
+- **Do** để dải hai cột quyết định chiều cao và cho phần dài hơn cuộn trong thân khối của nó.
+- **Do** dùng subgrid khi hai khối cạnh nhau phải bắt đầu ở cùng một độ cao.
+- **Do** đưa thao tác cấp trang lên măng sét từ 901px và trả nó về nội dung bên dưới ngưỡng đó.
+- **Do** chuyển con số chỉ tồn tại trong dòng phụ sang một chỗ khác trong thân khối trước khi bỏ dòng phụ.
 
 ### Don't:
-
-- **Don't** đặt eyebrow hay dòng nhãn nhỏ phía trên bất kỳ tiêu đề nào — măng sét, trang, màn đăng nhập hay màn từ chối quyền. Tiêu đề tự đứng được.
-- **Don't** đưa một xám trung hoà hay xám xanh vào bảng trung tính; nó đọc ra màu lạ ngay cạnh giấy ấm.
-- **Don't** dùng vàng ở chỗ thứ hai ngoài con dấu nhận diện, và đừng đặt vàng làm chữ trên nền trắng.
-- **Don't** tô cả khối số theo trạng thái; bốn ô tổng hợp không phải một bảng đèn.
-- **Don't** cho hiệu ứng nhô vào khối lớn, ô tổng hợp chỉ đọc hay hàng nguồn chỉ đọc.
-- **Don't** vẽ vạch màu dày quá 1px ở cạnh một khối nội dung, hàng đang chọn, notice, dải lỗi hay thẻ đang chọn — kể cả dựng bằng inset shadow; vạch điều hướng cũ đã được gỡ, đừng dựng lại.
-- **Don't** lồng một khối có viền vào trong một khối có viền; bên trong dùng `line-soft` hoặc khoảng trắng.
-- **Don't** cho panel mượn bóng overlay; bóng lớn chỉ dành cho drawer và toast.
-- **Don't** cho nhãn "Mô phỏng" màu cảnh báo; một cảnh báo thường trực có màu là một cảnh báo người dùng học cách bỏ qua.
-- **Don't** mở rộng danh sách ngoại lệ chip quá hai mục đã ghi.
-- **Don't** thêm cỡ chữ ngoài chín bậc, và đừng mượn cỡ 18px cho metadata.
-- **Don't** dùng bậc 10px cho gì khác ngoài nhãn bottom nav.
-- **Don't** đặt `role="button"` lên `<tr>`; nó phá ngữ nghĩa bảng.
-- **Don't** để mốc chạm lệch khỏi mốc shell, và đừng để chỉ dẫn cuộn xuất hiện muộn hơn hiện tượng nó chỉ dẫn.
-- **Don't** làm mờ nền măng sét; blur chỉ tồn tại ở bottom nav mobile.
-- **Don't** thêm hiệu ứng vào cho từng khối; một trang chỉ nhô lên một lần.
-- **Don't** đưa webfont vào sản phẩm; stack hệ thống là quyết định đã cân nhắc.
+- **Don't** tô màu trạng thái vào con số. Màu sống ở nhãn, chip và dải thông báo.
+- **Don't** thêm xám xanh lạnh vào trung tính; nó phá sự liền mạch với con dấu.
+- **Don't** cho mục điều hướng đang mở một tín hiệu thứ hai. Thanh trắng trên nền sơn mài đã là tương phản mạnh nhất hệ này có.
+- **Don't** nâng hoặc đổ bóng một khối chỉ để đọc khi rê chuột; hover chỉ thuộc về thứ bấm được.
+- **Don't** dựng lại dòng tổng hợp thành bốn thẻ riêng có viền.
+- **Don't** đưa tiêu đề trang hiện lại lên đầu nội dung; sidebar đã nói tên màn.
+- **Don't** tự host hay tải webfont. Quyết định dùng stack hệ thống có ba căn cứ đã ghi; đừng mở lại nếu không có yêu cầu mới từ người dùng.
+- **Don't** thêm bậc chữ mới hay bậc đường kẻ thứ ba để tạo phân cấp.
 - **Don't** đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay.
-- **Don't** ép bảng nghiệp vụ thành card rời trên mobile hoặc giấu việc bảng cuộn ngang.
-
-
-## Sidebar theo ảnh tham chiếu — 29/09/2026
-
-Giữ nguyên palette hiện hành. Sidebar và drawer dùng nền chrome đỏ sẫm, dấu nhận diện tròn, nhóm điều hướng tách bằng khoảng cách. Bỏ icon trong danh sách sidebar; thanh điều hướng mobile vẫn giữ icon để dễ nhận diện trong không gian hẹp.
-
-Mục đang chọn có nền trắng, chữ brand-strong, bo 4px; bỏ vạch vàng bên trái. Mục chưa chọn dịch ngang 3px khi hover bằng chuột, 140ms. Chuyển màn dùng workspace-enter 200ms, dịch ngang 8px và fade; chỉ nội dung thay đổi chuyển động, khung/sidebar đứng yên. Bấm lại mục hiện tại không tạo history entry hoặc chạy lại animation. prefers-reduced-motion bỏ chuyển động.
-
-
-## UX remediation — 29/09/2026 (ưu tiên hơn mô tả cũ)
-
-- Panel và dải tổng hợp: viền 1px var(--line), shadow 0 1px 2px / 5% + 0 5px 14px / 4%. Panel ngoài không có hover lift.
-- Mục sidebar chưa chọn dùng font-weight 400; mục chọn 600. Bỏ chữ HN giả lập logo, dùng tên cơ quan cho tới khi có asset logo phù hợp.
-- Thông tin phụ quan trọng: 12px. Nhãn nguồn vẫn là 11px; chỉ giữ mã nguồn cần cho việc đối chiếu.
-- Tổng hợp Workbench mobile: 2×2 hàng gọn cao tối thiểu 44px, nhãn và số cùng dòng; công việc xuất hiện sớm hơn.
-- Form tạo báo cáo: dialog bo 12px, tên + chu kỳ + kỳ, validate trường bắt buộc; Escape/Hủy trả focus; Tab giữ trong form. Bản nháp có bản ghi và lịch sử v1, lưu sessionStorage theo tài khoản; không tự nhận đã chạy dữ liệu.
-- Chức năng demo chưa triển khai không thông báo giả rằng đã hoàn thành.
-- Báo cáo đo: UX-MEASUREMENT.md. Kiểm tra lặp lại: node scripts/measure-ux.mjs.
-- Biểu trưng Thuế Nhà nước dùng ảnh nội bộ `public/tax-logo.png` tại sidebar, drawer, đăng nhập và màn từ chối quyền; nguồn ảnh: biểu tượng ứng dụng eTax Mobile do cơ quan Thuế phát hành trên App Store. Favicon là `public/tax-favicon.svg`, bản rút gọn chỉ giữ vòng tròn, sao và bông lúa để đọc rõ ở 16–32px.
-
-
-## Phân cấp điều hướng — 29/09/2026
-
-Sidebar được chia thành ba nhóm ngữ nghĩa Điều hành / Nghiệp vụ / Dữ liệu. Tên nhóm 10px, viết hoa, letter-spacing .1em và dùng mực `--on-chrome-3`; tên mục 14px và dùng mực sáng hơn. Không có đường chia ngay trên Điều hành; hai nhóm sau có khoảng cách dọc 24px và đường chia trắng mờ 1px, cách chữ nhóm 20px. Mục đang chọn dùng nền trắng, chữ đỏ sẫm; hover mục khác dùng trắng trong suốt. `role=group` và nhãn riêng cho mỗi nhóm giúp trình đọc màn hình nhận ra cấu trúc.
-
-## Rà soát nội dung các tab — 29/09/2026
-
-Thứ bậc màn hình là tiêu đề và hành động chính → số liệu tổng hợp hoặc cảnh báo cần xử lý → bảng/danh sách chính → chi tiết bản ghi đang chọn. Bỏ mô tả trang lặp lại tên tab, subtitle chỉ giải thích cách đọc chính bảng, và helper text trùng cột hoặc trạng thái. Giữ thời điểm dữ liệu, mã nguồn nghiệp vụ và thông báo về quy tắc chưa có hiệu lực vì chúng ảnh hưởng cách hiểu số liệu. Trên bảng tương tác, hover là giấy xám ấm (`--hover-surface`), đang chọn là hồng giấy (`--selected-surface`); hover hàng đang chọn giữ nguyên màu đang chọn.
+- **Don't** đặt trần chiều cao riêng cho bảng hoặc cột chi tiết khi chúng đang nằm trong dải hai cột; hai trần chồng nhau làm bảng dừng sớm.
+- **Don't** đem luật chặn chiều cao của dải xuống dưới 1361px, nơi dải đã xếp thành một cột.
+- **Don't** nắn chiều cao đầu khối bằng một con số đoán trước; hàng lưới chung mới là cách làm.
+- **Don't** dựng lại một hàng tiêu đề chỉ để có chỗ đặt nút hành động.
+- **Don't** đặt dòng phụ lên khối chi tiết để nhắc lại các cột đã hiện trên hàng đang chọn.
+- **Don't** để hệ trôi về dáng sản phẩm tiêu dùng: không gradient, không minh họa, không góc bo lớn, không màu bão hòa ngoài bảng đã đăng ký.

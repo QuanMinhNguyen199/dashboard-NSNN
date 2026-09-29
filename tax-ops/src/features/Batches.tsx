@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { Badge, Button, FigureLine, Icon, PageIntro, Panel, TableWrap, integer } from "@/components/ui";
+import { Badge, Button, DetailGrid, FigureLine, PageIntro, Panel, TableWrap, integer } from "@/components/ui";
+import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
 import { batchFiles } from "@/data/catalog";
 import { sourceBatches } from "@/data/mock";
 import type { Tone } from "@/domain/types";
@@ -11,13 +12,36 @@ const fileTone: Record<string, Tone> = { OK: "positive", COLUMN_DRIFT: "warning"
 const fileText: Record<string, string> = { OK: "Đạt", COLUMN_DRIFT: "Lệch cột", HAND_EDITED: "Nghi chỉnh tay", MISSING: "Thiếu file" };
 
 export function Batches() {
-  const [chon, setChon] = useState(sourceBatches[0]?.id ?? "");
+  const cases = useCaseSelection(sourceBatches[0]?.id ?? "");
   const [daNhan, setDaNhan] = useState<string | null>(null);
   const input = useRef<HTMLInputElement>(null);
-  const lo = sourceBatches.find((b) => b.id === chon) ?? sourceBatches[0];
+  const lo = sourceBatches.find((b) => b.id === cases.selectedId) ?? sourceBatches[0];
 
   const loi = batchFiles.filter((f) => f.issue !== "OK");
   const thieu = batchFiles.filter((f) => f.issue === "MISSING");
+  const fileMau = [...batchFiles].sort((a, b) => Number(a.issue === "OK") - Number(b.issue === "OK"));
+  const coChiTietFile = lo?.id === "TTR-2026-09";
+  const detail = lo && <Panel
+    title={`Chi tiết lô ${lo.source} – ${lo.period}`}
+    source={lo.source}
+  >
+    <DetailGrid items={[
+      { label: "File", value: `${lo.received}/${lo.expected}` },
+      { label: "Số dòng", value: integer(lo.rows) },
+      { label: "Chất lượng", value: `${lo.quality.toLocaleString("vi-VN")}%` },
+      { label: "Trạng thái", value: <Badge tone={loTone[lo.status]}>{loText[lo.status]}</Badge> },
+    ]}/>
+    {daNhan?.startsWith("Đã lập nhắc") && <div className="notice positive" role="status"><span>{daNhan}</span></div>}
+    {coChiTietFile ? <>
+      {loi.length > 0 && <div className="notice warning"><strong>{loi.length} file cần xem lại{thieu.length > 0 ? `, trong đó ${thieu.length} đơn vị chưa gửi` : ""}</strong><span>Chưa tính báo cáo cho tới khi cấu trúc được xác nhận hoặc đơn vị gửi lại bản kết xuất gốc.</span>{coChiTietFile && thieu.length > 0 && coChiTietFile && thieu.length > 0 && <Button kind="quiet" onClick={() => setDaNhan(`Đã lập nhắc gửi tới ${thieu.length} đơn vị: ${thieu.map((f) => f.unit).join(", ")}. Bản demo chưa gửi thật.`)}>Nhắc đơn vị chưa nộp</Button>}</div>}
+      <div className="batch-file-list" aria-label="File minh họa trong lô TTR">{fileMau.map((f) => <div key={f.id}>
+        <div><strong>{f.unit}</strong><Badge tone={fileTone[f.issue]}>{fileText[f.issue]}</Badge></div>
+        <code>{f.name === "—" ? "Chưa nhận file" : f.name}</code>
+        <small>{f.note}{f.rows > 0 ? ` – ${integer(f.rows)} dòng` : ""}</small>
+      </div>)}</div>
+      <p className="case-source-note">8 file minh họa trong lô; kiểm tra tại bàn dự kiến 35 file vì năm Thuế cơ sở tách hai địa bàn.</p>
+    </> : <div className="empty-state"><strong>Chưa có danh sách file chi tiết cho lô này trong bản mô phỏng</strong></div>}
+  </Panel>;
 
   return <div className="page-stack">
     <PageIntro
@@ -28,7 +52,7 @@ export function Batches() {
         nên đưa nó ra khỏi luồng Tab và khỏi cây trợ năng. */}
     <input ref={input} className="sr-only" type="file" multiple accept=".xlsx,.xls,.zip,.csv" tabIndex={-1} aria-hidden="true"
       onChange={(e) => setDaNhan(e.target.files?.length ? `Đã chọn ${e.target.files.length} file. Bản demo chưa gửi dữ liệu lên máy chủ.` : null)}/>
-    {daNhan && <div className="notice positive" role="status"><strong>Đã tiếp nhận lựa chọn</strong><span>{daNhan}</span><Button kind="quiet" onClick={() => setDaNhan(null)}>Đóng</Button></div>}
+    {daNhan?.startsWith("Đã chọn") && <div className="notice positive" role="status"><strong>Đã tiếp nhận lựa chọn</strong><span>{daNhan}</span><Button kind="quiet" onClick={() => setDaNhan(null)}>Đóng</Button></div>}
 
     <FigureLine items={[
       { label: "Dòng dữ liệu đã nhận", value: integer(615_807) },
@@ -37,16 +61,17 @@ export function Batches() {
       { label: "Lô chưa đủ file", value: sourceBatches.filter((b) => b.status === "MISSING").length, tone: "critical" },
     ]}/>
 
+    <CaseLayout label="Chi tiết lô dữ liệu" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
     <Panel
       title="Nhật ký lô dữ liệu"
-      source="TMS · TTR · HĐĐT · XMHĐ · Viettel"
+      source="TMS – TTR – HĐĐT – XMHĐ – Viettel"
     >
       <TableWrap label="nhật ký lô dữ liệu"><table>
         <thead><tr><th scope="col">Mã lô</th><th scope="col">Nguồn / kỳ</th><th scope="col" className="num">File</th><th scope="col" className="num">Số dòng</th><th scope="col" className="num">Chất lượng</th><th scope="col">Cập nhật</th><th scope="col">Trạng thái</th></tr></thead>
-        <tbody>{sourceBatches.map((b) => <tr key={b.id} onClick={() => setChon(b.id)} className={b.id === chon ? "is-selected" : undefined}>
+        <tbody>{sourceBatches.map((b) => <tr key={b.id} onClick={(e) => cases.select(b.id, e)} className={b.id === lo?.id ? "is-selected" : undefined}>
           {/* Cả hàng bấm được cho chuột; nút ở ô đầu là đích bàn phím. Đặt
               role="button" lên <tr> thì mất ngữ nghĩa bảng, nên không làm thế. */}
-          <td><button type="button" className="row-select" aria-pressed={b.id === chon} onClick={(e) => { e.stopPropagation(); setChon(b.id); }}><code>{b.id}</code></button></td>
+          <td><button type="button" className="row-select" aria-pressed={b.id === lo?.id} onClick={(e) => { e.stopPropagation(); cases.select(b.id, e); }}><code>{b.id}</code></button></td>
           <td><strong>{b.source}</strong><small>{b.period}</small></td>
           <td className="num">{b.received}/{b.expected}</td>
           <td className="num">{integer(b.rows)}</td>
@@ -56,37 +81,6 @@ export function Batches() {
         </tr>)}</tbody>
       </table></TableWrap>
     </Panel>
-
-    {/*
-      Chi tiết lô là chỗ trả lời câu "thiếu cái gì" chứ không phải "thiếu bao
-      nhiêu". Một con số 67/93 không giúp ai đi đòi file; tên đơn vị thì có.
-    */}
-    <Panel
-      title={`Chi tiết lô ${lo.source} · ${lo.period}`}
-      subtitle={`${thieu.length} đơn vị chưa gửi`}
-      source="TTR"
-    >
-      {loi.length > 0 && <div className="notice warning">
-        <strong>{loi.length} file cần xem lại</strong>
-        <span>Chưa tính báo cáo cho tới khi cấu trúc được xác nhận hoặc đơn vị gửi lại bản kết xuất gốc.</span>
-      </div>}
-      <TableWrap label="chi tiết file trong lô"><table>
-        <thead><tr><th scope="col">Tên file</th><th scope="col">Đơn vị nguồn</th><th scope="col" className="num">Số dòng</th><th scope="col" className="num">Số cột</th><th scope="col">Ghi chú</th><th scope="col">Kết quả kiểm</th></tr></thead>
-        <tbody>{batchFiles.map((f) => <tr key={f.id}>
-          <td>{f.name === "—" ? <em>Chưa nhận</em> : <code>{f.name}</code>}</td>
-          <td><strong>{f.unit}</strong></td>
-          <td className="num">{f.rows ? integer(f.rows) : "—"}</td>
-          <td className="num">{f.columns || "—"}</td>
-          <td><small>{f.note}</small></td>
-          <td><Badge tone={fileTone[f.issue]}>{fileText[f.issue]}</Badge></td>
-        </tr>)}</tbody>
-      </table></TableWrap>
-      <div className="table-footer">
-        <span>Số file dự kiến của kiểm tra tại bàn là 35, không phải 30: năm Thuế cơ sở tách hai địa bàn.</span>
-        <Button kind="secondary" icon="external" onClick={() => setDaNhan(thieu.length ? `Đã lập nhắc gửi tới ${thieu.length} đơn vị: ${thieu.map((f) => f.unit).join(", ")}. Bản demo chưa gửi thật.` : "Không còn đơn vị nào chưa nộp trong lô này.")}>Gửi nhắc đơn vị chưa nộp</Button>
-      </div>
-    </Panel>
-
-    {thieu.length === 0 && <div className="empty-state"><Icon name="check" size={26}/><strong>Đã nhận đủ file của kỳ này</strong><span>Có thể chuyển sang bước ánh xạ.</span></div>}
+    </CaseLayout>
   </div>;
 }

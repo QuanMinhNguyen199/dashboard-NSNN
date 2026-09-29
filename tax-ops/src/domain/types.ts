@@ -9,7 +9,7 @@ export type ViewId =
   | "workbench"
   | "debt" | "risk" | "refund"
   | "reports"
-  | "batches" | "mapping" | "rules";
+  | "runs" | "batches" | "mapping" | "rules";
 /*
   BA vai, chốt ngày 28/09.
 
@@ -42,6 +42,30 @@ export interface SourceBatch {
   quality: number;
   status: "READY" | "WARNING" | "PROCESSING" | "MISSING";
   updatedAt: string;
+}
+
+/*
+  Một lượt kéo dữ liệu từ hệ nguồn về vùng thô (EP-05).
+
+  `rowsSource` là số dòng ĐẾM Ở NGUỒN, `rowsStore` là số dòng vào kho. Giữ hai
+  con số riêng là cả điểm của FT-05.4: một lượt chạy "thành công" mà lệch số
+  dòng là lượt chạy hỏng, và nếu chỉ lưu một con số thì không ai biết.
+
+  `version` tăng dần theo từng lần kéo cùng một nguồn và kỳ — vùng thô không
+  bao giờ ghi đè (FT-05.2), nên chạy lại kỳ cũ vẫn còn bản trước để đối chiếu.
+*/
+export interface DataRun {
+  id: string;
+  source: SourceBatch["source"];
+  period: string;
+  scope: string;
+  mode: "AUTO" | "MANUAL";
+  startedAt: string;
+  rowsSource: number | null;
+  rowsStore: number;
+  version: number;
+  status: "OK" | "MISMATCH" | "FAILED" | "RUNNING";
+  note: string;
 }
 
 export interface MappingIssue {

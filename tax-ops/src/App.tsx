@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NSNN_LINK, Shell, navFor } from "@/components/Shell";
+import { NAV, NSNN_LINK, Shell, navFor } from "@/components/Shell";
 import { TaxLogo } from "@/components/TaxLogo";
 import { Badge } from "@/components/ui";
 import { Batches } from "@/features/Batches";
@@ -8,6 +8,7 @@ import { Rules } from "@/features/Rules";
 import { Debt } from "@/features/Debt";
 import { Refund } from "@/features/Refund";
 import { Reports } from "@/features/Reports";
+import { Runs } from "@/features/Runs";
 import { Risk } from "@/features/Risk";
 import { Workbench } from "@/features/Workbench";
 import type { ViewId } from "@/domain/types";
@@ -15,7 +16,10 @@ import { ActionProvider } from "@/state/ActionContext";
 import { LoginScreen } from "@/auth/LoginScreen";
 import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAuth";
 
-const views: ViewId[] = ["workbench", "debt", "risk", "refund", "reports", "batches", "mapping", "rules"];
+/* Danh sách này là bản sao thứ hai của NAV và đã một lần lệch khỏi nó: thêm
+   màn mới vào NAV mà quên chỗ này thì đường dẫn im lặng rơi về Trang công
+   việc, và không cổng kiểm nào bắt được vì trang vẫn có tiêu đề hợp lệ. */
+const views: ViewId[] = NAV.map((item) => item.id);
 
 function readView(): ViewId {
   const value = new URLSearchParams(window.location.search).get("view");
@@ -63,11 +67,11 @@ export function App() {
 
   useEffect(() => {
     if (!user) {
-      document.title = "Đăng nhập · Quản lý nghiệp vụ Thuế";
+      document.title = "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title = { workbench: "Trang công việc", debt: "Nợ và cưỡng chế", risk: "Kiểm tra và rủi ro", refund: "Hoàn thuế và hỗ trợ", reports: "Báo cáo", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ" }[view];
-    document.title = `${title} · Quản lý nghiệp vụ Thuế`;
+    const title = { workbench: "Trang công việc", debt: "Nợ và cưỡng chế", risk: "Kiểm tra và rủi ro", refund: "Hoàn thuế và hỗ trợ", reports: "Báo cáo", runs: "Lượt chạy dữ liệu", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ" }[view];
+    document.title = `${title} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
   const login = (next: DemoUser) => {
@@ -102,6 +106,7 @@ export function App() {
     {moDuoc === "risk" && <Risk onCreateReport={openReports}/>}
     {moDuoc === "refund" && <Refund onCreateReport={openReports}/>}
     {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit}/>}
+    {moDuoc === "runs" && <Runs/>}
     {moDuoc === "batches" && <Batches/>}
     {moDuoc === "mapping" && <Mapping/>}
     {moDuoc === "rules" && <Rules/>}
