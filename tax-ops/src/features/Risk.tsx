@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Badge, Button, DetailGrid, Icon, Kpi, KpiStrip, PageIntro, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { Badge, Button, Icon, Kpi, KpiStrip, PageIntro, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
 import { riskRows } from "@/data/mock";
 import type { Tone } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
@@ -23,34 +23,12 @@ export function Risk({ onCreateReport }: { onCreateReport: () => void }) {
 }
 
 function DeskAudit({ search, setSearch, rows }: { search: string; setSearch: (value: string) => void; rows: typeof riskRows }) {
-  const [chon, setChon] = useState(riskRows[0]?.id ?? "");
-  const hoSo = rows.find((row) => row.id === chon) ?? rows[0];
   return <>
     <KpiStrip><Kpi label="Doanh nghiệp trong kế hoạch" value="13.842" note="Từ danh sách rủi ro sau loại trừ"/><Kpi label="Đã xử lý trong kỳ" value="8.416" note="60,8% kế hoạch" tone="positive"/><Kpi label="Chờ giải trình" value="2.138" note="Cần theo dõi hạn trả lời" tone="warning"/><Kpi label="Đề nghị kiểm tra" value="684" note="Chờ phê duyệt bước tiếp theo" tone="critical"/></KpiStrip>
-    <Panel title="Kết quả kiểm tra tại bàn" source="TTR" actions={<SearchField value={search} onChange={setSearch} placeholder="Tìm doanh nghiệp hoặc đơn vị"/>}>
-      <TableWrap label="kết quả kiểm tra tại bàn"><table><thead><tr><th scope="col">Người nộp thuế</th><th scope="col">Đơn vị quản lý</th><th scope="col" className="num">Tờ khai</th><th scope="col" className="num">Chênh lệch</th><th scope="col">Trạng thái</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id} onClick={() => setChon(row.id)} className={row.id === chon ? "is-selected" : undefined}><td><button type="button" className="row-select" aria-pressed={row.id === chon} onClick={(e) => { e.stopPropagation(); setChon(row.id); }}><strong>{row.taxpayer}</strong><small>{row.maskedTaxId}</small></button></td><td>{row.unit}</td><td className="num">{row.declarations}</td><td className="num">{row.variance.toLocaleString("vi-VN")}%</td><td><Badge tone={stateTone[row.state]}>{stateText[row.state]}</Badge></td></tr>)}</tbody></table></TableWrap>
+    <div className="notice warning"><strong>Hệ số K chỉ để tham khảo</strong><span>Ngưỡng cảnh báo chưa thống nhất giữa các nguồn. Chênh lệch là số đo, không phải kết luận rủi ro.</span></div>
+    <Panel title="Kết quả kiểm tra tại bàn" source="TTR – HĐĐT" actions={<SearchField value={search} onChange={setSearch} placeholder="Tìm doanh nghiệp hoặc đơn vị"/>}>
+      <TableWrap label="kết quả kiểm tra tại bàn"><table><thead><tr><th scope="col">Người nộp thuế</th><th scope="col">Đơn vị quản lý</th><th scope="col" className="num">Tờ khai</th><th scope="col" className="num">Chênh lệch</th><th scope="col" className="num">Hệ số K</th><th scope="col">Trạng thái</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td><strong>{row.taxpayer}</strong><small>{row.maskedTaxId}</small></td><td>{row.unit}</td><td className="num">{row.declarations}</td><td className="num">{row.variance.toLocaleString("vi-VN")}%</td><td className="num">{row.kFactor === null ? <><span>Chưa tính</span><small>Thiếu dữ liệu</small></> : row.kFactor.toLocaleString("vi-VN")}</td><td><Badge tone={stateTone[row.state]}>{stateText[row.state]}</Badge></td></tr>)}{rows.length === 0 && <tr><td className="table-empty" colSpan={6}>Không tìm thấy doanh nghiệp hoặc đơn vị phù hợp.</td></tr>}</tbody></table></TableWrap>
     </Panel>
-    {/*
-      Hàng dẫn tới đây. Hệ số K của hồ sơ được đặt cạnh ngưỡng đang áp dụng —
-      nhưng ngưỡng đó chưa được chốt, nên khối này nêu dữ liệu và nói rõ nó chưa
-      kết luận được, thay vì gắn nhãn "rủi ro cao" mà không có căn cứ.
-    */}
-    {hoSo && <Panel
-      title={`Hồ sơ · ${hoSo.taxpayer}`}
-      subtitle={`${hoSo.maskedTaxId} · ${hoSo.unit}`}
-      source="TTR · HĐĐT"
-    >
-      <DetailGrid items={[
-        { label: "Số tờ khai", value: <>{hoSo.declarations} <small>trong kỳ khảo sát</small></> },
-        { label: "Chênh lệch tờ khai – hóa đơn", value: `${hoSo.variance.toLocaleString("vi-VN")}%` },
-        { label: "Hệ số K", value: hoSo.kFactor === null ? <>Chưa tính <small>thiếu dữ liệu nguồn</small></> : <>{hoSo.kFactor.toLocaleString("vi-VN")} <small>ngưỡng chưa chốt</small></> },
-        { label: "Trạng thái", value: <Badge tone={stateTone[hoSo.state]}>{stateText[hoSo.state]}</Badge> },
-      ]}/>
-      <div className="notice warning">
-        <strong>Chưa bật cảnh báo tự động cho hồ sơ này</strong>
-        <span>Ngưỡng hệ số K hiện ghi khác nhau giữa các nguồn. Chênh lệch ở trên là số đo được, không phải kết luận rủi ro.</span>
-      </div>
-    </Panel>}
   </>;
 }
 

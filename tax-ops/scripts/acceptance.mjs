@@ -4,7 +4,7 @@ import puppeteer from "puppeteer-core";
 /* Bỏ dấu gạch chéo cuối để `${base}/?view=` không thành đường dẫn hai gạch —
    máy chủ tĩnh trả 404 cho nó và lỗi hiện ra ở nơi khác hẳn nguyên nhân. */
 const base = (process.argv[2] ?? "http://127.0.0.1:5174").replace(/\/+$/, "");
-const views = ["workbench", "debt", "risk", "refund", "reports", "batches", "mapping", "rules"];
+const views = ["workbench", "debt", "risk", "refund", "reports", "runs", "batches", "mapping", "rules"];
 const browser = await puppeteer.launch({ channel: "chrome", headless: "new", args: ["--no-sandbox"] });
 const page = await browser.newPage();
 const errors = [];
@@ -37,6 +37,12 @@ async function inspect(width, height, mobile) {
       document.documentElement.style.scrollBehavior = "auto";
       window.scrollTo(0, 0);
     });
+    /* Một màn rơi về Trang công việc vẫn có h1 hợp lệ, nên chỉ kiểm "có tiêu
+       đề" là không đủ: phải kiểm đúng màn đã yêu cầu thật sự mở ra. */
+    const dungMan = await page.evaluate(() => new URLSearchParams(location.search).get("view"));
+    const navActive = await page.$eval(".nav-item.is-active span, .mobile-nav button.is-active span", (el) => el.textContent).catch(() => null);
+    if (!navActive) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: không xác định được mục điều hướng đang mở.`);
+    if (dungMan !== view) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: URL không giữ được view.`);
     const result = await page.evaluate((isMobile) => {
       const visible = (element) => {
         if (element.classList.contains("sr-only")) return false;
@@ -63,10 +69,47 @@ async function inspect(width, height, mobile) {
 }
 
 await inspect(1440, 1000, false);
+for (const view of ["debt", "refund", "reports", "batches"]) {
+  await page.goto(`${base}/?view=${view}`, { waitUntil: "networkidle0" });
+  const split = await page.evaluate(() => {
+    const list = document.querySelector(".case-list")?.getBoundingClientRect();
+    const detail = document.querySelector(".case-detail")?.getBoundingClientRect();
+    return Boolean(list && detail && detail.left >= list.right && Math.abs(detail.top - list.top) < 2);
+  });
+  if (!split) throw new Error(`${view}: chi tiết chưa nằm cạnh danh sách trên desktop.`);
+  /* Đưa hàng vào GIỮA khung nhìn trước khi bấm. Thanh điều hướng đáy cố định
+     phủ 62px cuối màn; để puppeteer tự cuộn thì cú bấm có thể rơi trúng thanh
+     đó và nhảy sang màn khác — đúng như một người dùng bấm nhầm. */
+  await page.$eval(".case-list tbody tr:nth-child(2) .row-select", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click(".case-list tbody tr:nth-child(2) .row-select");
+  const selected = await page.$eval(".case-list tbody tr:nth-child(2)", (row) => row.classList.contains("is-selected"));
+  if (!selected) throw new Error(`${view}: chọn hồ sơ thứ hai chưa cập nhật chi tiết.`);
+}
+await page.goto(`${base}/?view=risk`, { waitUntil: "networkidle0" });
+const riskTable = await page.evaluate(() => ({
+  hasK: [...document.querySelectorAll("main th")].some((cell) => cell.textContent?.trim() === "Hệ số K"),
+  firstK: document.querySelector("main tbody tr:first-child td:nth-child(5)")?.textContent?.trim(),
+  hasDetailsBelow: [...document.querySelectorAll("main .panel h2")].some((title) => title.textContent?.startsWith("Hồ sơ ·")),
+  rowButtons: document.querySelectorAll("main tbody .row-select").length,
+}));
+if (!riskTable.hasK || riskTable.firstK !== "4,8" || riskTable.hasDetailsBelow || riskTable.rowButtons) {
+  throw new Error(`Bảng kiểm tra tại bàn chưa trình bày dữ liệu trên cùng hàng: ${JSON.stringify(riskTable)}`);
+}
 await page.goto(`${base}/?view=workbench`, { waitUntil: "networkidle0" });
 await page.evaluate(() => { document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); });
 await page.screenshot({ path: ".impeccable/review/desktop.png", fullPage: true });
 await inspect(390, 844, true);
+for (const view of ["debt", "refund", "reports", "batches"]) {
+  await page.goto(`${base}/?view=${view}`, { waitUntil: "networkidle0" });
+  await page.$eval(".case-list tbody tr:nth-child(2) .row-select", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click(".case-list tbody tr:nth-child(2) .row-select");
+  await page.waitForSelector(".case-detail-dialog[open]");
+  await new Promise((resolve) => setTimeout(resolve, 220));
+  await page.screenshot({ path: `.impeccable/review/${view}-detail-mobile.png` });
+  await page.keyboard.press("Escape");
+  const restored = await page.evaluate(() => !document.querySelector(".case-detail-dialog")?.open && document.activeElement?.matches(".case-list tbody tr:nth-child(2) .row-select"));
+  if (!restored) throw new Error(`${view}: đóng chi tiết chưa trả focus về hồ sơ đã chọn.`);
+}
 await page.goto(`${base}/?view=workbench`, { waitUntil: "networkidle0" });
 await page.evaluate(() => { document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); });
 await page.screenshot({ path: ".impeccable/review/mobile.png", fullPage: true });
@@ -89,6 +132,11 @@ await page.select(".segmented-mobile select", "VERIFY");
 await page.screenshot({ path: ".impeccable/review/risk-subview-mobile.png" });
 
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.click(".page-actions .button");
+await page.waitForSelector(".report-dialog[open]");
+if (await page.$("input[name=reportName]") === null) throw new Error("CTA tạo báo cáo không mở form.");
+await page.keyboard.press("Escape");
+await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.evaluate(() => {
   document.documentElement.style.scrollBehavior = "auto";
   const table = document.querySelector(".table-wrap");
@@ -97,10 +145,6 @@ await page.evaluate(() => {
 });
 const tableShell = await page.$(".table-shell");
 await tableShell?.screenshot({ path: ".impeccable/review/debt-table-scrolled-mobile.png" });
-await page.click(".page-actions .button");
-await page.waitForSelector(".report-dialog[open]");
-if (await page.$("input[name=reportName]") === null) throw new Error("CTA tạo báo cáo không mở form.");
-await page.keyboard.press("Escape");
 
 await page.goto(`${base}/?view=workbench`, { waitUntil: "networkidle0" });
 await page.click(".menu-button");

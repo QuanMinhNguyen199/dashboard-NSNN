@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Badge, Button, FigureLine, PageIntro, Panel, SearchField, Segmented, TableWrap } from "@/components/ui";
+import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
 import { reportVersions } from "@/data/catalog";
 import { reportRuns } from "@/data/mock";
 import type { ReportRun, ReportStatus, ReportVersion, Tone } from "@/domain/types";
@@ -31,7 +32,7 @@ const TIEP: Partial<Record<ReportStatus, { den: ReportStatus; nhan: string }>> =
 const dauThoiGian = () => {
   const t = new Date();
   const hai = (n: number) => String(n).padStart(2, "0");
-  return `${hai(t.getDate())}/${hai(t.getMonth() + 1)} · ${hai(t.getHours())}:${hai(t.getMinutes())}`;
+  return `${hai(t.getDate())}/${hai(t.getMonth() + 1)} – ${hai(t.getHours())}:${hai(t.getMinutes())}`;
 };
 
 export function Reports({ actor, owner }: { actor: string; owner: string }) {
@@ -51,7 +52,9 @@ export function Reports({ actor, owner }: { actor: string; owner: string }) {
   const notify = useAction();
   const [cycle, setCycle] = useState<Cycle>("ALL");
   const [search, setSearch] = useState("");
-  const [chon, setChon] = useState(reportRuns[0]?.id ?? "");
+  const cases = useCaseSelection(reportRuns[0]?.id ?? "");
+  const chon = cases.selectedId;
+  const setChon = cases.setSelectedId;
 
   // Giữ báo cáo và phiên bản theo tài khoản trong phiên trình duyệt.
   const [runs, setRuns] = useState<ReportRun[]>(saved?.runs ?? reportRuns);
@@ -111,9 +114,33 @@ export function Reports({ actor, owner }: { actor: string; owner: string }) {
   };
 
   const dem = (trang: ReportStatus) => runs.filter((r) => r.status === trang).length;
-  const bc = runs.find((r) => r.id === chon) ?? runs[0];
+  const bc = rows.find((r) => r.id === chon) ?? rows[0];
   const pb = bc ? versions.filter((v) => v.runId === bc.id) : [];
   const buocHienTai = bc ? CHUOI.indexOf(bc.status) : -1;
+  const detail = bc && <Panel
+    title={`Phiên bản – ${bc.name}`}
+  >
+    {pb.length === 0
+      ? <div className="empty-state"><strong>Báo cáo này chưa có lần chạy nào được lưu</strong></div>
+      : <div className="timeline">{pb.map((v) => <div key={v.id} className={`timeline-step${v.approvedBy ? " is-done" : ""}`}>
+          <i/>
+          <span>{v.version}</span>
+          <div><strong>{v.createdAt} – {v.createdBy}</strong><span>{v.note}{v.approvedBy ? ` – duyệt bởi ${v.approvedBy}` : " – chưa duyệt"}</span></div>
+        </div>)}</div>}
+    <details className="workflow-details">
+      <summary>Xem luồng phát hành</summary>
+      <div className="approval-flow">{BUOC.map((b, i) => {
+        const qua = buocHienTai > i;
+        const dang = buocHienTai === i;
+        return <div key={b.trang} className={dang ? "is-current" : qua ? "is-done" : undefined} aria-current={dang ? "step" : undefined}>
+          <span>{i + 1}</span>
+          <strong>{b.ten}{dang && <span className="sr-only"> — bước hiện tại</span>}{qua && <span className="sr-only"> — đã qua</span>}</strong>
+          <small>{b.mo}</small>
+        </div>;
+      })}</div>
+      {bc.status === "BLOCKED" && <div className="notice critical"><strong>Báo cáo đang vướng dữ liệu</strong><span>{bc.qualityNote ?? "Chưa đủ điều kiện để vào luồng duyệt."} Xử lý ở màn Lô dữ liệu trước khi khóa số.</span></div>}
+    </details>
+  </Panel>;
 
   return <div className="page-stack">
     <PageIntro title="Báo cáo" actions={<button ref={createTrigger} type="button" className="button is-primary" onClick={() => { setFormError(""); dialog.current?.showModal(); }}>Tạo báo cáo mới</button>}/>
@@ -145,66 +172,31 @@ export function Reports({ actor, owner }: { actor: string; owner: string }) {
       { label: "Đang vướng", value: dem("BLOCKED"), tone: dem("BLOCKED") ? "critical" : "neutral" },
       { label: "Đã phát hành", value: dem("PUBLISHED"), tone: "positive" },
     ]}/>
+    <CaseLayout label="Chi tiết phiên bản báo cáo" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
     <Panel title="Danh sách báo cáo" actions={<div className="inline-controls"><Segmented label="Chu kỳ báo cáo" value={cycle} onChange={setCycle} options={[{ value: "ALL", label: "Tất cả" }, { value: "WEEK", label: "Tuần" }, { value: "MONTH", label: "Tháng" }, { value: "YEAR", label: "Năm" }]}/><SearchField value={search} onChange={setSearch} placeholder="Tìm báo cáo hoặc đơn vị"/></div>}>
       <TableWrap label="danh sách báo cáo"><table>
         <thead><tr><th scope="col">Tên báo cáo</th><th scope="col">Kỳ báo cáo</th><th scope="col">Đơn vị lập</th><th scope="col">Nguồn</th><th scope="col">Cập nhật</th><th scope="col">Trạng thái</th><th scope="col"><span className="sr-only">Hành động</span></th></tr></thead>
         <tbody>{rows.map((row) => {
           const buoc = TIEP[row.status];
-          return <tr key={row.id} onClick={() => setChon(row.id)} className={row.id === chon ? "is-selected" : undefined}>
+          return <tr key={row.id} onClick={(e) => cases.select(row.id, e)} className={row.id === bc?.id ? "is-selected" : undefined}>
             {/*
               Cả hàng bấm được cho chuột, nhưng đích bàn phím phải là một control
               thật. Nút ở ô đầu giữ nguyên ngữ nghĩa bảng, thứ mà role="button"
               trên <tr> sẽ phá mất.
             */}
-            <td><button type="button" className="row-select" aria-pressed={row.id === chon} onClick={(e) => { e.stopPropagation(); setChon(row.id); }}><strong>{row.name}</strong>{row.qualityNote && <small className="quality-note">{row.qualityNote}</small>}</button></td>
+            <td><button type="button" className="row-select" aria-pressed={row.id === bc?.id} onClick={(e) => { e.stopPropagation(); cases.select(row.id, e); }}><strong>{row.name}</strong>{row.qualityNote && <small className="quality-note">{row.qualityNote}</small>}</button></td>
             <td>{row.period}</td>
             <td>{row.owner}</td>
             <td><small>{row.source}</small></td>
             <td>{row.updatedAt}</td>
             <td><Badge tone={statusTone[row.status]}>{statusText[row.status]}</Badge></td>
             <td>{buoc
-              ? <Button kind="secondary" onClick={() => dayTrangThai(row)}>{buoc.nhan}</Button>
+              ? <Button kind="secondary" onClick={(e) => { e.stopPropagation(); dayTrangThai(row); }}>{buoc.nhan}</Button>
               : <span className="cell-note">{row.status === "BLOCKED" ? "Chờ đủ dữ liệu" : "—"}</span>}</td>
           </tr>;
         })}{rows.length === 0 && <tr><td colSpan={7}>Không tìm thấy báo cáo. Hãy đổi từ khóa hoặc chu kỳ.</td></tr>}</tbody>
       </table></TableWrap>
     </Panel>
-    {/*
-      Chi tiết phiên bản: một báo cáo không phải một file mà là một CHUỖI lần
-      chạy. Không có chỗ này thì câu "số ở đâu ra" chỉ trả lời được bằng trí nhớ.
-    */}
-    {bc && <Panel
-      title={`Phiên bản · ${bc.name}`}
-      subtitle={`Kỳ ${bc.period} · đơn vị lập ${bc.owner} · nguồn ${bc.source}`}
-    >
-      {pb.length === 0
-        ? <div className="empty-state"><strong>Báo cáo này chưa có lần chạy nào được lưu</strong></div>
-        : <div className="timeline">{pb.map((v) => <div key={v.id} className={`timeline-step${v.approvedBy ? " is-done" : ""}`}>
-            <i/>
-            <span>{v.version}</span>
-            <div><strong>{v.createdAt} · {v.createdBy}</strong><span>{v.note}{v.approvedBy ? ` · duyệt bởi ${v.approvedBy}` : " · chưa duyệt"}</span></div>
-          </div>)}</div>}
-    </Panel>}
-
-    {/*
-      Luồng phát hành chỉ đúng bước của báo cáo ĐANG CHỌN. Trước đây nó hard-code
-      bước 1, nên mở một bản đang chờ duyệt thì sơ đồ vẫn chỉ vào Bản nháp — một
-      sơ đồ nói sai còn tệ hơn không có sơ đồ.
-    */}
-    <details className="workflow-details">
-    <summary>Xem luồng phát hành</summary>
-    <Panel title="Luồng phát hành">
-      <div className="approval-flow">{BUOC.map((b, i) => {
-        const qua = buocHienTai > i;
-        const dang = buocHienTai === i;
-        return <div key={b.trang} className={dang ? "is-current" : qua ? "is-done" : undefined} aria-current={dang ? "step" : undefined}>
-          <span>{i + 1}</span>
-          <strong>{b.ten}{dang && <span className="sr-only"> — bước hiện tại</span>}{qua && <span className="sr-only"> — đã qua</span>}</strong>
-          <small>{b.mo}</small>
-        </div>;
-      })}</div>
-      {bc?.status === "BLOCKED" && <div className="notice critical"><strong>Báo cáo đang vướng dữ liệu</strong><span>{bc.qualityNote ?? "Chưa đủ điều kiện để vào luồng duyệt."} Xử lý ở màn Lô dữ liệu trước khi khóa số.</span></div>}
-    </Panel>
-    </details>
+    </CaseLayout>
   </div>;
 }

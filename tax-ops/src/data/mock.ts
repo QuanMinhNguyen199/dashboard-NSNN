@@ -1,12 +1,13 @@
-import type { DebtRow, MappingIssue, RefundRow, ReportRun, RiskRow, SourceBatch, WorkItem } from "@/domain/types";
+import type {
+  DataRun, DebtRow, MappingIssue, RefundRow, ReportRun, RiskRow, SourceBatch, WorkItem } from "@/domain/types";
 
-export const DATA_AS_OF = "27/09/2026 · 18:00";
+export const DATA_AS_OF = "27/09/2026 – 18:00";
 
 export const workItems: WorkItem[] = [
-  { id: "w1", title: "Chốt báo cáo kiểm tra tại bàn tuần 39", module: "Kiểm tra tại bàn", assignee: "Phòng QL3", due: "Hôm nay · 16:30", status: "DUE", count: 35 },
+  { id: "w1", title: "Chốt báo cáo kiểm tra tại bàn tuần 39", module: "Kiểm tra tại bàn", assignee: "Phòng QL3", due: "Hôm nay – 16:30", status: "DUE", count: 35 },
   { id: "w2", title: "Bổ sung dữ liệu mua vào tháng 8", module: "Chênh lệch HĐĐT", assignee: "Phòng QL2", due: "Quá hạn 2 ngày", status: "OVERDUE", count: 26 },
-  { id: "w3", title: "Xác nhận 18 ánh xạ chưa khớp", module: "Danh bạ quản lý", assignee: "Quản trị dữ liệu", due: "29/09 · 11:00", status: "BLOCKED", count: 18 },
-  { id: "w4", title: "Duyệt báo cáo nợ tuần 39", module: "Nợ và cưỡng chế", assignee: "Trưởng phòng QL1", due: "30/09 · 09:00", status: "DUE", count: 1 },
+  { id: "w3", title: "Xác nhận 18 ánh xạ chưa khớp", module: "Danh bạ quản lý", assignee: "Quản trị dữ liệu", due: "29/09 – 11:00", status: "BLOCKED", count: 18 },
+  { id: "w4", title: "Duyệt báo cáo nợ tuần 39", module: "Nợ và cưỡng chế", assignee: "Trưởng phòng QL1", due: "30/09 – 09:00", status: "DUE", count: 1 },
   /*
     Bốn dòng nữa để hàng đợi đọc ra đúng một ca làm việc.
 
@@ -15,21 +16,21 @@ export const workItems: WorkItem[] = [
     đợi thật dài hơn thế nhiều. Mọi dòng đều mang nhãn mô phỏng như phần còn lại
     của kho và không dùng để báo cáo.
   */
-  { id: "w5", title: "Đối chiếu hồ sơ hoàn kỳ tháng 9", module: "Hoàn thuế", assignee: "Phòng QL4", due: "30/09 · 15:00", status: "DUE", count: 7 },
-  { id: "w6", title: "Phân loại 42 trường hợp nợ mới phát sinh", module: "Nợ và cưỡng chế", assignee: "Phòng QLDN2", due: "01/10 · 09:00", status: "DUE", count: 42 },
+  { id: "w5", title: "Đối chiếu hồ sơ hoàn kỳ tháng 9", module: "Hoàn thuế", assignee: "Phòng QL4", due: "30/09 – 15:00", status: "DUE", count: 7 },
+  { id: "w6", title: "Phân loại 42 trường hợp nợ mới phát sinh", module: "Nợ và cưỡng chế", assignee: "Phòng QLDN2", due: "01/10 – 09:00", status: "DUE", count: 42 },
   { id: "w7", title: "Xác minh 9 hóa đơn rủi ro cao", module: "Xác minh hóa đơn", assignee: "Phòng QL3", due: "Quá hạn 1 ngày", status: "OVERDUE", count: 9 },
-  { id: "w8", title: "Chốt danh sách tạm hoãn xuất cảnh", module: "Nợ và cưỡng chế", assignee: "Trưởng phòng QL1", due: "02/10 · 10:00", status: "DUE", count: 3 },
+  { id: "w8", title: "Chốt danh sách tạm hoãn xuất cảnh", module: "Nợ và cưỡng chế", assignee: "Trưởng phòng QL1", due: "02/10 – 10:00", status: "DUE", count: 3 },
 ];
 
 export const sourceBatches: SourceBatch[] = [
-  { id: "TTR-2026-09", source: "TTR", period: "Tháng 9/2026", received: 35, expected: 35, rows: 182_406, quality: 98.4, status: "READY", updatedAt: "27/09 · 17:42" },
-  { id: "TMS-NO-2026-09", source: "TMS", period: "Tháng 9/2026", received: 5, expected: 5, rows: 3_812, quality: 94.8, status: "WARNING", updatedAt: "27/09 · 16:20" },
-  { id: "HDDT-2026-08", source: "HĐĐT", period: "Tháng 8/2026", received: 26, expected: 52, rows: 428_905, quality: 50, status: "MISSING", updatedAt: "26/09 · 15:08" },
-  { id: "VIETTEL-2026-09-27", source: "VIETTEL", period: "Ngày 27/09/2026", received: 1, expected: 1, rows: 684, quality: 100, status: "READY", updatedAt: "27/09 · 18:03" },
+  { id: "TTR-2026-09", source: "TTR", period: "Tháng 9/2026", received: 35, expected: 35, rows: 182_406, quality: 98.4, status: "READY", updatedAt: "27/09 – 17:42" },
+  { id: "TMS-NO-2026-09", source: "TMS", period: "Tháng 9/2026", received: 5, expected: 5, rows: 3_812, quality: 94.8, status: "WARNING", updatedAt: "27/09 – 16:20" },
+  { id: "HDDT-2026-08", source: "HĐĐT", period: "Tháng 8/2026", received: 26, expected: 52, rows: 428_905, quality: 50, status: "MISSING", updatedAt: "26/09 – 15:08" },
+  { id: "VIETTEL-2026-09-27", source: "VIETTEL", period: "Ngày 27/09/2026", received: 1, expected: 1, rows: 684, quality: 100, status: "READY", updatedAt: "27/09 – 18:03" },
   /* Chỉ dùng nguồn CÓ THẬT trong danh mục hệ thống. Thêm một cái tên nghe hợp lý
      nhưng không tồn tại là bịa ra một đường dữ liệu, không phải dựng giao diện. */
-  { id: "XMHD-2026-09", source: "XMHĐ", period: "Tháng 9/2026", received: 12, expected: 12, rows: 96_120, quality: 99.1, status: "READY", updatedAt: "27/09 · 17:05" },
-  { id: "TMS-NO-2026-08", source: "TMS", period: "Tháng 8/2026", received: 18, expected: 21, rows: 54_907, quality: 86.3, status: "PROCESSING", updatedAt: "27/09 · 18:11" },
+  { id: "XMHD-2026-09", source: "XMHĐ", period: "Tháng 9/2026", received: 12, expected: 12, rows: 96_120, quality: 99.1, status: "READY", updatedAt: "27/09 – 17:05" },
+  { id: "TMS-NO-2026-08", source: "TMS", period: "Tháng 8/2026", received: 18, expected: 21, rows: 54_907, quality: 86.3, status: "PROCESSING", updatedAt: "27/09 – 18:11" },
 ];
 
 export const mappingIssues: MappingIssue[] = [
@@ -64,10 +65,28 @@ export const refundRows: RefundRow[] = [
 ];
 
 export const reportRuns: ReportRun[] = [
-  { id: "b1", name: "Kiểm tra tại bàn tuần 39", owner: "Phòng QL3", cycle: "WEEK", period: "22–27/09/2026", source: "TTR · Danh bạ TMS", status: "REVIEW", updatedAt: "27/09 · 17:48" },
-  { id: "b2", name: "Tình hình nợ và cưỡng chế tuần 39", owner: "Phòng QL1", cycle: "WEEK", period: "22–27/09/2026", source: "TMS 9.4.16.1 · 2.2.7", status: "DRAFT", updatedAt: "27/09 · 16:35", qualityNote: "18 MST chưa ánh xạ" },
-  { id: "b3", name: "Chênh lệch tờ khai – HĐĐT tháng 8", owner: "Phòng QL2", cycle: "MONTH", period: "Tháng 8/2026", source: "HĐĐT", status: "BLOCKED", updatedAt: "26/09 · 15:10", qualityNote: "Thiếu 26 file mua vào" },
-  { id: "b4", name: "Hoàn thuế TNCN tháng 9", owner: "Phòng QL4", cycle: "MONTH", period: "Tháng 9/2026", source: "TMS 1.5.1 · 6.29.1", status: "DRAFT", updatedAt: "27/09 · 14:20", qualityNote: "7 hồ sơ vênh nguồn" },
-  { id: "b5", name: "Tổng đài hỗ trợ ngày 27/09", owner: "Phòng QL4", cycle: "WEEK", period: "27/09/2026", source: "Viettel", status: "PUBLISHED", updatedAt: "27/09 · 18:06" },
-  { id: "b6", name: "Kết quả kiểm tra tại bàn tháng 8", owner: "Phòng QL3", cycle: "MONTH", period: "Tháng 8/2026", source: "TTR · Danh bạ TMS", status: "APPROVED", updatedAt: "05/09 · 09:12" },
+  { id: "b1", name: "Kiểm tra tại bàn tuần 39", owner: "Phòng QL3", cycle: "WEEK", period: "22–27/09/2026", source: "TTR – Danh bạ TMS", status: "REVIEW", updatedAt: "27/09 – 17:48" },
+  { id: "b2", name: "Tình hình nợ và cưỡng chế tuần 39", owner: "Phòng QL1", cycle: "WEEK", period: "22–27/09/2026", source: "TMS 9.4.16.1 – 2.2.7", status: "DRAFT", updatedAt: "27/09 – 16:35", qualityNote: "18 MST chưa ánh xạ" },
+  { id: "b3", name: "Chênh lệch tờ khai – HĐĐT tháng 8", owner: "Phòng QL2", cycle: "MONTH", period: "Tháng 8/2026", source: "HĐĐT", status: "BLOCKED", updatedAt: "26/09 – 15:10", qualityNote: "Thiếu 26 file mua vào" },
+  { id: "b4", name: "Hoàn thuế TNCN tháng 9", owner: "Phòng QL4", cycle: "MONTH", period: "Tháng 9/2026", source: "TMS 1.5.1 – 6.29.1", status: "DRAFT", updatedAt: "27/09 – 14:20", qualityNote: "7 hồ sơ vênh nguồn" },
+  { id: "b5", name: "Tổng đài hỗ trợ ngày 27/09", owner: "Phòng QL4", cycle: "WEEK", period: "27/09/2026", source: "Viettel", status: "PUBLISHED", updatedAt: "27/09 – 18:06" },
+  { id: "b6", name: "Kết quả kiểm tra tại bàn tháng 8", owner: "Phòng QL3", cycle: "MONTH", period: "Tháng 8/2026", source: "TTR – Danh bạ TMS", status: "APPROVED", updatedAt: "05/09 – 09:12" },
+];
+
+/*
+  Nhật ký lượt chạy (EP-05). Bảy lượt bao đủ các kết cục mà FT-05.4 phải xử lý:
+  chạy tự động đạt, chạy tự động LỆCH SỐ DÒNG, chạy tự động hỏng, tải file tay
+  thay thế, và một lượt đang chạy.
+
+  Cặp TTR tháng 9 có hai bản (v1 và v2) để thấy vùng thô không ghi đè: bản v1
+  lệch số dòng vẫn còn nguyên sau khi v2 chạy lại.
+*/
+export const dataRuns: DataRun[] = [
+  { id: "R-0912", source: "TTR", period: "Tháng 9/2026", scope: "30 đơn vị – 35 file", mode: "MANUAL", startedAt: "27/09 – 17:42", rowsSource: 182_406, rowsStore: 182_406, version: 2, status: "OK", note: "Cán bộ tải tay: TTR chạy trên IE cũ, chưa kéo tự động được" },
+  { id: "R-0911", source: "TTR", period: "Tháng 9/2026", scope: "30 đơn vị – 35 file", mode: "MANUAL", startedAt: "27/09 – 15:08", rowsSource: 182_406, rowsStore: 176_385, version: 1, status: "MISMATCH", note: "Thiếu 6.021 dòng: một file kết xuất bị cắt giữa chừng. Bản này được giữ nguyên, không ghi đè" },
+  { id: "R-0908", source: "TMS", period: "Tháng 9/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 16:20", rowsSource: 3_812, rowsStore: 3_812, version: 4, status: "OK", note: "Kéo theo lịch 16h; tham số kỳ và phạm vi đúng như cán bộ chọn tay" },
+  { id: "R-0907", source: "XMHĐ", period: "Tháng 9/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 17:05", rowsSource: 96_120, rowsStore: 96_120, version: 3, status: "OK", note: "Chia 3 lần kéo để nguồn không quá tải" },
+  { id: "R-0906", source: "HĐĐT", period: "Tháng 8/2026", scope: "26 file mua vào", mode: "AUTO", startedAt: "26/09 – 15:08", rowsSource: null, rowsStore: 0, version: 1, status: "FAILED", note: "Hết thời gian chờ ở bước đăng nhập; chưa lấy được số dòng ở nguồn để đối soát" },
+  { id: "R-0905", source: "VIETTEL", period: "Ngày 27/09/2026", scope: "Tổng đài", mode: "AUTO", startedAt: "27/09 – 18:03", rowsSource: 684, rowsStore: 684, version: 1, status: "OK", note: "Chạy đúng 18h theo BR-42" },
+  { id: "R-0904", source: "TMS", period: "Tháng 8/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 18:11", rowsSource: null, rowsStore: 54_907, version: 2, status: "RUNNING", note: "Đang kéo; đối soát số dòng chạy sau khi xong" },
 ];

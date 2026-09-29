@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Badge, Button, DetailGrid, Kpi, KpiStrip, PageIntro, Panel, Segmented, TableWrap, integer } from "@/components/ui";
+import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
 import { refundRows } from "@/data/mock";
 import type { Tone } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
@@ -18,34 +19,30 @@ export function Refund({ onCreateReport }: { onCreateReport: () => void }) {
 }
 
 function RefundView() {
-  const [chon, setChon] = useState(refundRows[0]?.id ?? "");
-  const hoSo = refundRows.find((row) => row.id === chon) ?? refundRows[0];
+  const cases = useCaseSelection(refundRows[0]?.id ?? "");
+  const hoSo = refundRows.find((row) => row.id === cases.selectedId) ?? refundRows[0];
+  const detail = hoSo && <Panel
+    title={`Hồ sơ – ${hoSo.code}`}
+    source="TMS 1.5.1 – 6.29.1"
+  >
+    <DetailGrid items={[
+      { label: "Có ở chức năng 1.5.1", value: hoSo.source151 ? "Có" : <>Thiếu <small>chưa thấy đầu hồ sơ</small></> },
+      { label: "Có ở chức năng 6.29.1", value: hoSo.source6291 ? "Có" : <>Thiếu <small>chưa thấy trong danh sách xử lý</small></> },
+      { label: "Số ngày mở", value: <>{hoSo.daysOpen} <small>tính đến ngày báo cáo</small></> },
+      { label: "Trạng thái", value: <Badge tone={statusTone[hoSo.status]}>{statusText[hoSo.status]}</Badge> },
+    ]}/>
+    {hoSo.source151 !== hoSo.source6291 && <div className="notice critical">
+      <strong>Hồ sơ vênh giữa hai nguồn</strong>
+      <span>Một chức năng có hồ sơ này, chức năng kia không. Đối chiếu lại kết xuất gốc của cùng kỳ trước khi đưa vào số tổng hợp.</span>
+    </div>}
+  </Panel>;
   return <>
     <KpiStrip><Kpi label="Tồn đầu kỳ" value="312" note="Hồ sơ chuyển từ kỳ trước"/><Kpi label="Phát sinh trong kỳ" value="284" note="Theo ngày nhận hồ sơ"/><Kpi label="Đã xử lý" value="168" note="59,2% phát sinh" tone="positive"/><Kpi label="Tồn cuối kỳ" value="428" note="34 hồ sơ quá hạn" tone="warning"/></KpiStrip>
-    <Panel title="Đối chiếu hồ sơ hoàn thuế" source="TMS 1.5.1 · 6.29.1">
-      <TableWrap label="đối chiếu hồ sơ hoàn thuế"><table><thead><tr><th scope="col">Hồ sơ</th><th scope="col">Ngày nhận</th><th scope="col">Đơn vị xử lý</th><th scope="col" className="center">1.5.1</th><th scope="col" className="center">6.29.1</th><th scope="col" className="num">Số ngày mở</th><th scope="col">Trạng thái</th></tr></thead><tbody>{refundRows.map((row) => <tr key={row.id} onClick={() => setChon(row.id)} className={row.id === chon ? "is-selected" : undefined}><td><button type="button" className="row-select" aria-pressed={row.id === chon} onClick={(e) => { e.stopPropagation(); setChon(row.id); }}><strong>{row.code}</strong></button></td><td>{row.receivedAt}</td><td>{row.unit}</td><td className="center"><SourceMark ok={row.source151}/></td><td className="center"><SourceMark ok={row.source6291}/></td><td className="num">{row.daysOpen}</td><td><Badge tone={statusTone[row.status]}>{statusText[row.status]}</Badge></td></tr>)}</tbody></table></TableWrap>
+    <CaseLayout label="Chi tiết hồ sơ hoàn thuế" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
+    <Panel title="Đối chiếu hồ sơ hoàn thuế" source="TMS 1.5.1 – 6.29.1">
+      <TableWrap label="đối chiếu hồ sơ hoàn thuế"><table><thead><tr><th scope="col">Hồ sơ</th><th scope="col">Ngày nhận</th><th scope="col">Đơn vị xử lý</th><th scope="col" className="center">1.5.1</th><th scope="col" className="center">6.29.1</th><th scope="col" className="num">Số ngày mở</th><th scope="col">Trạng thái</th></tr></thead><tbody>{refundRows.map((row) => <tr key={row.id} onClick={(e) => cases.select(row.id, e)} className={row.id === hoSo?.id ? "is-selected" : undefined}><td><button type="button" className="row-select" aria-pressed={row.id === hoSo?.id} onClick={(e) => { e.stopPropagation(); cases.select(row.id, e); }}><strong>{row.code}</strong></button></td><td>{row.receivedAt}</td><td>{row.unit}</td><td className="center"><SourceMark ok={row.source151}/></td><td className="center"><SourceMark ok={row.source6291}/></td><td className="num">{row.daysOpen}</td><td><Badge tone={statusTone[row.status]}>{statusText[row.status]}</Badge></td></tr>)}</tbody></table></TableWrap>
     </Panel>
-    {/*
-      Giá trị của màn này là chỉ ra hồ sơ VÊNH giữa hai chức năng TMS. Panel chi
-      tiết nói rõ hồ sơ có mặt ở nguồn nào và thiếu ở nguồn nào — câu hỏi mà
-      trước đây người dùng phải tự ghép từ hai dấu tích trong bảng.
-    */}
-    {hoSo && <Panel
-      title={`Hồ sơ · ${hoSo.code}`}
-      subtitle={`Nhận ngày ${hoSo.receivedAt} · ${hoSo.unit}`}
-      source="TMS 1.5.1 · 6.29.1"
-    >
-      <DetailGrid items={[
-        { label: "Có ở chức năng 1.5.1", value: hoSo.source151 ? "Có" : <>Thiếu <small>chưa thấy đầu hồ sơ</small></> },
-        { label: "Có ở chức năng 6.29.1", value: hoSo.source6291 ? "Có" : <>Thiếu <small>chưa thấy trong danh sách xử lý</small></> },
-        { label: "Số ngày mở", value: <>{hoSo.daysOpen} <small>tính đến ngày báo cáo</small></> },
-        { label: "Trạng thái", value: <Badge tone={statusTone[hoSo.status]}>{statusText[hoSo.status]}</Badge> },
-      ]}/>
-      {hoSo.source151 !== hoSo.source6291 && <div className="notice critical">
-        <strong>Hồ sơ vênh giữa hai nguồn</strong>
-        <span>Một chức năng có hồ sơ này, chức năng kia không. Đối chiếu lại kết xuất gốc của cùng kỳ trước khi đưa vào số tổng hợp.</span>
-      </div>}
-    </Panel>}
+    </CaseLayout>
   </>;
 }
 

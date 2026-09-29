@@ -27,6 +27,7 @@ export const NAV: { id: ViewId; label: string; short: string; icon: IconName; gr
   { id: "risk", label: "Kiểm tra và rủi ro", short: "Kiểm tra", icon: "risk", group: "business", roles: ["OFFICER"] },
   { id: "refund", label: "Hoàn thuế và hỗ trợ", short: "Hoàn thuế", icon: "refund", group: "business", roles: ["OFFICER"] },
   { id: "reports", label: "Báo cáo", short: "Báo cáo", icon: "report", group: "business", roles: ["OFFICER", "TAX_LEADER"] },
+  { id: "runs", label: "Lượt chạy dữ liệu", short: "Lượt chạy", icon: "clock", group: "data", roles: ["OFFICER"] },
   { id: "batches", label: "Lô dữ liệu", short: "Lô dữ liệu", icon: "database", group: "data", roles: ["OFFICER"] },
   { id: "mapping", label: "Ánh xạ quản lý", short: "Ánh xạ", icon: "users", group: "data", roles: ["OFFICER"] },
   { id: "rules", label: "Quy tắc nghiệp vụ", short: "Quy tắc", icon: "file", group: "data", roles: ["OFFICER"] },
@@ -100,7 +101,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
       })}
     </nav>
     <div className="sidebar-user">
-      <strong>{user.name}</strong><small>{roleLabels[user.role]} · {user.unit}</small>
+      <strong>{user.name}</strong><small>{roleLabels[user.role]} – {user.unit}</small>
       <button className="logout-button" type="button" onClick={onLogout}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
     </div>
   </>;
@@ -120,6 +121,9 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
     <header className="topbar" {...chan}>
       <button className="menu-button" type="button" onClick={(event) => openMenu(event.currentTarget)} aria-label="Mở điều hướng" aria-expanded={menuOpen} aria-haspopup="dialog"><Icon name="menu"/></button>
       <div className="topbar-context"><span>Tháng 9/2026</span><span>Thuế TP Hà Nội</span></div>
+      {/* Ô cắm cho hành động cấp trang. PageIntro bắn nút vào đây thay vì để nó
+          đứng một mình trên một hàng riêng trong nội dung. */}
+      <div className="topbar-actions" id="page-actions-slot"/>
       <Badge tone="warning" mock>Mô phỏng</Badge>
     </header>
     <main className="workspace" id="workspace" {...chan}><div key={view} className="workspace-view">{children}</div></main>

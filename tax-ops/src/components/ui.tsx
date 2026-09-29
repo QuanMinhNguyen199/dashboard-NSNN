@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { Tone } from "@/domain/types";
 
@@ -72,10 +74,18 @@ export function Kpi({ label, value, note, tone = "neutral" }: { label: string; v
 export function Panel({ title, subtitle, source, actions, children, className = "" }: { title: string; subtitle?: string; source?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
   return <section className={`panel ${className}`.trim()}>
     <header className="panel-head">
-      <div><h2>{title}{source !== undefined && <span className="panel-source">{source}</span>}</h2>{subtitle && <p>{subtitle}</p>}</div>
+      <div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>
       {actions && <div className="panel-actions">{actions}</div>}
     </header>
-    <div className="panel-body">{children}</div>
+    {/*
+      Nhãn nguồn nằm ở CHÂN thân khối, không nằm cạnh tiêu đề.
+
+      Đặt trong `<h2>` thì nó thành một phần của đầu khối: khối nào khai nguồn
+      thì đầu cao thêm một dòng, khối bên cạnh không khai thì không — hai hình
+      dạng đầu khối trên cùng một màn. Nguồn cũng không phải tên của khối; nó
+      là chú thích về dữ liệu, nên chỗ của nó là cuối phần dữ liệu.
+    */}
+    <div className="panel-body">{children}{source !== undefined && <p className="panel-source">Nguồn: {source}</p>}</div>
   </section>;
 }
 
@@ -100,8 +110,48 @@ export function DetailGrid({ items }: { items: { label: string; value: ReactNode
   return <dl className="detail-grid">{items.map((item) => <div key={item.label}><dt>{item.label}</dt><dd>{item.value}</dd></div>)}</dl>;
 }
 
+/*
+  Tên màn đã nằm ở mục điều hướng đang mở, nên tiêu đề chỉ còn tồn tại cho trình
+  đọc màn hình. Hệ quả: nếu trang không có dòng dẫn, khối này rỗng — và một nút
+  hành động đứng một mình giữa hàng trống là thứ người dùng gọi là "bơ vơ".
+
+  Nút vì thế được đưa lên măng sét, nơi vốn còn nhiều chỗ trống và cũng là chỗ
+  đúng của một hành động cấp TRANG. Khi chỗ đó chưa tồn tại (ví dụ trong hộp
+  thoại), nút quay về nằm trong luồng nội dung.
+*/
 export function PageIntro({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
-  return <div className="page-intro"><div><h1>{title}</h1>{description && <p>{description}</p>}</div>{actions && <div className="page-actions">{actions}</div>}</div>;
+  const rong = useRongToiThieu("(min-width: 901px)");
+  const oMangSet = useSlot("page-actions-slot");
+  const nut = actions && <div className="page-actions">{actions}</div>;
+  return <>
+    <h1 className="sr-only">{title}</h1>
+    {description && <p className="page-lead">{description}</p>}
+    {nut && (rong && oMangSet ? createPortal(nut, oMangSet) : nut)}
+  </>;
+}
+
+/*
+  Dưới 900px măng sét đã chật vì có nút mở điều hướng, kỳ làm việc và nhãn mô
+  phỏng; nhét thêm một nút hành động vào đó làm nó gãy thành ba hàng. Ở khổ đó
+  nút quay về nằm trong luồng nội dung, nơi nó trải hết bề ngang như trước.
+*/
+function useRongToiThieu(truyVan: string) {
+  const [khop, setKhop] = useState(() => typeof window !== "undefined" && window.matchMedia(truyVan).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(truyVan);
+    const dong = () => setKhop(mq.matches);
+    dong();
+    mq.addEventListener("change", dong);
+    return () => mq.removeEventListener("change", dong);
+  }, [truyVan]);
+  return khop;
+}
+
+/** Tìm ô cắm trong măng sét sau khi cây DOM đã dựng xong. */
+function useSlot(id: string) {
+  const [o, setO] = useState<HTMLElement | null>(null);
+  useEffect(() => { setO(document.getElementById(id)); }, []);
+  return o;
 }
 
 export function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: string }[]; onChange: (value: T) => void }) {
