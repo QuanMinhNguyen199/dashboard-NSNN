@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-29T00:00:00.000Z",
+  "title": "Design System: Quản lý nghiệp vụ Thuế TP Hà Nội",
+  "extensions": {
+    "colorMeta": {
+      "brand": { "role": "primary", "displayName": "Đỏ son thao tác", "canonical": "#c92332", "tonalRamp": ["#2c0709", "#500d12", "#78141d", "#a71927", "#c92332", "#df5f6a", "#eda0a7", "#fff0f1"] },
+      "brand-strong": { "role": "primary", "displayName": "Đỏ son đậm", "canonical": "#a71927", "tonalRamp": ["#240608", "#420b0f", "#640f17", "#a71927", "#c53340", "#db707a", "#ecacb2", "#fbe4e6"] },
+      "brand-soft": { "role": "primary", "displayName": "Hồng giấy", "canonical": "#fff0f1", "tonalRamp": ["#3a1114", "#5c1b20", "#82282f", "#ac414a", "#cd7a81", "#e5aeb3", "#f7d9dc", "#fff0f1"] },
+      "brand-edge": { "role": "primary", "displayName": "Viền hồng", "canonical": "#efc2c7", "tonalRamp": ["#33151a", "#53232a", "#76343c", "#9c5159", "#bd7a82", "#d8a1a8", "#efc2c7", "#fbe9eb"] },
+      "brand-gold": { "role": "secondary", "displayName": "Vàng dấu", "canonical": "#ffd348", "tonalRamp": ["#33280a", "#544111", "#775c17", "#9c7a1e", "#c29b2c", "#e3b93a", "#ffd348", "#ffeaa6"] },
+      "positive": { "role": "secondary", "displayName": "Xanh xác nhận", "canonical": "#28704b", "tonalRamp": ["#0a2317", "#123c27", "#1a5538", "#28704b", "#3a9264", "#6ab68d", "#a3d4ba", "#eef7f1"] },
+      "warning": { "role": "secondary", "displayName": "Nâu vàng cảnh báo", "canonical": "#815b1c", "tonalRamp": ["#291c06", "#432f0c", "#5f4212", "#815b1c", "#a67a2d", "#c8a052", "#e0c691", "#faf4e8"] },
+      "critical": { "role": "secondary", "displayName": "Đỏ gạch can thiệp", "canonical": "#b13b37", "tonalRamp": ["#2f0f0e", "#521a18", "#7a2724", "#b13b37", "#c86460", "#dd9491", "#eec2c0", "#fcf0ef"] },
+      "info": { "role": "secondary", "displayName": "Xám thông tin", "canonical": "#565052", "tonalRamp": ["#141213", "#242122", "#383335", "#565052", "#7a7275", "#a29a9c", "#c8c1c3", "#f2efef"] },
+      "canvas": { "role": "neutral", "displayName": "Giấy nền ấm", "canonical": "#f5f4f3", "tonalRamp": ["#292526", "#3f3a3b", "#565052", "#71686b", "#9c9294", "#c4bbbd", "#e3dedd", "#f5f4f3"] },
+      "surface": { "role": "neutral", "displayName": "Bề mặt trắng", "canonical": "#ffffff", "tonalRamp": ["#292526", "#433d3e", "#5e5658", "#7d7376", "#a49b9d", "#c9c2c3", "#e8e4e4", "#ffffff"] },
+      "surface-soft": { "role": "neutral", "displayName": "Bề mặt chìm", "canonical": "#f8f7f6", "tonalRamp": ["#292526", "#3f3a3b", "#565052", "#71686b", "#9c9294", "#c4bbbd", "#e6e2e0", "#f8f7f6"] },
+      "line": { "role": "neutral", "displayName": "Viền khối", "canonical": "#dfdcda", "tonalRamp": ["#2a2625", "#403b3a", "#585251", "#736c6a", "#968e8c", "#bbb3b1", "#dfdcda", "#f2f0ef"] },
+      "line-soft": { "role": "neutral", "displayName": "Đường chia hàng", "canonical": "#eeebe9", "tonalRamp": ["#2d2927", "#44403d", "#5d5754", "#7a7370", "#9f9895", "#c6c0bd", "#eeebe9", "#f8f6f5"] },
+      "control-line": { "role": "neutral", "displayName": "Viền control", "canonical": "#cec7c9", "tonalRamp": ["#262123", "#3a3437", "#51494c", "#6d6367", "#918689", "#b3a8ab", "#cec7c9", "#ebe6e7"] },
+      "control-line-hover": { "role": "neutral", "displayName": "Viền control khi rê chuột", "canonical": "#a99b9f", "tonalRamp": ["#1f1a1c", "#332c2f", "#483f42", "#625659", "#826f74", "#a99b9f", "#c9bfc2", "#e8e2e4"] },
+      "ink": { "role": "neutral", "displayName": "Mực kết quả", "canonical": "#292526", "tonalRamp": ["#0d0b0c", "#181516", "#292526", "#413b3d", "#5c5457", "#837a7c", "#b0a7a9", "#ddd7d8"] },
+      "ink-2": { "role": "neutral", "displayName": "Mực mô tả", "canonical": "#565052", "tonalRamp": ["#141213", "#242122", "#383335", "#565052", "#766e70", "#9a9193", "#c0b9ba", "#e5e1e2"] },
+      "ink-3": { "role": "neutral", "displayName": "Mực metadata", "canonical": "#71686b", "tonalRamp": ["#191617", "#2b2628", "#40393b", "#585053", "#71686b", "#968d90", "#bcb4b6", "#e2dddf"] },
+      "navy": { "role": "neutral", "displayName": "Mực gần đen (tên token là di sản)", "canonical": "#302629", "tonalRamp": ["#0f0c0d", "#1d1718", "#302629", "#473a3d", "#655457", "#8b797c", "#b5a6a8", "#ded6d7"] },
+      "state-edge": { "role": "neutral", "displayName": "Viền trạng thái", "canonical": "#7d8a99", "tonalRamp": ["#141a20", "#242e38", "#374453", "#4f5d6d", "#66717f", "#7d8a99", "#a7b2bd", "#d5dbe1"] },
+      "selection-bg": { "role": "neutral", "displayName": "Nền vùng bôi đen", "canonical": "#f7d9dd", "tonalRamp": ["#3a1418", "#5c2027", "#822f37", "#ab4a53", "#c87b83", "#e0a8ae", "#f7d9dd", "#fdeff1"] },
+      "scroll-thumb": { "role": "neutral", "displayName": "Thanh cuộn", "canonical": "#cfc7ca", "tonalRamp": ["#262123", "#3a3437", "#51494c", "#6d6367", "#918689", "#afa2a7", "#cfc7ca", "#ece7e9"] },
+      "scroll-thumb-hover": { "role": "neutral", "displayName": "Thanh cuộn khi rê chuột", "canonical": "#afa2a7", "tonalRamp": ["#201b1d", "#342d30", "#4a4144", "#64585c", "#857478", "#afa2a7", "#ccc3c6", "#eae5e7"] },
+      "on-navy-1": { "role": "neutral", "displayName": "Mực nhạt trên toast", "canonical": "#d8e5f2", "tonalRamp": ["#1a2530", "#2a3a4a", "#3d5266", "#566d84", "#7b91a6", "#a5b8cb", "#d8e5f2", "#f1f7fc"] },
+      "positive-on-navy": { "role": "neutral", "displayName": "Xác nhận trên toast", "canonical": "#7fd0a4", "tonalRamp": ["#0b2a1a", "#11452a", "#18603c", "#217e50", "#3fa46e", "#7fd0a4", "#b3e5c9", "#e0f5ea"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Chỉ tiêu đề cột trái màn đăng nhập. Chữ lớn nhất trong sản phẩm; trần 26px." },
+      "title": { "displayName": "Title", "purpose": "Tiêu đề trang trong page-intro; 18px dưới 720px." },
+      "subtitle": { "displayName": "Subtitle", "purpose": "Tiêu đề form đăng nhập và tiêu đề màn từ chối quyền; 18px dưới 720px." },
+      "metric": { "displayName": "Metric", "purpose": "Mọi con số tổng hợp. Luôn mang màu ink, không mang màu trạng thái." },
+      "section": { "displayName": "Section", "purpose": "Tiêu đề panel; cao hơn một bậc so với nội dung hàng để đầu khối thắng được hàng đầu tiên." },
+      "body": { "displayName": "Body", "purpose": "Nội dung, ô nhập, ô bảng, giá trị trong lưới chi tiết." },
+      "row": { "displayName": "Row", "purpose": "Nhãn nút, mục điều hướng, tên hàng việc / hàng nguồn, mô tả trang, nội dung notice." },
+      "label": { "displayName": "Label", "purpose": "Nhãn ô tổng hợp và ô chi tiết, nhãn badge, mã monospace, ngữ cảnh măng sét." },
+      "micro": { "displayName": "Micro", "purpose": "Dòng phụ, metadata, đầu bảng, nhãn control, nhãn nhóm điều hướng (700)." },
+      "nav": { "displayName": "Nav", "purpose": "Sàn của thang, đúng một vai trò: nhãn mục bottom nav trên mobile, luôn kèm aria-label đầy đủ." },
+      "code": { "displayName": "Code", "purpose": "Mã lô trong bảng (12px) và tên tài khoản mẫu (10px)." }
+    },
+    "shadows": [
+      { "name": "panel", "value": "0 1px 2px rgb(41 37 38 / 5%), 0 5px 16px rgb(41 37 38 / 4%)", "purpose": "Bóng mặc định của mọi khối nội dung; hai tầng, đi kèm viền 1px." },
+      { "name": "overlay", "value": "0 18px 48px #29252633", "purpose": "Drawer điều hướng và toast. Không dùng cho nội dung." },
+      { "name": "masthead", "value": "0 1px 3px rgb(41 37 38 / 3%)", "purpose": "Măng sét sticky, chỉ đủ để nội dung cuộn qua không dính vào nó." },
+      { "name": "bottom-nav", "value": "0 -6px 20px #29252612", "purpose": "Thanh điều hướng dưới, nơi nội dung thật sự trôi bên dưới." },
+      { "name": "control-lift-primary", "value": "0 1px 1px #29252614", "purpose": "Nút chính ở trạng thái nghỉ; mất khi :active." },
+      { "name": "control-lift-secondary", "value": "0 1px 1px #2925260f", "purpose": "Nút phụ và thẻ tài khoản mẫu ở trạng thái nghỉ." },
+      { "name": "nav-active", "value": "0 1px 2px rgb(41 37 38 / 4%)", "purpose": "Mục điều hướng đang mở." },
+      { "name": "segmented-active", "value": "0 1px 2px #2925261f", "purpose": "Ô đang chọn trong segmented, đi kèm viền state-edge." },
+      { "name": "interactive-hover", "value": "0 3px 8px rgb(41 37 38 / 10%)", "purpose": "Chỉ cho hàng bảng có row-select, hàng việc dạng nút và ô tổng hợp có hành động; kèm translateY(-2px)." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Easing duy nhất của hệ." },
+      { "name": "rise", "value": "240ms — opacity .55 → 1, translateY(4px) → 0", "purpose": "Một khoảnh khắc vào trang cho cả page-stack, gated theo prefers-reduced-motion." },
+      { "name": "toast-in", "value": "220ms — opacity 0 → 1, translateY(8px) → 0", "purpose": "Entrance duy nhất còn lại ngoài rise." },
+      { "name": "state-transition", "value": "100–180ms", "purpose": "Transition trạng thái của hàng, nút và control; không transition nào làm đổi kích thước bố cục." },
+      { "name": "reduced-motion", "value": "animation-duration / transition-duration .01ms !important", "purpose": "Cắt toàn bộ chuyển động khi prefers-reduced-motion: reduce; scroll-behavior về auto." }
+    ],
+    "breakpoints": [
+      { "name": "grid", "value": "1180px" },
+      { "name": "touch-shell", "value": "900px" },
+      { "name": "narrow", "value": "720px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Hành động chính của trang hoặc panel; cao 32px, 44px từ 900px xuống.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 16V4M7 9l5-5 5 5\"/><path d=\"M4 15v5h16v-5\"/></svg><span>Tạo báo cáo mới</span></button>",
+      "css": ".ds-btn-primary { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 11px; border: 1px solid var(--brand, #c92332); border-radius: var(--radius-control, 6px); color: #fff; background: var(--brand, #c92332); font: 600 13px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; white-space: nowrap; box-shadow: 0 1px 1px #29252614; cursor: pointer; transition: background 120ms cubic-bezier(.16,1,.3,1), border-color 120ms cubic-bezier(.16,1,.3,1); } .ds-btn-primary:hover { background: var(--brand-strong, #a71927); border-color: var(--brand-strong, #a71927); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus, #c92332); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: none; transform: translateY(.5px); } @media (max-width: 900px) { .ds-btn-primary { min-height: 44px; min-width: 44px; } }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Hành động phụ trong ô bảng, notice và chân bảng.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\"><span>Duyệt</span></button>",
+      "css": ".ds-btn-secondary { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 11px; border: 1px solid var(--control-line, #cec7c9); border-radius: var(--radius-control, 6px); color: var(--ink, #292526); background: #fff; font: 600 13px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; white-space: nowrap; box-shadow: 0 1px 1px #2925260f; cursor: pointer; transition: background 120ms cubic-bezier(.16,1,.3,1), border-color 120ms cubic-bezier(.16,1,.3,1); } .ds-btn-secondary:hover { border-color: var(--control-line-hover, #a99b9f); background: var(--surface-soft, #f8f7f6); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--focus, #c92332); outline-offset: 2px; } .ds-btn-secondary:active { box-shadow: none; transform: translateY(.5px); } @media (max-width: 900px) { .ds-btn-secondary { min-height: 44px; min-width: 44px; } }"
+    },
+    {
+      "name": "Badge (dot + label)",
+      "kind": "chip",
+      "refersTo": "badge-critical",
+      "description": "Trạng thái nghiệp vụ: chấm 6px cộng nhãn chữ. Hai ngoại lệ có nền chip: tone-critical và cờ mock (trung tính).",
+      "html": "<span class=\"ds-badge ds-badge-positive\">Đã phát hành</span> <span class=\"ds-badge ds-badge-warning\">Chờ duyệt</span> <span class=\"ds-badge ds-badge-critical\">Quá hạn</span> <span class=\"ds-badge ds-badge-mock\">Mô phỏng</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 0; border: 0; background: none; font: 600 12px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; white-space: nowrap; } .ds-badge::before { content: \"\"; flex: none; width: 6px; height: 6px; border-radius: 50%; background: currentColor; } .ds-badge-positive { color: var(--positive, #28704b); } .ds-badge-warning { color: var(--warning, #815b1c); } .ds-badge-critical { padding: 2px 7px; border-radius: var(--radius-chip, 4px); color: var(--critical, #b13b37); background: var(--critical-bg, #fcf0ef); } .ds-badge-mock { padding: 2px 7px; border: 1px solid var(--line, #dfdcda); border-radius: var(--radius-chip, 4px); color: var(--ink-2, #565052); background: var(--surface-soft, #f8f7f6); } .ds-badge-mock::before { display: none; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Ô tìm kiếm trong đầu panel; outline chuyển lên wrapper bằng :focus-within để không có hai vòng chồng nhau.",
+      "html": "<label class=\"ds-search\"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-4-4\"/></svg><input placeholder=\"Tìm báo cáo hoặc đơn vị\"/></label>",
+      "css": ".ds-search { width: min(320px, 40vw); min-height: 32px; display: flex; align-items: center; gap: 7px; padding: 0 9px; border: 1px solid var(--control-line, #cec7c9); border-radius: var(--radius-control, 6px); background: #fff; color: var(--ink-3, #71686b); transition: border-color 120ms cubic-bezier(.16,1,.3,1); } .ds-search:hover { border-color: var(--control-line-hover, #a99b9f); } .ds-search:focus-within { outline: 2px solid var(--focus, #c92332); outline-offset: 2px; border-color: transparent; } .ds-search input { width: 100%; min-height: 32px; padding: 0; border: 0; outline: 0; background: none; color: var(--ink, #292526); font: 14px/1.5 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-search input::placeholder { color: var(--ink-3, #71686b); opacity: 1; } @media (max-width: 900px) { .ds-search, .ds-search input { min-height: 44px; } }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Mục điều hướng trên sidebar trắng; mục đang mở nhận ba lớp cùng lúc — nền hồng, viền hồng, chữ đỏ đậm. Không vạch trái.",
+      "html": "<div class=\"ds-nav\"><span class=\"ds-nav-group\">Nghiệp vụ</span><button type=\"button\" class=\"ds-nav-item ds-nav-active\" aria-current=\"page\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 3h9l4 4v14H6z\"/><path d=\"M14 3v5h5M9 12h6M9 16h6\"/></svg><span>Báo cáo</span></button><button type=\"button\" class=\"ds-nav-item\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5h16v14H4z\"/><path d=\"M8 9h8M8 13h5M8 17h3\"/></svg><span>Nợ và cưỡng chế</span></button></div>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 1px; width: 252px; padding: 10px 12px; background: #fff; border-right: 1px solid var(--line, #dfdcda); } .ds-nav-group { padding: 12px 10px 4px; color: var(--ink-3, #71686b); font: 700 11px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; letter-spacing: .01em; } .ds-nav-item { min-height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 10px; border: 1px solid transparent; border-radius: 6px; color: var(--ink-2, #565052); background: transparent; font: 550 13px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; text-align: left; cursor: pointer; transition: background 120ms cubic-bezier(.16,1,.3,1), color 120ms cubic-bezier(.16,1,.3,1); } .ds-nav-item svg { color: var(--ink-3, #71686b); transition: color 120ms cubic-bezier(.16,1,.3,1); } .ds-nav-item:hover { color: var(--ink, #292526); background: var(--surface-soft, #f8f7f6); } .ds-nav-item:hover svg { color: var(--ink, #292526); } .ds-nav-item:focus-visible { outline: 2px solid var(--focus, #c92332); outline-offset: 2px; } .ds-nav-active { color: var(--brand-strong, #a71927); background: var(--brand-soft, #fff0f1); border-color: var(--brand-edge, #efc2c7); font-weight: 600; box-shadow: 0 1px 2px rgb(41 37 38 / 4%); } .ds-nav-active svg { color: var(--brand, #c92332); } @media (max-width: 900px) { .ds-nav-item { min-height: 44px; } }"
+    },
+    {
+      "name": "Brand Seal",
+      "kind": "custom",
+      "refersTo": "brand-mark",
+      "description": "Con dấu nhận diện: vuông bo, chữ và viền vàng trên nền đỏ đậm. Chỗ duy nhất trong hệ dùng vàng.",
+      "html": "<div class=\"ds-seal-row\"><span class=\"ds-seal\">HN</span><div><strong>Quản lý nghiệp vụ Thuế</strong><small>Thuế TP Hà Nội</small></div></div>",
+      "css": ".ds-seal-row { display: flex; align-items: center; gap: 10px; } .ds-seal { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border: 1px solid var(--brand-gold, #ffd348); border-radius: 8px; color: var(--brand-gold, #ffd348); background: var(--brand-strong, #a71927); font: 700 11px/1 system-ui, -apple-system, \"Segoe UI\", sans-serif; letter-spacing: .04em; } .ds-seal-row strong { display: block; color: var(--ink, #292526); font: 650 13px/1.3 system-ui, -apple-system, \"Segoe UI\", sans-serif; letter-spacing: -.01em; } .ds-seal-row small { display: block; margin-top: 1px; color: var(--ink-3, #71686b); font: 400 11px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; }"
+    },
+    {
+      "name": "Panel (framed surface)",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Khối nội dung có viền 1px cộng bóng hai tầng, bo 10px. Đầu khối 54px với tiêu đề 14px.",
+      "html": "<section class=\"ds-panel\"><header class=\"ds-panel-head\"><h2>Danh sách báo cáo<span class=\"ds-panel-source\">Nhật ký chạy báo cáo</span></h2></header><div class=\"ds-panel-body\"><p class=\"ds-panel-note\">Thân khối tràn ra mép bằng margin âm để hàng chạy hết chiều rộng.</p></div></section>",
+      "css": ".ds-panel { overflow: hidden; border: 1px solid var(--line, #dfdcda); border-radius: var(--radius-panel, 10px); background: #fff; color: var(--ink, #292526); box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 16px rgb(41 37 38 / 4%); } .ds-panel-head { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 16px; border-bottom: 1px solid var(--line, #dfdcda); } .ds-panel-head h2 { margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 650 14px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; letter-spacing: -.005em; } .ds-panel-source { margin-left: 10px; color: var(--ink-3, #71686b); font: 400 11px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-panel-body { padding: 0 14px 12px; } .ds-panel-note { margin: 12px 0 0; color: var(--ink-2, #565052); font: 14px/1.5 system-ui, -apple-system, \"Segoe UI\", sans-serif; }"
+    },
+    {
+      "name": "Summary Row",
+      "kind": "custom",
+      "refersTo": "summary-cell",
+      "description": "Dải tổng hợp: một vai trò, một cách thể hiện. Số giữ màu mực trung tính; chỉ ô có hành động mới nhô khi rê chuột.",
+      "html": "<div class=\"ds-figure-line\"><div><span>Bản nháp</span><strong>4</strong></div><div><span>Chờ duyệt</span><strong>3</strong></div><div><span>Đang vướng</span><strong>1</strong></div><button type=\"button\"><span>Đã phát hành</span><strong>12</strong></button></div>",
+      "css": ".ds-figure-line { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line, #dfdcda); border-radius: var(--radius-panel, 10px); background: #fff; box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 16px rgb(41 37 38 / 4%); } .ds-figure-line > * { min-width: 0; min-height: 56px; display: grid; align-content: center; gap: 1px; padding: 9px 16px; border: 0; border-left: 1px solid var(--line-soft, #eeebe9); background: transparent; text-align: left; font: inherit; } .ds-figure-line > *:first-child { border-left: 0; } .ds-figure-line > button { cursor: pointer; } .ds-figure-line span { color: var(--ink-3, #71686b); font: 600 12px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-figure-line strong { color: var(--ink, #292526); font: 650 18px/1.25 system-ui, -apple-system, \"Segoe UI\", sans-serif; letter-spacing: -.015em; font-variant-numeric: tabular-nums; } .ds-figure-line > button:focus-visible { outline: 2px solid var(--focus, #c92332); outline-offset: -2px; } @media (any-hover: hover) and (any-pointer: fine) { .ds-figure-line:has(> button) { overflow: visible; } .ds-figure-line > button { position: relative; transition: background-color 160ms ease-out; } .ds-figure-line > button:hover { background-color: var(--brand-soft, #fff0f1); } } @media (any-hover: hover) and (any-pointer: fine) and (prefers-reduced-motion: no-preference) { .ds-figure-line > button { transition: transform 180ms cubic-bezier(.16,1,.3,1), box-shadow 180ms cubic-bezier(.16,1,.3,1), background-color 160ms ease-out; } .ds-figure-line > button:hover { z-index: 1; transform: translateY(-2px); box-shadow: 0 3px 8px rgb(41 37 38 / 10%); } } @media (max-width: 720px) { .ds-figure-line { grid-template-columns: 1fr 1fr; } .ds-figure-line > * { min-height: 72px; padding: 11px 12px; border-top: 1px solid var(--line-soft, #eeebe9); } .ds-figure-line > *:nth-child(-n + 2) { border-top: 0; } .ds-figure-line > *:nth-child(odd) { border-left: 0; } }"
+    },
+    {
+      "name": "Data Table with Row Select",
+      "kind": "custom",
+      "refersTo": "table-cell",
+      "description": "Bảng nghiệp vụ: đầu bảng dính, hàng 38px, và một đích bàn phím thật trong ô đầu của hàng bấm được.",
+      "html": "<div class=\"ds-table-wrap\" tabindex=\"0\" role=\"region\" aria-label=\"Bảng danh sách báo cáo\"><table class=\"ds-table\"><thead><tr><th scope=\"col\">Tên báo cáo</th><th scope=\"col\">Kỳ báo cáo</th><th scope=\"col\">Trạng thái</th></tr></thead><tbody><tr class=\"ds-row-selected\"><td><button type=\"button\" class=\"ds-row-select\" aria-pressed=\"true\"><strong>Báo cáo thu NSNN tuần 39</strong></button></td><td>Tuần 39/2026</td><td><span class=\"ds-badge ds-badge-warning\">Chờ duyệt</span></td></tr><tr><td><button type=\"button\" class=\"ds-row-select\" aria-pressed=\"false\"><strong>Báo cáo nợ thuế tháng 9</strong></button></td><td>Tháng 9/2026</td><td><span class=\"ds-badge ds-badge-positive\">Đã phát hành</span></td></tr></tbody></table></div>",
+      "css": ".ds-table-wrap { max-height: min(62vh, 560px); overflow: auto; background: #fff; } .ds-table-wrap:focus-visible { outline: 2px solid var(--focus, #c92332); outline-offset: 2px; } .ds-table { width: 100%; border-collapse: collapse; font: 14px/1.5 system-ui, -apple-system, \"Segoe UI\", sans-serif; font-variant-numeric: tabular-nums; } .ds-table th { position: sticky; top: 0; z-index: 2; height: 34px; padding: 6px 12px; color: var(--ink-2, #565052); background: var(--surface-soft, #f8f7f6); border-bottom: 1px solid var(--line, #dfdcda); font: 650 11px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; letter-spacing: .01em; text-align: left; white-space: nowrap; } .ds-table td { height: 38px; padding: 7px 12px; border-bottom: 1px solid var(--line-soft, #eeebe9); vertical-align: middle; } .ds-table tbody tr:has(.ds-row-select) { cursor: pointer; } .ds-table tbody tr.ds-row-selected { background: var(--brand-soft, #fff0f1); } .ds-table tbody tr.ds-row-selected td { font-weight: 500; } .ds-table tbody tr:last-child td { border-bottom: 0; } .ds-row-select { width: calc(100% + 24px); min-height: 32px; margin: -7px -12px; padding: 7px 12px; display: grid; align-content: center; justify-items: start; gap: 2px; border: 0; border-radius: var(--radius-chip, 4px); color: inherit; background: transparent; font: inherit; text-align: left; cursor: pointer; } .ds-row-select strong { font-weight: 600; } .ds-row-select:focus-visible { outline: 2px solid var(--focus, #c92332); outline-offset: -2px; } .ds-badge { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-badge::before { content: \"\"; width: 6px; height: 6px; border-radius: 50%; background: currentColor; } .ds-badge-positive { color: var(--positive, #28704b); } .ds-badge-warning { color: var(--warning, #815b1c); } @media (any-hover: hover) and (any-pointer: fine) { .ds-table tbody tr:has(.ds-row-select):hover { background-color: var(--brand-soft, #fff0f1); } } @media (max-width: 900px) { .ds-row-select { min-height: 44px; } } @media (max-width: 720px) { .ds-table td { height: 44px; } }"
+    },
+    {
+      "name": "Detail Grid",
+      "kind": "custom",
+      "refersTo": "detail-cell",
+      "description": "Chi tiết của bản ghi đang chọn, đặt dưới bảng. Giá trị ở cỡ body 14px vì đây là metadata, không phải số tổng hợp.",
+      "html": "<dl class=\"ds-detail-grid\"><div><dt>Mã số thuế</dt><dd>0101****78</dd></div><div><dt>Đơn vị quản lý</dt><dd>Phòng Thanh tra 2</dd></div><div><dt>Cán bộ phụ trách</dt><dd>Nguyễn Minh A<small>Hiệu lực từ 01/2026</small></dd></div><div><dt>Đề xuất xử lý</dt><dd><span class=\"ds-badge ds-badge-critical\">Cưỡng chế</span></dd></div></dl>",
+      "css": ".ds-detail-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; overflow: hidden; background: #fff; } .ds-detail-grid > div { min-width: 0; min-height: 56px; display: grid; align-content: center; gap: 3px; padding: 9px 16px; border-left: 1px solid var(--line-soft, #eeebe9); } .ds-detail-grid > div:first-child { border-left: 0; } .ds-detail-grid dt { color: var(--ink-3, #71686b); font: 600 12px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-detail-grid dd { margin: 0; color: var(--ink, #292526); font: 500 14px/1.5 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-detail-grid dd small { display: block; margin-top: 2px; color: var(--ink-3, #71686b); font: 400 11px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-badge { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-badge-critical { padding: 2px 7px; border-radius: var(--radius-chip, 4px); color: var(--critical, #b13b37); background: var(--critical-bg, #fcf0ef); } @media (max-width: 720px) { .ds-detail-grid { grid-template-columns: 1fr 1fr; } .ds-detail-grid > div { padding: 9px 12px; border-top: 1px solid var(--line-soft, #eeebe9); } .ds-detail-grid > div:nth-child(-n + 2) { border-top: 0; } .ds-detail-grid > div:nth-child(odd) { border-left: 0; } }"
+    },
+    {
+      "name": "Approval Flow",
+      "kind": "custom",
+      "refersTo": "segmented-active",
+      "description": "Bốn bước phát hành; vòng state-edge, bước hiện tại đỏ son, bước đã qua xanh xác nhận, kèm aria-current và sr-only.",
+      "html": "<div class=\"ds-approval\"><div class=\"ds-step-done\"><span>1</span><strong>Bản nháp<span class=\"ds-sr\"> — đã qua</span></strong><small>Chạy dữ liệu và xử lý lỗi</small></div><div class=\"ds-step-current\" aria-current=\"step\"><span>2</span><strong>Chờ duyệt<span class=\"ds-sr\"> — bước hiện tại</span></strong><small>Khóa số và gửi người duyệt</small></div><div><span>3</span><strong>Đã duyệt</strong><small>Gắn người duyệt và thời điểm</small></div><div><span>4</span><strong>Phát hành</strong><small>Xuất đúng mẫu, lưu phiên bản</small></div></div>",
+      "css": ".ds-approval { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding-top: 14px; background: #fff; } .ds-approval > div { position: relative; min-height: 68px; display: grid; grid-template-columns: 26px minmax(0, 1fr); align-content: start; gap: 2px 8px; padding-right: 22px; } .ds-approval > div::after { content: \"\"; position: absolute; top: 13px; right: 6px; left: 34px; height: 1px; background: var(--line, #dfdcda); } .ds-approval > div:last-child::after { display: none; } .ds-approval span { z-index: 1; grid-row: 1 / span 2; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid var(--state-edge, #7d8a99); border-radius: 50%; color: var(--ink-3, #71686b); background: #fff; font: 650 12px/1 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-approval strong { z-index: 1; background: #fff; font: 600 13px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-approval small { z-index: 1; background: #fff; color: var(--ink-3, #71686b); font: 400 11px/1.35 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-step-current span { color: #fff; border-color: var(--brand, #c92332); background: var(--brand, #c92332); } .ds-step-done span { color: #fff; border-color: var(--positive, #28704b); background: var(--positive, #28704b); } .ds-step-done::after { background: var(--positive, #28704b); } .ds-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } @media (max-width: 720px) { .ds-approval { grid-template-columns: 1fr; gap: 8px; } .ds-approval > div { min-height: 56px; padding: 0; } .ds-approval > div::after { top: 26px; right: auto; bottom: -9px; left: 12px; width: 1px; height: auto; } }"
+    },
+    {
+      "name": "Toast",
+      "kind": "custom",
+      "refersTo": "toast",
+      "description": "Xác nhận hành động trên nền mực gần đen; hẹn giờ 4,2s dừng khi rê chuột hoặc focus và huỷ khi unmount.",
+      "html": "<div class=\"ds-toast\" role=\"status\" aria-live=\"polite\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12 4 4L19 6\"/></svg><span>Đã duyệt “Báo cáo thu NSNN tuần 39” lúc 29/09 · 10:14, người duyệt Nguyễn Minh A.</span><button type=\"button\" aria-label=\"Đóng thông báo\"><svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\"/></svg></button></div>",
+      "css": ".ds-toast { width: min(420px, 100%); min-height: 46px; display: grid; grid-template-columns: 20px minmax(0, 1fr) 30px; align-items: center; gap: 10px; padding: 9px 9px 9px 13px; color: #fff; border-radius: var(--radius-panel, 10px); background: var(--navy, #302629); box-shadow: 0 18px 48px #29252633; } .ds-toast > svg { color: var(--positive-on-navy, #7fd0a4); } .ds-toast span { font: 600 13px/1.4 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-toast button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: var(--radius-control, 6px); color: var(--on-navy-1, #d8e5f2); background: transparent; cursor: pointer; } .ds-toast button:hover { color: #fff; background: #ffffff1c; } .ds-toast button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Notice",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "Dải ràng buộc: nền nhạt mang màu mức độ, nhãn đậm cùng màu, không viền và không vạch trái.",
+      "html": "<div class=\"ds-notice ds-notice-warning\"><strong>Quy tắc mô phỏng</strong><span>Ngưỡng cưỡng chế phải được xác nhận bằng văn bản có hiệu lực trước khi dùng để ra quyết định.</span></div>",
+      "css": ".ds-notice { min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 10px 13px; border: 0; border-radius: var(--radius-control, 6px); font: 13px/1.5 system-ui, -apple-system, \"Segoe UI\", sans-serif; } .ds-notice strong { flex: none; font-weight: 650; } .ds-notice > span { flex: 1; color: var(--ink, #292526); } .ds-notice-warning { color: var(--warning, #815b1c); background: var(--warning-bg, #faf4e8); } @media (max-width: 720px) { .ds-notice { align-items: flex-start; flex-wrap: wrap; padding: 11px 12px; } .ds-notice strong, .ds-notice > span { width: 100%; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Hồ sơ giấy ấm, đóng dấu đỏ",
+    "overview": "Đây là chuẩn mực của loại sản phẩm được thực thi đầy đủ, theo đúng thước đo thủ công đã chọn: dày thông tin mà vẫn tĩnh, bảng dài đọc được, số có trọng lượng, trạng thái rõ mà không ồn ào. Vị trí của điều hướng, bộ lọc và nút không đổi vì người dùng đã quen tay; thứ đổi là chất liệu.\n\nNền là một lớp giấy ấm (canvas xám ngả hồng rất nhạt), không phải xám xanh. Trên đó, mỗi khối nội dung là một tấm trắng có viền 1px và một bóng hai tầng rất nhẹ, bo 10px — khối được đóng khung rõ ràng, và độ sâu do viền cộng bóng gánh chứ không chỉ do bậc nền. Đỏ son và vàng lấy từ dấu nhận diện ngành Thuế: đỏ là màu thao tác duy nhất, vàng chỉ xuất hiện đúng một chỗ là con dấu \"HN\".\n\nĐiều hướng là một sidebar trắng viền phải, không phải một khối màu đặc. Mục đang mở nhận nền hồng nhạt, viền hồng và chữ đỏ đậm — một tín hiệu ba lớp thay cho vạch màu bên trái, vốn đã được gỡ hẳn. Con số tổng hợp giữ màu mực trung tính; màu trạng thái sống ở nhãn và ở thông báo, không tô cả khối số. Chuyển động được dàn dựng một lần khi vào trang, và hiệu ứng nhô chỉ dành cho thứ thật sự bấm được.\n\nPalette được dựng theo ảnh tham chiếu logo do người dùng cung cấp, không phải mã màu thương hiệu chính thức. Khi có bộ màu chính thức, đây là chỗ đối chiếu lại.",
+    "keyCharacteristics": [
+      "Giấy ấm, không xám xanh: mọi bậc trung tính đều ngả đỏ.",
+      "Khối có viền 1px cộng bóng hai tầng, bo 10px; khung là một phần của hệ.",
+      "Đỏ son là màu thao tác duy nhất; vàng chỉ dành cho con dấu nhận diện.",
+      "Trạng thái = chấm 6px + nhãn chữ; chip chỉ dành cho hai ngoại lệ đã ghi.",
+      "Số tổng hợp mang màu mực trung tính, không mang màu trạng thái.",
+      "Bảng là công dân hạng nhất: đầu bảng dính, hàng 38px, mỗi hàng bấm được có một đích bàn phím thật.",
+      "Chỉ thứ bấm được mới nhô lên khi rê chuột.",
+      "Từ 900px trở xuống: shell cảm ứng và cam kết 44px bắt đầu ở cùng một mốc."
+    ],
+    "rules": [
+      { "name": "The Warm Neutral Rule", "body": "Mọi bậc trung tính trong hệ đều ngả đỏ. Một xám trung hoà hoặc xám xanh đặt cạnh canvas sẽ đọc ra màu lạ ngay, kể cả khi độ sáng khớp. Thêm một bậc trung tính thì lấy sắc độ từ ink, đừng lấy từ một bảng xám chung.", "section": "colors" },
+      { "name": "The One Operational Red Rule", "body": "Đỏ son là màu thao tác duy nhất: hành động, liên kết, điều hướng đang mở, tiến độ. Không có đỏ trang trí, và không có màu thao tác thứ hai.", "section": "colors" },
+      { "name": "The Gold Is a Seal Rule", "body": "Vàng chỉ sống trên con dấu nhận diện, luôn trên nền đỏ đậm. Nó không phải một bậc nhấn tự do, và nó không đủ tương phản để làm chữ trên nền trắng. Dùng vàng ở chỗ thứ hai là biến một dấu triện thành màu trang trí và mất luôn lý do nó có mặt.", "section": "colors" },
+      { "name": "The Two Reds Don't Blur Rule", "body": "Đỏ son thao tác và đỏ gạch can thiệp là hai vai trò tách bạch: một cái mời bấm, một cái báo hỏng. Chúng không được mượn giá trị của nhau, và đỏ can thiệp luôn đi kèm nhãn chữ đọc được.", "section": "colors" },
+      { "name": "The Numbers Stay Neutral Rule", "body": "Con số tổng hợp mang màu ink, kể cả khi hàng đó đang cảnh báo. Màu trạng thái nằm ở nhãn, ở badge và ở dải thông báo. Tô cả khối số theo trạng thái làm bốn ô tổng hợp biến thành một bảng đèn, và con số thôi là con số.", "section": "colors" },
+      { "name": "The Two Hairlines Rule", "body": "Đường kẻ có hai trọng số và chúng không thay nhau: line dựng mép khối, chân măng sét và viền sidebar; line-soft chia hàng và chia ô bên trong. Khi mọi đường trong một bảng nặng ngang nhau, mắt không còn biết đâu là mép khối.", "section": "colors" },
+      { "name": "The Panel Title Sits Above the Row Rule", "body": "Tiêu đề panel là 14px, cao hơn một bậc so với nội dung hàng (13px). Đầu khối phải thắng được hàng đầu tiên bên dưới nó; nếu không, cái viền quanh khối là thứ duy nhất nói rằng khối đã bắt đầu.", "section": "typography" },
+      { "name": "The Documented Floor Rule", "body": "10px là sàn của thang và nó được ghi nhận chứ không giấu: nó chỉ mang nhãn mục bottom nav — chuỗi ngắn, cố định, đứng ngay dưới một icon 20px và luôn đi kèm aria-label đầy đủ. Đừng mở bậc này cho nội dung.", "section": "typography" },
+      { "name": "The Metadata Doesn't Borrow Weight Rule", "body": "Cỡ 18px thuộc về số tổng hợp. Giá trị trong lưới chi tiết là metadata nên dùng 14px, dù nó cũng là \"một con số đứng dưới một cái nhãn\". Cho metadata mượn cỡ metric là cho nó mượn trọng lượng nó không có.", "section": "typography" },
+      { "name": "The One Ramp Through the Door Rule", "body": "Màn đăng nhập chạy cùng thang chữ với các view bên trong; trần là 26px. Cửa vào không được hứa một giọng mà sản phẩm không giữ sau khi đăng nhập.", "section": "typography" },
+      { "name": "The Tabular Number Rule", "body": "font-variant-numeric: tabular-nums bật ở body cho toàn ứng dụng. Số trong bảng căn phải; định dạng vi-VN.", "section": "typography" },
+      { "name": "The System Stack Rule", "body": "Chữ dùng stack hệ thống và không tự host. Đây là cam kết thương hiệu đã ghi trong PRODUCT.md với ba căn cứ (bề mặt Operate, dấu tiếng Việt chồng tầng, mạng nội bộ). Không đề xuất webfont.", "section": "typography" },
+      { "name": "The Square 44 Rule", "body": "Cam kết 44px bắt đầu ở 900px, đúng cùng mốc với shell cảm ứng, và áp theo cả hai chiều — min-height và min-width. Hai mốc này phải trùng nhau: khi shell đã nói \"đây là thiết bị chạm\" thì mọi thứ trong shell phải chạm được, nếu không iPad dọc ở 768px sẽ chạy bottom nav và drawer mà control vẫn cỡ chuột.", "section": "layout" },
+      { "name": "The Fixed Furniture Rule", "body": "Điều hướng, bộ lọc và nút giữ nguyên vị trí đã có. Cải thiện đi vào chất liệu và mức hoàn thiện, không đi vào việc xếp lại đồ đạc.", "section": "layout" },
+      { "name": "The Structured Overflow Rule", "body": "Không ép bảng nghiệp vụ thành card rời trên mobile. Bảng giữ min-width: 780px, nằm trong vùng cuộn có tabIndex=0 và có tên (role=\"region\" + aria-label), và dải \"Vuốt ngang để xem thêm\" hiện từ 900px — cùng mốc bảng bắt đầu cuộn ngang. Chỉ dẫn xuất hiện muộn hơn hiện tượng nó chỉ dẫn là một lời hứa lỡ.", "section": "layout" },
+      { "name": "The Framed Surface Rule", "body": "Khối nội dung có mép được vẽ: viền 1px cộng bóng panel, bo 10px. Viền và bóng đi cùng nhau — bỏ viền để lại một khối trôi, bỏ bóng để lại một ô kẻ phẳng. Muốn tách nhóm bên trong một khối thì dùng line-soft hoặc khoảng trắng; đừng lồng một khối có viền vào trong một khối có viền.", "section": "elevation" },
+      { "name": "The Lift Means Clickable Rule", "body": "Hiệu ứng nhô 2px cộng bóng chỉ dành cho thứ thật sự bấm được: hàng bảng có row-select, hàng việc dạng nút, và ô tổng hợp có hành động. Selector trong build nêu đích danh ba loại đó và loại trừ :disabled. Ô tổng hợp chỉ đọc, hàng nguồn chỉ đọc và khối lớn không nhô. Một khối nhô lên mà bấm vào không có gì xảy ra là một lời hứa hỏng, và người ngồi cả ca phải thử lại nó nhiều lần mỗi ngày.", "section": "elevation" },
+      { "name": "The Hover Is Not for Touch Rule", "body": "Toàn bộ hành vi hover được bọc trong (any-hover: hover) and (any-pointer: fine), và riêng phần dịch chuyển còn bọc thêm prefers-reduced-motion: no-preference. Trên thiết bị chạm, hiệu ứng nhô không tồn tại — nó chỉ kẹt lại sau một lần chạm.", "section": "elevation" },
+      { "name": "The Overlay Earns the Big Shadow Rule", "body": "Chỉ thứ thật sự phủ lên nội dung mới được bóng lớn: drawer và toast. Panel giữ bóng panel và không bao giờ mượn bóng overlay.", "section": "elevation" },
+      { "name": "The One Rise Rule", "body": "Đúng một khoảnh khắc chuyển động khi vào trang: cả page-stack nhô 4px trong 240ms với --ease-out, xuất phát từ opacity .55 chứ không phải 0, và chỉ khi prefers-reduced-motion: no-preference. Không có hiệu ứng vào theo từng khối. Ngoài nó, chỉ toast có entrance; phần còn lại chỉ có transition trạng thái 100–180ms, và không transition nào làm đổi kích thước bố cục. Cuộn lên đầu khi đổi view cũng đi qua cùng một cổng prefers-reduced-motion.", "section": "elevation" },
+      { "name": "The Dot Not Pill Rule", "body": "Trạng thái thường trực là một chấm 6px currentColor cộng nhãn chữ, không nền, không viền. Hai ngoại lệ được ghi nhận và chỉ hai: tone-critical (việc cần can thiệp được phép to tiếng hơn) và cờ mock (cảnh báo thường trực, không phải trạng thái nghiệp vụ; nó bỏ luôn cái chấm vì nó không phải một trạng thái). Cả hai dùng chip 4px, padding 2px 7px.", "section": "shapes" },
+      { "name": "The Quiet Mock Chip Rule", "body": "Nhãn \"Mô phỏng\" ở măng sét mang bộ trung tính — chữ ink-2 trên surface-soft với viền line — chứ không mang màu cảnh báo. Nó phải hiện thường trực ở mọi khổ màn và ở cả màn từ chối quyền; nhưng chính vì thường trực, cho nó màu cảnh báo là đặt một cảnh báo không bao giờ tắt cạnh tiêu đề, và người dùng học cách nhìn xuyên qua nó trong một ngày.", "section": "shapes" },
+      { "name": "The Selected State Is a Fill Rule", "body": "Trạng thái \"đang chọn\" và \"đang mở\" nói bằng nền hồng giấy, cộng viền hồng ở nơi khối vốn đã có viền. Không có vạch màu dày quá 1px ở cạnh một khối nội dung, hàng danh sách, notice, dải lỗi hay thẻ đang chọn — kể cả khi dựng bằng inset box-shadow, vì đổi cách vẽ không đổi bản chất. Vạch 3px bên trái mục điều hướng của hệ trước đã được gỡ hẳn (content: none); đừng dựng lại nó.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do giữ mọi bậc trung tính trong họ ấm; lấy sắc độ từ ink, đừng lấy từ một bảng xám chung.",
+      "Do cho khối nội dung cả viền 1px lẫn bóng panel; hai thứ đó đi cùng nhau.",
+      "Do giữ đỏ son là màu thao tác duy nhất, và giữ vàng ở đúng con dấu nhận diện trên nền đỏ đậm.",
+      "Do để con số tổng hợp mang màu mực trung tính; màu trạng thái sống ở nhãn và thông báo.",
+      "Do chỉ cho hiệu ứng nhô vào thứ thật sự bấm được, và bọc nó trong any-hover/any-pointer cộng prefers-reduced-motion.",
+      "Do nói \"đang chọn\" bằng nền hồng giấy, cộng viền hồng ở nơi vốn đã có viền.",
+      "Do để độ cao ô tổng hợp chạy theo nội dung qua :has(small) (56px / 72px) thay vì thêm class biến thể.",
+      "Do cho bảng dài một đầu bảng dính trong chính vùng cuộn có trần chiều cao, scope=\"col\" ở mọi th, và một aria-label cho vùng cuộn.",
+      "Do cho mỗi hàng bảng bấm được một đích bàn phím thật bên trong ô đầu, dựng bằng margin âm bù padding để hàng không cao thêm.",
+      "Do giữ cam kết 44px và mốc shell cảm ứng ở cùng một breakpoint (900px).",
+      "Do giữ đúng một khoảnh khắc chuyển động khi vào trang, và gate cả nó lẫn scrollTo theo prefers-reduced-motion.",
+      "Do theme cả những bề mặt trình duyệt vẽ hộ: selection, caret, accent, placeholder, vòng focus, thanh cuộn.",
+      "Do để trạng thái nói bằng ít nhất hai tầng: aria-current cộng sr-only bên cạnh màu, không bao giờ chỉ màu.",
+      "Do cắt nhánh nền khỏi cây trợ năng bằng inert khi drawer mở, ngoài bẫy Tab bằng JS.",
+      "Do giữ màn đăng nhập và màn từ chối quyền trên cùng token và cùng thang chữ với các view bên trong."
+    ],
+    "donts": [
+      "Don't đặt eyebrow hay dòng nhãn nhỏ phía trên bất kỳ tiêu đề nào — măng sét, trang, màn đăng nhập hay màn từ chối quyền. Tiêu đề tự đứng được.",
+      "Don't đưa một xám trung hoà hay xám xanh vào bảng trung tính; nó đọc ra màu lạ ngay cạnh giấy ấm.",
+      "Don't dùng vàng ở chỗ thứ hai ngoài con dấu nhận diện, và đừng đặt vàng làm chữ trên nền trắng.",
+      "Don't tô cả khối số theo trạng thái; bốn ô tổng hợp không phải một bảng đèn.",
+      "Don't cho hiệu ứng nhô vào khối lớn, ô tổng hợp chỉ đọc hay hàng nguồn chỉ đọc.",
+      "Don't vẽ vạch màu dày quá 1px ở cạnh một khối nội dung, hàng đang chọn, notice, dải lỗi hay thẻ đang chọn — kể cả dựng bằng inset shadow; vạch điều hướng cũ đã được gỡ, đừng dựng lại.",
+      "Don't lồng một khối có viền vào trong một khối có viền; bên trong dùng line-soft hoặc khoảng trắng.",
+      "Don't cho panel mượn bóng overlay; bóng lớn chỉ dành cho drawer và toast.",
+      "Don't cho nhãn \"Mô phỏng\" màu cảnh báo; một cảnh báo thường trực có màu là một cảnh báo người dùng học cách bỏ qua.",
+      "Don't mở rộng danh sách ngoại lệ chip quá hai mục đã ghi.",
+      "Don't thêm cỡ chữ ngoài chín bậc, và đừng mượn cỡ 18px cho metadata.",
+      "Don't dùng bậc 10px cho gì khác ngoài nhãn bottom nav.",
+      "Don't đặt role=\"button\" lên <tr>; nó phá ngữ nghĩa bảng.",
+      "Don't để mốc chạm lệch khỏi mốc shell, và đừng để chỉ dẫn cuộn xuất hiện muộn hơn hiện tượng nó chỉ dẫn.",
+      "Don't làm mờ nền măng sét; blur chỉ tồn tại ở bottom nav mobile.",
+      "Don't thêm hiệu ứng vào cho từng khối; một trang chỉ nhô lên một lần.",
+      "Don't đưa webfont vào sản phẩm; stack hệ thống là quyết định đã cân nhắc.",
+      "Don't đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay.",
+      "Don't ép bảng nghiệp vụ thành card rời trên mobile hoặc giấu việc bảng cuộn ngang."
+    ]
+  }
+}

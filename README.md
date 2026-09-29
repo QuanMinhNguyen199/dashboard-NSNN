@@ -15,14 +15,44 @@ Bản chạy thử: <https://quanminhnguyen199.github.io/dashboard-NSNN/>
 
 ```bash
 npm install          # uỷ quyền xuống web/
-npm run dev          # http://localhost:5173
+npm run dev          # Cổng đăng nhập chung: http://localhost:5174
 npm run build
 npm run acceptance   # 20 tiêu chí trên Chrome thật (cần dev server đang chạy)
 ```
 
-Lệnh ở gốc repo chỉ uỷ quyền xuống [`web/`](web); chạy trực tiếp trong `web/` cũng như
-nhau. Hướng dẫn đầy đủ, cách **thay API**, giả định của mock và giới hạn còn lại:
+`npm run dev` và `npm run dev:tax-ops` chạy cổng chung `5174`: đăng nhập bằng
+`lanhdao.nhanuoc` (LDNN) tự chuyển tới `/nsnn/`; `canbo.thue` và `lanhdao.thue`
+vào Tax Ops tại `/`. Mật khẩu mẫu: `demo123`. Chỉ cần forward **5174**, liên kết
+giữa hai ứng dụng giữ nguyên tên miền và cổng. Đăng xuất ở NSNN quay về màn đăng nhập.
+Đây là phân vai demo bằng sessionStorage, chưa phải xác thực/phân quyền máy chủ.
+
+Dashboard NSNN được build vào `tax-ops/public/nsnn/` khi khởi động cổng chung;
+sau khi sửa mã NSNN, chạy lại `npm run dev` để cập nhật. Tax Ops vẫn có HMR.
+`npm run build:portal` tạo bản gộp tại `tax-ops/dist`; `npm run preview:portal`
+phục vụ bản đó ở `5174`. `npm run dev:nsnn` vẫn chạy NSNN riêng ở `5173`.
+Kiểm tra phân vai: `cd tax-ops && node scripts/check-portal.mjs` khi cổng chung đang chạy.
+
+Hướng dẫn đầy đủ, cách **thay API**, giả định của mock và giới hạn còn lại:
 [`web/README.md`](web/README.md).
+
+## Web quản lý nghiệp vụ Thuế
+
+[`tax-ops/`](tax-ops) là ứng dụng độc lập dành cho cán bộ Thuế, tách khỏi
+Dashboard Thu NSNN dành cho lãnh đạo thành phố. Ứng dụng có URL, state, dữ liệu
+và build riêng; chỉ dùng chung định hướng thiết kế thể chế.
+
+```bash
+npm run dev:tax-ops       # http://localhost:5174
+npm run build:tax-ops
+npm run build:all         # build cả NSNN và Web QL
+```
+
+Phạm vi nghiệp vụ và hướng dẫn chi tiết nằm tại [`tax-ops/README.md`](tax-ops/README.md).
+Khi chạy hai ứng dụng độc lập, Web QL mở Dashboard NSNN cho tài khoản có quyền `NSNN_VIEW`; liên kết
+thêm `from=tax-ops` để Dashboard hiện lối **Quay lại Web QL**. Người mở Dashboard
+NSNN trực tiếp không thấy lối vào Web QL. Hai ứng dụng không truyền bộ lọc hoặc
+dữ liệu hồ sơ trên URL. URL đích đọc từ `VITE_TAX_OPS_URL` và `VITE_NSNN_URL`;
+hệ thống đích vẫn phải xác thực quyền.
 
 ## Cấu trúc mã nguồn
 
@@ -53,6 +83,7 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 | Thư mục | Nội dung |
 |---|---|
 | [`web/`](web) | **Ứng dụng.** React + TypeScript + Vite. Source, `DESIGN.md`, script nghiệm thu. |
+| [`tax-ops/`](tax-ops) | **Web quản lý nghiệp vụ Thuế.** Trang công việc, nợ, kiểm tra, hoàn thuế, báo cáo và quản lý dữ liệu nội bộ. |
 | [`web/archive/legacy-clone/`](web/archive/legacy-clone) | Bản clone nguyên trạng website ba tab của giai đoạn trước. Không còn trong build, giữ để tra cứu. |
 | [`reference-nsnn/`](reference-nsnn) | Bộ khảo sát website tham chiếu: 143 phản hồi API đã lưu, 40 trạng thái giao diện, CSS/bundle gốc, GeoJSON ranh giới 126 phường/xã và 30 quận/huyện trước 01/07/2025. |
 | [`verification/`](verification) | Ảnh và text đối chiếu của giai đoạn clone. |

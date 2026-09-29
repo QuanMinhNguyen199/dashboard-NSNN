@@ -59,6 +59,14 @@ const run = async () => {
     if (m.type() === "error" && !isNoise(m.text())) jsErrors.push(m.text());
   });
 
+  // Lối Web QL là đường QUAY LẠI theo ngữ cảnh. Người mở Dashboard trực tiếp
+  // không được thấy một cổng vào hệ thống nghiệp vụ nội bộ ngành Thuế.
+  await page.goto(withFastMock(BASE + "/?from=tax-ops"), { waitUntil: "networkidle0" });
+  const returnLabel = await page.$eval(".dapp-switch", (link) => link.textContent?.trim());
+  if (returnLabel !== "Quay lại Web QL") throw new Error(`Sai lối quay lại Web QL: ${returnLabel}`);
+  await page.goto(withFastMock(BASE), { waitUntil: "networkidle0" });
+  if (await page.$(".dapp-switch") !== null) throw new Error("Dashboard mở trực tiếp vẫn hiện lối vào Web QL.");
+
   // 1 — Điều hướng năm tab
   await page.goto(withFastMock(BASE + "/?tab=overview&year=2026&periodType=MONTH&period=8"), {
     waitUntil: "networkidle0",

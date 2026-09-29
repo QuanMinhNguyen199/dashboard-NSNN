@@ -259,7 +259,16 @@ export function DonutChart({
                   {content}
                 </button>
               ) : (
+                /*
+                  `is-locked` chỉ gắn cho lát THẬT SỰ bị khoá.
+
+                  Không có `onSelect` và bị khoá là hai chuyện khác hẳn nhau,
+                  dù cùng dựng ra một thẻ `div`. Donut chỉ để đọc thì chú giải
+                  của nó bình thường; làm mờ nó là báo một trạng thái vô hiệu
+                  không hề tồn tại.
+                */
                 <div
+                  className={khoa.has(row.id) ? "is-locked" : undefined}
                   tabIndex={0}
                   aria-describedby={tooltipId}
                   onFocus={() => setHoveredId(row.id)}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Biểu trưng Thuế">
+  <circle cx="32" cy="32" r="31" fill="#f3c602"/>
+  <circle cx="32" cy="32" r="27" fill="#cf2333"/>
+  <circle cx="32" cy="32" r="23.5" fill="none" stroke="#f3c602" stroke-width="1.5"/>
+  <path d="m32 12 2.8 8.6h9l-7.3 5.3 2.8 8.6-7.3-5.3-7.3 5.3 2.8-8.6-7.3-5.3h9z" fill="#f3c602"/>
+  <path d="M17 29c0 9 5 16 13 20M47 29c0 9-5 16-13 20" fill="none" stroke="#f3c602" stroke-width="2.8" stroke-linecap="round"/>
+  <path d="m18 36-4-2m7 8-5-1m7 5-4 1m27-11 4-2m-7 8 5-1m-7 5 4 1" fill="none" stroke="#f3c602" stroke-width="2.3" stroke-linecap="round"/>
+  <path d="M24 49a12 12 0 0 1 16 0" fill="none" stroke="#f3c602" stroke-width="3" stroke-linecap="round"/>
+</svg>
