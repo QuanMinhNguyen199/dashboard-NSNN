@@ -292,6 +292,19 @@ table { border-collapse: collapse; width: 100%; }
   color: var(--ink-on-dark); font-size: var(--fs-label); font-weight: var(--fw-label);
 }
 .dheader-frame:hover { background: var(--on-dark-fill-hover); border-color: var(--on-dark-line-hover); }
+.dapp-switch {
+  min-height: 32px; padding: 5px 10px;
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  border: 1px solid var(--on-dark-line); border-radius: var(--r-chip);
+  background: var(--on-dark-fill); color: var(--ink-on-dark);
+  font-size: var(--fs-label); font-weight: var(--fw-label); text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.dapp-switch:hover { background: var(--on-dark-fill-hover); border-color: var(--on-dark-line-hover); }
+.dapp-switch:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.dapp-switch svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dapp-switch.is-mobile { min-height: 40px; padding: 7px 9px; flex: none; }
+button.dapp-switch.is-mobile { min-height: 44px; cursor: pointer; }
 
 /* ───────────────────── Xem thử khổ nhúng (iframe thật) ──────────────────── */
 .dframe { display: flex; flex-direction: column; height: 100dvh; background: var(--canvas); }
@@ -1050,7 +1063,11 @@ button.dbar-row:hover .dbar-label b { color: var(--brand); }
 .ddonut-segment.is-locked:hover { opacity: 0.22; }
 /* Chú giải của lát khoá là `<div>` chứ không phải `<button>` — trông phải khác
    hẳn dòng bấm được, nếu không thì vẫn là một dòng mời bấm. */
-.ddonut-legend li:has(> div[aria-describedby]) { opacity: 0.55; }
+/* Làm mờ theo TRẠNG THÁI, không theo loại thẻ.
+   Luật cũ bám vào `div[aria-describedby]` — nhưng `div` cũng là thứ được dựng
+   khi donut không có tương tác nào cả. Một chú giải chỉ để đọc vì thế bị hạ
+   xuống 55% và trông như đang bị vô hiệu hoá. */
+.ddonut-legend li > div.is-locked { opacity: 0.55; }
 .ddonut-segment.is-hovered { opacity: 1; stroke-width: 22; }
 .ddonut-segment.is-interactive:focus { outline: none; }
 /* Chênh 2px giữa `is-selected` (22) và focus (24) là không nhìn ra. Thêm viền
@@ -2614,6 +2631,7 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
   .dheader { padding: 12px 15px; }
   .dheader h1 { font-size: var(--fs-insight); }
   .dheader p, .dheader-frame { display: none; }
+  .dheader-tools { gap: var(--s2); }
   .dshell { padding: 0 10px; }
   /* ĐIỀU HƯỚNG ĐÁY — thay dải tab cuộn ngang ở đỉnh.
      Dải cuộn ngang giấu mất tab thứ tư và năm sau một lớp mask, và nó nằm ở

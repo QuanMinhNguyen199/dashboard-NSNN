@@ -13,6 +13,20 @@ import { RevenueAnalysisTab } from "@/features/revenue-analysis/RevenueAnalysisT
 import { ReportTab } from "@/features/report/ReportTab";
 import { FilterBar } from "@/components/FilterBar";
 import { RevenuePreviewDrawer } from "@/features/revenue-preview/RevenuePreviewDrawer";
+import { isPortal, logoutPortal } from "./portalAuth";
+
+const TAX_OPS_URL =
+  import.meta.env.VITE_TAX_OPS_URL ??
+  (import.meta.env.DEV ? "http://localhost:5174/" : "/tax-operations/");
+const SHOW_TAX_OPS_RETURN = !isPortal && new URLSearchParams(window.location.search).get("from") === "tax-ops";
+
+function ExternalLinkIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M14 5h5v5M19 5l-8 8M19 13v6H5V5h6" />
+    </svg>
+  );
+}
 
 
 export function App() {
@@ -191,10 +205,17 @@ export function App() {
 
       {mobileHost ? (
         <header className="dmobile-header">
+          {isPortal && !embedded && <button type="button" className="dapp-switch is-mobile" onClick={logoutPortal}>Đăng xuất</button>}
           <div>
             <h1>Thu Ngân sách TP Hà Nội</h1>
             <p>{active.label}</p>
           </div>
+          {SHOW_TAX_OPS_RETURN && !embedded && (
+            <a className="dapp-switch is-mobile" href={TAX_OPS_URL}>
+              <span>Về Web QL</span>
+              <ExternalLinkIcon />
+            </a>
+          )}
         </header>
       ) : (
         <header className="dheader">
@@ -209,6 +230,13 @@ export function App() {
               chứ không đổi state: `FramePreview` dựng một cây React riêng, không
               nằm trong `DashboardProvider`, nên phải tải lại trang mới vào được. */}
           <div className="dheader-tools">
+            {isPortal && !embedded && <button type="button" className="dapp-switch is-mobile" onClick={logoutPortal}>Đăng xuất</button>}
+            {SHOW_TAX_OPS_RETURN && !embedded && (
+              <a className="dapp-switch" href={TAX_OPS_URL}>
+                <span>Quay lại Web QL</span>
+                <ExternalLinkIcon />
+              </a>
+            )}
             <button
               type="button"
               className="dheader-frame"

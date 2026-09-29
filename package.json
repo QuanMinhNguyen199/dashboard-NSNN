@@ -3,12 +3,19 @@
   "private": true,
   "description": "Vỏ tiện dụng: mọi lệnh đều uỷ quyền xuống web/, nơi chứa mã nguồn thật.",
   "scripts": {
-    "dev": "npm --prefix web run dev",
+    "dev": "node scripts/portal.mjs dev",
+    "dev:nsnn": "npm --prefix web run dev",
+    "build:portal": "node scripts/portal.mjs build",
+    "preview:portal": "node scripts/portal.mjs preview",
     "build": "npm --prefix web run build",
     "preview": "npm --prefix web run preview",
     "typecheck": "npm --prefix web run typecheck",
     "acceptance": "npm --prefix web run acceptance",
-    "postinstall": "npm --prefix web install"
+    "dev:tax-ops": "node scripts/portal.mjs dev",
+    "build:tax-ops": "npm --prefix tax-ops run build",
+    "acceptance:tax-ops": "npm --prefix tax-ops run acceptance",
+    "build:all": "npm --prefix web run build && npm --prefix tax-ops run build",
+    "postinstall": "npm --prefix web install && npm --prefix tax-ops install"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0"
