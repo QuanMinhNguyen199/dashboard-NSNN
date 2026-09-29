@@ -15,23 +15,28 @@ Mặc định Vite mở tại `http://localhost:5174`.
 
 ## Tài khoản trình diễn
 
-Màn đăng nhập cung cấp bốn tài khoản mẫu cho Cán bộ xử lý, Trưởng phòng, Lãnh
-đạo Thuế và Quản trị dữ liệu. Tất cả dùng mật khẩu `demo123`. Phiên chỉ được lưu
-trong tab trình duyệt hiện tại bằng `sessionStorage`; đây không phải cơ chế xác
-thực production.
+Màn đăng nhập cung cấp ba tài khoản mẫu: Cán bộ thuế, Lãnh đạo Thuế và Lãnh đạo
+nhà nước. Tất cả dùng mật khẩu `demo123`. Phiên chỉ được lưu trong tab trình duyệt
+hiện tại bằng `sessionStorage`; đây không phải cơ chế xác thực production.
 
-Tài khoản `lanhdao.thue` có quyền demo `NSNN_VIEW`, vì vậy có thể thấy lối
-chuyển sang Dashboard Thu NSNN khi `VITE_ENABLE_NSNN_LINK=true`. Ba tài khoản
-còn lại chỉ có quyền `TAX_OPS_VIEW`. Production phải lấy các quyền này từ dịch
-vụ xác thực thay vì suy ra trực tiếp từ nhãn vai trò trên giao diện.
+Trong tab Báo cáo, Cán bộ thuế tạo bản nháp và gửi duyệt; Lãnh đạo Thuế duyệt
+và phát hành. Hai tài khoản dùng chung báo cáo mô phỏng trong cùng tab trình
+duyệt để trình diễn luồng bàn giao. Những thao tác này chưa chạy dữ liệu nguồn,
+chưa lưu trên máy chủ và chưa phải quy trình phê duyệt thật.
+Màn cán bộ hiển thị bản nháp, lỗi và trạng thái “Đã gửi duyệt”; màn lãnh đạo chỉ
+hiển thị báo cáo đã gửi, đã duyệt hoặc đã phát hành, với hàng “Cần duyệt”.
+
+`canbo.thue` và `lanhdao.thue` có quyền `TAX_OPS_VIEW`. Tài khoản
+`lanhdao.nhanuoc` chỉ có `NSNN_VIEW` và được điều hướng sang Dashboard Thu NSNN;
+vai này không mở Web quản lý. Production phải lấy quyền từ dịch vụ xác thực
+thay vì suy ra từ nhãn vai trò trên giao diện.
 
 Liên kết sang Dashboard thêm tham số kỹ thuật `from=tax-ops`. Dashboard chỉ dựa
 vào tham số này để hiện nút quay lại; tham số không cấp quyền và không chứa MST,
 mã hồ sơ hoặc bộ lọc nghiệp vụ.
 
-Liên kết quay về Dashboard Thu NSNN mặc định bị ẩn. Đặt
-`VITE_ENABLE_NSNN_LINK=true` để bật cho vai trò **Lãnh đạo Thuế**; URL đích đọc
-từ `VITE_NSNN_URL` và mặc định là `http://localhost:5173/` khi chạy local.
+Trong portal dùng chung cổng 5174, Dashboard ở `/nsnn/`. Khi chạy Web quản lý
+độc lập, URL đích có thể cấu hình bằng `VITE_NSNN_URL`.
 
 Từ thư mục gốc repository có thể dùng:
 

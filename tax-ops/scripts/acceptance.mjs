@@ -146,11 +146,74 @@ await page.evaluate(() => {
 const tableShell = await page.$(".table-shell");
 await tableShell?.screenshot({ path: ".impeccable/review/debt-table-scrolled-mobile.png" });
 
+/* Cán bộ lập và gửi; chỉ lãnh đạo mới được duyệt, phát hành. Hai vai cùng
+   đọc bản ghi demo trong một tab trình duyệt sau khi đăng xuất/đăng nhập. */
+const reportName = `Kiểm tra quyền ${Date.now()}`;
+await page.goto(`${base}/?view=reports`, { waitUntil: "networkidle0" });
+await page.click(".page-actions .button");
+await page.type('input[name="reportName"]', reportName);
+await page.type('input[name="reportPeriod"]', "Tháng 9/2026");
+await page.click('.report-form button[type="submit"]');
+const officerRow = await page.evaluate((name) => {
+  const row = [...document.querySelectorAll(".case-list tbody tr")].find((item) => item.textContent?.includes(name));
+  row?.querySelector(".row-select")?.click();
+  return Boolean(row);
+}, reportName);
+if (!officerRow) throw new Error("Bản nháp vừa tạo không có trong danh sách cán bộ.");
+await page.waitForSelector(".case-detail-dialog[open]");
+const officerActions = await page.evaluate(() => {
+  const actions = [...document.querySelectorAll(".case-detail-dialog .panel-actions button")].map((button) => button.textContent?.trim());
+  return { send: actions.includes("Gửi duyệt"), canApprove: actions.includes("Duyệt") || actions.includes("Phát hành") };
+});
+if (!officerActions.send || officerActions.canApprove) throw new Error(`Quyền cán bộ ở tab Báo cáo sai: ${JSON.stringify(officerActions)}`);
+await page.click(".case-detail-dialog .panel-actions button");
+const sent = await page.evaluate((name) => [...document.querySelectorAll(".case-list tbody tr")].some((row) => row.textContent?.includes(name) && row.textContent?.includes("Đã gửi duyệt")), reportName);
+if (!sent) throw new Error("Cán bộ gửi duyệt nhưng trạng thái báo cáo chưa đổi.");
+await page.keyboard.press("Escape");
+await page.screenshot({ path: ".impeccable/review/reports-officer-sent-mobile.png" });
+
 await page.goto(`${base}/?view=workbench`, { waitUntil: "networkidle0" });
 await page.click(".menu-button");
 await page.click(".mobile-drawer .logout-button");
 await page.waitForSelector(".login-page");
 if (await page.$(".workspace") !== null) throw new Error("Đăng xuất không xoá phiên demo.");
+
+await page.evaluate(() => {
+  const leader = [...document.querySelectorAll(".demo-account-list button")].find((item) => item.textContent?.includes("Lãnh đạo Thuế"));
+  leader?.click();
+});
+await page.click(".login-submit");
+await page.goto(`${base}/?view=reports`, { waitUntil: "networkidle0" });
+await page.screenshot({ path: ".impeccable/review/reports-leader-review-mobile.png" });
+await page.setViewport({ width: 1440, height: 1000 });
+await page.screenshot({ path: ".impeccable/review/reports-leader-review-desktop.png" });
+await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+const leaderRow = await page.evaluate((name) => {
+  const row = [...document.querySelectorAll(".case-list tbody tr")].find((item) => item.textContent?.includes(name));
+  row?.querySelector(".row-select")?.click();
+  return Boolean(row);
+}, reportName);
+if (!leaderRow) throw new Error("Lãnh đạo không thấy báo cáo cán bộ đã gửi.");
+await page.waitForSelector(".case-detail-dialog[open]");
+const leaderActions = await page.evaluate(() => ({
+  approve: [...document.querySelectorAll(".case-detail-dialog .panel-actions button")].some((button) => button.textContent?.trim() === "Duyệt"),
+  canCreate: Boolean(document.querySelector(".page-actions .button")),
+  queue: [...document.querySelectorAll(".figure-line span")].some((item) => item.textContent?.trim() === "Cần duyệt"),
+  showsDraft: [...document.querySelectorAll(".case-list tbody tr")].some((row) => row.textContent?.includes("Bản nháp")),
+}));
+if (!leaderActions.approve || leaderActions.canCreate || !leaderActions.queue || leaderActions.showsDraft) throw new Error(`Quyền lãnh đạo ở tab Báo cáo sai: ${JSON.stringify(leaderActions)}`);
+await new Promise((resolve) => setTimeout(resolve, 220));
+await page.screenshot({ path: ".impeccable/review/reports-leader-detail-mobile.png" });
+await page.click(".case-detail-dialog .panel-actions button");
+const approved = await page.evaluate((name) => {
+  const row = [...document.querySelectorAll(".case-list tbody tr")].find((item) => item.textContent?.includes(name));
+  return Boolean(row?.textContent?.includes("Đã duyệt") && [...document.querySelectorAll(".case-detail-dialog .panel-actions button")].some((button) => button.textContent?.trim() === "Phát hành"));
+}, reportName);
+if (!approved) throw new Error("Lãnh đạo duyệt nhưng báo cáo chưa chuyển sang Đã duyệt.");
+await page.keyboard.press("Escape");
+await page.click(".menu-button");
+await page.click(".mobile-drawer .logout-button");
+await page.waitForSelector(".login-page");
 
 /* Ba vai, chốt 28/09: Lãnh đạo nhà nước KHÔNG vào Web quản lý. Đăng nhập được
    nhưng phải gặp một lời từ chối có giải thích kèm đường sang Dashboard, không
