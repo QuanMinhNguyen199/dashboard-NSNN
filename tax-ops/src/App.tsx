@@ -70,7 +70,7 @@ export function App() {
       document.title = "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title = { workbench: "Trang công việc", debt: "Nợ và cưỡng chế", risk: "Kiểm tra và rủi ro", refund: "Hoàn thuế và hỗ trợ", reports: "Báo cáo", runs: "Lượt chạy dữ liệu", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ" }[view];
+    const title = { workbench: "Tổng quan", debt: "Nợ và cưỡng chế", risk: "Kiểm tra và rủi ro", refund: "Hoàn thuế và hỗ trợ", reports: "Báo cáo", runs: "Lượt chạy dữ liệu", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ" }[view];
     document.title = `${title} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 

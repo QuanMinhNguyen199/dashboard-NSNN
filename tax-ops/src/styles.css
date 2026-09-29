@@ -266,10 +266,11 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
    đúng hình dạng mà hệ này đã bỏ. */
 .panel { overflow: hidden; border: 0; border-radius: var(--radius-panel); background: var(--surface); }
 .panel-head { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+.panel-head > div:first-child { min-width: 0; }
 .panel-head h2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; font-weight: 650; letter-spacing: -.005em; }
 
 .panel-head p { max-width: 72ch; margin-top: 2px; color: var(--ink-3); font-size: 12px; }
-.panel-actions { flex: none; }
+.panel-actions { flex: none; min-width: 0; }
 .panel-body { padding: 0 14px 12px; }
 /* Chú thích nguồn ở chân thân khối: mờ, nhỏ, và không bao giờ chạm vào chiều
    cao đầu khối. Khối không khai nguồn thì đơn giản là không có dòng này. */
@@ -304,17 +305,18 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 @media (max-width: 1360px) { .case-layout { display: block; } .case-detail { display: none; } }
 
 .task-list { margin-inline: -14px; }
-.task-row { width: 100%; min-height: 54px; display: grid; grid-template-columns: minmax(0, 1fr) auto 16px; align-items: center; gap: 10px; padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line-soft); background: var(--surface); text-align: left; transition: background 100ms var(--ease-out); }
+.task-row { width: 100%; min-width: 0; min-height: 54px; display: grid; grid-template-columns: minmax(0, 1fr) auto 20px; align-items: center; gap: 10px; padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line-soft); background: var(--surface); text-align: left; transition: background 100ms var(--ease-out); }
 .task-row:last-child { border-bottom: 0; }
 .task-row:hover { background: var(--surface-soft); }
 .task-row:active { background: var(--line-soft); }
-.task-row > .icon:last-child { color: var(--ink-3); transition: color 100ms var(--ease-out), transform 140ms var(--ease-out); }
+.task-row > .icon:last-child { justify-self: end; color: var(--ink-3); transition: color 100ms var(--ease-out), transform 140ms var(--ease-out); }
 .task-row:hover > .icon:last-child { color: var(--brand); transform: translateX(1px); }
 
 .task-copy strong, .task-copy small, .task-meta small { display: block; }
 .task-copy strong { font-size: 13px; font-weight: 600; }
 .task-copy small, .task-meta small { margin-top: 2px; color: var(--ink-3); font-size: 11px; }
-.task-meta { display: grid; justify-items: end; gap: 1px; }
+.task-meta { min-width: 0; margin-right: 8px; display: grid; justify-items: end; gap: 1px; }
+.task-meta .badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
 .source-list { margin-inline: -14px; }
 .source-row { position: relative; min-height: 54px; display: grid; grid-template-columns: minmax(105px, .75fr) 64px minmax(100px, 1fr) auto; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1px solid var(--line-soft); }
@@ -384,10 +386,12 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 .quality-note { color: var(--critical); }
 .table-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); color: var(--ink-3); font-size: 12px; }
 
-.checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
-.check-item { min-height: 46px; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 9px; border-bottom: 1px solid var(--line-soft); font-size: 13px; }
-.check-item > span { width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid var(--state-edge); border-radius: 50%; color: white; font-size: 11px; font-weight: 700; }
-.check-item.is-done > span { background: var(--positive); border-color: var(--positive); }
+.checklist { min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+.check-item { min-width: 0; min-height: 46px; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 9px; border-bottom: 1px solid var(--line-soft); font-size: 13px; }
+.check-item > strong { min-width: 0; overflow-wrap: anywhere; }
+.check-item > .badge { justify-self: end; }
+.check-item > span:not(.badge) { width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid var(--state-edge); border-radius: 50%; color: white; font-size: 11px; font-weight: 700; }
+.check-item.is-done > span:not(.badge) { background: var(--positive); border-color: var(--positive); }
 .status-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .status-flow > div { display: grid; gap: 4px; padding: 14px 14px 4px; border-left: 1px solid var(--line-soft); }
 .status-flow > div:first-child { border-left: 0; }
@@ -467,6 +471,7 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 
 @media (max-width: 1180px) {
   .workbench-grid, .two-column { grid-template-columns: 1fr; }
+  .kpi-strip, .figure-line { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .status-flow { grid-template-columns: repeat(3, 1fr); }
   .status-flow > div:nth-child(4) { border-left: 0; }
   .status-flow > div:nth-child(n + 4) { border-top: 1px solid var(--line-soft); }
@@ -534,7 +539,7 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .segmented-mobile { display: grid; gap: 4px; }
   .segmented-mobile > span { color: var(--ink-3); font-size: 11px; font-weight: 600; }
   .segmented-mobile select { width: 100%; min-height: 44px; }
-  .task-row { min-height: 72px; grid-template-columns: minmax(0, 1fr) 16px; padding: 10px 12px; }
+  .task-row { min-height: 72px; grid-template-columns: minmax(0, 1fr) 20px; padding: 10px 12px; }
   .task-meta { grid-column: 1; justify-items: start; }
   .task-meta small { margin-left: 1px; }
   .task-row > .icon:last-child { grid-column: 2; grid-row: 1 / span 2; }
@@ -726,7 +731,7 @@ tbody tr.is-selected { background: var(--selected-surface); }
 @supports (grid-template-columns: subgrid) {
   @media (min-width: 721px) {
     .source-list { display: grid; grid-template-columns: minmax(105px, .75fr) max-content minmax(100px, 1fr) max-content; }
-    .task-list { display: grid; grid-template-columns: minmax(0, 1fr) max-content 16px; }
+    .task-list { display: grid; grid-template-columns: minmax(0, 1fr) max-content 20px; }
     .rank-list { display: grid; grid-template-columns: 24px minmax(0, 1fr) max-content; }
     .source-row, .task-row, .rank-list > div { grid-template-columns: subgrid; grid-column: 1 / -1; }
     /* Số căn phải để các chữ số thẳng cột; nhãn dưới nó theo cùng mép. */

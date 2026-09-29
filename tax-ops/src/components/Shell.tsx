@@ -15,14 +15,14 @@ import type { DemoUser } from "@/auth/demoAuth";
   `OFFICER` mở toàn bộ: khảo sát cho thấy chính cán bộ là người tải file, làm
   sạch, ánh xạ và chạy báo cáo — không có vai nào khác làm những việc đó.
 
-  `TAX_LEADER` chỉ mở Trang công việc và Báo cáo: phạm vi xem của lãnh đạo chưa
+  `TAX_LEADER` chỉ mở Tổng quan và Báo cáo: phạm vi xem của lãnh đạo chưa
   được định nghĩa, nên chừa chỗ chứ không đoán nội dung.
 
   `STATE_LEADER` không có mục nào. Đây là tài khoản của Dashboard Thu NSNN; họ
   không có việc gì trong hệ tác nghiệp.
 */
 export const NAV: { id: ViewId; label: string; short: string; icon: IconName; group: "work" | "business" | "data"; roles: UserRole[] }[] = [
-  { id: "workbench", label: "Trang công việc", short: "Công việc", icon: "home", group: "work", roles: ["OFFICER", "TAX_LEADER"] },
+  { id: "workbench", label: "Tổng quan", short: "Tổng quan", icon: "home", group: "work", roles: ["OFFICER", "TAX_LEADER"] },
   { id: "debt", label: "Nợ và cưỡng chế", short: "Nợ", icon: "debt", group: "business", roles: ["OFFICER"] },
   { id: "risk", label: "Kiểm tra và rủi ro", short: "Kiểm tra", icon: "risk", group: "business", roles: ["OFFICER"] },
   { id: "refund", label: "Hoàn thuế và hỗ trợ", short: "Hoàn thuế", icon: "refund", group: "business", roles: ["OFFICER"] },

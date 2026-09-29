@@ -15,7 +15,7 @@ export function Workbench({ onNavigate, role }: { onNavigate: (view: ViewId) => 
 
   return <div className="page-stack workbench-page">
     <PageIntro
-      title="Trang công việc"
+      title="Tổng quan"
       description={`Dữ liệu đến ${DATA_AS_OF}`}
     />
 
@@ -27,7 +27,7 @@ export function Workbench({ onNavigate, role }: { onNavigate: (view: ViewId) => 
     ]}/>
 
     <div className="workbench-grid">
-      <Panel title="Công việc ưu tiên" source="TMS – TTR – HĐĐT">
+      <Panel title="Công việc ưu tiên">
         <div className="task-list">{workItems.map((item) => <button className="task-row" type="button" key={item.id} onClick={() => onNavigate(moduleView(item.module))}>
           <span className="task-copy"><strong>{item.title}</strong><small>{item.module} – {item.assignee}</small></span>
           <span className="task-meta"><Badge tone={workTone[item.status] as Tone}>{workLabel[item.status]}</Badge><small>{item.due}</small></span>
