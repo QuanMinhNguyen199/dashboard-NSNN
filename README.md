@@ -30,6 +30,11 @@ Dashboard NSNN được build vào `tax-ops/public/nsnn/` khi khởi động c�
 sau khi sửa mã NSNN, chạy lại `npm run dev` để cập nhật. Tax Ops vẫn có HMR.
 `npm run build:portal` tạo bản gộp tại `tax-ops/dist`; `npm run preview:portal`
 phục vụ bản đó ở `5174`. `npm run dev:nsnn` vẫn chạy NSNN riêng ở `5173`.
+GitHub Pages build bản gộp với base `/dashboard-NSNN/`: màn đăng nhập ở gốc site,
+Dashboard Thu NSNN ở `/dashboard-NSNN/nsnn/`. Workflow `deploy-pages.yml` cài
+phụ thuộc của cả hai ứng dụng, build và phát hành `tax-ops/dist`. Trong GitHub,
+chọn **Settings → Pages → Build and deployment → GitHub Actions** nếu repo chưa
+chọn nguồn này.
 Kiểm tra phân vai: `cd tax-ops && node scripts/check-portal.mjs` khi cổng chung đang chạy.
 
 Hướng dẫn đầy đủ, cách **thay API**, giả định của mock và giới hạn còn lại:
@@ -76,7 +81,7 @@ Giao diện chỉ biết interface `DashboardDataProvider`. **Thay API là đổ
 | Workflow | Chạy khi | Làm gì |
 |---|---|---|
 | [`ci.yml`](.github/workflows/ci.yml) | push **mọi nhánh** và pull request | typecheck → build → 20 tiêu chí nghiệm thu trên Chrome |
-| [`deploy-pages.yml`](.github/workflows/deploy-pages.yml) | push `main` | build → phát hành GitHub Pages |
+| [`deploy-pages.yml`](.github/workflows/deploy-pages.yml) | push `main` | build cổng chung Tax Ops + NSNN → phát hành GitHub Pages |
 
 ## Nội dung repo
 
