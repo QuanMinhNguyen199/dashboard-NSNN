@@ -105,7 +105,7 @@ export function App() {
     {moDuoc === "debt" && <Debt onNavigate={setView} onCreateReport={openReports}/>}
     {moDuoc === "risk" && <Risk onCreateReport={openReports}/>}
     {moDuoc === "refund" && <Refund onCreateReport={openReports}/>}
-    {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit}/>}
+    {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit} role={user.role}/>}
     {moDuoc === "runs" && <Runs/>}
     {moDuoc === "batches" && <Batches/>}
     {moDuoc === "mapping" && <Mapping/>}

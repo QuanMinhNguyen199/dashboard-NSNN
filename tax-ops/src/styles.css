@@ -249,6 +249,9 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 .badge.is-mock::before { display: none; }
 
 .kpi-strip, .figure-line { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface);  box-shadow: none; }
+.reports-page .figure-line:has(> :nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.report-inline-status { display: none; }
+@media (max-width: 900px) { .report-inline-status { display: block; margin-top: 4px; } }
 .kpi, .figure-line > * { min-width: 0; min-height: 56px; display: grid; align-content: center; gap: 1px; padding: 9px 16px; border: 0; border-left: 1px solid var(--line-soft); background: transparent; text-align: left; }
 .kpi:first-child, .figure-line > *:first-child { border-left: 0; }
 .figure-line button:hover { background: var(--surface-soft); }
