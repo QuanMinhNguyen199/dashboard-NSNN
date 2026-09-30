@@ -1,0 +1,1449 @@
+diff --git a/web/DESIGN.md b/web/DESIGN.md
+index f7b42ea..991f4de 100644
+--- a/web/DESIGN.md
++++ b/web/DESIGN.md
+@@ -210,7 +210,7 @@ IF the context/query is about the Mobile host or the mobile preview:
+ 
+ Đây là giao diện Operate dành cho người đọc và đối chiếu số liệu ngân sách công. Cảm giác chủ đạo là thể chế, chắc chắn và yên tĩnh: đầu trang xanh navy xác lập thẩm quyền; phần làm việc dùng nền trung tính sáng, bề mặt trắng có viền mảnh và một giọng xanh dữ liệu nhất quán. Mật độ thông tin cao nhưng mỗi lớp có trật tự rõ ràng, ưu tiên quét nhanh hơn biểu đạt trang trí.
+ 
+-Hệ thống dùng tiếng Việt làm ngôn ngữ sản phẩm, số theo định dạng `vi-VN`, **một** đơn vị tiền duy nhất là “tỷ đồng” và chữ số dạng tabular để các cột số ổn định khi thay đổi. Giao diện phải diễn đạt trung thực nguồn, kỳ, phạm vi, độ phủ và khoảng trống dữ liệu. API, MCP, fixture và mock đi qua cùng một hợp đồng dữ liệu có kiểu; trạng thái nguồn phải hiện rõ trong giao diện.
++Hệ thống dùng tiếng Việt làm ngôn ngữ sản phẩm, số theo định dạng `vi-VN`, đơn vị tiền tệ VND; mỗi số tiền kèm hậu tố tỷ, triệu, nghìn hoặc đồng và chữ số dạng tabular để các cột số ổn định khi thay đổi. Giao diện phải diễn đạt trung thực nguồn, kỳ, phạm vi, độ phủ và khoảng trống dữ liệu. API, MCP, fixture và mock đi qua cùng một hợp đồng dữ liệu có kiểu; trạng thái nguồn phải hiện rõ trong giao diện.
+ 
+ **Key Characteristics:**
+ 
+@@ -347,43 +347,17 @@ cấp nào, chỉ tạo lệch. Năm bậc cách nhau nửa pixel là trôi dạ
+ 
+ ### Số và đơn vị
+ 
+-**Thang tiền dừng ở "tỷ đồng".** Không có bậc "nghìn tỷ".
++**Đơn vị tiền tệ: VND.** Mỗi số tiền tự chọn hậu tố theo trị tuyệt đối: từ 1 tỷ ghi “tỷ”, từ 1 triệu ghi “triệu”, từ 1 nghìn ghi “nghìn”, còn lại ghi “đồng”. Không dùng bậc “nghìn tỷ”.
+ 
+-Bậc 10¹² trong tiếng Việt là một từ ghép: "nghìn tỷ" bắt người đọc nhân nhẩm hai
+-lần, còn dạng viết tắt CLDR "NT" thì không ai đọc ra. Dừng ở "tỷ" cho cả ứng dụng
+-đúng **một** đơn vị tiền duy nhất — mọi con số trên mọi tab so được với nhau mà
+-không phải đổi bậc lần nào, kể cả nhãn trục biểu đồ. Số lớn dùng dấu chấm phân
+-cách nghìn: "434.710" đọc nhanh hơn "434,71 nghìn tỷ" vì không có phép nhân nào
+-trong đầu. Đây cũng là đơn vị của báo cáo ngân sách giấy — "Đơn vị tính: tỷ đồng".
++Áp dụng cho mọi KPI, bảng, danh sách, tooltip và nhãn trục: ví dụ “7,06 tỷ”, “240 triệu”, “−94 triệu”. Số 0 ghi “0 đồng”; thiếu dữ liệu ghi “—”. Số liệu nguồn, công thức và Excel vẫn giữ đơn vị gốc để đối soát.
+ 
+-Không dùng mã ISO `VND`: "đồng" đã là tên đơn vị tiền, và màn hình không có loại
+-tiền thứ hai nào để phân biệt.
++Nhãn thẻ dùng “Đơn vị tiền tệ: VND”, nhãn cột có thể dùng “(VND)”. Dòng chú thích chung giải thích số tiền rút gọn và đơn vị nằm cạnh từng số. Không ghi đơn vị chung “tỷ đồng” cho một cột có cả tỷ và triệu.
+ 
+-| Việc | Cách làm |
+-|---|---|
+-| Thang | `tỷ` → `triệu` → `nghìn` → `đồng`. Không có bậc nào trên `tỷ` |
+-| Chọn đơn vị | Một lần cho cả tập giá trị, lấy theo giá trị lớn nhất |
+-| Số lẻ | Cố định trong cả cột: `≥1000` → 0 lẻ, `≥100` → 1 lẻ, còn lại 2 lẻ |
+-| Ghi đơn vị | **Một** lần ở phụ đề thẻ hoặc đầu cột, không lặp ở từng dòng |
+-| Dưới ngưỡng hiển thị | `<0,01`, **không** phải `0,00` |
+-| Số 0 thật | `0` |
+-
+-Những số so sánh được với nhau dùng chung một thang kể cả khi không nằm trong một
+-cột: "Thu trong kỳ" và "Lũy kế từ đầu năm" trên cùng dải KPI, hay vế A và vế B
+-của tab so sánh.
+-
+-Số đứng một mình tách chữ số khỏi đơn vị: chữ số giữ cỡ và trọng lượng đầy đủ,
+-đơn vị nhỏ hơn (0,7em) và nhạt hơn. Con số là thông tin, đơn vị là chú thích.
+-
+-Mọi phần trăm dùng locale `vi-VN` với **dấu phẩy** thập phân và đúng một số lẻ.
+-Không có chỗ nào dùng `toFixed()` trực tiếp cho số hiển thị.
++Số tiền dùng locale `vi-VN`, tối đa hai số lẻ tùy quy mô và bỏ số 0 thập phân dư. Làm tròn sát ngưỡng thì chuyển lên bậc kế tiếp, ví dụ 999.999.999 đồng hiển thị “1 tỷ”. Chữ số giữ trọng lượng chính; hậu tố nhỏ và nhẹ hơn, tối thiểu cỡ chữ nhãn. Giữ số và đơn vị cùng dòng.
+ 
+-**The Column Unit Rule.** Một cột, một đơn vị, một số lẻ, ghi đơn vị đúng một lần
+-ở đầu. Không hậu tố nào lặp lại ở từng dòng, và không bậc nào trên "tỷ".
++Tỷ lệ tiếp tục hiển thị `%` với một số lẻ; số lượng, mã định danh và ngày tháng không đi qua bộ định dạng tiền.
+ 
+-**The Numeric Alignment Rule.** Mọi số liệu dùng tabular numerals nên chiều rộng
+-chữ số bằng nhau, dấu phẩy thẳng hàng giữa các dòng và cột không nhảy khi giá trị
+-đổi. Căn phải khi nằm ở cuối hàng.
++**Căn số.** Dùng tabular numerals và căn phải trong bảng. Thang hình học của biểu đồ tính theo số tiền gốc; việc đổi hậu tố không thay đổi vị trí điểm hay độ dài thanh.
+ 
+ ### Độ dài dòng và giãn chữ
+ 
+@@ -799,7 +773,7 @@ thêm mới đều phải đi qua hook đó.
+ - **Do** giữ thứ tự header → tab sticky → filter ngữ cảnh → nguồn → KPI → lưới widget.
+ - **Do** dùng surface trắng có viền trên canvas trung tính và nhịp 14–16px để duy trì mật độ hiện tại.
+ - **Do** dùng đúng lưới 12 cột và kiểm tra ở 390px, 1024px và 1440px.
+-- **Do** định dạng số theo `vi-VN`, dùng tabular numerals và chọn **một** đơn vị cho cả cột, ghi ở đầu cột.
++- **Do** định dạng số theo `vi-VN`, dùng tabular numerals và ghi hậu tố tiền ngay cạnh từng số, dùng nhãn tiền tệ VND.
+ - **Do** chốt kích thước đích chạm theo `pointer: coarse` và chọn theo vai trò ngữ nghĩa, không theo tên class.
+ - **Do** cho mọi hoạt ảnh JavaScript đọc `useReducedMotion()`; media query CSS không với tới chúng.
+ - **Do** tính lại tỷ lệ tương phản khi đổi bất kỳ bậc mực nào.
+@@ -827,7 +801,7 @@ thêm mới đều phải đi qua hook đó.
+ - **Don't** viết hoa toàn bộ nhãn điều khiển; ở cỡ 11–12px dấu tiếng Việt chen chúc.
+ - **Don't** giữ số của phạm vi cũ trong lúc chờ số mới. Giấu số đi, giữ thứ tự lại.
+ - **Don't** ghim chiều rộng cột bằng `nth-child` khi nhiều bảng dùng chung một class.
+-- **Don't** dùng bậc "nghìn tỷ" hay mã ISO `VND`; thang tiền dừng ở "tỷ đồng".
++- **Don't** dùng bậc "nghìn tỷ" hoặc để số tiền thiếu hậu tố; bậc lớn nhất là "tỷ".
+ - **Don't** để hai đơn vị tiền khác nhau trong cùng một cột số.
+ - **Don't** đặt `transition-duration: 0.01ms` cho toàn bộ dưới reduced-motion; chặn theo thuộc tính di chuyển và giữ phản hồi màu.
+ - **Don't** gắn quy tắc vùng chạm vào `max-width`; bề rộng màn hình không nói được thiết bị nhập liệu.
+diff --git a/web/package.json b/web/package.json
+index 39700dd..81e756c 100644
+--- a/web/package.json
++++ b/web/package.json
+@@ -6,7 +6,9 @@
+   "description": "Prototype tái tạo nguyên trạng dashboard Thu NSNN Hà Nội theo phường/xã (dev-nsnn.thehegeo.com)",
+   "scripts": {
+     "dev": "vite",
+-    "build": "npm run check:tokens && npm run check:docs && npm run check:data && tsc -b && vite build",
++    "build": "npm run check:tokens && npm run check:docs && npm run check:data && npm run check:money && tsc -b && vite build",
++    "check:money": "node scripts/check-money-format.mjs",
++    "check:money-ui": "node scripts/check-money-ui.mjs",
+     "preview": "vite preview",
+     "typecheck": "tsc -b",
+     "acceptance": "node scripts/acceptance.mjs",
+diff --git a/web/scripts/acceptance.mjs b/web/scripts/acceptance.mjs
+index d534f0e..416a79d 100644
+--- a/web/scripts/acceptance.mjs
++++ b/web/scripts/acceptance.mjs
+@@ -546,12 +546,7 @@ const run = async () => {
+   }
+   check(17, "Thẻ cùng hàng cao bằng nhau", unevenRows, []);
+ 
+-  // 18 — Một cột số chỉ được dùng MỘT đơn vị tiền
+-  //
+-  // DESIGN.md đã có "The Single Money Scale Rule" từ đầu, code vẫn vi phạm suốt
+-  // vì không ai canh: sáu trong mười ba thẻ trộn đơn vị, bảng chi tiết trộn bốn
+-  // đơn vị trong sáu cột. Quy tắc bằng lời không tự thực thi được, nên đưa vào
+-  // đây. Cũng chặn luôn bậc "nghìn tỷ" đã bị loại khỏi thang.
++  // 18 — Each monetary value carries a unit; the currency label stays VND.
+   const mixedUnits = [];
+   for (const tab of ["overview", "revenue-analysis", "location-detail", "advanced-compare"]) {
+     await page.setViewport({ width: 1440, height: 900 });
+@@ -561,18 +556,12 @@ const run = async () => {
+     );
+     await wait(1500);
+     const bad = await page.evaluate(() => {
+-      const unitOf = (text) => {
+-        const m = /(nghìn tỷ|tỷ|triệu|nghìn|đồng)\s*$/.exec(text.trim());
+-        return m ? m[1] : null;
+-      };
+       const out = [];
+-      for (const card of document.querySelectorAll(".dcard")) {
+-        const title = card.querySelector("h2")?.textContent ?? "?";
+-        const cells = [
+-          ...card.querySelectorAll(".dbar-value, .dlist-amount, .dtable td.is-num, .dledger strong, .dcontrib strong, .dbridge strong"),
+-        ].map((el) => el.textContent);
+-        const units = new Set(cells.map(unitOf).filter(Boolean));
+-        if (units.size > 1) out.push(`${title}:${[...units].join("+")}`);
++      if (!document.querySelector(".dcurrency-note")?.textContent.includes("Đơn vị tiền tệ: VND")) out.push("missing VND label");
++      for (const amount of document.querySelectorAll(".dmoney")) {
++        const text = amount.textContent.trim();
++        if (text !== "—" && !/(tỷ|triệu|nghìn|đồng)$/.test(text)) out.push(text);
++        if (/(tỷ|triệu|nghìn|đồng)\s*(tỷ|triệu|nghìn|đồng)$/.test(text)) out.push("duplicate unit: " + text);
+       }
+       // Bậc nghìn tỷ đã bị loại khỏi thang, không được xuất hiện ở bất kỳ đâu.
+       if (/nghìn tỷ/.test(document.body.innerText)) out.push("còn chuỗi 'nghìn tỷ'");
+@@ -580,7 +569,7 @@ const run = async () => {
+     });
+     if (bad.length) mixedUnits.push(`${tab}: ${bad.join(", ")}`);
+   }
+-  check(18, "Một cột số chỉ dùng một đơn vị tiền", mixedUnits, []);
++  check(18, "Mỗi số tiền có hậu tố, nhãn tiền tệ VND", mixedUnits, []);
+ 
+   await page.setViewport({ width: 1440, height: 1000 });
+ 
+diff --git a/web/scripts/check-workspaces.mjs b/web/scripts/check-workspaces.mjs
+index 66f0cb8..764ec00 100644
+--- a/web/scripts/check-workspaces.mjs
++++ b/web/scripts/check-workspaces.mjs
+@@ -189,7 +189,7 @@ check(
+ check(
+   "Doanh nghiệp: chi tiết không lặp nguồn quản lý hoặc tên nhóm",
+   detail ? { headers: detail.headers, repeatedGroupNames: detail.repeatedGroupNames } : null,
+-  { headers: ["Doanh nghiệp", "Số thu (tỷ đồng) ↓", "So cùng kỳ"], repeatedGroupNames: 0 },
++  { headers: ["Doanh nghiệp", "Số thu (VND) ↓", "So cùng kỳ"], repeatedGroupNames: 0 },
+ );
+ 
+ // Ba góc nhìn đổi được.
+diff --git a/web/src/app/App.tsx b/web/src/app/App.tsx
+index d73820f..0851acc 100644
+--- a/web/src/app/App.tsx
++++ b/web/src/app/App.tsx
+@@ -12,6 +12,7 @@ import { OverviewTab } from "@/features/overview/OverviewTab";
+ import { RevenueAnalysisTab } from "@/features/revenue-analysis/RevenueAnalysisTab";
+ import { ReportTab } from "@/features/report/ReportTab";
+ import { FilterBar } from "@/components/FilterBar";
++import { CURRENCY_LABEL, MONEY_DISPLAY_NOTE } from "@/domain/moneyFormat";
+ import { RevenuePreviewDrawer } from "@/features/revenue-preview/RevenuePreviewDrawer";
+ import { isPortal, logoutPortal } from "./portalAuth";
+ 
+@@ -322,6 +323,7 @@ export function App() {
+         </nav>
+ 
+         <FilterBar />
++        <p className="dcurrency-note"><strong>{CURRENCY_LABEL}</strong> · {MONEY_DISPLAY_NOTE}</p>
+ 
+ 
+         <main
+diff --git a/web/src/components/TaxpayerDrawer.tsx b/web/src/components/TaxpayerDrawer.tsx
+index a87b1c0..81881ea 100644
+--- a/web/src/components/TaxpayerDrawer.tsx
++++ b/web/src/components/TaxpayerDrawer.tsx
+@@ -1,6 +1,7 @@
++import { Money, money } from "@/components/primitives";
+ import { useEffect } from "react";
+ import type { TaxpayerRow } from "@/domain/types";
+-import { inScale, moneyScale } from "@/components/primitives";
++
+ 
+ export function TaxpayerDrawer({ row, onClose }: { row: TaxpayerRow | null; onClose: () => void }) {
+   useEffect(() => {
+@@ -23,7 +24,6 @@ export function TaxpayerDrawer({ row, onClose }: { row: TaxpayerRow | null; onCl
+     { id: "tndn", name: "Thuế TNDN", amount: Math.round(row.amount * 0.34) },
+     { id: "khac", name: "Khoản thu khác", amount: row.amount - Math.round(row.amount * 0.52) - Math.round(row.amount * 0.34) },
+   ];
+-  const unit = moneyScale([row.amount, ...history.map((item) => item.amount)]);
+   const max = Math.max(...history.map((item) => item.amount), 1);
+ 
+   return (
+@@ -41,13 +41,13 @@ export function TaxpayerDrawer({ row, onClose }: { row: TaxpayerRow | null; onCl
+         </header>
+         <dl className="dtaxpayer-meta">
+           <div><dt>Đơn vị quản lý</dt><dd>{row.taxOffice ?? "Chưa xác định"}</dd></div>
+-          <div><dt>Tổng số đã nộp</dt><dd>{inScale(row.amount, unit)} {unit.short}</dd></div>
++          <div><dt>Tổng số đã nộp</dt><dd><Money value={row.amount} /></dd></div>
+         </dl>
+         <section>
+           <h3>Lịch sử nộp theo tháng</h3>
+           <div className="dtaxpayer-history" aria-label="Lịch sử nộp thuế mô phỏng">
+             {history.map((item) => (
+-              <div key={item.id} title={`${item.name}: ${inScale(item.amount, unit)} ${unit.short}`}>
++              <div key={item.id} title={`${item.name}: ${money(item.amount)}`}>
+                 <i style={{ height: `${Math.max((item.amount / max) * 100, 4)}%` }} />
+                 <span>{item.name}</span>
+               </div>
+@@ -57,7 +57,7 @@ export function TaxpayerDrawer({ row, onClose }: { row: TaxpayerRow | null; onCl
+         <section>
+           <h3>Cơ cấu khoản đã nộp</h3>
+           <ul className="dtaxpayer-taxes">
+-            {taxes.map((item) => <li key={item.id}><span>{item.name}</span><strong>{inScale(item.amount, unit)} {unit.short}</strong></li>)}
++            {taxes.map((item) => <li key={item.id}><span>{item.name}</span><strong><Money value={item.amount} /></strong></li>)}
+           </ul>
+         </section>
+       </aside>
+diff --git a/web/src/components/TrendChart.tsx b/web/src/components/TrendChart.tsx
+index d2d2d66..02a968b 100644
+--- a/web/src/components/TrendChart.tsx
++++ b/web/src/components/TrendChart.tsx
+@@ -1,6 +1,7 @@
++import { Money, money } from "@/components/primitives";
+ import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+ import type { TrendPoint } from "@/domain/types";
+-import { inScale, money, moneyScale } from "@/components/primitives";
++
+ import { useReducedMotion } from "@/components/useReducedMotion";
+ 
+ /**
+@@ -15,7 +16,7 @@ import { useReducedMotion } from "@/components/useReducedMotion";
+  * Recharts là ngoại lệ duy nhất, và nó là ngoại lệ đắt nhất.
+  */
+ 
+-const PAD = { top: 12, right: 12, bottom: 22, left: 56 };
++const PAD = { top: 12, right: 12, bottom: 22, left: 92 };
+ 
+ /** Bề rộng thật của khung, để vẽ ở tỉ lệ 1:1 thay vì co giãn viewBox. */
+ function useWidth(ref: React.RefObject<HTMLElement | null>) {
+@@ -160,9 +161,6 @@ export function TrendChart({
+     0,
+     ...points.flatMap((p) => [Math.abs(p.current ?? 0), Math.abs(p.previous ?? 0), Math.abs(p.plan ?? 0)]),
+   );
+-  // Cùng thang với mọi con số khác trong ứng dụng. Trục riêng một bậc sẽ buộc
+-  // người đọc đổi đơn vị khi mắt đi từ biểu đồ sang KPI ngay bên cạnh.
+-  const axis = moneyScale([peak]);
+ 
+   const trough = Math.min(
+     ...points.flatMap((p) =>
+@@ -229,7 +227,7 @@ export function TrendChart({
+                   y2={geo.yOf(t)}
+                 />
+                 <text className="dchart-tick" x={PAD.left - 10} y={geo.yOf(t)} dy="0.32em" textAnchor="end">
+-                  {inScale(t, axis)}
++                  {money(t)}
+                 </text>
+               </g>
+             ))}
+@@ -293,18 +291,18 @@ export function TrendChart({
+             <span>
+               <i className="solid" />
+               {nameCurrent}
+-              <em>{active.current === null ? "chưa có" : money(active.current)}</em>
++              <em>{active.current === null ? "chưa có" : <Money value={active.current} />}</em>
+             </span>
+             <span>
+               <i />
+               {namePrevious}
+-              <em>{active.previous === null ? "chưa có" : money(active.previous)}</em>
++              <em>{active.previous === null ? "chưa có" : <Money value={active.previous} />}</em>
+             </span>
+             {active.plan != null && (
+               <span>
+                 <i className="is-plan" />
+                 Kế hoạch
+-                <em>{money(active.plan)}</em>
++                <em><Money value={active.plan} /></em>
+               </span>
+             )}
+           </div>
+@@ -326,7 +324,7 @@ export function TrendChart({
+             Kế hoạch tiến độ (mô phỏng)
+           </span>
+         )}
+-        <span>Đơn vị trục: {axis.unit}</span>
++        <span>Đơn vị tiền tệ: VND</span>
+         {hasGap && <span>Khoảng trống = chưa có số liệu</span>}
+       </div>
+     </div>
+diff --git a/web/src/components/charts.tsx b/web/src/components/charts.tsx
+index 1604d0d..a3fa408 100644
+--- a/web/src/components/charts.tsx
++++ b/web/src/components/charts.tsx
+@@ -1,10 +1,11 @@
++import { Money, LiveNotice, money, moneyScale, pct } from "@/components/primitives";
+ import { TrendChart } from "@/components/TrendChart";
+ import { useId, useState, type CSSProperties } from "react";
+ 
+ export { TrendChart };
+ 
+ import type { AmountRow, TrendPoint, Waterfall } from "@/domain/types";
+-import { inScale, LiveNotice, money, moneyScale, pct } from "@/components/primitives";
++
+ 
+ /**
+  * Bốn bậc màu của biểu đồ tròn, tham chiếu qua token chứ không viết cứng mã hex:
+@@ -210,7 +211,7 @@ export function DonutChart({
+             </span>
+           ) : (
+             <span>
+-              <b>{money(total)}</b>
++              <b><Money value={total} /></b>
+               <small>{centerLabel}</small>
+             </span>
+           );
+@@ -278,7 +279,7 @@ export function DonutChart({
+                 </div>
+               )}
+               <span id={tooltipId} className="ddonut-tooltip" role="tooltip">
+-                {money(row.amount)} · {pct((row.amount / total) * 100)}
++                <Money value={row.amount} /> · {pct((row.amount / total) * 100)}
+               </span>
+             </li>
+           );
+@@ -317,40 +318,11 @@ export function WaterfallChart({
+   const twoSided = hasNegative && hasPositive;
+   const reach = twoSided ? 50 : 100;
+   const origin = twoSided ? 50 : hasNegative ? 100 : 0;
+-  // Cầu nối và các bước phải cùng một đơn vị: đây là phép cộng, đọc theo cột
+-  // dọc. Trước đây "48,62 nghìn tỷ" đứng cạnh "+367,6 tỷ" trong cùng một phép.
++  // Scale retained for chart metadata; each label formats its own amount.
+   const unit = moneyScale([data.start, data.end, difference, ...data.steps.map((s) => s.delta)]);
+ 
+-  /**
+-   * Số ĐỌC ĐƯỢC phải cộng ra số tổng ĐỌC ĐƯỢC.
+-   *
+-   * Mỗi bước được làm tròn riêng rồi in ra, nên sai số làm tròn tích luỹ mà
+-   * không ai gánh: trên Tổng quan bốn bước in ra +6.964, +368, +173, −3 — cộng
+-   * lại là 7.502, trong khi dòng tổng in +7.501. Ở tầng số thô thì khớp; ở tầng
+-   * chữ trên màn hình thì không. Với một tài liệu được đọc thành tiếng trong
+-   * cuộc họp, tầng chữ mới là tầng thật.
+-   *
+-   * Cách bù: dồn toàn bộ phần dư vào bước có phần thập phân bị cắt nhiều nhất —
+-   * quy tắc "largest remainder". Bước đó lệch đúng một đơn vị hiển thị cuối
+-   * cùng, và tổng thì khớp.
+-   */
+-  const displayDeltas = (() => {
+-    const step = Math.pow(10, -unit.decimals) * unit.divisor;
+-    const rounded = data.steps.map((s) => Math.round(s.delta / step) * step);
+-    const target = Math.round(difference / step) * step;
+-    const residual = target - rounded.reduce((sum, v) => sum + v, 0);
+-    if (Math.abs(residual) < step / 2) return rounded;
+-    // Bước nào bị cắt nhiều nhất thì nhận phần dư.
+-    let worst = 0;
+-    let worstGap = -1;
+-    data.steps.forEach((s, i) => {
+-      const gap = Math.abs(s.delta - rounded[i]);
+-      if (gap > worstGap) { worstGap = gap; worst = i; }
+-    });
+-    const out = [...rounded];
+-    out[worst] += residual;
+-    return out;
+-  })();
++  // Preserve original deltas; rounding is applied only by the display formatter.
++  const displayDeltas = data.steps.map((step) => step.delta);
+ 
+   return (
+     <div
+@@ -362,18 +334,18 @@ export function WaterfallChart({
+       <div className="dbridge">
+         <div>
+           <span>{data.startLabel}</span>
+-          <strong>{inScale(data.start, unit)}</strong>
++          <strong><Money value={data.start} /></strong>
+         </div>
+         <div className="dbridge-arrow" aria-hidden="true" />
+         <div>
+           <span>{data.endLabel}</span>
+-          <strong>{inScale(data.end, unit)}</strong>
++          <strong><Money value={data.end} /></strong>
+         </div>
+         <div className="dbridge-diff">
+-          <span>Chênh lệch · {unit.unit}</span>
++          <span>Chênh lệch (VND)</span>
+           <strong className={difference >= 0 ? "pos" : "neg"}>
+             {difference >= 0 ? "+" : "−"}
+-            {inScale(Math.abs(difference), unit)}
++            <Money value={Math.abs(difference)} />
+           </strong>
+         </div>
+       </div>
+@@ -395,7 +367,7 @@ export function WaterfallChart({
+               </span>
+               <strong className={step.delta >= 0 ? "pos" : "neg"}>
+                 {step.delta >= 0 ? "+" : "−"}
+-                {inScale(Math.abs(displayDeltas[index]), unit)}
++                <Money value={Math.abs(displayDeltas[index])} />
+               </strong>
+             </>
+           );
+@@ -450,8 +422,8 @@ export function TrendTable({ points, year }: { points: TrendPoint[]; year: numbe
+             return (
+               <tr key={point.month}>
+                 <th scope="row">{point.label}</th>
+-                <td>{point.current === null ? "chưa có" : money(point.current)}</td>
+-                <td>{point.previous === null ? "chưa có" : money(point.previous)}</td>
++                <td>{point.current === null ? "chưa có" : <Money value={point.current} />}</td>
++                <td>{point.previous === null ? "chưa có" : <Money value={point.previous} />}</td>
+                 <td>{pct(change, true)}</td>
+               </tr>
+             );
+diff --git a/web/src/components/primitives.tsx b/web/src/components/primitives.tsx
+index 1c9d322..42f74a5 100644
+--- a/web/src/components/primitives.tsx
++++ b/web/src/components/primitives.tsx
+@@ -2,127 +2,18 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
+ import type { AmountRow, ResourceState } from "@/domain/types";
+ import { yoy } from "@/domain/metrics";
+ 
+-/* ───────────────────────────── Định dạng số ─────────────────────────────── */
++import { moneyParts, moneyScale, unitLabel, type MoneyScale } from "@/domain/moneyFormat";
++export { money, moneyScale, unitLabel, columnLabel, CURRENCY_LABEL, MONEY_DISPLAY_NOTE, type MoneyScale } from "@/domain/moneyFormat";
+ 
+-/**
+- * Tiền tệ: MỘT đơn vị cho cả một cột, không phải mỗi giá trị một đơn vị.
+- *
+- * Cách cũ chọn đơn vị theo từng số nên trong cùng một danh sách xếp hạng có
+- * "50,72 nghìn tỷ" đứng cạnh "303,9 tỷ" — mắt phải đọc hậu tố mới biết số nào
+- * lớn hơn, đúng thứ mà một bảng xếp hạng phải cho biết ngay. Bảng chi tiết tệ
+- * hơn: bốn đơn vị trong sáu cột.
+- *
+- * Quy tắc mới, theo lối bảng số liệu tài chính:
+- *   · Đơn vị chọn một lần cho cả tập giá trị, lấy theo giá trị lớn nhất.
+- *   · Số lẻ cố định trong cả cột, nên dấu phẩy thẳng hàng.
+- *   · Đơn vị ghi MỘT lần ở đầu thẻ hoặc đầu cột, không lặp ở từng dòng.
+- *   · Giá trị nhỏ hơn độ phân giải hiển thị ghi "< 0,01" chứ không phải "0,00":
+- *     số 0 tròn trĩnh là một khẳng định, không được nói thay cho phép làm tròn.
+- */
+-export interface MoneyScale {
+-  divisor: number;
+-  /** Nhãn đơn vị đầy đủ, ví dụ "tỷ đồng". Ghi ở đầu thẻ hoặc đầu cột. */
+-  unit: string;
+-  /** Nhãn ngắn dùng khi số đứng một mình, ví dụ "tỷ". */
+-  short: string;
+-  decimals: number;
+-}
+-
+-/**
+- * Thang DỪNG Ở "tỷ" — không có bậc nghìn tỷ.
+- *
+- * Bậc 10¹² trong tiếng Việt là một từ ghép ("nghìn tỷ", CLDR viết tắt "NT").
+- * Từ ghép bắt người đọc nhân nhẩm hai lần, còn "NT" thì không ai đọc ra. Dừng ở
+- * "tỷ" cho cả ứng dụng đúng một đơn vị tiền duy nhất: mọi con số trên mọi tab
+- * đều so được với nhau mà không phải đổi bậc lần nào. Số lớn dùng dấu chấm phân
+- * cách nghìn — "434.710" đọc nhanh hơn "434,71 nghìn tỷ" vì không có phép nhân
+- * nào trong đầu.
+- *
+- * Đây cũng là đơn vị của báo cáo ngân sách giấy: "Đơn vị tính: tỷ đồng".
+- */
+-const STEPS = [
+-  { divisor: 1e9, unit: "tỷ đồng", short: "tỷ" },
+-  { divisor: 1e6, unit: "triệu đồng", short: "triệu" },
+-  { divisor: 1e3, unit: "nghìn đồng", short: "nghìn" },
+-  { divisor: 1, unit: "đồng", short: "đồng" },
+-];
+-
+-/** Số lẻ đủ để giá trị lớn nhất còn khoảng bốn chữ số có nghĩa, cố định cả cột. */
+-const decimalsFor = (scaled: number) => (scaled >= 1000 ? 0 : scaled >= 100 ? 1 : 2);
+-
+-/**
+- * Chọn thang cho cả một tập giá trị. Lấy theo giá trị lớn nhất: dùng giá trị
+- * nhỏ nhất sẽ cho ra những con số sáu bảy chữ số ở đầu bảng.
+- */
+-export function moneyScale(values: Iterable<number | null | undefined>): MoneyScale {
+-  let max = 0;
+-  for (const value of values) {
+-    if (value == null || !Number.isFinite(value)) continue;
+-    max = Math.max(max, Math.abs(value));
+-  }
+-  const step = STEPS.find((candidate) => max >= candidate.divisor) ?? STEPS[STEPS.length - 1];
+-  return { ...step, decimals: step.divisor === 1 ? 0 : decimalsFor(max / step.divisor) };
+-}
+-
+-/** Con số theo thang đã chọn, KHÔNG kèm đơn vị — đơn vị ghi một lần ở đầu cột. */
+-export function inScale(value: number | null | undefined, scale: MoneyScale): string {
+-  if (value == null || !Number.isFinite(value)) return "—";
+-  if (value === 0) return "0";
+-  const scaled = Math.abs(value) / scale.divisor;
+-  const floor = scale.decimals === 0 ? 1 : Math.pow(10, -scale.decimals);
+-  const sign = value < 0 ? "−" : "";
+-  // Dưới ngưỡng hiển thị thì ghi "<0,01" chứ không phải "0,00": số 0 tròn trĩnh
+-  // là một khẳng định, không được nói thay cho phép làm tròn. Viết liền để cả
+-  // cụm đọc như một token khi phía trước còn có dấu âm.
+-  if (scaled < floor)
+-    return `${sign}<${floor.toLocaleString("vi-VN", { minimumFractionDigits: scale.decimals })}`;
+-  return (
+-    sign +
+-    scaled.toLocaleString("vi-VN", {
+-      minimumFractionDigits: scale.decimals,
+-      maximumFractionDigits: scale.decimals,
+-    })
+-  );
+-}
+-
+-/**
+- * Tiền cho một giá trị ĐỨNG MỘT MÌNH (KPI, tooltip, nhãn trục) — có kèm đơn vị
+- * vì không có đầu cột nào để ghi hộ. Dùng `inScale` cho mọi thứ xếp thành cột.
+- */
+-export function money(value: number | null | undefined): string {
+-  if (value == null || !Number.isFinite(value)) return "—";
+-  const scale = moneyScale([value]);
+-  const text = inScale(value, scale);
+-  return scale.short ? `${text} ${scale.short}` : text;
+-}
+-
+-/**
+- * Số tiền đứng một mình, tách chữ số khỏi đơn vị để chữ số giữ vai trò chính.
+- * Đơn vị nhỏ hơn và nhạt hơn, không tranh chỗ với con số.
+- */
+-export function Money({
+-  value,
+-  scale: given,
+-  className,
+-}: {
++/** Each amount carries its own unit, with quieter typography for the suffix. */
++export function Money({ value, className }: {
+   value: number | null | undefined;
+-  /**
+-   * Thang dùng chung khi nhiều số đứng cạnh nhau và so sánh được với nhau —
+-   * ví dụ "Thu trong kỳ" và "Lũy kế từ đầu năm" trên cùng một dải KPI. Không
+-   * truyền thì mỗi số tự chọn thang của nó.
+-   */
++  /** Kept for existing callers; each amount now chooses its own display unit. */
+   scale?: MoneyScale;
+   className?: string;
+ }) {
+-  if (value == null || !Number.isFinite(value))
+-    return <span className={cx("dmoney", className)}>—</span>;
+-  const scale = given ?? moneyScale([value]);
+-  return (
+-    <span className={cx("dmoney", className)}>
+-      <b>{inScale(value, scale)}</b>
+-      {scale.short && <i>{scale.short}</i>}
+-    </span>
+-  );
++  const parts = moneyParts(value);
++  return <span className={cx("dmoney", className)}><b>{parts.number}</b>{parts.unit && <i>{parts.unit}</i>}</span>;
+ }
+ 
+ /**
+@@ -163,18 +54,6 @@ export function LiveNotice({
+   );
+ }
+ 
+-/** Nhãn đơn vị dùng ở phụ đề thẻ hoặc đầu cột. */
+-export const unitLabel = (scale: MoneyScale) => `Đơn vị: ${scale.unit}`;
+-
+-/**
+- * Đầu cột tiền: tên cột kèm đơn vị trong ngoặc.
+- *
+- * Đây là nơi DUY NHẤT đơn vị được ghi trong một bảng. Lặp nó ở từng ô làm cột
+- * dài ra, đẩy chữ số ra xa nhau và bắt mắt đọc lại cùng một chữ ở mọi dòng —
+- * đúng thứ mà bảng số liệu tài chính tránh.
+- */
+-export const columnLabel = (name: string, scale: MoneyScale) => `${name} (${scale.unit})`;
+-
+ /** Phần trăm một số lẻ theo vi-VN; không bao giờ in NaN hay Infinity. */
+ export function pct(value: number | null | undefined, withSign = false): string {
+   if (value == null || !Number.isFinite(value)) return "—";
+@@ -329,7 +208,6 @@ export function Bars({
+   total,
+   scale = "amount",
+   money: moneyUnit,
+-  showMoneyUnit = false,
+   onSelect,
+   emptyText = "Không có mục nào khớp bộ lọc hiện tại.",
+ }: {
+@@ -389,8 +267,8 @@ export function Bars({
+                     anyPrevious ? <Change current={row.amount} previous={row.previous} label="" /> : null
+                   ) : (
+                     <>
+-                      {inScale(row.amount, unit)}
+-                      {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
++                      <Money value={row.amount} />
++
+                       {row.share != null && <em>{pct(row.share)}</em>}
+                     </>
+                   )}
+@@ -413,8 +291,8 @@ export function Bars({
+             </span>
+             {scale === "change" ? (
+               <span className="dbar-trail">
+-                {inScale(row.amount, unit)}
+-                {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
++                <Money value={row.amount} />
++
+               </span>
+             ) : anyPrevious ? (
+               <Change current={row.amount} previous={row.previous} />
+diff --git a/web/src/features/advanced-compare/AdvancedCompareTab.tsx b/web/src/features/advanced-compare/AdvancedCompareTab.tsx
+index 67a409d..0bf0d05 100644
+--- a/web/src/features/advanced-compare/AdvancedCompareTab.tsx
++++ b/web/src/features/advanced-compare/AdvancedCompareTab.tsx
+@@ -6,15 +6,7 @@ import { useDashboardState } from "@/state/DashboardState";
+ import { GridRows } from "@/components/Grid";
+ import { Kpi, KpiStrip } from "@/components/Kpi";
+ import { TrendChart, WaterfallChart } from "@/components/charts";
+-import {
+-  Card,
+-  Money,
+-  ResourceView,
+-  Segmented,
+-  inScale,
+-  moneyScale,
+-  pct,
+-} from "@/components/primitives";
++import { Card, Money, ResourceView, Segmented, moneyScale, pct, money } from "@/components/primitives";
+ 
+ const MODES: { value: AdvancedComparisonMode; label: string }[] = [
+   { value: "period", label: "Theo kỳ" },
+@@ -320,10 +312,10 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
+                         {data.rows.slice(0, 12).map((row) => (
+                           <tr key={row.id}>
+                             <th scope="row">{row.name}</th>
+-                            <td className="is-num">{inScale(row.a, deltaUnit)}</td>
+-                            <td className="is-num">{inScale(row.b, deltaUnit)}</td>
++                            <td className="is-num">{money(row.a)}</td>
++                            <td className="is-num">{money(row.b)}</td>
+                             <td className={`is-num ${row.delta >= 0 ? "tone-pos" : "tone-neg"}`}>
+-                              {row.delta >= 0 ? "▲" : "▼"} {inScale(Math.abs(row.delta), deltaUnit)}
++                              {row.delta >= 0 ? "▲" : "▼"} {money(Math.abs(row.delta))}
+                             </td>
+                             <td className="is-num">{pct(row.contribution)}</td>
+                           </tr>
+diff --git a/web/src/features/budget-forecast/BudgetProgressTable.tsx b/web/src/features/budget-forecast/BudgetProgressTable.tsx
+index 05c6525..d06f5e4 100644
+--- a/web/src/features/budget-forecast/BudgetProgressTable.tsx
++++ b/web/src/features/budget-forecast/BudgetProgressTable.tsx
+@@ -1,6 +1,7 @@
++import { Money, Change, columnLabel, pct, type MoneyScale } from "@/components/primitives";
+ import { useState } from "react";
+ import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
+-import { Change, columnLabel, inScale, pct, type MoneyScale } from "@/components/primitives";
++
+ import {
+   BUDGET_STATUS_LABEL,
+   type BudgetBreakdownRow,
+@@ -125,10 +126,10 @@ export function BudgetProgressTable({
+                   </button>
+                 </th>
+                 <td className="is-num" data-label="Thực hiện">
+-                  {inScale(row.actual, unit)}
++                  <Money value={row.actual} />
+                 </td>
+                 <td className="is-num" data-label="Dự toán">
+-                  {inScale(row.plan, unit)}
++                  <Money value={row.plan} />
+                 </td>
+                 <td className="is-num" data-label="Hoàn thành">
+                   {pct(row.completionRate)}
+@@ -136,7 +137,7 @@ export function BudgetProgressTable({
+                 {/* Còn thiếu hiện giá trị tuyệt đối; chiều đã nằm ở cột Trạng
+                     thái, nên một dấu trừ ở đây chỉ thêm một thứ phải giải mã. */}
+                 <td className="is-num" data-label="Còn thiếu">
+-                  {inScale(Math.abs(row.remaining), unit)}
++                  <Money value={Math.abs(row.remaining)} />
+                 </td>
+                 <td className="is-num" data-label="So cùng kỳ">
+                   <Change current={row.actual} previous={row.previous} label="" />
+@@ -154,16 +155,16 @@ export function BudgetProgressTable({
+                   <tr key={part.id} className="is-child">
+                     <th scope="row">{part.name}</th>
+                     <td className="is-num" data-label="Thực hiện">
+-                      {inScale(part.actual, unit)}
++                      <Money value={part.actual} />
+                     </td>
+                     <td className="is-num" data-label="Dự toán">
+-                      {inScale(part.plan, unit)}
++                      <Money value={part.plan} />
+                     </td>
+                     <td className="is-num" data-label="Hoàn thành">
+                       {pct(part.completionRate)}
+                     </td>
+                     <td className="is-num" data-label="Còn thiếu">
+-                      {inScale(Math.abs(part.plan - part.actual), unit)}
++                      <Money value={Math.abs(part.plan - part.actual)} />
+                     </td>
+                     <td className="is-num" data-label="So cùng kỳ">
+                       <Change current={part.actual} previous={part.previous} label="" />
+diff --git a/web/src/features/budget-forecast/ForecastChart.tsx b/web/src/features/budget-forecast/ForecastChart.tsx
+index 442ede4..d61cb0e 100644
+--- a/web/src/features/budget-forecast/ForecastChart.tsx
++++ b/web/src/features/budget-forecast/ForecastChart.tsx
+@@ -1,5 +1,6 @@
++import { Money, type MoneyScale, money } from "@/components/primitives";
+ import { useId, useState } from "react";
+-import { inScale, type MoneyScale } from "@/components/primitives";
++
+ import type { BudgetTrendPoint } from "@/domain/workspaces";
+ 
+ /**
+@@ -29,7 +30,7 @@ function niceTicks(max: number, min: number, count = 4): number[] {
+   return out;
+ }
+ 
+-export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; unit: MoneyScale }) {
++export function ForecastChart({ points }: { points: BudgetTrendPoint[]; unit: MoneyScale }) {
+   const id = useId();
+   const [hover, setHover] = useState<number | null>(null);
+ 
+@@ -55,8 +56,8 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
+    * của điểm nào. Một biểu đồ dự toán so thực hiện mà không đọc được số thì
+    * không trả lời được câu hỏi duy nhất nó sinh ra để trả lời.
+    */
+-  const padL = 56;
+-  const padR = 8;
++  const padL = 92;
++  const padR = 20;
+   const padB = 24;
+   const ticks = niceTicks(max, min);
+   const truc = { day: ticks[0], dinh: ticks[ticks.length - 1] };
+@@ -99,13 +100,13 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
+       <svg
+         viewBox={`0 0 ${W} ${H}`}
+         role="img"
+-        aria-label={`Thực hiện, dự toán và dự báo theo tháng, đơn vị ${unit.unit}`}
++        aria-label={`Thực hiện, dự toán và dự báo theo tháng, đơn vị tiền tệ VND`}
+       >
+         {ticks.map((t) => (
+           <g key={t}>
+             <line x1={padL} y1={y(t)} x2={W - padR} y2={y(t)} className="dforecast-grid" />
+             <text x={padL - 8} y={y(t)} dy="0.32em" textAnchor="end" className="dforecast-tick">
+-              {inScale(t, unit)}
++              {money(t)}
+             </text>
+           </g>
+         ))}
+@@ -188,9 +189,9 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
+               {points.map((p) => (
+                 <tr key={p.month}>
+                   <th scope="row">{p.label}</th>
+-                  <td className="is-num" data-label="Thực hiện">{p.actual === null ? "" : inScale(p.actual, unit)}</td>
+-                  <td className="is-num" data-label="Dự toán">{p.plan === null ? "" : inScale(p.plan, unit)}</td>
+-                  <td className="is-num" data-label="Dự báo">{p.forecast === null ? "" : inScale(p.forecast, unit)}</td>
++                  <td className="is-num" data-label="Thực hiện">{p.actual === null ? "" : <Money value={p.actual} />}</td>
++                  <td className="is-num" data-label="Dự toán">{p.plan === null ? "" : <Money value={p.plan} />}</td>
++                  <td className="is-num" data-label="Dự báo">{p.forecast === null ? "" : <Money value={p.forecast} />}</td>
+                 </tr>
+               ))}
+             </tbody>
+@@ -200,9 +201,9 @@ export function ForecastChart({ points, unit }: { points: BudgetTrendPoint[]; un
+ 
+       {active && (
+         <p className="dhint" aria-hidden="true">
+-          <b>{active.label}</b> · thực hiện {active.actual === null ? "chưa có" : inScale(active.actual, unit)} ·
+-          dự toán {active.plan === null ? "chưa có" : inScale(active.plan, unit)} · dự báo{" "}
+-          {active.forecast === null ? "chưa có" : inScale(active.forecast, unit)}
++          <b>{active.label}</b> · thực hiện {active.actual === null ? "chưa có" : <Money value={active.actual} />} ·
++          dự toán {active.plan === null ? "chưa có" : <Money value={active.plan} />} · dự báo{" "}
++          {active.forecast === null ? "chưa có" : <Money value={active.forecast} />}
+         </p>
+       )}
+     </div>
+diff --git a/web/src/features/budget-forecast/OfficialBudgetSnapshot.tsx b/web/src/features/budget-forecast/OfficialBudgetSnapshot.tsx
+index 39dc1f5..2fb037b 100644
+--- a/web/src/features/budget-forecast/OfficialBudgetSnapshot.tsx
++++ b/web/src/features/budget-forecast/OfficialBudgetSnapshot.tsx
+@@ -1,4 +1,4 @@
+-import { Bars, Card, Money, inScale, moneyScale, pct } from "@/components/primitives";
++import { Bars, Card, Money, moneyScale, pct } from "@/components/primitives";
+ import { OFFICIAL_18_09 } from "@/data/official-18-09";
+ 
+ /** Mốc tham chiếu chung và phần dữ liệu mở rộng đã có trong tài liệu bàn giao. */
+@@ -111,12 +111,12 @@ export function OfficialBudgetSnapshot({ variant }: { variant: "summary" | "deta
+                 {OFFICIAL_18_09.locationPlans2026.map((row) => (
+                   <tr key={row.id}>
+                     <th scope="row">{row.name}</th>
+-                    <td className="is-num" data-label="Tổng dự toán">{inScale(row.plan, locationUnit)}</td>
++                    <td className="is-num" data-label="Tổng dự toán"><Money value={row.plan} /></td>
+                     <td className="is-num" data-label="Trừ tiền sử dụng đất">
+-                      {inScale(row.planExcludingLandUse, locationUnit)}
++                      <Money value={row.planExcludingLandUse} />
+                     </td>
+                     <td className="is-num" data-label="Tiền sử dụng đất">
+-                      {inScale(row.components.landUse ?? 0, locationUnit)}
++                      <Money value={row.components.landUse ?? 0} />
+                     </td>
+                   </tr>
+                 ))}
+@@ -125,7 +125,7 @@ export function OfficialBudgetSnapshot({ variant }: { variant: "summary" | "deta
+                 <tr>
+                   <th scope="row">Cộng 126 địa bàn</th>
+                   <td className="is-num" data-label="Tổng dự toán">
+-                    {inScale(OFFICIAL_18_09.locationPlanTotal, locationUnit)}
++                    <Money value={OFFICIAL_18_09.locationPlanTotal} />
+                   </td>
+                   <td colSpan={2} />
+                 </tr>
+diff --git a/web/src/features/enterprise-management/EnterpriseTable.tsx b/web/src/features/enterprise-management/EnterpriseTable.tsx
+index 729aec4..c08f46c 100644
+--- a/web/src/features/enterprise-management/EnterpriseTable.tsx
++++ b/web/src/features/enterprise-management/EnterpriseTable.tsx
+@@ -1,7 +1,8 @@
++import { Money, Change, columnLabel, type MoneyScale } from "@/components/primitives";
+ import { useMemo } from "react";
+ import { Pager, usePage } from "@/components/Pager";
+ import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
+-import { Change, columnLabel, inScale, type MoneyScale } from "@/components/primitives";
++
+ import type { EnterpriseRevenueRow } from "@/domain/workspaces";
+ 
+ type SortKey = "name" | "amount" | "change";
+@@ -79,7 +80,7 @@ export function EnterpriseTable({
+                   {displayName(row)}
+                 </th>
+                 <td className="is-num" data-label="Số thu">
+-                  {inScale(row.amount, unit)}
++                  <Money value={row.amount} />
+                 </td>
+                 <td className="is-num" data-label="So cùng kỳ">
+                   <Change current={row.amount} previous={row.previous} label="" />
+diff --git a/web/src/features/enterprise-management/IndustrySummary.tsx b/web/src/features/enterprise-management/IndustrySummary.tsx
+index 73565ef..f034bde 100644
+--- a/web/src/features/enterprise-management/IndustrySummary.tsx
++++ b/web/src/features/enterprise-management/IndustrySummary.tsx
+@@ -1,7 +1,8 @@
++import { Money, Change, columnLabel, pct, type MoneyScale } from "@/components/primitives";
+ import { Pager, usePage } from "@/components/Pager";
+ import { useNarrow } from "@/components/useNarrow";
+ import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
+-import { Change, columnLabel, inScale, pct, type MoneyScale } from "@/components/primitives";
++
+ import type { EnterpriseGroupRow, EnterpriseManagementData } from "@/domain/workspaces";
+ 
+ type SortKey = "name" | "amount" | "share" | "change" | "count";
+@@ -65,7 +66,7 @@ export function IndustrySummary({
+   const cells = (row: EnterpriseGroupRow) => (
+     <>
+       <td className="is-num" data-label="Số thu">
+-        {inScale(row.amount, unit)}
++        <Money value={row.amount} />
+       </td>
+       <td className="is-num" data-label="Tỷ trọng">
+         {pct(row.share)}
+@@ -103,8 +104,7 @@ export function IndustrySummary({
+     <>
+       <span className="dgc-ten">{row.name}</span>
+       <span className="dgc-so">
+-        <strong>{inScale(row.amount, unit)}</strong>
+-        <small>{unit.short}</small>
++        <strong><Money value={row.amount} /></strong>
+         <Change current={row.amount} previous={row.previous} label="" />
+       </span>
+       <span className="dgc-phu">
+@@ -144,14 +144,14 @@ export function IndustrySummary({
+             <p key={row.id}>
+               <span>{row.name}</span>
+               <span>
+-                {inScale(row.amount, unit)} {unit.short} · {pct(row.share)}
++                <Money value={row.amount} /> · {pct(row.share)}
+               </span>
+             </p>
+           ))}
+           <p className="is-total">
+             <span>Tổng</span>
+             <span>
+-              {inScale(totals.amount, unit)} {unit.short} ·{" "}
++              <Money value={totals.amount} /> ·{" "}
+               {totals.directoryTotal?.toLocaleString("vi-VN")} doanh nghiệp
+             </span>
+           </p>
+@@ -218,7 +218,7 @@ export function IndustrySummary({
+             <tr className="is-total">
+               <th scope="row">Tổng</th>
+               <td className="is-num" data-label="Số thu">
+-                {inScale(totals.amount, unit)}
++                <Money value={totals.amount} />
+               </td>
+               <td className="is-num" data-label="Tỷ trọng">
+                 {pct(totals.amount === 0 ? null : 100)}
+diff --git a/web/src/features/inspection/InspectionReportTable.tsx b/web/src/features/inspection/InspectionReportTable.tsx
+index 27d2e40..7a025cc 100644
+--- a/web/src/features/inspection/InspectionReportTable.tsx
++++ b/web/src/features/inspection/InspectionReportTable.tsx
+@@ -1,5 +1,6 @@
++import { Money, columnLabel, pct, type MoneyScale } from "@/components/primitives";
+ import { sortRows, useSort, SortStrip, SortHeaders, type SortCol } from "@/components/SortableHeader";
+-import { columnLabel, inScale, pct, type MoneyScale } from "@/components/primitives";
++
+ import { INSPECTION_STATUS_LABEL, type InspectionUnitRow } from "@/domain/workspaces";
+ 
+ type SortKey = "name" | "cases" | "completion" | "processed" | "paid" | "paidRate";
+@@ -73,10 +74,10 @@ export function InspectionReportTable({
+                 {pct(row.completionRate)}
+               </td>
+               <td className="is-num" data-label="Số tiền xử lý">
+-                {inScale(row.processedAmount, unit)}
++                <Money value={row.processedAmount} />
+               </td>
+               <td className="is-num" data-label="Đã nộp">
+-                {inScale(row.paidAmount, unit)}
++                <Money value={row.paidAmount} />
+               </td>
+               <td className="is-num" data-label="Tỷ lệ nộp">
+                 {pct(row.paidRate)}
+@@ -110,10 +111,10 @@ export function InspectionReportTable({
+               {pct(sum.totalCases === 0 ? null : (sum.completedCases / sum.totalCases) * 100)}
+             </td>
+             <td className="is-num" data-label="Số tiền xử lý">
+-              {inScale(sum.processedAmount, unit)}
++              <Money value={sum.processedAmount} />
+             </td>
+             <td className="is-num" data-label="Đã nộp">
+-              {inScale(sum.paidAmount, unit)}
++              <Money value={sum.paidAmount} />
+             </td>
+             <td className="is-num" data-label="Tỷ lệ nộp">
+               {pct(sum.processedAmount === 0 ? null : (sum.paidAmount / sum.processedAmount) * 100)}
+diff --git a/web/src/features/inspection/InspectionSummary.tsx b/web/src/features/inspection/InspectionSummary.tsx
+index b94c78d..98a9a0e 100644
+--- a/web/src/features/inspection/InspectionSummary.tsx
++++ b/web/src/features/inspection/InspectionSummary.tsx
+@@ -1,4 +1,5 @@
+-import { Bars, inScale, type MoneyScale } from "@/components/primitives";
++import { Money, Bars, type MoneyScale } from "@/components/primitives";
++
+ import type { InspectionTrendPoint } from "@/domain/workspaces";
+ 
+ /**
+@@ -62,8 +63,8 @@ export function InspectionSummary({
+                 <tr key={p.label}>
+                   <th scope="row">{p.label}</th>
+                   <td className="is-num" data-label="Cuộc hoàn thành">{p.completedCases}</td>
+-                  <td className="is-num" data-label="Số tiền xử lý">{inScale(p.processedAmount, unit)}</td>
+-                  <td className="is-num" data-label="Số đã nộp">{inScale(p.paidAmount, unit)}</td>
++                  <td className="is-num" data-label="Số tiền xử lý"><Money value={p.processedAmount} /></td>
++                  <td className="is-num" data-label="Số đã nộp"><Money value={p.paidAmount} /></td>
+                 </tr>
+               ))}
+             </tbody>
+diff --git a/web/src/features/location-detail/LocationDetailTab.tsx b/web/src/features/location-detail/LocationDetailTab.tsx
+index 4709049..a448110 100644
+--- a/web/src/features/location-detail/LocationDetailTab.tsx
++++ b/web/src/features/location-detail/LocationDetailTab.tsx
+@@ -9,17 +9,7 @@ import { Kpi, KpiStrip } from "@/components/Kpi";
+ import { TaxOfficeDetail } from "./TaxOfficeDetail";
+ import { LocationMap } from "@/features/location-detail/LocationMap";
+ import { DonutChart, TrendChart } from "@/components/charts";
+-import {
+-  Bars,
+-  Card,
+-  Change,
+-  columnLabel,
+-  inScale,
+-  Money,
+-  ResourceView,
+-  moneyScale,
+-  pct,
+-} from "@/components/primitives";
++import { Bars, Card, Change, columnLabel, Money, ResourceView, moneyScale, pct } from "@/components/primitives";
+ 
+ /**
+  * Danh sách và bản đồ dùng CHUNG một `selected-location` state trong URL, nên
+@@ -181,6 +171,7 @@ function LocationBody({ data, map }: { data: LocationDetailData; map: ReactNode
+             rows={data.industries}
+             emptyText="Đã chọn một ngành; bỏ bộ lọc ngành nghề để xem toàn bộ cơ cấu."
+           />
++          <p className="dhint">Số tiền kèm tỷ, triệu, nghìn hoặc đồng. 1 tỷ = 1.000 triệu đồng.</p>
+         </Card>
+ 
+         <Card
+@@ -203,7 +194,7 @@ function LocationBody({ data, map }: { data: LocationDetailData; map: ReactNode
+                   <tr key={row.id}>
+                     <th scope="row">{row.name}</th>
+                     <td data-label="Ngành nghề">{row.industry}</td>
+-                    <td className="is-num" data-label="Số thu">{inScale(row.amount, taxpayerScale)}</td>
++                    <td className="is-num" data-label="Số thu"><Money value={row.amount} /></td>
+                     <td className="is-num" data-label="Tỷ trọng">{pct(row.share)}</td>
+                   </tr>
+                 ))}
+diff --git a/web/src/features/location-detail/LocationMap.tsx b/web/src/features/location-detail/LocationMap.tsx
+index bb7d674..d30d53c 100644
+--- a/web/src/features/location-detail/LocationMap.tsx
++++ b/web/src/features/location-detail/LocationMap.tsx
+@@ -1,9 +1,10 @@
++import { Money, Card, money, moneyScale } from "@/components/primitives";
+ import { useEffect, useRef, useState } from "react";
+ import { geoMercator, geoPath, type GeoPath } from "d3-geo";
+ import { select, type Selection } from "d3-selection";
+ import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
+ import "d3-transition";
+-import { Card, inScale, money, moneyScale } from "@/components/primitives";
++
+ import { useReducedMotion } from "@/components/useReducedMotion";
+ 
+ // Ranh giới Hà Nội sau phép chiếu Mercator cao hơn rộng (tỉ lệ ≈ 5:6). Khung
+@@ -304,7 +305,7 @@ export function LocationMap({
+                       {row.name}
+                     </button>
+                   </th>
+-                  <td className="is-num">{inScale(row.amount, tableUnit)}</td>
++                  <td className="is-num"><Money value={row.amount} /></td>
+                 </tr>
+               ))}
+             </tbody>
+diff --git a/web/src/features/location-detail/TaxOfficeAssignedAreas.tsx b/web/src/features/location-detail/TaxOfficeAssignedAreas.tsx
+index dde26e9..bd90e3f 100644
+--- a/web/src/features/location-detail/TaxOfficeAssignedAreas.tsx
++++ b/web/src/features/location-detail/TaxOfficeAssignedAreas.tsx
+@@ -2,7 +2,7 @@ import type { TmsBreakdownData } from "@/domain/types";
+ import { useCallback, useMemo, useRef } from "react";
+ import { taxOfficeLocationIds, taxOfficeScopeNote } from "@/domain/tms";
+ import { LOCATION_BY_ID } from "@/domain/catalog";
+-import { inScale, moneyScale } from "@/components/primitives";
++import { money } from "@/components/primitives";
+ import { toDisplayNumber } from "@/domain/money";
+ 
+ const taxPeriodLabel = (period: string | undefined) => {
+@@ -52,15 +52,7 @@ export function TaxOfficeAssignedAreas({
+       || a.name.localeCompare(b.name, "vi"),
+     );
+   }, [selectedCode, selectedScope]);
+-  const locationScale = useMemo(() => {
+-    const scale = moneyScale(selectedLocations.map((row) => toDisplayNumber(row.amount)));
+-    // Một chữ số thập phân cho cả cột giúp phân biệt dấu nghìn với dấu thập phân.
+-    return { ...scale, decimals: scale.divisor === 1 ? 0 : 1 };
+-  }, [selectedLocations]);
+-  const locationAmount = (value: number | null) =>
+-    value === 0
+-      ? (0).toLocaleString("vi-VN", { minimumFractionDigits: locationScale.decimals })
+-      : inScale(value, locationScale);
++  const locationAmount = money;
+   const stripCleanupRef = useRef<(() => void) | null>(null);
+   const bindScrollRegion = useCallback((region: HTMLElement | null) => {
+     stripCleanupRef.current?.();
+@@ -136,7 +128,7 @@ export function TaxOfficeAssignedAreas({
+                     ) : (
+                       <>
+                         {locationAmount(toDisplayNumber(row.amount))}
+-                        {toDisplayNumber(row.amount) !== null && <> <small>{locationScale.short}</small></>}
++
+                       </>
+                     )}
+                   </span>
+diff --git a/web/src/features/overview/OverviewTab.tsx b/web/src/features/overview/OverviewTab.tsx
+index f1d802b..086a001 100644
+--- a/web/src/features/overview/OverviewTab.tsx
++++ b/web/src/features/overview/OverviewTab.tsx
+@@ -7,7 +7,7 @@ import { GridRows } from "@/components/Grid";
+ import { Kpi, KpiStrip } from "@/components/Kpi";
+ import { DonutChart, TrendChart, TrendTable } from "@/components/charts";
+ import { TaxpayerDrawer } from "@/components/TaxpayerDrawer";
+-import { Bars, Card, Change, inScale, Money, ResourceView, Segmented, moneyScale, money, pct } from "@/components/primitives";
++import { Bars, Card, Change, Money, ResourceView, Segmented, moneyScale, money, pct } from "@/components/primitives";
+ 
+ export function OverviewTab() {
+   const { filters, dispatchIntent } = useDashboardState();
+@@ -89,7 +89,8 @@ function OverviewBody({ data, dispatch }: {
+         { id: "trend", span: 7, render: () => <Card title="Xu hướng thu ngân sách" subtitle={`Lũy kế ${filters.year} và cùng kỳ ${filters.year - 1}`} actions={<button type="button" className="dlink" onClick={() => setShowTrendTable((value) => !value)}>{showTrendTable ? "Xem biểu đồ" : "Xem bảng số liệu"}</button>}>{showTrendTable ? <TrendTable points={data.trend} year={filters.year} /> : <TrendChart points={data.trend} year={filters.year} />}</Card> },
+         { id: "budget", span: 5, hidden: data.budgetLevels.length === 0, render: () => <Card title="Cơ cấu theo cấp ngân sách" subtitle="Phần Trung ương và phần Hà Nội được hưởng" unit={budgetDetailUnit}>
+           <DonutChart rows={data.budgetLevels} centerLabel="NSNN" selectedId={selectedBudgetLevel} onSelect={(id) => setSelectedBudgetLevel(id as "NSTW" | "NSDP")} />
+-          <section className="dbudget-local" aria-live="polite"><h3>{selectedBudgetLevel === "NSTW" ? "Trong ngân sách trung ương" : "Trong ngân sách địa phương"}</h3><ul>{budgetDetailRows.map((row) => <li key={row.id}><div><span>{row.name}</span><strong className="dbudget-value">{inScale(row.amount, budgetDetailUnit)} <small>{budgetDetailUnit.short}</small></strong></div><span className="dbudget-track" aria-hidden="true"><i style={{ width: `${Math.max(Math.abs(row.amount) / budgetDetailMax * 100, 0.8)}%` }} /></span></li>)}</ul></section>
++          <section className="dbudget-local" aria-live="polite"><h3>{selectedBudgetLevel === "NSTW" ? "Trong ngân sách trung ương" : "Trong ngân sách địa phương"}</h3><ul>{budgetDetailRows.map((row) => <li key={row.id}><div><span>{row.name}</span><strong className="dbudget-value">{money(row.amount)}</strong></div><span className="dbudget-track" aria-hidden="true"><i style={{ width: `${Math.max(Math.abs(row.amount) / budgetDetailMax * 100, 0.8)}%` }} /></span></li>)}</ul></section>
++          <p className="dhint">Số tiền kèm tỷ, triệu, nghìn hoặc đồng. 1 tỷ = 1.000 triệu đồng.</p>
+         </Card> },
+       ],
+       [
+@@ -98,14 +99,14 @@ function OverviewBody({ data, dispatch }: {
+             {data.sources.map((row) => <button
+               key={row.id}
+               type="button"
+-              aria-label={`${row.name}: ${inScale(row.amount, sourceUnit)} ${sourceUnit.unit}, chiếm ${pct(row.share)}`}
++              aria-label={`${row.name}: ${money(row.amount)}, chiếm ${pct(row.share)}`}
+               onClick={() => dispatch({ type: "OPEN_REVENUE_PREVIEW", sourceId: row.id as SourceCode })}
+             >
+               <span className="doverview-source-name">{row.name}</span>
+               <svg className="doverview-source-arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                 <path d="m6 3.5 4.5 4.5L6 12.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+               </svg>
+-              <strong>{inScale(row.amount, sourceUnit)}</strong>
++              <strong>{money(row.amount)}</strong>
+               <small><span>Tỷ trọng</span>{pct(row.share)}</small>
+               <span className="doverview-source-track" aria-hidden="true">
+                 <i style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0.5)}%` }} />
+@@ -129,17 +130,15 @@ function OverviewBody({ data, dispatch }: {
+ }
+ 
+ function ExecutionList({ rows, mode, onSelect }: { rows: TaxOfficeProgressRow[]; mode: "completion" | "amount"; onSelect: (row: TaxOfficeProgressRow) => void }) {
+-  const unit = moneyScale(rows.map((row) => row.amount));
+   const max = Math.max(...rows.map((row) => mode === "completion" ? (row.completionRate ?? 0) : row.amount), 1);
+   return <ol className="dexecution-list">{rows.map((row, index) => {
+     const value = mode === "completion" ? (row.completionRate ?? 0) : row.amount;
+-    return <li key={row.id}><button type="button" onClick={() => onSelect(row)}><span>{index + 1}</span><b>{row.name}</b><strong>{mode === "completion" ? pct(value) : `${inScale(value, unit)} ${unit.short}`}</strong><i aria-hidden="true"><em style={{ width: `${Math.max(value / max * 100, 1)}%` }} /></i></button></li>;
++    return <li key={row.id}><button type="button" onClick={() => onSelect(row)}><span>{index + 1}</span><b>{row.name}</b><strong>{mode === "completion" ? pct(value) : `${money(value)}`}</strong><i aria-hidden="true"><em style={{ width: `${Math.max(value / max * 100, 1)}%` }} /></i></button></li>;
+   })}</ol>;
+ }
+ 
+ function TaxpayerList({ rows, onSelect }: { rows: TaxpayerRow[]; onSelect: (row: TaxpayerRow) => void }) {
+-  const unit = moneyScale(rows.map((row) => row.amount));
+-  return <ol className="dtaxpayer-list">{rows.map((row, index) => <li key={row.id}><button type="button" onClick={() => onSelect(row)}><span>{index + 1}</span><b>{row.name}<small>{row.industry}</small></b><strong>{inScale(row.amount, unit)} {unit.short}</strong><i aria-hidden="true">›</i></button></li>)}</ol>;
++  return <ol className="dtaxpayer-list">{rows.map((row, index) => <li key={row.id}><button type="button" onClick={() => onSelect(row)}><span>{index + 1}</span><b>{row.name}<small>{row.industry}</small></b><strong><Money value={row.amount} /></strong><i aria-hidden="true">›</i></button></li>)}</ol>;
+ }
+ 
+ export { pct };
+diff --git a/web/src/features/report/ReportTab.tsx b/web/src/features/report/ReportTab.tsx
+index 6165705..11865ce 100644
+--- a/web/src/features/report/ReportTab.tsx
++++ b/web/src/features/report/ReportTab.tsx
+@@ -1,3 +1,4 @@
++import { Money, Card, LiveNotice, ResourceView, NhanOnDinh } from "@/components/primitives";
+ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+ import { useReportGrid } from "@/data/hooks";
+ import { provider } from "@/data";
+@@ -14,7 +15,7 @@ import {
+ import { toDisplayNumber } from "@/domain/money";
+ import { locationDimensionAvailable, locationDimensionNote } from "@/domain/periods";
+ import type { DashboardFilters, ReportCell, ReportGridData, ReportRow } from "@/domain/types";
+-import { Card, inScale, LiveNotice, moneyScale, ResourceView, NhanOnDinh } from "@/components/primitives";
++
+ import { ReportSummary } from "./ReportSummary";
+ import { ReportModePicker } from "./ReportModePicker";
+ import { xuatTheoMauNganh } from "./nsnnTemplateExport";
+@@ -381,22 +382,6 @@ function ReportBody({
+     return map;
+   }, [data.cells]);
+ 
+-  /**
+-   * Một thang tiền cho cả bảng, tính từ **ô** chứ không từ tổng hàng.
+-   *
+-   * Tổng hàng lớn hơn một ô hàng nghìn lần vì nó cộng cả nghìn cột. Lấy thang
+-   * theo tổng hàng thì cả bảng hiện "<1" và không còn đọc được gì.
+-   */
+-  const scale = useMemo(
+-    () => moneyScale(data.cells.map((cell) => toDisplayNumber(cell.value))),
+-    [data.cells],
+-  );
+-  /** Cột tổng dùng thang riêng vì nó ở bậc độ lớn khác hẳn các ô. */
+-  const totalScale = useMemo(
+-    () => moneyScale(data.rows.map((row) => toDisplayNumber(row.total))),
+-    [data.rows],
+-  );
+-
+   const groups = data.columns.filter((column) => column.parentId === null && data.subGroupBy);
+   const leaves = data.columns.filter((column) => (data.subGroupBy ? column.parentId !== null : true));
+ 
+@@ -427,7 +412,7 @@ function ReportBody({
+         // dòng "Mẫu N" phía trên; dòng đó đã bỏ nên mốc chuyển về tiêu đề thẻ,
+         // chứ không bỏ theo — bỏ là trình đọc màn hình mất chỗ đáp xuống.
+         titleId="nsnn-report-table-title"
+-        subtitle={`${DIMENSION_BY_ID[data.groupBy].source}. Ô theo ${scale.unit}, cột tổng theo ${totalScale.unit}.`}
++        subtitle={`${DIMENSION_BY_ID[data.groupBy].source} · Đơn vị tiền tệ: VND`}
+         actions={
+           <div className="dreport-actions">
+             {/*
+@@ -499,7 +484,7 @@ function ReportBody({
+                     Chỉ tiêu
+                   </th>
+                   <th scope="col" rowSpan={2} className="is-num dreport-total">
+-                    Tổng {totalScale.short}
++                    Tổng (VND)
+                   </th>
+                   {/*
+                     Ô nhóm là một Ô CHỌN, không phải một nhãn.
+@@ -545,7 +530,7 @@ function ReportBody({
+                 {groups.length === 0 && <th scope="col">Chỉ tiêu</th>}
+                 {groups.length === 0 && (
+                   <th scope="col" className="is-num dreport-total">
+-                    Tổng {totalScale.short}
++                    Tổng (VND)
+                   </th>
+                 )}
+                 {leaves.map((column) => (
+@@ -586,14 +571,14 @@ function ReportBody({
+                     <td className="is-num dreport-total" data-label="Tổng">
+                       {toDisplayNumber(row.total) === null
+                         ? null
+-                        : inScale(toDisplayNumber(row.total), totalScale)}
++                        : <Money value={toDisplayNumber(row.total)} />}
+                     </td>
+                     {leaves.map((column) => {
+                       const cell = cells.get(`${row.id}|${column.id}`);
+                       const value = toDisplayNumber(cell?.value ?? null);
+                       return (
+                         <td key={column.id} className="is-num" data-label={column.name}>
+-                          {value === null ? null : inScale(value, scale)}
++                          {value === null ? null : <Money value={value} />}
+                         </td>
+                       );
+                     })}
+diff --git a/web/src/features/revenue-analysis/RevenueAnalysisTab.tsx b/web/src/features/revenue-analysis/RevenueAnalysisTab.tsx
+index 5997705..5a30178 100644
+--- a/web/src/features/revenue-analysis/RevenueAnalysisTab.tsx
++++ b/web/src/features/revenue-analysis/RevenueAnalysisTab.tsx
+@@ -9,18 +9,7 @@ import { Kpi, KpiStrip } from "@/components/Kpi";
+ import { DonutChart } from "@/components/charts";
+ import { TaxpayerDrawer } from "@/components/TaxpayerDrawer";
+ import { topNguoiNopThue } from "@/data/mock/build";
+-import {
+-  Bars,
+-  Card,
+-  Change,
+-  Money,
+-  money,
+-  ResourceView,
+-  inScale,
+-  moneyScale,
+-  pct,
+-  Segmented,
+-} from "@/components/primitives";
++import { Bars, Card, Change, Money, money, ResourceView, moneyScale, pct, Segmented } from "@/components/primitives";
+ 
+ /** Sub-navigation của workspace phân tích thu. */
+ /**
+@@ -92,6 +81,7 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
+     ? data.groups?.find((row) => row.id === "sxkd")
+     : data.groups?.find((row) => row.id === group) ?? data.groups?.[0];
+   const [detailMode, setDetailMode] = useState<"tax" | "office" | "industry">("tax");
++  const [showMillionDemo, setShowMillionDemo] = useState(false);
+   const [selectedTaxpayer, setSelectedTaxpayer] = useState<TaxpayerRow | null>(null);
+   const [heatSelection, setHeatSelection] = useState<{ industry: string; tax: string; amount: number } | null>(null);
+   /*
+@@ -143,6 +133,8 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
+     return khoanCuaKhoi.length ? khoanCuaKhoi : data.breakdown;
+   }, [data.breakdown, data.byIndustry, data.byTaxOffice, detailMode, khoanCuaKhoi, kpi.amount, selectedGroup]);
+ 
++  const displayedInspectorRows = showMillionDemo ? MILLION_DEMO_ROWS : inspectorRows;
++
+   return (
+     <>
+       <KpiStrip label={`Chỉ số ${sourceLabel}`} columns={3}>
+@@ -199,8 +191,9 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
+             }
+           />
+         </Card>
+-        <Card title="Chi tiết chỉ tiêu đang chọn" subtitle={`Đang phân tích: ${selectedGroup?.name ?? sourceLabel}${coSoDung === "sac-thue" ? " · theo sắc thuế" : ""}`} actions={<Segmented label="Góc nhìn chi tiết" value={detailMode} options={[{ value: "tax", label: "Sắc thuế" }, { value: "office", label: "Đơn vị CQT" }, { value: "industry", label: "Ngành nghề" }]} onChange={setDetailMode} />}>
+-          <InspectorTable rows={inspectorRows} />
++        <Card title="Chi tiết chỉ tiêu đang chọn" subtitle={showMillionDemo ? "Dữ liệu minh họa tỷ / triệu đồng · chỉ áp dụng cho bảng này" : `Đang phân tích: ${selectedGroup?.name ?? sourceLabel}${coSoDung === "sac-thue" ? " · theo sắc thuế" : ""}`} unit={moneyScale(displayedInspectorRows.flatMap((row) => [row.amount, row.previous, row.amount - (row.previous ?? 0)]))} actions={<><button type="button" className="dbtn" aria-pressed={showMillionDemo} onClick={() => setShowMillionDemo((value) => !value)}>{showMillionDemo ? "Tắt mẫu tiền triệu" : "Xem mẫu tiền triệu"}</button>{!showMillionDemo && <Segmented label="Góc nhìn chi tiết" value={detailMode} options={[{ value: "tax", label: "Sắc thuế" }, { value: "office", label: "Đơn vị CQT" }, { value: "industry", label: "Ngành nghề" }]} onChange={setDetailMode} />}</>}>
++          <InspectorTable rows={displayedInspectorRows} showMillions={showMillionDemo} />
++          <p className="dhint">Số tiền kèm tỷ, triệu, nghìn hoặc đồng. 1 tỷ = 1.000 triệu đồng. Tăng trưởng và tỷ trọng tính theo %.</p>
+         </Card>
+       </section> : <GridRows rows={[
+         [{ id: "breakdown", span: 8, render: () => <BreakdownTable data={data} /> }, { id: "location", span: 4, hidden: !data.byLocation.length, render: () => <Card title="Đóng góp theo địa bàn" subtitle="10 phường, xã đóng góp nhiều nhất" unit={moneyScale(data.byLocation.map((row) => row.amount))}><Bars rows={data.byLocation} onSelect={(row) => dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: row.id })} /></Card> }],
+@@ -303,26 +296,26 @@ function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
+ 
+   return <section
+     className="drevenue-combo"
+-    aria-label={`Biểu đồ kết hợp phát sinh tháng và lũy kế, đơn vị ${unit.unit}`}
++    aria-label={`Biểu đồ kết hợp phát sinh tháng và lũy kế, đơn vị tiền tệ VND`}
+   >
+     <div className="drevenue-combo-inner">
+       <div className="drevenue-combo-head">
+-        <span className="drevenue-combo-axis-title">Phát sinh tháng · {unit.short}</span>
++        <span className="drevenue-combo-axis-title">Phát sinh tháng</span>
+         <span className="drevenue-combo-keys" aria-hidden="true">
+           <span><i className="is-monthly" />Phát sinh tháng</span>
+           <span><i className="is-current" />Lũy kế {year}</span>
+           <span><i className="is-previous" />Cùng kỳ {year - 1}</span>
+         </span>
+-        <span className="drevenue-combo-axis-title is-right">Lũy kế · {unit.short}</span>
++        <span className="drevenue-combo-axis-title is-right">Lũy kế</span>
+       </div>
+ 
+       <div className="drevenue-combo-plot">
+         <div className="drevenue-combo-axis" aria-hidden="true">
+           {ticks.map(({ ratio, monthly: monthlyTick, cumulative: cumulativeTick }) => (
+             <span key={ratio} style={{ bottom: `${ratio * 100}%` }}>
+-              <b>{inScale(monthlyTick, unit)}</b>
++              <b><Money value={monthlyTick} /></b>
+               <i />
+-              <em>{inScale(cumulativeTick, unit)}</em>
++              <em><Money value={cumulativeTick} /></em>
+             </span>
+           ))}
+         </div>
+@@ -334,7 +327,7 @@ function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
+               type="button"
+               disabled={point.current === null}
+               onClick={() => onSelectMonth(point.month)}
+-              title={`${point.label}: ${point.current === null ? "chưa có số liệu" : `${inScale(point.current, unit)} ${unit.short}`}`}
++              title={`${point.label}: ${point.current === null ? "chưa có số liệu" : `${money(point.current)}`}`}
+             >
+               {point.current !== null && (
+                 <i style={{ height: `${Math.max((point.current / th.tran) * 100, 1)}%` }} />
+@@ -355,11 +348,17 @@ function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
+   </section>;
+ }
+ 
+-function InspectorTable({ rows }: { rows: AmountRow[] }) {
+-  const unit = moneyScale(rows.flatMap((row) => [row.amount, row.previous, row.amount - (row.previous ?? 0)]));
++const MILLION_DEMO_ROWS: AmountRow[] = [
++  { id: "demo-private", name: "Khu vực kinh tế ngoài quốc doanh", amount: 7_060_000_000, previous: 3_110_000_000 },
++  { id: "demo-foreign", name: "Doanh nghiệp có vốn đầu tư nước ngoài", amount: 240_000_000, previous: 146_000_000 },
++  { id: "demo-local", name: "Doanh nghiệp nhà nước địa phương", amount: 652_000_000, previous: 746_000_000 },
++].map((row) => ({ ...row, share: row.amount / 7_952_000_000 * 100 }));
++
++function InspectorTable({ rows, showMillions = false }: { rows: AmountRow[]; showMillions?: boolean }) {
++  const formatAmount = money;
+   return <div className="dtable-wrap"><table className="dtable dinspector-finance"><thead><tr><th>Khoản mục / Đối tượng</th><th className="is-num">Kỳ này</th><th className="is-num">Cùng kỳ</th><th className="is-num">Chênh lệch</th><th className="is-num">Tăng trưởng</th><th className="is-num">Tỷ trọng</th></tr></thead><tbody>{rows.map((row) => {
+     const delta = row.amount - (row.previous ?? 0);
+-    return <tr key={row.id}><th scope="row">{row.name}</th><td className="is-num" data-label="Kỳ này">{inScale(row.amount, unit)}</td><td className="is-num" data-label="Cùng kỳ">{row.previous === null ? "—" : inScale(row.previous, unit)}</td><td className={`is-num ${delta >= 0 ? "tone-pos" : "tone-neg"}`} data-label="Chênh lệch">{row.previous === null ? "—" : `${delta >= 0 ? "+" : "−"}${inScale(Math.abs(delta), unit)}`}</td><td className="is-num" data-label="Tăng trưởng"><Change current={row.amount} previous={row.previous} /></td><td className="is-num" data-label="Tỷ trọng"><span className="dshare-cell"><i><em style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0)}%` }} /></i>{pct(row.share)}</span></td></tr>;
++    return <tr key={row.id}><th scope="row">{row.name}</th><td className="is-num" data-label="Kỳ này">{formatAmount(row.amount)}</td><td className="is-num" data-label="Cùng kỳ">{row.previous === null ? "—" : formatAmount(row.previous)}</td><td className={`is-num ${delta >= 0 ? "tone-pos" : "tone-neg"}`} data-label="Chênh lệch">{row.previous === null ? "—" : `${delta >= 0 ? "+" : "−"}${formatAmount(Math.abs(delta))}`}</td><td className="is-num" data-label="Tăng trưởng">{showMillions && row.previous !== null && row.previous > 0 ? <span className={delta >= 0 ? "tone-pos" : "tone-neg"}>{delta >= 0 ? "+" : "−"}{pct(Math.abs(delta / row.previous * 100))}</span> : <Change current={row.amount} previous={row.previous} />}</td><td className="is-num" data-label="Tỷ trọng"><span className="dshare-cell"><i><em style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0)}%` }} /></i>{pct(row.share)}</span></td></tr>;
+   })}</tbody></table></div>;
+ }
+ 
+@@ -372,7 +371,6 @@ function IndustryHeatmap({ rows, selected, onSelect }: {
+ }) {
+   const ratios = [0.38, 0.42, 0.08, 0.12];
+   const max = Math.max(...rows.flatMap((row) => ratios.map((ratio) => row.amount * ratio)), 1);
+-  const unit = moneyScale([max]);
+   return <div className="dheatmap" style={{ /* San 190px chu khong phai 150px: nhan dai nhat cua danh muc nganh la
+           "Tai chinh, Ngan hang, Bao hiem" - do duoc 178px chu + 8px dem. San 150
+           cho cot 159px nen no thieu 19px va bi cat cut. */
+@@ -381,13 +379,12 @@ function IndustryHeatmap({ rows, selected, onSelect }: {
+     {rows.map((row) => <div className="dheatmap-row" key={row.id} style={{ display: "contents" }}><strong title={row.name}><span>{row.name}</span></strong>{HEAT_TAXES.map((tax, index) => {
+       const amount = row.amount * ratios[index];
+       const active = selected?.industry === row.name && selected.tax === tax;
+-      return <button key={tax} type="button" className={active ? "is-active" : undefined} onClick={() => onSelect({ industry: row.name, tax, amount })} style={{ "--heat": Math.max(amount / max, 0.08) } as CSSProperties}><span>{inScale(amount, unit)}</span></button>;
++      return <button key={tax} type="button" className={active ? "is-active" : undefined} onClick={() => onSelect({ industry: row.name, tax, amount })} style={{ "--heat": Math.max(amount / max, 0.08) } as CSSProperties}><span><Money value={amount} /></span></button>;
+     })}</div>)}
+   </div>;
+ }
+ 
+ function TaxpayerTable({ rows, onSelect }: { rows: TaxpayerRow[]; onSelect: (row: TaxpayerRow) => void }) {
+-  const unit = moneyScale(rows.map((row) => row.amount));
+   /*
+     Mỗi đầu cột tự khai VAI TRÒ của mình.
+ 
+@@ -396,7 +393,7 @@ function TaxpayerTable({ rows, onSelect }: { rows: TaxpayerRow[]; onSelect: (row
+     nên một con số một chữ số chiếm 305px trong khi sáu cột còn lại chia đều
+     90px, và tên doanh nghiệp phải xuống ba dòng.
+   */
+-  return <div className="dtable-wrap"><table className="dtable dtaxpayer-table"><thead><tr><th className="dcol-rank">STT</th><th className="dcol-code">Mã hiển thị</th><th>Người nộp thuế</th><th className="dcol-meta">Ngành nghề chính</th><th className="dcol-office">Đơn vị quản lý</th><th className="is-num dcol-money">Số đã nộp</th><th className="is-num dcol-pct">Tỷ trọng</th></tr></thead><tbody>{rows.map((row, index) => <tr key={row.id} onClick={() => onSelect(row)}><td className="dcol-rank" data-label="STT">{index + 1}</td><td className="dcol-code" data-label="Mã hiển thị"><button type="button" className="dlink" onClick={(event) => { event.stopPropagation(); onSelect(row); }}>{row.displayCode}</button></td><th scope="row" title={row.name}>{row.name}</th><td className="dcol-meta" data-label="Ngành nghề chính" title={row.industry}>{row.industry}</td><td className="dcol-office" data-label="Đơn vị quản lý" title={row.taxOffice}>{row.taxOffice}</td><td className="is-num dcol-money" data-label="Số đã nộp">{inScale(row.amount, unit)}</td><td className="is-num dcol-pct" data-label="Tỷ trọng">{pct(row.share)}</td></tr>)}</tbody></table></div>;
++  return <div className="dtable-wrap"><table className="dtable dtaxpayer-table"><thead><tr><th className="dcol-rank">STT</th><th className="dcol-code">Mã hiển thị</th><th>Người nộp thuế</th><th className="dcol-meta">Ngành nghề chính</th><th className="dcol-office">Đơn vị quản lý</th><th className="is-num dcol-money">Số đã nộp</th><th className="is-num dcol-pct">Tỷ trọng</th></tr></thead><tbody>{rows.map((row, index) => <tr key={row.id} onClick={() => onSelect(row)}><td className="dcol-rank" data-label="STT">{index + 1}</td><td className="dcol-code" data-label="Mã hiển thị"><button type="button" className="dlink" onClick={(event) => { event.stopPropagation(); onSelect(row); }}>{row.displayCode}</button></td><th scope="row" title={row.name}>{row.name}</th><td className="dcol-meta" data-label="Ngành nghề chính" title={row.industry}>{row.industry}</td><td className="dcol-office" data-label="Đơn vị quản lý" title={row.taxOffice}>{row.taxOffice}</td><td className="is-num dcol-money" data-label="Số đã nộp"><Money value={row.amount} /></td><td className="is-num dcol-pct" data-label="Tỷ trọng">{pct(row.share)}</td></tr>)}</tbody></table></div>;
+ }
+ 
+ function DomesticGroupStructure({
+@@ -551,13 +548,13 @@ function BreakdownTable({ data }: { data: RevenueAnalysisData }) {
+               return (
+                 <tr key={row.id}>
+                   <th scope="row">{row.name}</th>
+-                  <td className="is-num">{inScale(row.amount, unit)}</td>
++                  <td className="is-num"><Money value={row.amount} /></td>
+                   <td className="is-num">
+-                    {row.previous === null ? "chưa có" : inScale(row.previous, unit)}
++                    {row.previous === null ? "chưa có" : <Money value={row.previous} />}
+                   </td>
+                   <td className={`is-num ${delta >= 0 ? "tone-pos" : "tone-neg"}`}>
+                     {delta >= 0 ? "+" : "−"}
+-                    {inScale(Math.abs(delta), unit)}
++                    <Money value={Math.abs(delta)} />
+                   </td>
+                   <td className="is-num">
+                     <Change current={row.amount} previous={row.previous} />
+@@ -593,17 +590,17 @@ function NetReconciliation({ data }: { data: RevenueAnalysisData }) {
+       <ul className="dledger">
+         <li>
+           <span>Tổng bảy khoản gộp</span>
+-          <strong>{inScale(net.gross, unit)}</strong>
++          <strong><Money value={net.gross} /></strong>
+         </li>
+         {net.deductions.map((row) => (
+           <li key={row.id}>
+             <span>{row.name}</span>
+-            <strong className="tone-neg">{inScale(row.amount, unit)}</strong>
++            <strong className="tone-neg"><Money value={row.amount} /></strong>
+           </li>
+         ))}
+         <li className="is-total">
+           <span>Thu cân đối ròng</span>
+-          <strong>{inScale(net.net, unit)}</strong>
++          <strong><Money value={net.net} /></strong>
+         </li>
+       </ul>
+     </Card>
+diff --git a/web/src/features/revenue-preview/RevenuePreviewDrawer.tsx b/web/src/features/revenue-preview/RevenuePreviewDrawer.tsx
+index a146b00..b653ef0 100644
+--- a/web/src/features/revenue-preview/RevenuePreviewDrawer.tsx
++++ b/web/src/features/revenue-preview/RevenuePreviewDrawer.tsx
+@@ -1,3 +1,4 @@
++import { Money, Change, pct } from "@/components/primitives";
+ import { useEffect, useRef } from "react";
+ import { SOURCE_BY_CODE, itemsOfSource } from "@/domain/catalog";
+ import { share, yoy } from "@/domain/metrics";
+@@ -5,7 +6,7 @@ import { sumOf } from "@/data/mock/observations";
+ import { trendOf } from "@/data/mock/build";
+ import { useDashboardState } from "@/state/DashboardState";
+ import { TrendChart } from "@/components/charts";
+-import { Change, money, pct } from "@/components/primitives";
++
+ import { ANALYSIS_SOURCES } from "@/features/revenue-analysis/RevenueAnalysisTab";
+ 
+ /**
+@@ -108,7 +109,7 @@ export function RevenuePreviewDrawer() {
+         </header>
+ 
+         <div className="ddrawer-value">
+-          <strong>{money(amount)}</strong>
++          <strong><Money value={amount} /></strong>
+           <Change current={amount} previous={previous} />
+         </div>
+ 
+diff --git a/web/src/styles/dashboard.css b/web/src/styles/dashboard.css
+index 2360d3f..fb36860 100644
+--- a/web/src/styles/dashboard.css
++++ b/web/src/styles/dashboard.css
+@@ -3303,10 +3303,10 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
+ }
+ .drevenue-combo-keys i.is-previous { background: repeating-linear-gradient(90deg, var(--data-reference) 0 5px, transparent 5px 9px); }
+ .drevenue-combo-plot { position: relative; height: 224px; }
+-.drevenue-combo-axis { position: absolute; inset: 8px 58px 22px 52px; }
++.drevenue-combo-axis { position: absolute; inset: 8px 92px 22px 92px; }
+ .drevenue-combo-axis > span {
+-  position: absolute; left: -52px; right: -58px; height: 0;
+-  display: grid; grid-template-columns: 46px minmax(0, 1fr) 52px; align-items: center;
++  position: absolute; left: -92px; right: -92px; height: 0;
++  display: grid; grid-template-columns: 86px minmax(0, 1fr) 86px; align-items: center;
+ }
+ .drevenue-combo-axis > span > b,
+ .drevenue-combo-axis > span > em {
+@@ -3318,12 +3318,12 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
+ .drevenue-combo-axis > span > em { padding-left: 6px; text-align: left; }
+ .drevenue-combo-axis > span > i { height: 1px; background: var(--divider); }
+ .dchart-unit { color: var(--ink-3); }
+-.drevenue-combo-area { position: absolute; inset: 8px 58px 22px 52px; pointer-events: none; }
++.drevenue-combo-area { position: absolute; inset: 8px 92px 22px 92px; pointer-events: none; }
+ .drevenue-combo-area > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+ .drevenue-combo-area polyline { fill: none; vector-effect: non-scaling-stroke; stroke-width: 2; }
+ .drevenue-combo-area polyline.is-current { stroke: var(--brand); }
+ .drevenue-combo-area polyline.is-previous { stroke: var(--data-reference); stroke-dasharray: 5 4; }
+-.drevenue-combo-bars { position: absolute; inset: 8px 58px 0 52px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 0; }
++.drevenue-combo-bars { position: absolute; inset: 8px 92px 0 92px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; gap: 0; }
+ .drevenue-combo-bars button { display: grid; grid-template-rows: 1fr 22px; align-items: end; height: 100%; min-width: 0; }
+ .drevenue-combo-bars button i { display: block; width: min(62%, 34px); min-height: 0; margin-inline: auto; background: color-mix(in srgb, var(--data-secondary) 28%, transparent); border: 1px solid var(--data-secondary); border-bottom: 0; }
+ .drevenue-combo-bars button:disabled { cursor: default; }
+@@ -4024,3 +4024,5 @@ h1, h2, h3, .dcard-title h2, .dsubject, .dkpi-label {
+   .dexpandable[open] > .dexpandable-content,
+   .dtrang, .dreport-detail { animation: none; }
+ }
++
++.dcurrency-note { margin: var(--s2) 0 var(--s3); color: var(--ink-2); font-size: var(--fs-label); }

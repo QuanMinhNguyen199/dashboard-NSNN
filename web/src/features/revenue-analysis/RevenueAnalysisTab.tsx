@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BudgetMoney } from "@/components/primitives";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { SOURCES, SOURCE_BY_CODE, type DomesticGroupId, type SourceCode } from "@/domain/catalog";
 import { useRevenueAnalysis } from "@/data/hooks";
@@ -143,6 +144,9 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
     return khoanCuaKhoi.length ? khoanCuaKhoi : data.breakdown;
   }, [data.breakdown, data.byIndustry, data.byTaxOffice, detailMode, khoanCuaKhoi, kpi.amount, selectedGroup]);
 
+  const useEnterpriseMock = detailMode === "tax" && selectedGroup?.id === "sxkd" && coSoDung === "khoi";
+  const detailRows = useEnterpriseMock ? MOCK_ENTERPRISE_ROWS : inspectorRows;
+
   return (
     <>
       <KpiStrip label={`Chỉ số ${sourceLabel}`} columns={3}>
@@ -199,8 +203,25 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
             }
           />
         </Card>
-        <Card title="Chi tiết chỉ tiêu đang chọn" subtitle={`Đang phân tích: ${selectedGroup?.name ?? sourceLabel}${coSoDung === "sac-thue" ? " · theo sắc thuế" : ""}`} actions={<Segmented label="Góc nhìn chi tiết" value={detailMode} options={[{ value: "tax", label: "Sắc thuế" }, { value: "office", label: "Đơn vị CQT" }, { value: "industry", label: "Ngành nghề" }]} onChange={setDetailMode} />}>
-          <InspectorTable rows={inspectorRows} />
+        <Card className="dinspector-card" title="Bảng chi tiết" actions={
+          <div className="dinspector-units">
+            <strong>Đơn vị: tỷ đồng</strong>
+            <span>(*) Những giá trị có trị tuyệt đối &lt; 1 tỷ được ghi là triệu</span>
+          </div>
+        }>
+          <p className="dinspector-context">Đang phân tích: <strong>{selectedGroup?.name ?? sourceLabel}</strong><span aria-hidden="true"> › </span><strong>Thành phần</strong></p>
+          <div className="dinspector-subheading">
+            <h3>{selectedGroup?.name ?? sourceLabel}</h3>
+            {useEnterpriseMock && <span className="dinspector-mock">Số liệu mô phỏng</span>}
+          </div>
+          <div className="dinspector-tabs" role="group" aria-label="Góc nhìn chi tiết">
+            {([
+              { value: "tax", label: "Khoản thu" },
+              { value: "office", label: "Đơn vị cơ quan thuế" },
+              { value: "industry", label: "Ngành nghề kinh doanh" },
+            ] as const).map((tab) => <button key={tab.value} type="button" className={detailMode === tab.value ? "is-active" : ""} aria-pressed={detailMode === tab.value} onClick={() => setDetailMode(tab.value)}>{tab.label}</button>)}
+          </div>
+          <InspectorTable rows={detailRows} mode={detailMode} />
         </Card>
       </section> : <GridRows rows={[
         [{ id: "breakdown", span: 8, render: () => <BreakdownTable data={data} /> }, { id: "location", span: 4, hidden: !data.byLocation.length, render: () => <Card title="Đóng góp theo địa bàn" subtitle="10 phường, xã đóng góp nhiều nhất" unit={moneyScale(data.byLocation.map((row) => row.amount))}><Bars rows={data.byLocation} onSelect={(row) => dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: row.id })} /></Card> }],
@@ -355,12 +376,31 @@ function RevenueComboChart({ monthly, cumulative, year, onSelectMonth }: {
   </section>;
 }
 
-function InspectorTable({ rows }: { rows: AmountRow[] }) {
-  const unit = moneyScale(rows.flatMap((row) => [row.amount, row.previous, row.amount - (row.previous ?? 0)]));
-  return <div className="dtable-wrap"><table className="dtable dinspector-finance"><thead><tr><th>Khoản mục / Đối tượng</th><th className="is-num">Kỳ này</th><th className="is-num">Cùng kỳ</th><th className="is-num">Chênh lệch</th><th className="is-num">Tăng trưởng</th><th className="is-num">Tỷ trọng</th></tr></thead><tbody>{rows.map((row) => {
-    const delta = row.amount - (row.previous ?? 0);
-    return <tr key={row.id}><th scope="row">{row.name}</th><td className="is-num" data-label="Kỳ này">{inScale(row.amount, unit)}</td><td className="is-num" data-label="Cùng kỳ">{row.previous === null ? "—" : inScale(row.previous, unit)}</td><td className={`is-num ${delta >= 0 ? "tone-pos" : "tone-neg"}`} data-label="Chênh lệch">{row.previous === null ? "—" : `${delta >= 0 ? "+" : "−"}${inScale(Math.abs(delta), unit)}`}</td><td className="is-num" data-label="Tăng trưởng"><Change current={row.amount} previous={row.previous} /></td><td className="is-num" data-label="Tỷ trọng"><span className="dshare-cell"><i><em style={{ width: `${Math.max(Math.min(row.share ?? 0, 100), 0)}%` }} /></i>{pct(row.share)}</span></td></tr>;
-  })}</tbody></table></div>;
+type InspectorRow = AmountRow & { completion?: number };
+
+const MOCK_ENTERPRISE_ROWS: InspectorRow[] = [
+  { id: "mock-private", name: "Thu từ khu vực kinh tế ngoài quốc doanh", amount: 7_060_000_000, previous: 7_450_000_000, completion: 91.7 },
+  { id: "mock-central", name: "Thu từ khu vực doanh nghiệp nhà nước do Trung ương quản lý", amount: 1_170_000_000, previous: 1_420_000_000, completion: 73 },
+  { id: "mock-foreign", name: "Thu từ khu vực doanh nghiệp có vốn đầu tư nước ngoài", amount: 240_000_000, previous: 334_000_000, completion: 77.6 },
+  { id: "mock-local", name: "Thu từ khu vực doanh nghiệp nhà nước do địa phương quản lý", amount: 652_000_000, previous: 165_000_000, completion: 112.3 },
+].map((row) => ({ ...row, share: row.amount / 9_122_000_000 * 100 }));
+
+function InspectorTable({ rows, mode }: { rows: InspectorRow[]; mode: "tax" | "office" | "industry" }) {
+  return <div className="dtable-wrap"><table className="dtable dinspector-finance">
+    <thead><tr><th>{mode === "tax" ? "Khoản thu" : mode === "office" ? "Đơn vị cơ quan thuế" : "Ngành nghề kinh doanh"}</th><th className="is-num">Kỳ này</th><th className="is-num">Cùng kỳ</th><th className="is-num">Chênh lệch</th><th className="is-num">Tăng trưởng</th><th className="is-num">Tỷ trọng</th><th className="is-num">% Đạt DT</th></tr></thead>
+    <tbody>{rows.map((row) => {
+      const delta = row.previous === null ? null : row.amount - row.previous;
+      return <tr key={row.id}>
+        <th scope="row">{row.name}</th>
+        <td className="is-num" data-label="Kỳ này"><BudgetMoney value={row.amount} /></td>
+        <td className="is-num" data-label="Cùng kỳ"><BudgetMoney value={row.previous} /></td>
+        <td className={delta === null ? "is-num" : delta >= 0 ? "is-num tone-pos" : "is-num tone-neg"} data-label="Chênh lệch">{delta !== null && delta > 0 ? "+" : ""}<BudgetMoney value={delta} /></td>
+        <td className="is-num" data-label="Tăng trưởng">{delta !== null && row.previous !== null && row.previous > 0 ? <span className={delta > 0 ? "dchange up" : delta < 0 ? "dchange down" : "dchange flat"}>{delta !== 0 && <svg width="7" height="6" viewBox="0 0 7 6" aria-hidden="true"><path d={delta > 0 ? "M3.5 0 7 6H0z" : "M3.5 6 0 0h7z"} fill="currentColor" /></svg>}{pct(delta / row.previous * 100, true)}</span> : <Change current={row.amount} previous={row.previous} />}</td>
+        <td className="is-num" data-label="Tỷ trọng"><span className="dshare-cell"><i><em style={{ width: Math.max(Math.min(row.share ?? 0, 100), 0) + "%" }} /></i>{pct(row.share)}</span></td>
+        <td className="is-num" data-label="% Đạt DT">{pct(row.completion)}</td>
+      </tr>;
+    })}</tbody>
+  </table></div>;
 }
 
 const HEAT_TAXES = ["GTGT", "TNDN", "TTĐB", "Tiền thuê đất"];

@@ -1,0 +1,86 @@
+### SHEET QuyTac_Nguon (chu thich nguon du lieu) ###
+  Nội dung || Giá trị/Nguyên tắc
+  Ngày báo cáo || 22/07/2026
+  Báo cáo nợ hiện tại || D:\DTNGOC\QLHT DN SO 1\NAM 2026\TOOL HO TRO\TOOL_BAO_CAO_NO_TUAN\NO_NGAY\DANHGIANONGAY_22.07.2026.xlsx
+  Báo cáo đầu năm đúng phạm vi || D:\TOOL_BAO_CAO_NO_TUAN\NO DAU NAM DN.xlsx
+  Báo cáo tháng trước đúng phạm vi || D:\TOOL_BAO_CAO_NO_TUAN\NO Dn THANG 6.2026.xlsx
+  Báo cáo tuần trước đúng phạm vi || D:\DTNGOC\QLHT DN SO 1\NAM 2026\TOOL HO TRO\TOOL_BAO_CAO_NO_TUAN\BAO_CAO_CUOI\no tuan 220726.xlsx
+  Dữ liệu DAILY02 hiện tại || D:\DTNGOC\QLHT DN SO 1\NAM 2026\TOOL HO TRO\TOOL_BAO_CAO_NO_TUAN\NO_NGAY\TONGHOPNONGAY_22.07.2026.xlsx
+  Dữ liệu 01/NNT đầu năm || D:\DTNGOC\QLHT DN SO 1\NAM 2026\DAU MOI QLN\FILE GHEP 01NNT CAC THANG\Fileghep01NNT_THANG12.2025.xlsx
+  Báo cáo đánh giá CC/TH || D:\DTNGOC\QLHT DN SO 1\NAM 2026\TOOL HO TRO\TOOL_BAO_CAO_NO_TUAN\NO_NGAY\DANH_GIA_CC_TH\BAO_CAO_DANH_GIA_CC_TH_20260722.xlsx
+  Ngưỡng tăng nợ KNT || 500000000
+  Nguyên tắc nguồn lịch sử || Tổng thể và DN/tổ chức dùng các file lịch sử độc lập; không đọc chéo phạm vi.
+  Phạm vi file || DOANH NGHIỆP, TỔ CHỨC: chỉ gồm DN/tổ chức; giữ Phòng Quản lý các khoản thu từ đất.
+
+### So_Sanh_No - dong QL1 (r7) va cac moc ###
+  TONG TOAN NGANH: Tong cong(B)=35157665.713518, No KNT(C)=25192664.875427, Kho thu(D)=6662341.733719, Dang xu ly(E)=3302659.104372
+     tang/giam tuyet doi: Tong cong(B)=6577423.509488, No KNT(C)=5941067.449191, Kho thu(D)=285041.510634, Dang xu ly(E)=351314.549663
+     tang/giam tuong doi: Tong cong(B)=0.2301388302636757, No KNT(C)=0.308601271762235, Kho thu(D)=0.04469626654899932, Dang xu ly(E)=0.1190354237367718
+  TONG VP THUE TP HA NOI: Tong cong(B)=26552115.953198, No KNT(C)=18382498.139956, Kho thu(D)=4911758.327425, Dang xu ly(E)=3257859.485817
+     tang/giam tuyet doi: Tong cong(B)=4154110.584582, No KNT(C)=3798445.942872, Kho thu(D)=-31304.997549, Dang xu ly(E)=386969.639259
+     tang/giam tuong doi: Tong cong(B)=0.185467880564165, No KNT(C)=0.2604520260584008, Kho thu(D)=-0.00633311683280219, Dang xu ly(E)=0.1347908348775381
+  QL1: Tong cong(B)=3820973.450683, No KNT(C)=3113530.32029, Kho thu(D)=707443.130393, Dang xu ly(E)=0
+     tang/giam tuyet doi: Tong cong(B)=1074754.479853, No KNT(C)=893039.93505, Kho thu(D)=189516.423293, Dang xu ly(E)=-7801.87849
+     tang/giam tuong doi: Tong cong(B)=0.3913578965366236, No KNT(C)=0.4021814014535697, Kho thu(D)=0.3659135949064095, Dang xu ly(E)=-1
+
+### DS_DN_TangnoTren500tr - cot 'Phong/TCS' (index 6) ###
+  So doanh nghiep thuoc QL1: 173
+  Tong 'No KNT ngay 22/07/2026' = 6,858,618,566,731 d = 6,858,618.567 trieu
+  Tong 'No KNT dau nam'         = 2,205,932,841,224 d
+  Tong 'Tang/giam'              = 4,652,685,725,507 d
+  5 dong dau:
+    MST 0102143374 | CÔNG TY TNHH C.E.O QUỐC TẾ | no=826,746,200,000 | maCQT=0101
+    MST 0110463360 | CÔNG TY CỔ PHẦN THÁI NAM LAND | no=678,109,459,649 | maCQT=0101
+    MST 0110503750 | CÔNG TY CỔ PHẦN ĐẦU TƯ THÁI MINH L | no=559,361,269,820 | maCQT=0101
+    MST 0100520789 | CÔNG TY TNHH DUYÊN HÀ | no=270,000,000,000 | maCQT=0101
+    MST 0102043394 | CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH | no=201,228,066,433 | maCQT=0101
+
+### Danh gia Ket qua cuong che (38x8) ###
+  r1: TỔNG HỢP CƯỠNG CHẾ (NGƯỠNG |  |  |  |  |  |  | 
+  r2: Địa bàn | Phải Cưỡng chế |  | Đã Cưỡng chế |  | Chưa thực hiện CC |  | Tỷ lệ đã CC
+  r3:  | NNT | Số tiền | NNT | Số tiền | NNT | Số tiền | 
+  r4: Tổng cộng | 16354 | 9210886160707 | 13898 | 8660731774934 | 2455 | 550154385773 | 0.9187165656158542
+  r5: VP Thuế TP HN | 3017 | 6862831315546 | 1871 | 6393218388842 | 1145 | 469612926704 | 0.9315715474981571
+  r6: Phòng Quản lý, Hỗ trợ doan | 647 | 1858830288635 | 568 | 1788508825463 | 79 | 70321463172 | 0.9621689706683016
+  r7: Phòng Quản lý, Hỗ trợ doan | 860 | 81248061671 | 351 | 72201697895 | 509 | 9046363776 | 0.8886574819146863
+  r8: Phòng Quản lý, Hỗ trợ doan | 296 | 216011588385 | 208 | 187911402487 | 88 | 28100185898 | 0.8699135258988203
+  r9: Phòng Quản lý, Hỗ trợ doan | 308 | 287832726880 | 205 | 274780186040 | 103 | 13052540840 | 0.9546523392892646
+  r10: Phòng Quản lý, Hỗ trợ doan | 276 | 469972923396 | 99 | 454243833941 | 177 | 15729089455 | 0.9665319241343897
+  >> QL1: Phòng Quản lý, Hỗ trợ doan | 647 | 1858830288635 | 568 | 1788508825463 | 79 | 70321463172 | 0.9621689706683016
+
+### Danh gia Tam hoan XC (37x8) ###
+  r1: TỔNG HỢP TẠM HOÃN XUẤT CẢN |  |  |  |  |  |  | 
+  r2: Địa bàn | Phải THXC |  | Đã THXC |  | Chưa tạm hoãn |  | Tỷ lệ tạm hoãn
+  r3:  | NNT | Số tiền | NNT | Số tiền | NNT | Số tiền | 
+  r4: Tổng cộng | 956 | 6778262754039 | 702 | 5673514292979 | 254 | 1104748461060 | 0.8370159875549664
+  r5: VP Thuế TP HN | 341 | 5455899605232 | 221 | 4518530860822 | 120 | 937368744410 | 0.8281917168140156
+  r6: Phòng Quản lý, Hỗ trợ doan | 85 | 1417711634635 | 55 | 1276849839726 | 30 | 140861794909 | 0.9006414340774836
+  r7: Phòng Quản lý, Hỗ trợ doan | 11 | 35465051842 | 8 | 33590257429 | 3 | 1874794413 | 0.9471368483725224
+  r8: Phòng Quản lý, Hỗ trợ doan | 22 | 136617249765 | 12 | 121065055173 | 10 | 15552194592 | 0.8861622919598231
+  r9: Phòng Quản lý, Hỗ trợ doan | 15 | 176814974531 | 13 | 174859117163 | 2 | 1955857368 | 0.9889383952168763
+  r10: Phòng Quản lý, Hỗ trợ doan | 20 | 427381919510 | 18 | 424061215063 | 2 | 3320704447 | 0.9922301241690167
+  >> QL1: Phòng Quản lý, Hỗ trợ doan | 85 | 1417711634635 | 55 | 1276849839726 | 30 | 140861794909 | 0.9006414340774836
+
+### Bao_cao_tong_hop (37x9) ###
+  r1: BÁO CÁO TẠM HOÃN XUẤT CẢNH |  |  |  |  |  |  |  | 
+  r3: Phòng/Thuế cơ sở | NNT trạng thái 06 | Tổng nợ không hoạt động tạ | Số NNT đã tạm hoãn | Số nợ đã tạm hoãn | Tỷ lệ tạm hoãn về số tiền | Số NNT chưa tạm hoãn | Số tiền chưa tạm hoãn | Tỷ lệ chưa tạm hoãn về số 
+  r4: Tổng cộng chung | 32681 | 2833072556619 | 14733 | 1993785697071 | 0.7037538422420044 | 17948 | 839286859548 | 0.2962461577579955
+  r5: VP Thuế TP Hà Nội | 16404 | 1856956374091 | 6935 | 1221663090644 | 0.6578846480666608 | 9469 | 635293283447 | 0.34211535193333925
+  r6: Phòng Quản lý, Hỗ trợ doan | 582 | 90201931724 | 264 | 83690705664 | 0.9278150042293655 | 318 | 6511226060 | 0.07218499577063447
+  r7: Phòng Quản lý, Hỗ trợ doan | 743 | 59746025093 | 65 | 21445583622 | 0.3589457807212788 | 678 | 38300441471 | 0.6410542192787212
+  r8: Phòng Quản lý, Hỗ trợ doan | 392 | 104854133806 | 141 | 92622743184 | 0.8833485130435546 | 251 | 12231390622 | 0.1166514869564455
+  r9: Phòng Quản lý, Hỗ trợ doan | 169 | 36836286601 | 115 | 35178187579 | 0.9549873460384308 | 54 | 1658099022 | 0.04501265396156917
+  r10: Phòng Quản lý, Hỗ trợ doan | 64 | 15855585880 | 5 | 395765486 | 0.02496063463029851 | 59 | 15459820394 | 0.9750393653697015
+  >> QL1: Phòng Quản lý, Hỗ trợ doan | 582 | 90201931724 | 264 | 83690705664 | 0.9278150042293655 | 318 | 6511226060 | 0.07218499577063447
+
+### DS NNT chua cuong che (2458x17) ###
+  header: STT | MST | Tên NNT | CQT | Phòng/TCS | Loại NNT | Chương | Nợ >90 ngày - Nợ tháng | Nợ >90 ngày - Nợ ngày | Nợ dùng đánh giá tại đ | Tổng nợ dùng đánh giá  | Ngưỡng | Tình trạng cưỡng chế | Biện pháp hiệu lực | Số quyết định hiệu lực | Kết luận | Ghi chú
+  So dong thuoc QL1: 79
+
+### DS tren 500tr chua Hoan XC (255x16) ###
+  header: STT | MST | Tên NNT | CQT | Phòng/TCS | Loại NNT | Chương | Nợ >120 ngày - Nợ thán | Nợ >120 ngày - Nợ ngày | Nợ dùng đánh giá tại đ | Tổng nợ dùng đánh giá  | Ngưỡng theo loại NNT | Tình trạng tạm hoãn | Ngày tạm hoãn | Kết luận | Ghi chú
+  So dong thuoc QL1: 29
+
+### DS_chua_tam_hoan (16170x11) ###
+  header: STT | MST | Tên NNT | Cơ quan thuế | Chương | Tổng nợ KCHĐ theo MST | Nhóm xử lý | Tình trạng tạm hoãn | Ngày tạm hoãn | Map Phòng/Thuế cơ sở | Loại NNT
+  So dong thuoc QL1: 317

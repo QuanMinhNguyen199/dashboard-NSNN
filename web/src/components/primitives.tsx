@@ -1,6 +1,13 @@
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import type { AmountRow, ResourceState } from "@/domain/types";
 import { yoy } from "@/domain/metrics";
+import { BILLION_SCALE, budgetMoneyParts } from "@/domain/moneyFormat";
+
+/** Billions omit their suffix; only the million exception is labelled inline. */
+export function BudgetMoney({ value }: { value: number | null | undefined }) {
+  const parts = budgetMoneyParts(value);
+  return <span className="dbudget-money">{parts.number}{parts.million && <span className="dmoney-million-unit"> triệu</span>}</span>;
+}
 
 /* ───────────────────────────── Định dạng số ─────────────────────────────── */
 
@@ -330,6 +337,7 @@ export function Bars({
   scale = "amount",
   money: moneyUnit,
   showMoneyUnit = false,
+  compactMillions = false,
   onSelect,
   emptyText = "Không có mục nào khớp bộ lọc hiện tại.",
 }: {
@@ -340,12 +348,14 @@ export function Bars({
   money?: MoneyScale;
   /** Hiện hậu tố đơn vị ngay sau từng số khi danh sách không có đầu cột riêng. */
   showMoneyUnit?: boolean;
+  /** Billions by default with explicit, quieter million suffixes. */
+  compactMillions?: boolean;
   onSelect?: (row: AmountRow) => void;
   emptyText?: string;
 }) {
   if (!rows.length) return <p className="dempty">{emptyText}</p>;
 
-  const unit = moneyUnit ?? moneyScale(rows.map((row) => row.amount));
+  const unit = compactMillions ? BILLION_SCALE : moneyUnit ?? moneyScale(rows.map((row) => row.amount));
 
   const changes = rows.map((row) => yoy(row.amount, row.previous));
   /**
@@ -389,8 +399,8 @@ export function Bars({
                     anyPrevious ? <Change current={row.amount} previous={row.previous} label="" /> : null
                   ) : (
                     <>
-                      {inScale(row.amount, unit)}
-                      {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
+                      {compactMillions ? <BudgetMoney value={row.amount} /> : inScale(row.amount, unit)}
+                      {showMoneyUnit && !compactMillions && <span className="dbar-unit"> {unit.short}</span>}
                       {row.share != null && <em>{pct(row.share)}</em>}
                     </>
                   )}
@@ -413,8 +423,8 @@ export function Bars({
             </span>
             {scale === "change" ? (
               <span className="dbar-trail">
-                {inScale(row.amount, unit)}
-                {showMoneyUnit && <span className="dbar-unit"> {unit.short}</span>}
+                {compactMillions ? <BudgetMoney value={row.amount} /> : inScale(row.amount, unit)}
+                {showMoneyUnit && !compactMillions && <span className="dbar-unit"> {unit.short}</span>}
               </span>
             ) : anyPrevious ? (
               <Change current={row.amount} previous={row.previous} />

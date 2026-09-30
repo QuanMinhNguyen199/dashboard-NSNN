@@ -7,7 +7,7 @@ import { useAction } from "@/state/ActionContext";
 
 const trangThaiText = { OK: "Đạt", MISMATCH: "Lệch số dòng", FAILED: "Lỗi", RUNNING: "Đang chạy" } as const;
 const trangThaiTone: Record<DataRun["status"], Tone> = { OK: "positive", MISMATCH: "warning", FAILED: "critical", RUNNING: "info" };
-const cachChayText = { AUTO: "Tự động", MANUAL: "Tải tay" } as const;
+const cachChayText = { AUTO: "Tự động", MANUAL: "Thủ công" } as const;
 
 /** Chênh lệch giữa số dòng ở nguồn và số dòng vào kho. Không đo được thì null. */
 const lech = (r: DataRun) => r.rowsSource === null ? null : r.rowsSource - r.rowsStore;
@@ -34,7 +34,6 @@ export function Runs() {
   */
   const detail = luot && <Panel
     title={`Lượt ${luot.id} – ${luot.source}`}
-    source={luot.source}
   >
     <DetailGrid items={[
       { label: "Tham số kỳ", value: luot.period },
@@ -52,7 +51,7 @@ export function Runs() {
       {/* Nút nằm cạnh chính dải báo kết quả mà nó trả lời; để ở đầu khối thì
           đầu khối cao thấp khác nhau tuỳ lượt có lỗi hay không. */}
       {luot.status !== "OK" && luot.status !== "RUNNING" && (
-        <Button kind="quiet" icon="upload" onClick={() => notify(`Đã mở kênh tải tay thay cho lượt ${luot.id}. Bản tải tay sẽ thành phiên bản v${luot.version + 1}, không ghi đè bản cũ.`)}>Tải file tay thay lượt này</Button>
+        <Button kind="quiet" icon="upload" onClick={() => notify("Bản demo chưa hỗ trợ nhập tệp thủ công cho lượt chạy này.")}>Nhập tệp thủ công cho lượt này</Button>
       )}
     </div>
   </Panel>;
@@ -63,18 +62,9 @@ export function Runs() {
       actions={<Button kind="primary" icon="upload" onClick={() => notify("Bản demo chưa nối hệ nguồn nên chưa chạy thật được.")}>Chạy lại theo tham số cũ</Button>}
     />
 
-    {/*
-      Nói thẳng phần chưa có: kéo tự động phụ thuộc một quyết định chưa chốt.
-      Không nói thì màn này trông như đã nối xong hệ nguồn.
-    */}
-    <div className="notice warning">
-      <strong>Kéo tự động chưa được phép cho mọi nguồn</strong>
-      <span>Thuế TP chưa chốt việc cho tool kéo trực tiếp và dùng tài khoản nào (Q-73, Q-75). TTR vẫn phải tải tay vì chạy trên IE cũ. Nguồn chưa tự động được thì tải file tay vào cùng vùng thô.</span>
-    </div>
-
     <FigureLine items={[
       { label: "Lượt chạy trong ngày", value: dataRuns.length },
-      { label: "Nguồn kéo được tự động", value: `${tuDong}/5`, note: "TTR còn phải tải tay" },
+      { label: "Nguồn kéo được tự động", value: `${tuDong}/5`, note: "TTR cần nhập tệp thủ công" },
       { label: "Lượt lỗi đang mở", value: loiDangMo, tone: loiDangMo ? "critical" : "positive" },
       { label: "Dòng lệch khi đối soát", value: integer(dongLech), tone: dongLech ? "warning" : "positive", note: "Nguồn so với kho" },
     ]}/>
@@ -82,7 +72,6 @@ export function Runs() {
     <CaseLayout detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close} label="Chi tiết lượt chạy">
       <Panel
         title="Nhật ký lượt chạy"
-        source="Vùng dữ liệu thô"
         actions={<SearchField value={search} onChange={setSearch} placeholder="Tìm mã lượt, nguồn hoặc kỳ"/>}
       >
         <TableWrap label="nhật ký lượt chạy"><table>
@@ -102,7 +91,7 @@ export function Runs() {
           </tr>)}</tbody>
         </table></TableWrap>
         <footer className="table-footer">
-          <span>Hiển thị {rows.length}/{dataRuns.length} lượt mô phỏng – vùng thô giữ mọi phiên bản, không ghi đè</span>
+          <span>Hiển thị {rows.length}/{dataRuns.length} lượt – vùng thô giữ mọi phiên bản, không ghi đè</span>
         </footer>
       </Panel>
     </CaseLayout>

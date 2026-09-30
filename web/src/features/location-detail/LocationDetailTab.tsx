@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from "react";
+import { BILLION_SCALE, MILLION_NOTE } from "@/domain/moneyFormat";
 import { LOCATIONS } from "@/domain/catalog";
 import { TAX_OFFICE_ENTITIES, taxOfficeLocationIds } from "@/domain/tms";
 import { sumOf } from "@/data/mock/observations";
@@ -175,12 +176,14 @@ function LocationBody({ data, map }: { data: LocationDetailData; map: ReactNode 
         <Card
           title="Cơ cấu ngành trên địa bàn"
           subtitle={filters.industry ? "Đang giới hạn theo ngành đã chọn · số mô phỏng" : "Phân nhóm ngành nghề từ dữ liệu TMS · số mô phỏng"}
-          unit={moneyScale(data.industries.map((row) => row.amount))}
+          unit={BILLION_SCALE}
         >
           <Bars
             rows={data.industries}
+            compactMillions
             emptyText="Đã chọn một ngành; bỏ bộ lọc ngành nghề để xem toàn bộ cơ cấu."
           />
+          <p className="dhint">{MILLION_NOTE}</p>
         </Card>
 
         <Card

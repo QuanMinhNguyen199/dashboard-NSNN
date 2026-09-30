@@ -1,67 +1,104 @@
 import { useState, type FormEvent } from "react";
-import { DEMO_ACCOUNTS, authenticate, type DemoUser } from "@/auth/demoAuth";
+import { authenticate, type DemoUser } from "@/auth/demoAuth";
+import { Icon } from "@/components/ui";
 import { TaxLogo } from "@/components/TaxLogo";
 
+/*
+  Màn đăng nhập KHÔNG còn danh sách tài khoản mẫu.
+
+  Danh sách đó là một bảng điều khiển của bản trình diễn, không phải một bộ
+  phận của sản phẩm: nó in tên đăng nhập và mật khẩu chung ngay cạnh ô nhập.
+  Giữ nó thì màn đầu tiên người xem nhìn thấy đã tự khai mình là đồ giả, và
+  mọi nhận xét về sau đều bị đặt trong khung đó. Tài khoản demo vẫn còn nguyên
+  trong `demoAuth`; chỉ lối vào nhanh bị gỡ, nên ai biết tài khoản vẫn gõ vào
+  bình thường.
+
+  Hệ quả phải chịu: ô nhập bắt đầu RỖNG. Điền sẵn thì màn lại tự khai là demo
+  theo cách khác, chỉ kín đáo hơn.
+
+  Hai cột chia việc DỨT KHOÁT: trái là nhận diện, phải là nội dung. Bản trước
+  đặt "Đăng nhập theo vai trò nghiệp vụ" bên trái và "Đăng nhập" bên phải —
+  cùng một câu nói hai lần, cách nhau nửa màn hình, và người đọc phải tự đoán
+  câu nào mới là tiêu đề thật. Bên trái nay không mang chữ nào của luồng đăng
+  nhập; toàn bộ tiêu đề, ô nhập và phần giải thích nằm một chỗ bên phải.
+*/
 export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) {
-  /* Mở sẵn tài khoản Cán bộ thuế: đây là vai duy nhất thấy đủ tám màn, nên là
-     điểm vào đúng cho người xem demo. Tìm theo tên tài khoản chứ không theo chỉ
-     số mảng — danh sách vai đã đổi một lần và chỉ số im lặng trỏ sai vai. */
-  const macDinh = DEMO_ACCOUNTS.find((item) => item.role === "OFFICER") ?? DEMO_ACCOUNTS[0];
-  const [username, setUsername] = useState(macDinh.username);
-  const [password, setPassword] = useState(macDinh.password);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [hien, setHien] = useState(false);
   const [error, setError] = useState("");
+  const [sso, setSso] = useState(false);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    /* Thiếu ô và sai thông tin là hai lỗi khác nhau; gộp làm một thì người
+       dùng không biết nên gõ tiếp hay gõ lại. */
+    if (!username.trim() || !password) {
+      setError("Nhập đủ tài khoản và mật khẩu.");
+      return;
+    }
     const user = authenticate(username, password);
     if (!user) {
-      setError("Tài khoản hoặc mật khẩu không đúng. Hãy dùng một tài khoản mẫu bên dưới.");
+      setError("Tài khoản hoặc mật khẩu không đúng.");
       return;
     }
     setError("");
     onLogin(user);
   };
 
-  const useAccount = (account: (typeof DEMO_ACCOUNTS)[number]) => {
-    setUsername(account.username);
-    setPassword(account.password);
-    setError("");
-  };
-
   return <main className="login-page">
-    <section className="login-context" aria-labelledby="login-product">
-      <div className="login-brand"><TaxLogo/><div><strong id="login-product">Quản lý nghiệp vụ Thuế</strong><small>Thuế TP Hà Nội</small></div></div>
-      <div className="login-context-copy">
-        {/* Không có eyebrow. "Môi trường trình diễn" nằm trên tiêu đề là đúng
-            thứ duy nhất sàn thủ công cấm tuyệt đối, và cùng lúc app này đã xoá
-            nó khỏi thanh trên cùng — cấm ở màn hai mà dùng ở màn một thì không
-            còn là một hệ. Nội dung không mất: nó đã được nói rõ hơn ở dòng ghi
-            chú dữ liệu mô phỏng phía dưới. */}
-        <h1>Đăng nhập theo đúng vai trò nghiệp vụ</h1>
-        <p>Ba vai dùng chung một lần đăng nhập. Cán bộ thuế và Lãnh đạo Thuế làm việc trên hệ này; Lãnh đạo nhà nước chỉ đọc Dashboard Thu NSNN.</p>
+    {/* Cột nhận diện. Một khối duy nhất: con dấu, tên hệ, vạch vàng, tên cơ
+        quan — đặt ở giữa chiều cao. Không tiêu đề, không nút, không đường dẫn.
+        Vạch vàng là lần dùng sắc vàng con dấu duy nhất trên màn này. */}
+    <section className="login-context" aria-label="Nhận diện hệ thống">
+      <div className="login-mark">
+        <TaxLogo/>
+        <strong>Quản lý nghiệp vụ Thuế</strong>
+        <span className="login-rule" aria-hidden="true"/>
+        <small>Thuế thành phố Hà Nội</small>
       </div>
-      <p className="login-data-note">Dữ liệu và danh tính trên màn hình này đều là mô phỏng.</p>
     </section>
 
-    <section className="login-panel" aria-labelledby="login-title">
+    <section className="login-panel">
       <div className="login-form-wrap">
-        <div className="login-heading"><h2 id="login-title">Đăng nhập Web QL Thuế</h2><p>Nhập thông tin hoặc chọn nhanh một tài khoản mẫu.</p></div>
+        <div className="login-heading"><h1>Đăng nhập</h1><p>Dùng tài khoản do Thuế TP Hà Nội cấp.</p></div>
+
         <form className="login-form" onSubmit={submit} noValidate>
-          <label><span>Tài khoản</span><input name="username" autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} /></label>
-          <label><span>Mật khẩu</span><input name="password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+          <label>
+            <span>Tài khoản</span>
+            <input name="username" autoComplete="username" autoFocus value={username}
+              aria-invalid={error ? true : undefined} aria-describedby={error ? "login-error" : undefined}
+              onChange={(event) => { setUsername(event.target.value); setError(""); }}/>
+          </label>
+          <label>
+            <span>Mật khẩu</span>
+            {/* Nút hiện/ẩn là chức năng thật, không phải trang trí: mật khẩu gõ
+                sai trên bàn phím có dấu là lỗi thường gặp, và không có cách nào
+                tự kiểm tra nếu ô luôn che. Ô rỗng thì nút không có gì để hiện,
+                nên lúc đó nó không được dựng. */}
+            <span className="password-field">
+              <input name="password" type={hien ? "text" : "password"} autoComplete="current-password" value={password}
+                aria-invalid={error ? true : undefined} aria-describedby={error ? "login-error" : undefined}
+                onChange={(event) => { setPassword(event.target.value); setError(""); }}/>
+              {password !== "" && <button type="button" onClick={() => setHien((truoc) => !truoc)} aria-pressed={hien}>{hien ? "Ẩn" : "Hiện"}</button>}
+            </span>
+          </label>
           {error && <p className="login-error" id="login-error" role="alert">{error}</p>}
           <button className="login-submit" type="submit">Đăng nhập</button>
         </form>
 
-        <div className="demo-accounts">
-          <div className="demo-accounts-head"><h3>Tài khoản mẫu</h3><span>Mật khẩu chung: <strong>demo123</strong></span></div>
-          <div className="demo-account-list">
-            {DEMO_ACCOUNTS.map((account) => <button key={account.username} type="button" className={username === account.username ? "is-selected" : undefined} onClick={() => useAccount(account)} aria-pressed={username === account.username}>
-              <span><strong>{account.roleLabel}</strong><small>{account.unit}</small><em>{account.permissions.includes("TAX_OPS_VIEW") ? "Web quản lý" : "Chỉ Dashboard NSNN"}</em></span>
-              <code>{account.username}</code>
-            </button>)}
-          </div>
-        </div>
+        {/*
+          Lối đăng nhập một lần. Nút này là TƯỢNG TRƯNG: Keycloak là hướng đã
+          chọn cho xác thực tập trung nhưng chưa nối trong bản demo, nên nó nói
+          thẳng điều đó thay vì giả vờ chuyển hướng rồi quay về. Dựng một nút
+          trông như chạy được mà không chạy là thứ khiến người xem tin nhầm hệ
+          đã có SSO.
+        */}
+        <div className="login-or"><span>hoặc</span></div>
+        <button type="button" className="button is-secondary login-sso" onClick={() => setSso(true)} aria-describedby={sso ? "login-sso-note" : undefined}>
+          <Icon name="key" size={17}/><span>Đăng nhập bằng Keycloak</span>
+        </button>
+        {sso && <p className="login-sso-note" id="login-sso-note" role="status">Bản demo chưa nối Keycloak. Dùng tài khoản do Thuế TP Hà Nội cấp ở ô phía trên.</p>}
       </div>
     </section>
   </main>;

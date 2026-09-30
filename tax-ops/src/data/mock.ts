@@ -75,14 +75,14 @@ export const reportRuns: ReportRun[] = [
 
 /*
   Nhật ký lượt chạy (EP-05). Bảy lượt bao đủ các kết cục mà FT-05.4 phải xử lý:
-  chạy tự động đạt, chạy tự động LỆCH SỐ DÒNG, chạy tự động hỏng, tải file tay
+  chạy tự động đạt, chạy tự động LỆCH SỐ DÒNG, chạy tự động hỏng, nhập tệp thủ công
   thay thế, và một lượt đang chạy.
 
   Cặp TTR tháng 9 có hai bản (v1 và v2) để thấy vùng thô không ghi đè: bản v1
   lệch số dòng vẫn còn nguyên sau khi v2 chạy lại.
 */
 export const dataRuns: DataRun[] = [
-  { id: "R-0912", source: "TTR", period: "Tháng 9/2026", scope: "30 đơn vị – 35 file", mode: "MANUAL", startedAt: "27/09 – 17:42", rowsSource: 182_406, rowsStore: 182_406, version: 2, status: "OK", note: "Cán bộ tải tay: TTR chạy trên IE cũ, chưa kéo tự động được" },
+  { id: "R-0912", source: "TTR", period: "Tháng 9/2026", scope: "30 đơn vị – 35 file", mode: "MANUAL", startedAt: "27/09 – 17:42", rowsSource: 182_406, rowsStore: 182_406, version: 2, status: "OK", note: "Cán bộ nhập tệp thủ công: TTR chạy trên IE cũ, chưa kéo tự động được" },
   { id: "R-0911", source: "TTR", period: "Tháng 9/2026", scope: "30 đơn vị – 35 file", mode: "MANUAL", startedAt: "27/09 – 15:08", rowsSource: 182_406, rowsStore: 176_385, version: 1, status: "MISMATCH", note: "Thiếu 6.021 dòng: một file kết xuất bị cắt giữa chừng. Bản này được giữ nguyên, không ghi đè" },
   { id: "R-0908", source: "TMS", period: "Tháng 9/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 16:20", rowsSource: 3_812, rowsStore: 3_812, version: 4, status: "OK", note: "Kéo theo lịch 16h; tham số kỳ và phạm vi đúng như cán bộ chọn tay" },
   { id: "R-0907", source: "XMHĐ", period: "Tháng 9/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 17:05", rowsSource: 96_120, rowsStore: 96_120, version: 3, status: "OK", note: "Chia 3 lần kéo để nguồn không quá tải" },

@@ -37,9 +37,8 @@ const dauThoiGian = () => {
   return `${hai(t.getDate())}/${hai(t.getMonth() + 1)} – ${hai(t.getHours())}:${hai(t.getMinutes())}`;
 };
 
-export function Reports({ actor, owner, role }: { actor: string; owner: string; role: UserRole }) {
+export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: string; owner: string; role: UserRole; moTao: boolean; onDaMoTao: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
-  const createTrigger = useRef<HTMLButtonElement>(null);
   const [name, setName] = useState("");
   const [period, setPeriod] = useState("");
   const [newCycle, setNewCycle] = useState<ReportRun["cycle"]>("MONTH");
@@ -66,7 +65,7 @@ export function Reports({ actor, owner, role }: { actor: string; owner: string; 
     catch { notify("Không lưu được thay đổi vào trình duyệt. Dữ liệu có thể mất khi rời trang."); }
   }, [runs, versions, notify]);
 
-  const closeCreate = () => { dialog.current?.close(); createTrigger.current?.focus(); };
+  const closeCreate = () => { dialog.current?.close(); document.getElementById("global-create-report")?.focus(); };
   const createDraft = (event: FormEvent) => {
     event.preventDefault();
     if (role !== "OFFICER") return;
@@ -79,6 +78,20 @@ export function Reports({ actor, owner, role }: { actor: string; owner: string; 
     notify("Đã tạo bản nháp và lưu trong phiên demo trên trình duyệt này.");
   };
 
+  /*
+    Nút "Tạo báo cáo" nằm trên măng sét nên nó bấm được cả khi ĐANG mở màn Báo
+    cáo. Lúc đó không có lần dựng mới nào để một hiệu ứng "chạy khi mount" bám
+    vào, nên yêu cầu mở form đi qua một cờ từ App rồi được trả lại ngay — bằng
+    tham số đường dẫn thì lần bấm thứ hai trên cùng một màn im lặng không mở.
+  */
+  useEffect(() => {
+    if (!moTao) return;
+    if (role === "OFFICER") { setFormError(""); dialog.current?.showModal(); }
+    onDaMoTao();
+  }, [moTao, role, onDaMoTao]);
+
+  /* Đường dẫn dán tay `?create=1` vẫn mở form, và tham số được dọn ngay sau đó
+     để tải lại trang không mở lại hộp thoại. */
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.get("create") === "1" && role === "OFFICER") {
@@ -158,8 +171,8 @@ export function Reports({ actor, owner, role }: { actor: string; owner: string; 
   </Panel>;
 
   return <div className="page-stack reports-page">
-    <PageIntro title={role === "TAX_LEADER" ? "Duyệt báo cáo" : "Báo cáo"} actions={role === "OFFICER" && <button ref={createTrigger} type="button" className="button is-primary" onClick={() => { setFormError(""); dialog.current?.showModal(); }}>Tạo báo cáo mới</button>}/>
-    <dialog ref={dialog} className="report-dialog" aria-labelledby="create-report-title" aria-describedby="create-report-note" onClose={() => createTrigger.current?.focus()} onKeyDown={event => {
+    <PageIntro title={role === "TAX_LEADER" ? "Duyệt báo cáo" : "Báo cáo"}/>
+    <dialog ref={dialog} className="report-dialog" aria-labelledby="create-report-title" aria-describedby="create-report-note" onClose={() => document.getElementById("global-create-report")?.focus()} onKeyDown={event => {
       if (event.key !== "Tab") return;
       const controls = [...event.currentTarget.querySelectorAll<HTMLElement>('input, select, button:not(:disabled)')];
       const first = controls[0];
@@ -194,7 +207,7 @@ export function Reports({ actor, owner, role }: { actor: string; owner: string; 
     <CaseLayout label="Chi tiết phiên bản báo cáo" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
     <Panel title={role === "TAX_LEADER" ? "Báo cáo đã gửi" : "Danh sách báo cáo"} actions={<div className="inline-controls"><Segmented label="Chu kỳ báo cáo" value={cycle} onChange={setCycle} options={[{ value: "ALL", label: "Tất cả" }, { value: "WEEK", label: "Tuần" }, { value: "MONTH", label: "Tháng" }, { value: "YEAR", label: "Năm" }]}/><SearchField value={search} onChange={setSearch} placeholder="Tìm báo cáo hoặc đơn vị"/></div>}>
       <TableWrap label="danh sách báo cáo"><table>
-        <thead><tr><th scope="col">Tên báo cáo</th><th scope="col">Kỳ báo cáo</th><th scope="col">Đơn vị lập</th><th scope="col">Nguồn</th><th scope="col">Cập nhật</th><th scope="col">Trạng thái</th></tr></thead>
+        <thead><tr><th scope="col">Tên báo cáo</th><th scope="col">Kỳ báo cáo</th><th scope="col">Đơn vị / nguồn</th><th scope="col">Cập nhật</th><th scope="col">Cảnh báo dữ liệu</th><th scope="col">Trạng thái</th></tr></thead>
         <tbody>{rows.map((row) => {
           return <tr key={row.id} onClick={(e) => cases.select(row.id, e)} className={row.id === bc?.id ? "is-selected" : undefined}>
             {/*
@@ -202,11 +215,29 @@ export function Reports({ actor, owner, role }: { actor: string; owner: string; 
               thật. Nút ở ô đầu giữ nguyên ngữ nghĩa bảng, thứ mà role="button"
               trên <tr> sẽ phá mất.
             */}
-            <td><button type="button" className="row-select" aria-pressed={row.id === bc?.id} onClick={(e) => { e.stopPropagation(); cases.select(row.id, e); }}><strong>{row.name}</strong>{row.qualityNote && <small className="quality-note">{row.qualityNote}</small>}{row.status === "REVIEW" && <span className="report-inline-status"><Badge tone={role === "OFFICER" ? "info" : "warning"}>{nhanTrangThai(row.status)}</Badge></span>}</button></td>
+            {/*
+              Ô tên chỉ còn MỘT dòng. Cảnh báo chất lượng trước đây nằm dưới tên
+              dưới dạng dòng phụ có điều kiện, nên ba hàng có cảnh báo cao hơn ba
+              hàng không có — mắt phải căn lại ở mỗi hàng, và bảng mất nhịp.
+              Cảnh báo chuyển sang cột riêng bên phải, nơi hàng nào cũng có một
+              ô và chiều cao hàng không còn phụ thuộc dữ liệu.
+            */}
+            <td><button type="button" className="row-select" aria-pressed={row.id === bc?.id} onClick={(e) => { e.stopPropagation(); cases.select(row.id, e); }}><strong>{row.name}</strong>{/* Dưới 901px bảng cuộn ngang nên cột Trạng thái nằm ngoài khung nhìn với
+                  MỌI hàng, không riêng hàng chờ duyệt. Chip này vì thế dựng cho mọi
+                  hàng: dựng có điều kiện thì vừa bỏ sót trạng thái của năm hàng kia,
+                  vừa làm một hàng cao hơn phần còn lại. */}
+              <span className="report-inline-status"><Badge tone={row.status === "REVIEW" && role === "OFFICER" ? "info" : statusTone[row.status]}>{nhanTrangThai(row.status)}</Badge></span></button></td>
             <td>{row.period}</td>
-            <td>{row.owner}</td>
-            <td><small>{row.source}</small></td>
+            {/*
+              Nguồn gộp thành dòng phụ của đơn vị lập, đúng khuôn hai dòng mà
+              các bảng khác đã dùng (Nợ: tên + MST; Lô dữ liệu: nguồn + kỳ).
+              Khuôn này là cách bảng trong hệ giữ chiều cao hàng đều: MỌI hàng
+              đều hai dòng, nên tên báo cáo dài xuống dòng cũng không làm hàng
+              cao thêm. Nó còn trả lại một cột cho cảnh báo dữ liệu.
+            */}
+            <td><strong>{row.owner}</strong><small>{row.source}</small></td>
             <td>{row.updatedAt}</td>
+            <td>{row.qualityNote ? <small className="quality-note">{row.qualityNote}</small> : <span className="cell-empty">—</span>}</td>
             <td><Badge tone={row.status === "REVIEW" && role === "OFFICER" ? "info" : statusTone[row.status]}>{nhanTrangThai(row.status)}</Badge></td>
           </tr>;
         })}{rows.length === 0 && <tr><td colSpan={6}>Không tìm thấy báo cáo. Hãy đổi từ khóa hoặc chu kỳ.</td></tr>}</tbody>
