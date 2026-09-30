@@ -1,0 +1,33 @@
+1) NGAY BAO CAO
+   So_Sanh_No r1: BÁO CÁO ĐÁNH GIÁ NỢ TUẦN - NỢ ĐẾN NGÀY 31/07/2026 (ĐVT: TRIỆU ĐỒNG)
+   So_Sanh_No r2 cot C: Nợ đến ngày báo cáo (31/07/2026)
+   QuyTac_Nguon 'Ngay bao cao': 22/07/2026
+   DS_DN header cot D: Nợ KNT ngày 22/07/2026
+   Ten file: BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_202607
+
+2) DON VI DO / TINH BAO TOAN
+   DS_DN: 2249 dong, 2233 MST khac nhau, 16 MST trung lap
+   Tong No KNT cua DS_DN (toan bo)  = 20,345,482,754,510 d = 20,345,482.8 trieu
+   So_Sanh_No TONG TOAN NGANH No KNT = 25,192,664.9 (don vi cua sheet)
+   Ty le = 0.81 lan  -> neu >1 thi mot tap con lon hon tong the
+
+   QL1 tu DS_DN      = 6,858,618.6 trieu
+   QL1 tu So_Sanh_No: Tong cong=3,820,973.5 | No KNT=3,113,530.3
+   -> DS_DN / So_Sanh_No(No KNT) = 2.20 lan
+
+3) DOI CHIEU SO NNT (QL1)
+   Cuong che  : bang tong hop 'Chua thuc hien CC' = 79 NNT | danh sach 'DS NNT chua cuong che' = 79 dong
+   Tam hoan XC: bang tong hop 'Chua tam hoan'     = 30 NNT | danh sach 'DS tren 500tr chua Hoan XC' = 29 dong
+   Tam hoan   : Bao_cao_tong_hop 'Chua tam hoan'  = 318 NNT | danh sach 'DS_chua_tam_hoan' = 317 dong
+
+4) TINH CONG TRONG HANG QL1
+   Cuong che: da CC 568 + chua CC 79 = 647 vs phai CC 647  -> KHOP
+   Cuong che tien: 1,788,508,825,463 + 70,321,463,172 = 1,858,830,288,635 vs 1,858,830,288,635 -> KHOP
+   THXC: da 55 + chua 30 = 85 vs phai 85 -> KHOP
+   Ty le da CC ghi 0.962169 | tinh lai 0.962169 -> KHOP
+   Ty le THXC ghi 0.900641 | tinh lai 0.900641 -> KHOP
+
+5) CAU THANH NO QL1 (don vi sheet)
+   No KNT 3,113,530.3 + Kho thu 707,443.1 + Dang xu ly 0.0 = 3,820,973.5 vs Tong cong 3,820,973.5
+   -> KHOP
+   Tang/giam tuong doi 'Dang xu ly' = -1 (dau nam = 7,801.9, nay = 0)

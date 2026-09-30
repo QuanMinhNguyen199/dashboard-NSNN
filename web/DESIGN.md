@@ -347,6 +347,12 @@ cấp nào, chỉ tạo lệch. Năm bậc cách nhau nửa pixel là trôi dạ
 
 ### Số và đơn vị
 
+Ngoại lệ ở bảng chi tiết phân tích thu, phần phân bổ cấp ngân sách và cơ cấu
+ngành trên địa bàn: đơn vị mặc định là **tỷ đồng**, ghi rõ ở đầu thẻ. Giá trị
+có trị tuyệt đối dưới 1 tỷ được ghi theo **triệu đồng**, kèm chữ “triệu” nhẹ hơn
+và ghi chú ngay dưới nội dung. Giữ nguyên độ rõ của chữ số; chỉ giảm opacity
+ở hậu tố “triệu”. Không dùng nhãn VND hay lặp “tỷ” ở từng ô của các khối này.
+
 **Thang tiền dừng ở "tỷ đồng".** Không có bậc "nghìn tỷ".
 
 Bậc 10¹² trong tiếng Việt là một từ ghép: "nghìn tỷ" bắt người đọc nhân nhẩm hai

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Badge, Icon, type IconName } from "@/components/ui";
+import { Button, Icon, useRongToiThieu, type IconName } from "@/components/ui";
 import { TaxLogo } from "@/components/TaxLogo";
 import type { UserRole, ViewId } from "@/domain/types";
 import type { DemoUser } from "@/auth/demoAuth";
@@ -51,12 +51,18 @@ export const NSNN_LINK = (() => {
   return url.href;
 })();
 
-export function Shell({ view, user, onView, onLogout, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId) => void; onLogout: () => void; children: ReactNode }) {
+export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId) => void; onLogout: () => void; onCreateReport: () => void; onImport: () => void; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
   const duoc = navFor(user.role);
+  /*
+    Dưới 901px măng sét đã chật vì có nút mở điều hướng, kỳ làm việc và nhãn mô
+    phỏng. Ở khổ đó hai nút cấp hệ thống rơi xuống một hàng riêng ngay trên nội
+    dung, đúng như cách `PageIntro` xử lý nút cấp trang.
+  */
+  const rong = useRongToiThieu("(min-width: 901px)");
   useEffect(() => setMenuOpen(false), [view]);
   useEffect(() => {
     if (!menuOpen) return;
@@ -113,6 +119,23 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   */
   const chan = menuOpen ? ({ inert: "" } as Record<string, string>) : {};
 
+  /*
+    Hai hành động này thuộc về HỆ THỐNG chứ không thuộc một màn.
+
+    Trước đây mỗi màn nghiệp vụ tự dựng nút riêng — "Tạo báo cáo tuần" ở Nợ,
+    "Tạo báo cáo tháng 9" ở Kiểm tra, "Tạo báo cáo kỳ này" ở Hoàn thuế — ba
+    nhãn cho cùng một việc, và kỳ báo cáo bị đóng cứng vào nhãn nút trong khi
+    người dùng chọn kỳ ở trong hộp thoại. Gộp về một nút "Tạo báo cáo" đứng cố
+    định một chỗ thì nó luôn ở đó dù đang mở màn nào, và kỳ do hộp thoại hỏi.
+
+    Chỉ cán bộ thấy hai nút này: lãnh đạo Thuế duyệt báo cáo chứ không lập, và
+    cũng không phải người nộp dữ liệu đầu vào.
+  */
+  const hanhDongChung = user.role === "OFFICER" && <>
+    <Button kind="secondary" icon="upload" onClick={onImport}>Nhập dữ liệu</Button>
+    <Button id="global-create-report" kind="primary" icon="report" onClick={onCreateReport}>Tạo báo cáo</Button>
+  </>;
+
   return <div className="ops-app">
     {/* Điều hướng có 8 mục cộng nút đăng xuất, nên không có lối tắt thì mỗi lần
         đổi màn là chín lần Tab trước khi chạm nội dung. */}
@@ -124,9 +147,9 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
       {/* Ô cắm cho hành động cấp trang. PageIntro bắn nút vào đây thay vì để nó
           đứng một mình trên một hàng riêng trong nội dung. */}
       <div className="topbar-actions" id="page-actions-slot"/>
-      <Badge tone="warning" mock>Mô phỏng</Badge>
+      {rong && hanhDongChung && <div className="topbar-actions">{hanhDongChung}</div>}
     </header>
-    <main className="workspace" id="workspace" {...chan}><div key={view} className="workspace-view">{children}</div></main>
+    <main className="workspace" id="workspace" {...chan}><div key={view} className="workspace-view">{!rong && hanhDongChung && <div className="page-actions system-actions">{hanhDongChung}</div>}{children}</div></main>
     {/* Thanh đáy lấy năm mục ĐẦU TIÊN CỦA VAI, không cắt cứng năm mục đầu bảng:
         vai Quản trị dữ liệu không mở ba màn nghiệp vụ, cắt cứng sẽ cho họ năm nút
         dẫn tới bốn màn họ không vào được. Phần dư nằm trong "Thêm". */}

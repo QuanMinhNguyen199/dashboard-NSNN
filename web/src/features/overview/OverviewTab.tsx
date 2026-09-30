@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { BILLION_SCALE, MILLION_NOTE } from "@/domain/moneyFormat";
+import { BudgetMoney } from "@/components/primitives";
 import { useDashboardState } from "@/state/DashboardState";
 import { useOverview } from "@/data/hooks";
 import type { OverviewData, TaxOfficeProgressRow, TaxpayerRow } from "@/domain/types";
@@ -33,7 +35,7 @@ function OverviewBody({ data, dispatch }: {
   const kpiUnit = moneyScale([data.kpiPeriod.amount, data.kpiYtd.amount, domestic.amount]);
   const sourceUnit = moneyScale(data.sources.map((row) => row.amount));
   const budgetDetailRows = selectedBudgetLevel === "NSTW" ? data.centralBudgetSources : data.localBudgetLevels;
-  const budgetDetailUnit = moneyScale(budgetDetailRows.map((row) => row.amount));
+  const budgetDetailUnit = BILLION_SCALE;
   const budgetDetailMax = Math.max(...budgetDetailRows.map((row) => Math.abs(row.amount)), 1);
   const taxOfficeProgress = useMemo(() => [...data.taxOfficeProgress]
     .filter((row) => row.completionRate !== null)
@@ -89,7 +91,8 @@ function OverviewBody({ data, dispatch }: {
         { id: "trend", span: 7, render: () => <Card title="Xu hướng thu ngân sách" subtitle={`Lũy kế ${filters.year} và cùng kỳ ${filters.year - 1}`} actions={<button type="button" className="dlink" onClick={() => setShowTrendTable((value) => !value)}>{showTrendTable ? "Xem biểu đồ" : "Xem bảng số liệu"}</button>}>{showTrendTable ? <TrendTable points={data.trend} year={filters.year} /> : <TrendChart points={data.trend} year={filters.year} />}</Card> },
         { id: "budget", span: 5, hidden: data.budgetLevels.length === 0, render: () => <Card title="Cơ cấu theo cấp ngân sách" subtitle="Phần Trung ương và phần Hà Nội được hưởng" unit={budgetDetailUnit}>
           <DonutChart rows={data.budgetLevels} centerLabel="NSNN" selectedId={selectedBudgetLevel} onSelect={(id) => setSelectedBudgetLevel(id as "NSTW" | "NSDP")} />
-          <section className="dbudget-local" aria-live="polite"><h3>{selectedBudgetLevel === "NSTW" ? "Trong ngân sách trung ương" : "Trong ngân sách địa phương"}</h3><ul>{budgetDetailRows.map((row) => <li key={row.id}><div><span>{row.name}</span><strong className="dbudget-value">{inScale(row.amount, budgetDetailUnit)} <small>{budgetDetailUnit.short}</small></strong></div><span className="dbudget-track" aria-hidden="true"><i style={{ width: `${Math.max(Math.abs(row.amount) / budgetDetailMax * 100, 0.8)}%` }} /></span></li>)}</ul></section>
+          <section className="dbudget-local" aria-live="polite"><h3>{selectedBudgetLevel === "NSTW" ? "Trong ngân sách trung ương" : "Trong ngân sách địa phương"}</h3><ul>{budgetDetailRows.map((row) => <li key={row.id}><div><span>{row.name}</span><strong className="dbudget-value"><BudgetMoney value={row.amount} /></strong></div><span className="dbudget-track" aria-hidden="true"><i style={{ width: `${Math.max(Math.abs(row.amount) / budgetDetailMax * 100, 0.8)}%` }} /></span></li>)}</ul></section>
+          <p className="dhint">{MILLION_NOTE}</p>
         </Card> },
       ],
       [

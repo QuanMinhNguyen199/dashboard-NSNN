@@ -22,18 +22,7 @@ export function Rules() {
       { label: "Phạm vi áp dụng", value: "Toàn ngành" },
     ]}/>
 
-    {/*
-      Ngưỡng chưa có văn bản thì KHÔNG bật, và nói rõ vì sao.
-      Biên bản ghi các file hiện đang ghi ngưỡng khác nhau. Một hệ thống tự ra
-      cảnh báo cưỡng chế dựa trên con số chưa ai xác nhận thì sai nguy hiểm hơn
-      là không cảnh báo gì.
-    */}
-    {chuaBat.length > 0 && <div className="notice warning">
-      <strong>{chuaBat.length} quy tắc chưa được bật</strong>
-      <span>Hệ thống không tự ra cảnh báo nghiệp vụ khi chưa có văn bản căn cứ và ngày hiệu lực.</span>
-    </div>}
-
-    <Panel title="Danh mục quy tắc" source="Văn bản nghiệp vụ">
+    <Panel title="Danh mục quy tắc">
       <TableWrap label="danh mục quy tắc nghiệp vụ"><table>
         <thead><tr><th scope="col">Quy tắc</th><th scope="col">Giá trị</th><th scope="col">Phạm vi</th><th scope="col">Hiệu lực từ</th><th scope="col">Văn bản căn cứ</th><th scope="col">Trạng thái</th><th scope="col"><span className="sr-only">Hành động</span></th></tr></thead>
         <tbody>{ruleItems.map((r) => <tr key={r.id}>

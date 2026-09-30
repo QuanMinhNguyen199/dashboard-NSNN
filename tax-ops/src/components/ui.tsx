@@ -6,7 +6,7 @@ import type { Tone } from "@/domain/types";
 export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "menu" | "close" | "users" | "database" | "external" | "logout";
+  | "arrow" | "menu" | "close" | "users" | "database" | "external" | "logout" | "key";
 
 const paths: Record<IconName, ReactNode> = {
   home: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
@@ -28,14 +28,15 @@ const paths: Record<IconName, ReactNode> = {
   database: <><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></>,
   external: <><path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M19 13v6H5V5h6"/></>,
   logout: <><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M18 12H9"/></>,
+  key: <><circle cx="8" cy="15" r="4.2"/><path d="m11 12 8.5-8.5M16.5 6.5 19 9M14 9l2.5 2.5"/></>,
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   return <svg className="icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
 
-export function Badge({ tone = "neutral", mock = false, children }: { tone?: Tone; mock?: boolean; children: ReactNode }) {
-  return <span className={`badge tone-${tone}${mock ? " is-mock" : ""}`}>{children}</span>;
+export function Badge({ tone = "neutral", children }: { tone?: Tone; children: ReactNode }) {
+  return <span className={`badge tone-${tone}`}>{children}</span>;
 }
 
 export function Button({ kind = "secondary", icon, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { kind?: "primary" | "secondary" | "quiet"; icon?: IconName }) {
@@ -71,21 +72,13 @@ export function Kpi({ label, value, note, tone = "neutral" }: { label: string; v
   return <div className={`kpi tone-${tone}`}><span>{label}</span><strong>{value}</strong>{note && <small>{note}</small>}</div>;
 }
 
-export function Panel({ title, subtitle, source, actions, children, className = "" }: { title: string; subtitle?: string; source?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
+export function Panel({ title, subtitle, actions, children, className = "" }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
   return <section className={`panel ${className}`.trim()}>
     <header className="panel-head">
       <div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>
       {actions && <div className="panel-actions">{actions}</div>}
     </header>
-    {/*
-      Nhãn nguồn nằm ở CHÂN thân khối, không nằm cạnh tiêu đề.
-
-      Đặt trong `<h2>` thì nó thành một phần của đầu khối: khối nào khai nguồn
-      thì đầu cao thêm một dòng, khối bên cạnh không khai thì không — hai hình
-      dạng đầu khối trên cùng một màn. Nguồn cũng không phải tên của khối; nó
-      là chú thích về dữ liệu, nên chỗ của nó là cuối phần dữ liệu.
-    */}
-    <div className="panel-body">{children}{source !== undefined && <p className="panel-source">Nguồn: {source}</p>}</div>
+    <div className="panel-body">{children}</div>
   </section>;
 }
 
@@ -135,7 +128,7 @@ export function PageIntro({ title, description, actions }: { title: string; desc
   phỏng; nhét thêm một nút hành động vào đó làm nó gãy thành ba hàng. Ở khổ đó
   nút quay về nằm trong luồng nội dung, nơi nó trải hết bề ngang như trước.
 */
-function useRongToiThieu(truyVan: string) {
+export function useRongToiThieu(truyVan: string) {
   const [khop, setKhop] = useState(() => typeof window !== "undefined" && window.matchMedia(truyVan).matches);
   useEffect(() => {
     const mq = window.matchMedia(truyVan);

@@ -818,6 +818,26 @@ body.is-drag-scroll * { cursor: grabbing !important; }
    con số rơi xuống dòng khỏi đơn vị của nó đọc ra thành hai mẩu vô nghĩa. */
 .dmoney { display: inline-flex; align-items: baseline; gap: 0.28em; white-space: nowrap; }
 .dmoney b { font-weight: inherit; }
+.dbudget-money { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dmoney-million-unit { color: var(--ink); opacity: 0.72; font-size: var(--fs-label); font-weight: var(--fw-regular); }
+
+.dinspector-card .dcard-head { padding-bottom: var(--s3); }
+.dinspector-units { display: grid; gap: var(--s1); text-align: right; font-size: var(--fs-caption); color: var(--ink-2); }
+.dinspector-units strong { color: var(--ink); }
+.dinspector-context { margin: 0 0 var(--s3); font-size: var(--fs-caption); color: var(--ink-2); }
+.dinspector-context strong { color: var(--ink); }
+.dinspector-context > span { padding-inline: var(--s2); }
+.dinspector-subheading { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s3); }
+.dinspector-subheading h3 { font-size: var(--fs-title); font-weight: var(--fw-bold); }
+.dinspector-mock { color: var(--ink-3); font-size: var(--fs-label); }
+.dinspector-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--hairline); margin-bottom: var(--s2); }
+.dinspector-tabs button { flex: 0 0 auto; padding: var(--s3); color: var(--ink-2); border-bottom: 2px solid transparent; white-space: nowrap; }
+.dinspector-tabs button.is-active { color: var(--brand); border-bottom-color: var(--brand); font-weight: var(--fw-bold); }
+.dinspector-tabs button:hover { color: var(--brand); }
+.dinspector-card .dinspector-finance th:first-child { width: 32%; }
+.dinspector-card .dinspector-finance tbody td,
+.dinspector-card .dinspector-finance tbody th { padding-block: var(--s3); }
+.dinspector-card .dshare-cell { grid-template-columns: 32px auto; gap: var(--s2); }
 /* 0,6em của 23px chỉ ra 14px — nhỏ hơn cả chữ thân bài, trong khi nó là thứ nói
    con số kia nghĩa là gì. Nâng lên 0,7em và tăng trọng lượng. */
 .dmoney i {

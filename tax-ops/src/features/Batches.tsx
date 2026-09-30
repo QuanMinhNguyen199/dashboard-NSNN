@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Badge, Button, DetailGrid, FigureLine, PageIntro, Panel, TableWrap, integer } from "@/components/ui";
 import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
 import { batchFiles } from "@/data/catalog";
@@ -14,7 +14,6 @@ const fileText: Record<string, string> = { OK: "Đạt", COLUMN_DRIFT: "Lệch c
 export function Batches() {
   const cases = useCaseSelection(sourceBatches[0]?.id ?? "");
   const [daNhan, setDaNhan] = useState<string | null>(null);
-  const input = useRef<HTMLInputElement>(null);
   const lo = sourceBatches.find((b) => b.id === cases.selectedId) ?? sourceBatches[0];
 
   const loi = batchFiles.filter((f) => f.issue !== "OK");
@@ -23,7 +22,6 @@ export function Batches() {
   const coChiTietFile = lo?.id === "TTR-2026-09";
   const detail = lo && <Panel
     title={`Chi tiết lô ${lo.source} – ${lo.period}`}
-    source={lo.source}
   >
     <DetailGrid items={[
       { label: "File", value: `${lo.received}/${lo.expected}` },
@@ -40,19 +38,15 @@ export function Batches() {
         <small>{f.note}{f.rows > 0 ? ` – ${integer(f.rows)} dòng` : ""}</small>
       </div>)}</div>
       <p className="case-source-note">8 file minh họa trong lô; kiểm tra tại bàn dự kiến 35 file vì năm Thuế cơ sở tách hai địa bàn.</p>
-    </> : <div className="empty-state"><strong>Chưa có danh sách file chi tiết cho lô này trong bản mô phỏng</strong></div>}
+    </> : <div className="empty-state"><strong>Chưa có danh sách file chi tiết cho lô này</strong></div>}
   </Panel>;
 
   return <div className="page-stack">
-    <PageIntro
-      title="Lô dữ liệu"
-      actions={<Button kind="primary" icon="upload" onClick={() => input.current?.click()}>Nhập lô dữ liệu</Button>}
-    />
-    {/* Nút "Nhập lô dữ liệu" phía trên đã là control thật; ô này chỉ là cơ chế,
-        nên đưa nó ra khỏi luồng Tab và khỏi cây trợ năng. */}
-    <input ref={input} className="sr-only" type="file" multiple accept=".xlsx,.xls,.zip,.csv" tabIndex={-1} aria-hidden="true"
-      onChange={(e) => setDaNhan(e.target.files?.length ? `Đã chọn ${e.target.files.length} file. Bản demo chưa gửi dữ liệu lên máy chủ.` : null)}/>
-    {daNhan?.startsWith("Đã chọn") && <div className="notice positive" role="status"><strong>Đã tiếp nhận lựa chọn</strong><span>{daNhan}</span><Button kind="quiet" onClick={() => setDaNhan(null)}>Đóng</Button></div>}
+    {/* Màn này KHÔNG dựng nút nhập riêng. Nộp tệp đi qua nút "Nhập dữ liệu"
+        cố định trên măng sét, dùng chung cho cả phiếu khai lẫn file mẫu — hai
+        nút nhập cạnh nhau trên cùng một đầu trang thì người dùng phải đoán nút
+        nào nhận tệp của mình. */}
+    <PageIntro title="Lô dữ liệu"/>
 
     <FigureLine items={[
       { label: "Dòng dữ liệu đã nhận", value: integer(615_807) },
@@ -64,7 +58,6 @@ export function Batches() {
     <CaseLayout label="Chi tiết lô dữ liệu" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
     <Panel
       title="Nhật ký lô dữ liệu"
-      source="TMS – TTR – HĐĐT – XMHĐ – Viettel"
     >
       <TableWrap label="nhật ký lô dữ liệu"><table>
         <thead><tr><th scope="col">Mã lô</th><th scope="col">Nguồn / kỳ</th><th scope="col" className="num">File</th><th scope="col" className="num">Số dòng</th><th scope="col" className="num">Chất lượng</th><th scope="col">Cập nhật</th><th scope="col">Trạng thái</th></tr></thead>

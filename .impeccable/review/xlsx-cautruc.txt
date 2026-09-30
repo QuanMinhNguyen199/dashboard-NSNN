@@ -1,0 +1,127 @@
+FILE: BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_20260730 - CÃ³ chÃº thÃ_ch.xlsx
+SO SHEET: 9
+
+--- SHEET: So_Sanh_No | 39 dong x 30 cot ---
+  r1: BÁO CÁO ĐÁNH GIÁ NỢ TUẦN - N |  |  |  |  |  |  |  |  |  |  |  |  | 
+  r2: STT | Phòng/TCS | Nợ đến ngày báo cáo (31/07/2 |  |  |  | Tăng giảm so với đầu năm |  |  |  |  |  |  | 
+  r3:  |  |  |  |  |  | Số tuyệt đối |  |  |  | Số tương đối (%) |  |  | 
+  r4:  |  | Tổng cộng (B) | Nợ KNT (C) | Khó thu (D) | Đang xử lý (E) | Tổng cộng (B) | Nợ KNT (C) | Khó thu (D) | Đang xử lý (E) | Tổng cộng (B) | Nợ KNT (C) | Khó thu (D) | Đang xử lý (E)
+  r5:  | TỔNG TOÀN NGÀNH | 35157665.713518 | 25192664.875427 | 6662341.733719 | 3302659.104372 | 6577423.509488 | 5941067.449191 | 285041.510634 | 351314.549663 | 0.2301388302636757 | 0.308601271762235 | 0.04469626654899932 | 0.1190354237367718
+  r6:  | TỔNG VP THUẾ TP HÀ NỘI | 26552115.953198 | 18382498.139956 | 4911758.327425 | 3257859.485817 | 4154110.584582 | 3798445.942872 | -31304.997549 | 386969.639259 | 0.185467880564165 | 0.2604520260584008 | -0.00633311683280219 | 0.1347908348775381
+  r7: 1 | Phòng Quản lý, Hỗ trợ doanh  | 3820973.450683 | 3113530.32029 | 707443.130393 | 0 | 1074754.479853 | 893039.93505 | 189516.423293 | -7801.87849 | 0.3913578965366236 | 0.4021814014535697 | 0.3659135949064095 | -1
+  r8: 2 | Phòng Quản lý, Hỗ trợ doanh  | 353957.010825 | 198455.817064 | 155501.193761 | 0 | -8560.718108 | -26413.385524 | 17852.667416 | 0 | -0.02361461916137674 | -0.1174611072570661 | 0.1296974830755134 | 
+  r9: 3 | Phòng Quản lý, Hỗ trợ doanh  | 1045591.170779 | 365657.958947 | 679933.211832 | 0 | 188203.240375 | -121228.569279 | 330127.11409 | -20695.304436 | 0.2195076857290479 | -0.2489873148076278 | 0.9437431657737588 | -1
+  r10: 4 | Phòng Quản lý, Hỗ trợ doanh  | 860776.3684 | 681487.932094 | 179288.436306 | 0 | 175719.023406 | 75031.24214 | 101505.158182 | -817.376916 | 0.2565026485593538 | 0.1237206933040695 | 1.304974033367213 | -1
+  r11: 5 | Phòng Quản lý, Hỗ trợ doanh  | 1047903.499348 | 173775.213467 | 874128.285881 | 0 | -178035.354981 | -437512.056459 | 288823.009452 | -29346.307974 | -0.1452236825289668 | -0.7157225055773916 | 0.4934570404253573 | -1
+  r12: 6 | Phòng QLHKD, CN và thu khác | 5052.046456 | 0 | 5052.046456 | 0 | 5052.046456 | 0 | 5052.046456 | 0 |  |  |  | 
+
+--- SHEET: DS_DN_TangnoTren500tr | 2251 dong x 9 cot ---
+  r1: DANH SÁCH DOANH NGHIỆP, TỔ C |  |  |  |  |  |  |  | 
+  r2: STT | MST | Tên NNT | Nợ KNT ngày 22/07/2026 | Nợ KNT đầu năm | Tăng/giảm | Phòng/TCS | Mã CQT | Loại NNT
+  r3: 1 | 0500468389 | CÔNG TY CỔ PHẦN ĐẦU TƯ DIA | 2680061304709 | 1234480380098 | 1445580924611 | Thuế cơ sở 24 | 0135 | Doanh nghiệp, tổ chức
+  r4: 2 | 0302980690 | CÔNG TY TNHH ĐẦU TƯ ĐỊA ỐC T | 965041258381 | 0 | 965041258381 | Phòng Quản lý các khoản thu  | 0101 | Doanh nghiệp, tổ chức
+  r5: 3 | 0102143374 | CÔNG TY TNHH C.E.O QUỐC TẾ | 826746200000 | 0 | 826746200000 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r6: 4 | 0110463360 | CÔNG TY CỔ PHẦN THÁI NAM LAN | 678109459649 | 0 | 678109459649 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r7: 5 | 0110503750 | CÔNG TY CỔ PHẦN ĐẦU TƯ THÁI  | 559361269820 | 13413335029 | 545947934791 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r8: 6 | 0100520789 | CÔNG TY TNHH DUYÊN HÀ | 270000000000 | 12616595 | 269987383405 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r9: 7 | 0102479462 | CÔNG TY CỔ PHẦN THỜI ĐẠI MỚI | 222089900031 | 0 | 222089900031 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r10: 8 | 0102043394 | CÔNG TY CỔ PHẦN ĐẦU TƯ MAI L | 201228066433 | 0 | 201228066433 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r11: 9 | 0101410852 | CÔNG TY CỔ PHẦN TẬP ĐOÀN HDB | 191844214830 | 99711510 | 191744503320 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+  r12: 10 | 0106793937 | CÔNG TY TNHH BẤT ĐỘNG SẢN TH | 183369584595 | 2497838784 | 180871745811 | Phòng Quản lý, Hỗ trợ doanh  | 0101 | Doanh nghiệp, tổ chức
+
+--- SHEET: Danh gia Ket qua cuong che | 38 dong x 8 cot ---
+  r1: TỔNG HỢP CƯỠNG CHẾ (NGƯỠNG T |  |  |  |  |  |  | 
+  r2: Địa bàn | Phải Cưỡng chế |  | Đã Cưỡng chế |  | Chưa thực hiện CC |  | Tỷ lệ đã CC
+  r3:  | NNT | Số tiền | NNT | Số tiền | NNT | Số tiền | 
+  r4: Tổng cộng | 16354 | 9210886160707 | 13898 | 8660731774934 | 2455 | 550154385773 | 0.9187165656158542
+  r5: VP Thuế TP HN | 3017 | 6862831315546 | 1871 | 6393218388842 | 1145 | 469612926704 | 0.9315715474981571
+  r6: Phòng Quản lý, Hỗ trợ doanh  | 647 | 1858830288635 | 568 | 1788508825463 | 79 | 70321463172 | 0.9621689706683016
+  r7: Phòng Quản lý, Hỗ trợ doanh  | 860 | 81248061671 | 351 | 72201697895 | 509 | 9046363776 | 0.8886574819146863
+  r8: Phòng Quản lý, Hỗ trợ doanh  | 296 | 216011588385 | 208 | 187911402487 | 88 | 28100185898 | 0.8699135258988203
+  r9: Phòng Quản lý, Hỗ trợ doanh  | 308 | 287832726880 | 205 | 274780186040 | 103 | 13052540840 | 0.9546523392892646
+  r10: Phòng Quản lý, Hỗ trợ doanh  | 276 | 469972923396 | 99 | 454243833941 | 177 | 15729089455 | 0.9665319241343897
+  r11: Phòng Thuế cá nhân, hộ kinh  | 109 | 4942950045 | 67 | 2070912746 | 42 | 2872037299 | 0.41896291225819987
+  r12: Phòng Quản lý các khoản thu  | 520 | 3943992776534 | 373 | 3613501530270 | 147 | 330491246264 | 0.9162038915916988
+
+--- SHEET: Danh gia Tam hoan XC | 37 dong x 8 cot ---
+  r1: TỔNG HỢP TẠM HOÃN XUẤT CẢNH  |  |  |  |  |  |  | 
+  r2: Địa bàn | Phải THXC |  | Đã THXC |  | Chưa tạm hoãn |  | Tỷ lệ tạm hoãn
+  r3:  | NNT | Số tiền | NNT | Số tiền | NNT | Số tiền | 
+  r4: Tổng cộng | 956 | 6778262754039 | 702 | 5673514292979 | 254 | 1104748461060 | 0.8370159875549664
+  r5: VP Thuế TP HN | 341 | 5455899605232 | 221 | 4518530860822 | 120 | 937368744410 | 0.8281917168140156
+  r6: Phòng Quản lý, Hỗ trợ doanh  | 85 | 1417711634635 | 55 | 1276849839726 | 30 | 140861794909 | 0.9006414340774836
+  r7: Phòng Quản lý, Hỗ trợ doanh  | 11 | 35465051842 | 8 | 33590257429 | 3 | 1874794413 | 0.9471368483725224
+  r8: Phòng Quản lý, Hỗ trợ doanh  | 22 | 136617249765 | 12 | 121065055173 | 10 | 15552194592 | 0.8861622919598231
+  r9: Phòng Quản lý, Hỗ trợ doanh  | 15 | 176814974531 | 13 | 174859117163 | 2 | 1955857368 | 0.9889383952168763
+  r10: Phòng Quản lý, Hỗ trợ doanh  | 20 | 427381919510 | 18 | 424061215063 | 2 | 3320704447 | 0.9922301241690167
+  r11: Phòng Quản lý các khoản thu  | 188 | 3261908774949 | 115 | 2488105376268 | 73 | 773803398681 | 0.762775892255571
+  r12: Thuế cơ sở | 612 | 1316365006372 | 483 | 1163183924147 | 129 | 153181082225 | 0.8734237892208313
+
+--- SHEET: DS NNT chua cuong che | 2458 dong x 17 cot ---
+  r1: STT | MST | Tên NNT | CQT | Phòng/TCS | Loại NNT | Chương | Nợ >90 ngày - Nợ tháng | Nợ >90 ngày - Nợ ngày | Nợ dùng đánh giá tại đơn vị | Tổng nợ dùng đánh giá MST+CQ | Ngưỡng | Tình trạng cưỡng chế | Biện pháp hiệu lực
+  r2: 2 | 0102043394 | CÔNG TY CỔ PHẦN ĐẦU TƯ MAI L | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 555 | 123997232500 | 109787527059 | 109787527059 | 110016663927 | 3000000 | Không có QĐCC | 
+  r3: 3 | 0100112388 | Cục phục vụ ngoại giao đoàn | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 11 | 98207253817 | 95746455057 | 95746455057 | 95746455057 | 3000000 | Không có QĐCC | 
+  r4: 4 | 0100105052 | TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT  | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 137 | 49541531160 | 48655678297 | 48655678297 | 48690172941 | 3000000 | Không có QĐCC | 
+  r5: 5 | 0111250196 | CÔNG TY CỔ PHẦN QUẢN LÝ VÀ Đ | 0101 | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp, tổ chức | 555 | 32985639415 | 47454789728 | 32985639415 | 32985639415 | 3000000 | Không có QĐCC | 
+  r6: 7 | 0101659769 | CÔNG TY CỔ PHẦN  ĐẦU TƯ XÂY  | 0101 | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp, tổ chức | 854 | 15564308336 | 15564308336 | 15564308336 | 15564308336 | 3000000 | Không có QĐCC | 
+  r7: 8 | 0102479462 | CÔNG TY CỔ PHẦN THỜI ĐẠI MỚI | 0101 | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp, tổ chức | 555 | 108981717377 | 14667614697 | 14667614697 | 14667614697 | 3000000 | Không có QĐCC | 
+  r8: 9 | 0106218422 | Bệnh viện đa khoa Gia Lâm | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 856 | 10435863183 | 10025326080 | 10025326080 | 10025326080 | 3000000 | Không có QĐCC | 
+  r9: 10 | 0103598783 | CÔNG TY CỔ PHẦN PHÁT TRIỂN N | 0101 | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp, tổ chức | 552 | 9788328724 | 11453818806 | 9788328724 | 9788328724 | 3000000 | Không có QĐCC | 
+  r10: 11 | 2500226947 | CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ DU | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 555 | 9552154813 | 9309978214 | 9309978214 | 9310044741 | 3000000 | Không có QĐCC | 
+  r11: 12 | 0105391248 | Bệnh viện Đa khoa Y học cổ t | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 423 | 9221047610 | 9196478054 | 9196478054 | 9223713070 | 3000000 | Không có QĐCC | 
+  r12: 13 | 0101555946 | Bệnh viện ung bướu Hà Nội | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 423 | 9048838058 | 8692865227 | 8692865227 | 8692875856 | 3000000 | Không có QĐCC | 
+
+--- SHEET: DS tren 500tr chua Hoan XC | 255 dong x 16 cot ---
+  r1: STT | MST | Tên NNT | CQT | Phòng/TCS | Loại NNT | Chương | Nợ >120 ngày - Nợ tháng | Nợ >120 ngày - Nợ ngày | Nợ dùng đánh giá tại đơn vị | Tổng nợ dùng đánh giá MST+CQ | Ngưỡng theo loại NNT | Tình trạng tạm hoãn | Ngày tạm hoãn
+  r2:  |  |  |  |  |  |  |  |  | #REF! |  |  |  | 
+  r3: 1 | 0100276146 | CÔNG TY TNHH HÒA BÌNH | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 555 | 445199057701 | 193258704838 | 193258704838 | 193258838274 | 500000000 | Không có tạm hoãn | 
+  r4: 2 | 0500442020 | CÔNG TY CỔ PHẦN TẬP ĐOÀN XÂY | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 555 | 171300214761 | 111723178424 | 111723178424 | 111723178424 | 500000000 | Không có tạm hoãn | 
+  r5: 3 | 0100112388 | Cục phục vụ ngoại giao đoàn | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 11 | 98207253817 | 95746455057 | 95746455057 | 95746455057 | 500000000 | Không có tạm hoãn | 
+  r6: 4 | 0109153251 | CÔNG TY CỔ PHẦN ĐẦU TƯ KINH  | 0101 | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp, tổ chức | 555 | 64063389149 | 64063403917 | 64063389149 | 64063389149 | 500000000 | Không có tạm hoãn | 
+  r7: 5 | 0100105052 | TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT  | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 137 | 49541531160 | 48655678297 | 48655678297 | 48655678297 | 500000000 | Không có tạm hoãn | 
+  r8: 6 | 0102043394 | CÔNG TY CỔ PHẦN ĐẦU TƯ MAI L | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 555 | 36995535435 | 109787527059 | 36995535435 | 37224672303 | 500000000 | Không có tạm hoãn | 
+  r9: 7 | 0100106271 | CÔNG TY TRÁCH NHIỆM HỮU HẠN  | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 564 | 83538401523 | 36450203746 | 36450203746 | 36450203746 | 500000000 | Không có tạm hoãn | 
+  r10: 8 | 0300626775004 | CHI NHÁNH CÔNG TY TNHH MEKON | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 552 | 46890602674 | 27566299482 | 27566299482 | 27566299482 | 500000000 | Không có tạm hoãn | 
+  r11: 9 | 0109313811 | CÔNG TY CỔ PHẦN QUẢN LÝ KHÁC | 0103 | Thuế cơ sở 2 | Doanh nghiệp, tổ chức | 855 | 17763025056 | 17763025056 | 17763025056 | 17763025056 | 500000000 | Không có tạm hoãn | 
+  r12: 10 | 0100106754 | Công ty sản xuất công nghiệp | 0101 | Phòng Quản lý các khoản thu  | Doanh nghiệp, tổ chức | 416 | 30496952267 | 17698356006 | 17698356006 | 20227416750 | 500000000 | Không có tạm hoãn | 
+
+--- SHEET: QuyTac_Nguon | 12 dong x 2 cot ---
+  r1: Nội dung | Giá trị/Nguyên tắc
+  r2: Ngày báo cáo | 22/07/2026
+  r3: Báo cáo nợ hiện tại | D:\DTNGOC\QLHT DN SO 1\NAM 2
+  r4: Báo cáo đầu năm đúng phạm vi | D:\TOOL_BAO_CAO_NO_TUAN\NO D
+  r5: Báo cáo tháng trước đúng phạ | D:\TOOL_BAO_CAO_NO_TUAN\NO D
+  r6: Báo cáo tuần trước đúng phạm | D:\DTNGOC\QLHT DN SO 1\NAM 2
+  r7: Dữ liệu DAILY02 hiện tại | D:\DTNGOC\QLHT DN SO 1\NAM 2
+  r8: Dữ liệu 01/NNT đầu năm | D:\DTNGOC\QLHT DN SO 1\NAM 2
+  r9: Báo cáo đánh giá CC/TH | D:\DTNGOC\QLHT DN SO 1\NAM 2
+  r10: Ngưỡng tăng nợ KNT | 500000000
+  r11: Nguyên tắc nguồn lịch sử | Tổng thể và DN/tổ chức dùng 
+  r12: Phạm vi file | DOANH NGHIỆP, TỔ CHỨC: chỉ g
+
+--- SHEET: Bao_cao_tong_hop | 37 dong x 9 cot ---
+  r1: BÁO CÁO TẠM HOÃN XUẤT CẢNH T |  |  |  |  |  |  |  | 
+  r3: Phòng/Thuế cơ sở | NNT trạng thái 06 | Tổng nợ không hoạt động tại  | Số NNT đã tạm hoãn | Số nợ đã tạm hoãn | Tỷ lệ tạm hoãn về số tiền | Số NNT chưa tạm hoãn | Số tiền chưa tạm hoãn | Tỷ lệ chưa tạm hoãn về số ti
+  r4: Tổng cộng chung | 32681 | 2833072556619 | 14733 | 1993785697071 | 0.7037538422420044 | 17948 | 839286859548 | 0.2962461577579955
+  r5: VP Thuế TP Hà Nội | 16404 | 1856956374091 | 6935 | 1221663090644 | 0.6578846480666608 | 9469 | 635293283447 | 0.34211535193333925
+  r6: Phòng Quản lý, Hỗ trợ doanh  | 582 | 90201931724 | 264 | 83690705664 | 0.9278150042293655 | 318 | 6511226060 | 0.07218499577063447
+  r7: Phòng Quản lý, Hỗ trợ doanh  | 743 | 59746025093 | 65 | 21445583622 | 0.3589457807212788 | 678 | 38300441471 | 0.6410542192787212
+  r8: Phòng Quản lý, Hỗ trợ doanh  | 392 | 104854133806 | 141 | 92622743184 | 0.8833485130435546 | 251 | 12231390622 | 0.1166514869564455
+  r9: Phòng Quản lý, Hỗ trợ doanh  | 169 | 36836286601 | 115 | 35178187579 | 0.9549873460384308 | 54 | 1658099022 | 0.04501265396156917
+  r10: Phòng Quản lý, Hỗ trợ doanh  | 64 | 15855585880 | 5 | 395765486 | 0.02496063463029851 | 59 | 15459820394 | 0.9750393653697015
+  r11: Phòng quản lý các khoản thu  | 14454 | 1549462410987 | 6345 | 988330105109 | 0.6378535536589355 | 8109 | 561132305878 | 0.3621464463410645
+  r12: Khối Thuế cơ sở | 16277 | 976116182528 | 7798 | 786319199617 | 0.8055590243167026 | 8479 | 189796982911 | 0.19444097568329746
+
+--- SHEET: DS_chua_tam_hoan | 16170 dong x 11 cot ---
+  r1: STT | MST | Tên NNT | Cơ quan thuế | Chương | Tổng nợ KCHĐ theo MST | Nhóm xử lý | Tình trạng tạm hoãn | Ngày tạm hoãn | Map Phòng/Thuế cơ sở | Loại NNT
+  r2: 1 | 0303154993 | Công Ty Cổ Phần Vận Tải Biển | 0101 | 554 | 297150535215 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r3: 2 | 0104803435 | Công an Huyện ứng Hòa | 0101 | 830 | 7634000733 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r4: 3 | 0500141785 | Công ty Thương mại Hoài đức | 0101 | 416 | 7404299020 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r5: 4 | 0100949539 | Công ty cổ phần Bắc Trung | 0101 | 854 | 7311012527 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r6: 5 | 0100363737 | Hợp tác xã công nghiệp Cộng  | 0101 | 856 | 5149345563 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r7: 6 | 0100109321 | Công ty công trình giao thôn | 0101 | 19 | 4770181305 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r8: 7 | 0100109321 | Công ty công trình giao thôn | 0101 | 19 | 4770181305 |  | Chưa tạm hoãn |  | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp
+  r9: 8 | 0104924849 | Công ty TNHH Listone Vina | 0101 | 151 | 4743274649 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r10: 9 | 0104924849 | Công ty TNHH Listone Vina | 0101 | 151 | 4743274649 |  | Chưa tạm hoãn |  | Phòng Quản lý, Hỗ trợ doanh  | Doanh nghiệp
+  r11: 10 | 2500281296 | Công Ty Cổ Phần Đầu Tư Và Ph | 0101 | 855 | 4434754201 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp
+  r12: 11 | 0105771673 | CÔNG TY TNHH MỘT THÀNH VIÊN  | 0101 | 855 | 4028631036 | Tiểu mục đất/nhóm loại trừ | Chưa tạm hoãn |  | Phòng Quản lý các khoản thu  | Doanh nghiệp

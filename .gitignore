@@ -42,3 +42,8 @@ Thumbs.db
 /25-09
 /28-09
 /tax-ops/public/nsnn/
+/tax-ops/general_data
+
+# Bo du lieu that sinh tu general_data de app nap luc chay. Khoang 21 nghin dong
+# nguoi nop thue kem ma so thue va ten doanh nghiep that — khong dua len remote.
+/tax-ops/public/du-lieu-that/

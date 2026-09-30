@@ -1,0 +1,35 @@
+r5: [None] TỔNG TOÀN NGÀNH
+r6: [None] TỔNG VP THUẾ TP HÀ NỘI
+r7: [1] Phòng Quản lý, Hỗ trợ doanh nghiệp số 1
+r8: [2] Phòng Quản lý, Hỗ trợ doanh nghiệp số 2
+r9: [3] Phòng Quản lý, Hỗ trợ doanh nghiệp số 3
+r10: [4] Phòng Quản lý, Hỗ trợ doanh nghiệp số 4
+r11: [5] Phòng Quản lý, Hỗ trợ doanh nghiệp số 5
+r12: [6] Phòng QLHKD, CN và thu khác
+r13: [7] Phòng QLĐ
+r14: [None] TỔNG THUẾ CƠ SỞ
+r15: [8] Thuế cơ sở 1
+r16: [9] Thuế cơ sở 2
+r17: [10] Thuế cơ sở 3
+r18: [11] Thuế cơ sở 4
+r19: [12] Thuế cơ sở 5
+r20: [13] Thuế cơ sở 6
+r21: [14] Thuế cơ sở 7
+r22: [15] Thuế cơ sở 8
+r23: [16] Thuế cơ sở 9
+r24: [17] Thuế cơ sở 10
+r25: [18] Thuế cơ sở 11
+r26: [19] Thuế cơ sở 12
+r27: [20] Thuế cơ sở 13
+r28: [21] Thuế cơ sở 14
+r29: [22] Thuế cơ sở 15
+r30: [23] Thuế cơ sở 16
+r31: [24] Thuế cơ sở 17
+r32: [25] Thuế cơ sở 18
+r33: [26] Thuế cơ sở 19
+r34: [27] Thuế cơ sở 20
+r35: [28] Thuế cơ sở 21
+r36: [29] Thuế cơ sở 22
+r37: [30] Thuế cơ sở 23
+r38: [31] Thuế cơ sở 24
+r39: [32] Thuế cơ sở 25

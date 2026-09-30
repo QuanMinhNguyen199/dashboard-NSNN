@@ -16,6 +16,17 @@ await mkdir(".impeccable/review", { recursive: true });
 
 /* Mỗi lượt nghiệm thu bắt đầu từ màn đăng nhập để kiểm tra đúng luồng demo,
    sau đó giữ phiên trong sessionStorage cho các deep link kế tiếp. */
+/* Màn đăng nhập không còn lối chọn nhanh tài khoản mẫu, nên cổng kiểm gõ
+   thông tin như người dùng thật. Ô luôn rỗng khi màn vừa dựng. */
+async function dangNhap(page, username, password = "demo123") {
+  await page.waitForSelector(".login-form");
+  await page.click('input[name="username"]', { clickCount: 3 });
+  await page.type('input[name="username"]', username);
+  await page.click('input[name="password"]', { clickCount: 3 });
+  await page.type('input[name="password"]', password);
+  await page.click(".login-submit");
+}
+
 await page.setViewport({ width: 1440, height: 900 });
 await page.goto(`${base}/`, { waitUntil: "networkidle0" });
 const hasLogin = await page.$(".login-page") !== null;
@@ -24,7 +35,10 @@ await page.screenshot({ path: ".impeccable/review/login-desktop.png", fullPage: 
 await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
 await page.reload({ waitUntil: "networkidle0" });
 await page.screenshot({ path: ".impeccable/review/login-mobile.png", fullPage: true });
+/* Ô rỗng + bấm Đăng nhập phải ra lỗi có giải thích, không phải im lặng. */
 await page.click(".login-submit");
+if (await page.$(".login-error") === null) throw new Error("Gửi form rỗng mà không báo lỗi.");
+await dangNhap(page, "canbo.thue");
 await page.waitForSelector(".workspace");
 await page.reload({ waitUntil: "networkidle0" });
 if (await page.$(".workspace") === null) throw new Error("Phiên đăng nhập demo không được khôi phục sau reload.");
@@ -132,9 +146,21 @@ await page.select(".segmented-mobile select", "VERIFY");
 await page.screenshot({ path: ".impeccable/review/risk-subview-mobile.png" });
 
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
-await page.click(".page-actions .button");
+/* Nút "Tạo báo cáo" là hành động cấp HỆ THỐNG: nó phải mở được form tạo từ một
+   màn nghiệp vụ bất kỳ, không chỉ từ màn Báo cáo. */
+await page.$eval("#global-create-report", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+await page.click("#global-create-report");
 await page.waitForSelector(".report-dialog[open]");
 if (await page.$("input[name=reportName]") === null) throw new Error("CTA tạo báo cáo không mở form.");
+await page.keyboard.press("Escape");
+
+/* Nút "Nhập dữ liệu" là cửa duy nhất cho tệp vào hệ: kiểm tra nó mở đúng hộp
+   thoại nhập và hộp thoại có ô chọn tệp thật. */
+await page.goto(`${base}/?view=batches`, { waitUntil: "networkidle0" });
+await page.$eval(".system-actions .button", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+await page.click(".system-actions .button");
+await page.waitForSelector(".import-dialog[open]");
+if (await page.$(".import-dialog input[type=file]") === null) throw new Error("Hộp thoại nhập không có ô chọn tệp.");
 await page.keyboard.press("Escape");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.evaluate(() => {
@@ -150,7 +176,8 @@ await tableShell?.screenshot({ path: ".impeccable/review/debt-table-scrolled-mob
    đọc bản ghi demo trong một tab trình duyệt sau khi đăng xuất/đăng nhập. */
 const reportName = `Kiểm tra quyền ${Date.now()}`;
 await page.goto(`${base}/?view=reports`, { waitUntil: "networkidle0" });
-await page.click(".page-actions .button");
+await page.$eval("#global-create-report", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+await page.click("#global-create-report");
 await page.type('input[name="reportName"]', reportName);
 await page.type('input[name="reportPeriod"]', "Tháng 9/2026");
 await page.click('.report-form button[type="submit"]');
@@ -178,11 +205,7 @@ await page.click(".mobile-drawer .logout-button");
 await page.waitForSelector(".login-page");
 if (await page.$(".workspace") !== null) throw new Error("Đăng xuất không xoá phiên demo.");
 
-await page.evaluate(() => {
-  const leader = [...document.querySelectorAll(".demo-account-list button")].find((item) => item.textContent?.includes("Lãnh đạo Thuế"));
-  leader?.click();
-});
-await page.click(".login-submit");
+await dangNhap(page, "lanhdao.thue");
 await page.goto(`${base}/?view=reports`, { waitUntil: "networkidle0" });
 await page.screenshot({ path: ".impeccable/review/reports-leader-review-mobile.png" });
 await page.setViewport({ width: 1440, height: 1000 });
@@ -197,7 +220,7 @@ if (!leaderRow) throw new Error("Lãnh đạo không thấy báo cáo cán bộ 
 await page.waitForSelector(".case-detail-dialog[open]");
 const leaderActions = await page.evaluate(() => ({
   approve: [...document.querySelectorAll(".case-detail-dialog .panel-actions button")].some((button) => button.textContent?.trim() === "Duyệt"),
-  canCreate: Boolean(document.querySelector(".page-actions .button")),
+  canCreate: Boolean(document.querySelector("#global-create-report")),
   queue: [...document.querySelectorAll(".figure-line span")].some((item) => item.textContent?.trim() === "Cần duyệt"),
   showsDraft: [...document.querySelectorAll(".case-list tbody tr")].some((row) => row.textContent?.includes("Bản nháp")),
 }));
@@ -218,13 +241,7 @@ await page.waitForSelector(".login-page");
 /* Ba vai, chốt 28/09: Lãnh đạo nhà nước KHÔNG vào Web quản lý. Đăng nhập được
    nhưng phải gặp một lời từ chối có giải thích kèm đường sang Dashboard, không
    phải một shell rỗng hay một màn trắng. */
-await page.evaluate(() => {
-  const accounts = [...document.querySelectorAll(".demo-account-list button")];
-  const state = accounts.find((item) => item.textContent?.includes("Lãnh đạo nhà nước"));
-  if (!(state instanceof HTMLButtonElement)) throw new Error("Thiếu tài khoản Lãnh đạo nhà nước.");
-  state.click();
-});
-await page.click(".login-submit");
+await dangNhap(page, "lanhdao.nhanuoc");
 await page.waitForSelector(".dheader, .dmobile-header");
 if (new URL(page.url()).pathname !== new URL(`${base}/nsnn/`).pathname) throw new Error("Lãnh đạo nhà nước chưa được điều hướng vào NSNN.");
 await page.screenshot({ path: ".impeccable/review/nsnn-mobile.png", fullPage: true });

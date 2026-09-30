@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NAV, NSNN_LINK, Shell, navFor } from "@/components/Shell";
 import { TaxLogo } from "@/components/TaxLogo";
-import { Badge } from "@/components/ui";
+import { ImportDialog } from "@/components/ImportDialog";
 import { Batches } from "@/features/Batches";
 import { Mapping } from "@/features/Mapping";
 import { Rules } from "@/features/Rules";
@@ -13,6 +13,7 @@ import { Risk } from "@/features/Risk";
 import { Workbench } from "@/features/Workbench";
 import type { ViewId } from "@/domain/types";
 import { ActionProvider } from "@/state/ActionContext";
+import { DuLieuThatProvider } from "@/state/DuLieuThatContext";
 import { LoginScreen } from "@/auth/LoginScreen";
 import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAuth";
 
@@ -29,6 +30,8 @@ function readView(): ViewId {
 export function App() {
   const [view, setViewState] = useState<ViewId>(readView);
   const [user, setUser] = useState<DemoUser | null>(readDemoSession);
+  const [nhapMo, setNhapMo] = useState(false);
+  const [taoBaoCaoMo, setTaoBaoCaoMo] = useState(false);
   const setView = (next: ViewId) => {
     if (next === view) return;
     const query = new URLSearchParams(window.location.search);
@@ -38,11 +41,11 @@ export function App() {
     window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
 
+  /* Mở màn Báo cáo VÀ yêu cầu nó bật form tạo. Cờ được màn Báo cáo trả lại
+     ngay sau khi dùng, nên bấm lại lần nữa vẫn mở được form. */
   const openReports = () => {
     setView("reports");
-    const url = new URL(window.location.href);
-    url.searchParams.set("create", "1");
-    window.history.replaceState({}, "", url);
+    setTaoBaoCaoMo(true);
   };
 
   /*
@@ -100,17 +103,22 @@ export function App() {
 
   const moDuoc = duoc.some((item) => item.id === view) ? view : duoc[0].id;
 
-  return <ActionProvider><Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
+  return <DuLieuThatProvider><ActionProvider>
+    <Shell view={moDuoc} user={user} onView={setView} onLogout={logout} onCreateReport={openReports} onImport={() => setNhapMo(true)}>
     {moDuoc === "workbench" && <Workbench onNavigate={setView} role={user.role}/>}
-    {moDuoc === "debt" && <Debt onNavigate={setView} onCreateReport={openReports}/>}
-    {moDuoc === "risk" && <Risk onCreateReport={openReports}/>}
-    {moDuoc === "refund" && <Refund onCreateReport={openReports}/>}
-    {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit} role={user.role}/>}
+    {moDuoc === "debt" && <Debt onNavigate={setView}/>}
+    {moDuoc === "risk" && <Risk/>}
+    {moDuoc === "refund" && <Refund/>}
+    {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit} role={user.role} moTao={taoBaoCaoMo} onDaMoTao={() => setTaoBaoCaoMo(false)}/>}
     {moDuoc === "runs" && <Runs/>}
     {moDuoc === "batches" && <Batches/>}
     {moDuoc === "mapping" && <Mapping/>}
     {moDuoc === "rules" && <Rules/>}
-  </Shell></ActionProvider>;
+    </Shell>
+    {/* Hộp thoại nhập nằm NGOÀI Shell vì nút gọi nó có mặt trên mọi màn; dựng
+        nó trong từng màn thì mỗi lần đổi màn là một lần dựng lại. */}
+    <ImportDialog open={nhapMo} onClose={() => setNhapMo(false)}/>
+  </ActionProvider></DuLieuThatProvider>;
 }
 
 /*
@@ -121,14 +129,12 @@ export function App() {
 function NoAccess({ user, onLogout }: { user: DemoUser; onLogout: () => void }) {
   return <main className="no-access">
     <div>
-      {/* Màn này nằm ngoài Shell nên không thừa hưởng badge "Mô phỏng" lẫn khối
-          nhận diện. Thiếu cả hai thì nó vừa không cho biết hệ nào từ chối, vừa
-          nêu đích danh một con người và một cơ quan mà không nói đó là dữ liệu
-          mô phỏng — và đây là màn dễ bị chụp gửi đi nhất. */}
+      {/* Màn này nằm ngoài Shell nên không thừa hưởng khối nhận diện. Thiếu nó
+          thì màn không cho biết hệ nào đang từ chối, trong khi đây là màn dễ bị
+          chụp gửi đi nhất. */}
       <div className="no-access-brand">
         <TaxLogo/>
         <div><strong>Quản lý nghiệp vụ Thuế</strong><small>Thuế TP Hà Nội</small></div>
-        <Badge tone="warning" mock>Mô phỏng</Badge>
       </div>
       <p className="no-access-status" role="status">Đang mở Dashboard Thu NSNN…</p>
       <h1>Tài khoản này không dùng Web quản lý nghiệp vụ</h1>
@@ -139,8 +145,7 @@ function NoAccess({ user, onLogout }: { user: DemoUser; onLogout: () => void }) 
       </p>
       <p className="no-access-note">
         Hai hệ thống dùng chung một lần đăng nhập nhưng quyền tách riêng: vai ở hệ
-        này không có hiệu lực ở hệ kia. Dữ liệu và danh tính trên màn hình này đều
-        là mô phỏng.
+        này không có hiệu lực ở hệ kia.
       </p>
       <div className="no-access-actions">
         <a className="button is-primary" href={NSNN_LINK}>Mở Dashboard Thu NSNN</a>

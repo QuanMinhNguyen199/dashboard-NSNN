@@ -40,7 +40,6 @@ export function Mapping() {
     */}
     <Panel
       title="Hàng chờ xác nhận"
-      source="TMS 2.2.7"
       actions={<SearchField value={tim} onChange={setTim} placeholder="Tìm mã số thuế hoặc lý do"/>}
     >
       <TableWrap label="hàng chờ xác nhận ánh xạ"><table>

@@ -1,0 +1,45 @@
+=== So_Sanh_No (39x30) ===
+  r1: [0]BÁO CÁO ĐÁNH GIÁ NỢ  ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7] ¦ [8] ¦ [9] ¦ [10] ¦ [11] ¦ [12] ¦ [13] ¦ [14] ¦ [15] ¦ [16] ¦ [17] ¦ [18] ¦ [19] ¦ [20] ¦ [21] ¦ [22] ¦ [23] ¦ [24] ¦ [25] ¦ [26] ¦ [27] ¦ [28] ¦ [29]
+  r2: [0]STT ¦ [1]Phòng/TCS ¦ [2]Nợ đến ngày báo cáo  ¦ [3] ¦ [4] ¦ [5] ¦ [6]Tăng giảm so với đầu ¦ [7] ¦ [8] ¦ [9] ¦ [10] ¦ [11] ¦ [12] ¦ [13] ¦ [14]Tăng giảm so với thá ¦ [15] ¦ [16] ¦ [17] ¦ [18] ¦ [19] ¦ [20] ¦ [21] ¦ [22]Tăng giảm so với tuầ ¦ [23] ¦ [24] ¦ [25] ¦ [26] ¦ [27] ¦ [28] ¦ [29]
+  r3: [0] ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6]Số tuyệt đối ¦ [7] ¦ [8] ¦ [9] ¦ [10]Số tương đối (%) ¦ [11] ¦ [12] ¦ [13] ¦ [14]Số tuyệt đối ¦ [15] ¦ [16] ¦ [17] ¦ [18]Số tương đối (%) ¦ [19] ¦ [20] ¦ [21] ¦ [22]Số tuyệt đối ¦ [23] ¦ [24] ¦ [25] ¦ [26]Số tương đối (%) ¦ [27] ¦ [28] ¦ [29]
+  r4: [0] ¦ [1] ¦ [2]Tổng cộng (B) ¦ [3]Nợ KNT (C) ¦ [4]Khó thu (D) ¦ [5]Đang xử lý (E) ¦ [6]Tổng cộng (B) ¦ [7]Nợ KNT (C) ¦ [8]Khó thu (D) ¦ [9]Đang xử lý (E) ¦ [10]Tổng cộng (B) ¦ [11]Nợ KNT (C) ¦ [12]Khó thu (D) ¦ [13]Đang xử lý (E) ¦ [14]Tổng cộng (B) ¦ [15]Nợ KNT (C) ¦ [16]Khó thu (D) ¦ [17]Đang xử lý (E) ¦ [18]Tổng cộng (B) ¦ [19]Nợ KNT (C) ¦ [20]Khó thu (D) ¦ [21]Đang xử lý (E) ¦ [22]Tổng cộng (B) ¦ [23]Nợ KNT (C) ¦ [24]Khó thu (D) ¦ [25]Đang xử lý (E) ¦ [26]Tổng cộng (B) ¦ [27]Nợ KNT (C) ¦ [28]Khó thu (D) ¦ [29]Đang xử lý (E)
+=== DS_DN_TangnoTren500tr (2251x9) ===
+  r1: [0]DANH SÁCH DOANH NGHI ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7] ¦ [8]
+  r2: [0]STT ¦ [1]MST ¦ [2]Tên NNT ¦ [3]Nợ KNT ngày 22/07/20 ¦ [4]Nợ KNT đầu năm ¦ [5]Tăng/giảm ¦ [6]Phòng/TCS ¦ [7]Mã CQT ¦ [8]Loại NNT
+  r3: [0]1 ¦ [1]0500468389 ¦ [2]CÔNG TY CỔ PHẦN ĐẦU  ¦ [3]2680061304709 ¦ [4]1234480380098 ¦ [5]1445580924611 ¦ [6]Thuế cơ sở 24 ¦ [7]0135 ¦ [8]Doanh nghiệp, tổ chứ
+  r4: [0]2 ¦ [1]0302980690 ¦ [2]CÔNG TY TNHH ĐẦU TƯ  ¦ [3]965041258381 ¦ [4]0 ¦ [5]965041258381 ¦ [6]Phòng Quản lý các kh ¦ [7]0101 ¦ [8]Doanh nghiệp, tổ chứ
+=== Danh gia Ket qua cuong che (38x8) ===
+  r1: [0]TỔNG HỢP CƯỠNG CHẾ ( ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7]
+  r2: [0]Địa bàn ¦ [1]Phải Cưỡng chế ¦ [2] ¦ [3]Đã Cưỡng chế ¦ [4] ¦ [5]Chưa thực hiện CC ¦ [6] ¦ [7]Tỷ lệ đã CC
+  r3: [0] ¦ [1]NNT ¦ [2]Số tiền ¦ [3]NNT ¦ [4]Số tiền ¦ [5]NNT ¦ [6]Số tiền ¦ [7]
+  r4: [0]Tổng cộng ¦ [1]16354 ¦ [2]9210886160707 ¦ [3]13898 ¦ [4]8660731774934 ¦ [5]2455 ¦ [6]550154385773 ¦ [7]0.9187165656158542
+=== Danh gia Tam hoan XC (37x8) ===
+  r1: [0]TỔNG HỢP TẠM HOÃN XU ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7]
+  r2: [0]Địa bàn ¦ [1]Phải THXC ¦ [2] ¦ [3]Đã THXC ¦ [4] ¦ [5]Chưa tạm hoãn ¦ [6] ¦ [7]Tỷ lệ tạm hoãn
+  r3: [0] ¦ [1]NNT ¦ [2]Số tiền ¦ [3]NNT ¦ [4]Số tiền ¦ [5]NNT ¦ [6]Số tiền ¦ [7]
+  r4: [0]Tổng cộng ¦ [1]956 ¦ [2]6778262754039 ¦ [3]702 ¦ [4]5673514292979 ¦ [5]254 ¦ [6]1104748461060 ¦ [7]0.8370159875549664
+=== DS NNT chua cuong che (2458x17) ===
+  r1: [0]STT ¦ [1]MST ¦ [2]Tên NNT ¦ [3]CQT ¦ [4]Phòng/TCS ¦ [5]Loại NNT ¦ [6]Chương ¦ [7]Nợ >90 ngày - Nợ thá ¦ [8]Nợ >90 ngày - Nợ ngà ¦ [9]Nợ dùng đánh giá tại ¦ [10]Tổng nợ dùng đánh gi ¦ [11]Ngưỡng ¦ [12]Tình trạng cưỡng chế ¦ [13]Biện pháp hiệu lực ¦ [14]Số quyết định hiệu l ¦ [15]Kết luận ¦ [16]Ghi chú
+  r2: [0]2 ¦ [1]0102043394 ¦ [2]CÔNG TY CỔ PHẦN ĐẦU  ¦ [3]0101 ¦ [4]Phòng Quản lý các kh ¦ [5]Doanh nghiệp, tổ chứ ¦ [6]555 ¦ [7]123997232500 ¦ [8]109787527059 ¦ [9]109787527059 ¦ [10]110016663927 ¦ [11]3000000 ¦ [12]Không có QĐCC ¦ [13] ¦ [14] ¦ [15]Chưa cưỡng chế ¦ [16]
+  r3: [0]3 ¦ [1]0100112388 ¦ [2]Cục phục vụ ngoại gi ¦ [3]0101 ¦ [4]Phòng Quản lý các kh ¦ [5]Doanh nghiệp, tổ chứ ¦ [6]11 ¦ [7]98207253817 ¦ [8]95746455057 ¦ [9]95746455057 ¦ [10]95746455057 ¦ [11]3000000 ¦ [12]Không có QĐCC ¦ [13] ¦ [14] ¦ [15]Chưa cưỡng chế ¦ [16]
+  r4: [0]4 ¦ [1]0100105052 ¦ [2]TỔNG CÔNG TY ĐƯỜNG S ¦ [3]0101 ¦ [4]Phòng Quản lý các kh ¦ [5]Doanh nghiệp, tổ chứ ¦ [6]137 ¦ [7]49541531160 ¦ [8]48655678297 ¦ [9]48655678297 ¦ [10]48690172941 ¦ [11]3000000 ¦ [12]Không có QĐCC ¦ [13] ¦ [14] ¦ [15]Chưa cưỡng chế ¦ [16]
+=== DS tren 500tr chua Hoan XC (255x16) ===
+  r1: [0]STT ¦ [1]MST ¦ [2]Tên NNT ¦ [3]CQT ¦ [4]Phòng/TCS ¦ [5]Loại NNT ¦ [6]Chương ¦ [7]Nợ >120 ngày - Nợ th ¦ [8]Nợ >120 ngày - Nợ ng ¦ [9]Nợ dùng đánh giá tại ¦ [10]Tổng nợ dùng đánh gi ¦ [11]Ngưỡng theo loại NNT ¦ [12]Tình trạng tạm hoãn ¦ [13]Ngày tạm hoãn ¦ [14]Kết luận ¦ [15]Ghi chú
+  r2: [0] ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7] ¦ [8] ¦ [9]#REF! ¦ [10] ¦ [11] ¦ [12] ¦ [13] ¦ [14] ¦ [15]
+  r3: [0]1 ¦ [1]0100276146 ¦ [2]CÔNG TY TNHH HÒA BÌN ¦ [3]0101 ¦ [4]Phòng Quản lý các kh ¦ [5]Doanh nghiệp, tổ chứ ¦ [6]555 ¦ [7]445199057701 ¦ [8]193258704838 ¦ [9]193258704838 ¦ [10]193258838274 ¦ [11]500000000 ¦ [12]Không có tạm hoãn ¦ [13] ¦ [14]Chưa tạm hoãn ¦ [15]
+  r4: [0]2 ¦ [1]0500442020 ¦ [2]CÔNG TY CỔ PHẦN TẬP  ¦ [3]0101 ¦ [4]Phòng Quản lý các kh ¦ [5]Doanh nghiệp, tổ chứ ¦ [6]555 ¦ [7]171300214761 ¦ [8]111723178424 ¦ [9]111723178424 ¦ [10]111723178424 ¦ [11]500000000 ¦ [12]Không có tạm hoãn ¦ [13] ¦ [14]Chưa tạm hoãn ¦ [15]
+=== QuyTac_Nguon (12x2) ===
+  r1: [0]Nội dung ¦ [1]Giá trị/Nguyên tắc
+  r2: [0]Ngày báo cáo ¦ [1]22/07/2026
+  r3: [0]Báo cáo nợ hiện tại ¦ [1]D:\DTNGOC\QLHT DN SO
+  r4: [0]Báo cáo đầu năm đúng ¦ [1]D:\TOOL_BAO_CAO_NO_T
+=== Bao_cao_tong_hop (37x9) ===
+  r1: [0]BÁO CÁO TẠM HOÃN XUẤ ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7] ¦ [8]
+  r2: [0] ¦ [1] ¦ [2] ¦ [3] ¦ [4] ¦ [5] ¦ [6] ¦ [7] ¦ [8]
+  r3: [0]Phòng/Thuế cơ sở ¦ [1]NNT trạng thái 06 ¦ [2]Tổng nợ không hoạt đ ¦ [3]Số NNT đã tạm hoãn ¦ [4]Số nợ đã tạm hoãn ¦ [5]Tỷ lệ tạm hoãn về số ¦ [6]Số NNT chưa tạm hoãn ¦ [7]Số tiền chưa tạm hoã ¦ [8]Tỷ lệ chưa tạm hoãn 
+  r4: [0]Tổng cộng chung ¦ [1]32681 ¦ [2]2833072556619 ¦ [3]14733 ¦ [4]1993785697071 ¦ [5]0.7037538422420044 ¦ [6]17948 ¦ [7]839286859548 ¦ [8]0.2962461577579955
+=== DS_chua_tam_hoan (16170x11) ===
+  r1: [0]STT ¦ [1]MST ¦ [2]Tên NNT ¦ [3]Cơ quan thuế ¦ [4]Chương ¦ [5]Tổng nợ KCHĐ theo MS ¦ [6]Nhóm xử lý ¦ [7]Tình trạng tạm hoãn ¦ [8]Ngày tạm hoãn ¦ [9]Map Phòng/Thuế cơ sở ¦ [10]Loại NNT
+  r2: [0]1 ¦ [1]0303154993 ¦ [2]Công Ty Cổ Phần Vận  ¦ [3]0101 ¦ [4]554 ¦ [5]297150535215 ¦ [6]Tiểu mục đất/nhóm lo ¦ [7]Chưa tạm hoãn ¦ [8] ¦ [9]Phòng Quản lý các kh ¦ [10]Doanh nghiệp
+  r3: [0]2 ¦ [1]0104803435 ¦ [2]Công an Huyện ứng Hò ¦ [3]0101 ¦ [4]830 ¦ [5]7634000733 ¦ [6]Tiểu mục đất/nhóm lo ¦ [7]Chưa tạm hoãn ¦ [8] ¦ [9]Phòng Quản lý các kh ¦ [10]Doanh nghiệp
+  r4: [0]3 ¦ [1]0500141785 ¦ [2]Công ty Thương mại H ¦ [3]0101 ¦ [4]416 ¦ [5]7404299020 ¦ [6]Tiểu mục đất/nhóm lo ¦ [7]Chưa tạm hoãn ¦ [8] ¦ [9]Phòng Quản lý các kh ¦ [10]Doanh nghiệp
