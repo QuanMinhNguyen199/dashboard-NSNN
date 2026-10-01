@@ -1,0 +1,23 @@
+khoa cua ban ghi dau:
+  stt, mst, ten, maCQT, donVi, loaiNNT, chuong, noThang, noNgay, noDanhGia, tongNoDanhGia, nguong, tinhTrang, bienPhap, quyetDinh, ketLuan, ghiChu
+
+ban ghi dau:
+{
+ "stt": "2",
+ "mst": "0102043394",
+ "ten": "CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH",
+ "maCQT": "0101",
+ "donVi": "Phòng Quản lý các khoản thu từ đất",
+ "loaiNNT": "Doanh nghiệp, tổ chức",
+ "chuong": null,
+ "noThang": 123997232500.0,
+ "noNgay": 109787527059.0,
+ "noDanhGia": 109787527059.0,
+ "tongNoDanhGia": 110016663927.0,
+ "nguong": 3000000.0,
+ "tinhTrang": "Không có QĐCC",
+ "bienPhap": null,
+ "quyetDinh": null,
+ "ketLuan": "Chưa cưỡng chế",
+ "ghiChu": null
+}

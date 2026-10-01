@@ -1,0 +1,22 @@
+Ngay bao cao trong tep: 22/07/2026
+Tieu de sheet no      : BÁO CÁO ĐÁNH GIÁ NỢ TUẦN - NỢ ĐẾN NGÀY 31/07/2026 (ĐVT: TRIỆU ĐỒNG)
+
+Bang tong hop co san:
+  noTheoDonVi        35 dong
+  cuongChe           35 dong
+  tamHoanXuatCanh    34 dong
+  tamHoanTongHop     34 dong
+
+Danh sach chi tiet:
+  no-tang-500        2249 dong
+  chua-cuong-che     2455 dong
+  chua-thxc          253 dong
+  chua-tam-hoan      16169 dong
+
+Don vi trong bang no: 32 phong/TCS
+
+So ky co trong bo du lieu: 1 (mot anh chup duy nhat)
+  no-tang-500     : 2249 dong, 38 don vi khac nhau
+  chua-cuong-che  : 2455 dong, 32 don vi khac nhau
+  chua-thxc       : 253 dong, 27 don vi khac nhau
+  chua-tam-hoan   : 16169 dong, 31 don vi khac nhau

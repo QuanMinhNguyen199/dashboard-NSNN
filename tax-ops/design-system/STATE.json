@@ -1,0 +1,18 @@
+{
+  "runId": "tax-ops-ds-v1-20261001",
+  "scope": "full-library-v1",
+  "fileKey": "zwUeggCjneSdx9Hl61teer",
+  "step": "local-import-kit-prepared",
+  "remoteStatus": "blocked-by-figma-mcp-starter-quota",
+  "remoteMutations": [],
+  "sourceOfTruth": ["tax-ops/src/styles.css", "tax-ops/src/components/ui.tsx"],
+  "existingFigma": {
+    "page": "0:1",
+    "buttonSet": "10:19",
+    "statusSet": "16:284",
+    "collection": "VariableCollectionId:21:1724"
+  },
+  "completedSteps": ["source-discovery", "figma-inspection", "library-discovery", "source-gap-analysis", "local-token-extraction", "plugin-generation", "browser-preview"],
+  "pendingValidations": ["run-plugin-in-figma", "canvas-visual-review", "code-connect-registration"],
+  "resume": "Use the saved plugin import report for IDs after import; do not recreate an existing Tax Ops library."
+}

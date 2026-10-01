@@ -42,7 +42,7 @@ export function Mapping() {
       title="Hàng chờ xác nhận"
       actions={<SearchField value={tim} onChange={setTim} placeholder="Tìm mã số thuế hoặc lý do"/>}
     >
-      <TableWrap label="hàng chờ xác nhận ánh xạ"><table>
+      <TableWrap label="hàng chờ xác nhận ánh xạ"><table className="mapping-table">
         <thead><tr><th scope="col">Người nộp thuế</th><th scope="col">Đơn vị hiện tại</th><th scope="col">Đề xuất</th><th scope="col">Lý do chưa khớp</th><th scope="col"><span className="sr-only">Hành động</span></th></tr></thead>
         <tbody>{hangCho.map((m) => <tr key={m.id}>
           <td><strong>{m.taxpayer}</strong><small>{m.maskedTaxId}</small></td>

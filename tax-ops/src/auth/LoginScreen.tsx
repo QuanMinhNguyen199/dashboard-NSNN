@@ -1,49 +1,34 @@
-import { useState, type FormEvent } from "react";
-import { authenticate, type DemoUser } from "@/auth/demoAuth";
+import { useState } from "react";
+import { authenticate, DEMO_ACCOUNTS, type DemoUser } from "@/auth/demoAuth";
 import { Icon } from "@/components/ui";
 import { TaxLogo } from "@/components/TaxLogo";
 
 /*
-  Màn đăng nhập KHÔNG còn danh sách tài khoản mẫu.
+  Màn đăng nhập của bản demo có ĐÚNG HAI thứ: lối Keycloak tượng trưng, và sáu
+  tài khoản bấm vào là vào thẳng.
 
-  Danh sách đó là một bảng điều khiển của bản trình diễn, không phải một bộ
-  phận của sản phẩm: nó in tên đăng nhập và mật khẩu chung ngay cạnh ô nhập.
-  Giữ nó thì màn đầu tiên người xem nhìn thấy đã tự khai mình là đồ giả, và
-  mọi nhận xét về sau đều bị đặt trong khung đó. Tài khoản demo vẫn còn nguyên
-  trong `demoAuth`; chỉ lối vào nhanh bị gỡ, nên ai biết tài khoản vẫn gõ vào
-  bình thường.
+  Ô tài khoản/mật khẩu đã gỡ. Trong một bản demo nó không kiểm được gì: mật
+  khẩu chung là `demo123` và nó được in ngay bên dưới, nên "xác thực" ở đây chỉ
+  là bắt người xem gõ lại một chuỗi họ vừa đọc. Gỡ nó đi thì màn nói đúng thứ
+  nó đang làm — chọn vai để xem — thay vì diễn lại một thủ tục không có thật.
 
-  Hệ quả phải chịu: ô nhập bắt đầu RỖNG. Điền sẵn thì màn lại tự khai là demo
-  theo cách khác, chỉ kín đáo hơn.
+  Hệ quả phải nhận: không còn lối ẩn danh sách tài khoản. Nút "Ẩn" của bản
+  trước nay sẽ khoá hẳn mọi người ở ngoài, vì không còn ô nào để gõ tay. Một
+  công tắc đưa sản phẩm vào trạng thái không thoát ra được thì không phải lựa
+  chọn, nên nó bị gỡ cùng với cái form.
 
-  Hai cột chia việc DỨT KHOÁT: trái là nhận diện, phải là nội dung. Bản trước
-  đặt "Đăng nhập theo vai trò nghiệp vụ" bên trái và "Đăng nhập" bên phải —
-  cùng một câu nói hai lần, cách nhau nửa màn hình, và người đọc phải tự đoán
-  câu nào mới là tiêu đề thật. Bên trái nay không mang chữ nào của luồng đăng
-  nhập; toàn bộ tiêu đề, ô nhập và phần giải thích nằm một chỗ bên phải.
+  Hai cột chia việc DỨT KHOÁT: trái là nhận diện, phải là nội dung. Bên trái
+  không mang chữ nào của luồng đăng nhập.
 */
 export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [hien, setHien] = useState(false);
-  const [error, setError] = useState("");
   const [sso, setSso] = useState(false);
 
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    /* Thiếu ô và sai thông tin là hai lỗi khác nhau; gộp làm một thì người
-       dùng không biết nên gõ tiếp hay gõ lại. */
-    if (!username.trim() || !password) {
-      setError("Nhập đủ tài khoản và mật khẩu.");
-      return;
-    }
-    const user = authenticate(username, password);
-    if (!user) {
-      setError("Tài khoản hoặc mật khẩu không đúng.");
-      return;
-    }
-    setError("");
-    onLogin(user);
+  /* Bấm là vào thẳng. Vẫn đi qua `authenticate` chứ không dựng thẳng đối tượng
+     người dùng: đó là chỗ duy nhất quyết định một phiên hợp lệ trông thế nào,
+     và khi nối Keycloak thật thì chỉ một chỗ ấy phải đổi. */
+  const vao = (tenDangNhap: string, matKhau: string) => {
+    const user = authenticate(tenDangNhap, matKhau);
+    if (user) onLogin(user);
   };
 
   return <main className="login-page">
@@ -61,31 +46,7 @@ export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) 
 
     <section className="login-panel">
       <div className="login-form-wrap">
-        <div className="login-heading"><h1>Đăng nhập</h1><p>Dùng tài khoản do Thuế TP Hà Nội cấp.</p></div>
-
-        <form className="login-form" onSubmit={submit} noValidate>
-          <label>
-            <span>Tài khoản</span>
-            <input name="username" autoComplete="username" autoFocus value={username}
-              aria-invalid={error ? true : undefined} aria-describedby={error ? "login-error" : undefined}
-              onChange={(event) => { setUsername(event.target.value); setError(""); }}/>
-          </label>
-          <label>
-            <span>Mật khẩu</span>
-            {/* Nút hiện/ẩn là chức năng thật, không phải trang trí: mật khẩu gõ
-                sai trên bàn phím có dấu là lỗi thường gặp, và không có cách nào
-                tự kiểm tra nếu ô luôn che. Ô rỗng thì nút không có gì để hiện,
-                nên lúc đó nó không được dựng. */}
-            <span className="password-field">
-              <input name="password" type={hien ? "text" : "password"} autoComplete="current-password" value={password}
-                aria-invalid={error ? true : undefined} aria-describedby={error ? "login-error" : undefined}
-                onChange={(event) => { setPassword(event.target.value); setError(""); }}/>
-              {password !== "" && <button type="button" onClick={() => setHien((truoc) => !truoc)} aria-pressed={hien}>{hien ? "Ẩn" : "Hiện"}</button>}
-            </span>
-          </label>
-          {error && <p className="login-error" id="login-error" role="alert">{error}</p>}
-          <button className="login-submit" type="submit">Đăng nhập</button>
-        </form>
+        <div className="login-heading"><h1>Đăng nhập</h1><p>Bản demo. Chọn một vai để xem phần màn hình của vai đó.</p></div>
 
         {/*
           Lối đăng nhập một lần. Nút này là TƯỢNG TRƯNG: Keycloak là hướng đã
@@ -94,11 +55,28 @@ export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) 
           trông như chạy được mà không chạy là thứ khiến người xem tin nhầm hệ
           đã có SSO.
         */}
-        <div className="login-or"><span>hoặc</span></div>
         <button type="button" className="button is-secondary login-sso" onClick={() => setSso(true)} aria-describedby={sso ? "login-sso-note" : undefined}>
           <Icon name="key" size={17}/><span>Đăng nhập bằng Keycloak</span>
         </button>
-        {sso && <p className="login-sso-note" id="login-sso-note" role="status">Bản demo chưa nối Keycloak. Dùng tài khoản do Thuế TP Hà Nội cấp ở ô phía trên.</p>}
+        {sso && <p className="login-sso-note" id="login-sso-note" role="status">Bản demo chưa nối Keycloak. Dùng một trong các vai bên dưới.</p>}
+
+        <div className="login-or"><span>hoặc chọn vai để xem</span></div>
+
+        {/*
+          Lưới hai cột, xếp theo CẶP: mỗi phòng một hàng với chuyên viên bên
+          trái và trưởng phòng bên phải. Một cột dọc sáu dòng bắt người đọc dò
+          từ trên xuống để tìm ra hai dòng nào thuộc cùng một phòng; xếp cặp
+          thì quan hệ ấy đọc được bằng vị trí, không cần đọc chữ.
+        */}
+        <ul className="demo-accounts-list" aria-label="Tài khoản trình diễn">
+          {DEMO_ACCOUNTS.map((tk) => <li key={tk.username}>
+            <button type="button" onClick={() => vao(tk.username, tk.password)}>
+              <span className="demo-vai">{tk.vaiTroLabel}</span>
+              <small>{tk.unit}</small>
+              <code>{tk.username}</code>
+            </button>
+          </li>)}
+        </ul>
       </div>
     </section>
   </main>;

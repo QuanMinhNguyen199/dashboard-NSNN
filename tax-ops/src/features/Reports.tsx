@@ -3,31 +3,40 @@ import { Badge, Button, FigureLine, PageIntro, Panel, SearchField, Segmented, Ta
 import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
 import { reportVersions } from "@/data/catalog";
 import { reportRuns } from "@/data/mock";
-import type { ReportRun, ReportStatus, ReportVersion, Tone, UserRole } from "@/domain/types";
+import type { ReportRun, ReportStatus, ReportVersion, Tone, VaiTro } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
 
 type Cycle = "ALL" | "WEEK" | "MONTH" | "YEAR";
-const statusText: Record<ReportStatus, string> = { DRAFT: "Bản nháp", REVIEW: "Chờ duyệt", APPROVED: "Đã duyệt", PUBLISHED: "Đã phát hành", BLOCKED: "Đang vướng" };
-const statusTone: Record<ReportStatus, Tone> = { DRAFT: "neutral", REVIEW: "warning", APPROVED: "info", PUBLISHED: "positive", BLOCKED: "critical" };
+/*
+  MỘT nhãn và MỘT màu cho mỗi trạng thái, dùng chung cho cả hai vai.
+
+  Trước đây cùng một bản ghi hiện "Đã gửi duyệt" màu xanh dương với cán bộ và
+  "Cần duyệt" màu hổ phách với lãnh đạo. Hai người gọi điện cho nhau sẽ gọi
+  tên hai thứ khác nhau cho cùng một hồ sơ, và không ai đối chiếu được màn
+  hình của mình với màn hình người kia.
+*/
+const statusText: Record<ReportStatus, string> = { DRAFT: "Nháp", PENDING: "Chờ duyệt", FINAL: "Đã chốt", BLOCKED: "Đang vướng" };
+const statusTone: Record<ReportStatus, Tone> = { DRAFT: "neutral", PENDING: "warning", FINAL: "positive", BLOCKED: "critical" };
 
 /*
-  Bốn bước của luồng phát hành, theo đúng thứ tự tài liệu đề xuất ghi:
-  nháp → chờ duyệt → đã duyệt → phát hành. `BLOCKED` nằm ngoài chuỗi vì nó là
-  trạng thái dữ liệu chưa đạt, không phải một bước duyệt.
+  BA bước của mục G10: Nháp -> Chờ duyệt -> Đã chốt. `BLOCKED` nằm ngoài chuỗi
+  vì nó nói dữ liệu chưa đạt, không phải một bước của luồng duyệt.
 */
-const CHUOI: ReportStatus[] = ["DRAFT", "REVIEW", "APPROVED", "PUBLISHED"];
+const CHUOI: ReportStatus[] = ["DRAFT", "PENDING", "FINAL"];
 const BUOC = [
-  { trang: "DRAFT", ten: "Bản nháp", mo: "Chạy dữ liệu và xử lý lỗi" },
-  { trang: "REVIEW", ten: "Chờ duyệt", mo: "Khóa số và gửi người duyệt" },
-  { trang: "APPROVED", ten: "Đã duyệt", mo: "Gắn người duyệt và thời điểm" },
-  { trang: "PUBLISHED", ten: "Phát hành", mo: "Xuất đúng mẫu, lưu phiên bản" },
+  { trang: "DRAFT", ten: "Nháp", mo: "Chuyên viên chạy dữ liệu và xử lý lỗi" },
+  { trang: "PENDING", ten: "Chờ duyệt", mo: "Trưởng phòng đọc số và đối chiếu nguồn" },
+  { trang: "FINAL", ten: "Đã chốt", mo: "Khóa số, xuất kèm nhật ký nguồn gốc" },
 ] as const;
 
-/** Bước kế tiếp và nhãn của nút đẩy trạng thái. Không có nghĩa là hàng đó xong. */
-const TIEP: Partial<Record<ReportStatus, { den: ReportStatus; nhan: string; role: UserRole }>> = {
-  DRAFT: { den: "REVIEW", nhan: "Gửi duyệt", role: "OFFICER" },
-  REVIEW: { den: "APPROVED", nhan: "Duyệt", role: "TAX_LEADER" },
-  APPROVED: { den: "PUBLISHED", nhan: "Phát hành", role: "TAX_LEADER" },
+/*
+  Mỗi trạng thái có đúng MỘT vai đẩy được nó đi tiếp: chuyên viên gửi, trưởng
+  phòng chốt. Khóa vai vào bảng này để quyền nằm ở dữ liệu, không nằm ở việc
+  ẩn nút trong JSX.
+*/
+const TIEP: Partial<Record<ReportStatus, { den: ReportStatus; nhan: string; vaiTro: VaiTro; bao: (ten: string, luc: string) => string }>> = {
+  DRAFT: { den: "PENDING", nhan: "Gửi duyệt", vaiTro: "CV", bao: (ten, luc) => `Đã gửi “${ten}” lên trưởng phòng lúc ${luc}. Bản nháp khóa lại cho tới khi có kết quả duyệt.` },
+  PENDING: { den: "FINAL", nhan: "Chốt số", vaiTro: "TP", bao: (ten, luc) => `Đã chốt “${ten}” lúc ${luc}. Số đã khóa; muốn sửa phải chạy một phiên bản mới.` },
 };
 const STORAGE_KEY = "tax-ops-reports:shared-demo";
 
@@ -37,7 +46,7 @@ const dauThoiGian = () => {
   return `${hai(t.getDate())}/${hai(t.getMonth() + 1)} – ${hai(t.getHours())}:${hai(t.getMinutes())}`;
 };
 
-export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: string; owner: string; role: UserRole; moTao: boolean; onDaMoTao: () => void }) {
+export function Reports({ actor, owner, vaiTro, moTao, onDaMoTao }: { actor: string; owner: string; vaiTro: VaiTro; moTao: boolean; onDaMoTao: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [name, setName] = useState("");
   const [period, setPeriod] = useState("");
@@ -68,12 +77,12 @@ export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: strin
   const closeCreate = () => { dialog.current?.close(); document.getElementById("global-create-report")?.focus(); };
   const createDraft = (event: FormEvent) => {
     event.preventDefault();
-    if (role !== "OFFICER") return;
+    if (vaiTro !== "CV") return;
     if (!name.trim() || !period.trim()) { setFormError("Nhập tên và kỳ báo cáo."); return; }
     const id = `draft-${crypto.randomUUID()}`;
     const timestamp = dauThoiGian();
     setRuns(current => [{ id, name: name.trim(), period: period.trim(), cycle: newCycle, owner, source: "Chưa chọn nguồn", status: "DRAFT", updatedAt: timestamp }, ...current]);
-    setVersions(current => [{ id: `${id}-v1`, runId: id, version: "v1", createdAt: timestamp, createdBy: actor, approvedBy: null, note: "Tạo bản nháp; chưa chạy dữ liệu" }, ...current]);
+    setVersions(current => [{ id: `${id}-v1`, runId: id, version: "v1", createdAt: timestamp, createdBy: actor, guiBoi: null, chotBoi: null, note: "Tạo bản nháp; chưa chạy dữ liệu" }, ...current]);
     setChon(id); setCycle("ALL"); setSearch(""); setName(""); setPeriod(""); setFormError(""); closeCreate();
     notify("Đã tạo bản nháp và lưu trong phiên demo trên trình duyệt này.");
   };
@@ -86,92 +95,102 @@ export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: strin
   */
   useEffect(() => {
     if (!moTao) return;
-    if (role === "OFFICER") { setFormError(""); dialog.current?.showModal(); }
+    if (vaiTro === "CV") { setFormError(""); dialog.current?.showModal(); }
     onDaMoTao();
-  }, [moTao, role, onDaMoTao]);
+  }, [moTao, vaiTro, onDaMoTao]);
 
   /* Đường dẫn dán tay `?create=1` vẫn mở form, và tham số được dọn ngay sau đó
      để tải lại trang không mở lại hộp thoại. */
   useEffect(() => {
     const url = new URL(window.location.href);
-    if (url.searchParams.get("create") === "1" && role === "OFFICER") {
+    if (url.searchParams.get("create") === "1" && vaiTro === "CV") {
       dialog.current?.showModal();
     }
     if (url.searchParams.has("create")) {
       url.searchParams.delete("create");
       window.history.replaceState({}, "", url);
     }
-  }, [role]);
+  }, [vaiTro]);
 
   const rows = useMemo(
     () => runs.filter((row) =>
-      (role !== "TAX_LEADER" || ["REVIEW", "APPROVED", "PUBLISHED"].includes(row.status)) &&
+      /* Trưởng phòng không đọc bản nháp của chuyên viên: bản chưa nộp thì chưa
+         phải việc của người duyệt, và thấy nó chỉ tạo giục giã sai chỗ. */
+      (vaiTro !== "TP" || row.status !== "DRAFT") &&
       (cycle === "ALL" || row.cycle === cycle) &&
       `${row.name} ${row.owner} ${row.period}`.toLowerCase().includes(search.toLowerCase())
     ),
-    [runs, role, cycle, search],
+    [runs, vaiTro, cycle, search],
   );
+
+  /* Gửi và chốt đều là mốc đóng bản: ghi người thực hiện vào phiên bản mới
+     nhất, không sinh phiên bản mới. Phiên bản mới chỉ sinh khi chạy lại dữ liệu. */
+  const ghiMoc = (runId: string, truong: "guiBoi" | "chotBoi", ai: string | null) =>
+    setVersions((truoc) => {
+      const moiNhat = truoc.find((v) => v.runId === runId);
+      return moiNhat ? truoc.map((v) => v.id === moiNhat.id ? { ...v, [truong]: ai } : v) : truoc;
+    });
 
   const dayTrangThai = (row: ReportRun) => {
     const buoc = TIEP[row.status];
-    if (!buoc || buoc.role !== role) return;
+    if (!buoc || buoc.vaiTro !== vaiTro) return;
     const luc = dauThoiGian();
     setChon(row.id);
     setRuns((truoc) => truoc.map((r) => r.id === row.id ? { ...r, status: buoc.den, updatedAt: luc } : r));
-    if (buoc.den !== "REVIEW") setVersions((truoc) => {
-      const cua = truoc.filter((v) => v.runId === row.id);
-      if (buoc.den === "APPROVED") {
-        /* Duyệt không tạo phiên bản mới — nó gắn người duyệt vào bản đang chờ. */
-        const moiNhat = cua[0];
-        if (!moiNhat) return truoc;
-        return truoc.map((v) => v.id === moiNhat.id ? { ...v, approvedBy: actor } : v);
-      }
-      const so = cua.length + 1;
-      return [{ id: `${row.id}-ph${so}`, runId: row.id, version: `v${so}`, createdAt: luc, createdBy: actor, approvedBy: actor, note: "Phát hành bản chính thức" }, ...truoc];
-    });
-    notify(buoc.den === "REVIEW"
-      ? `Đã gửi “${row.name}” chờ Lãnh đạo Thuế duyệt trong bản demo. Chưa chạy hoặc kiểm tra dữ liệu thật.`
-      : buoc.den === "APPROVED"
-      ? `Đã duyệt “${row.name}” lúc ${luc}, người duyệt ${actor}.`
-      : `Đã phát hành “${row.name}” lúc ${luc}. Phiên bản được lưu kèm người duyệt.`);
+    ghiMoc(row.id, buoc.den === "FINAL" ? "chotBoi" : "guiBoi", actor);
+    notify(buoc.bao(row.name, luc));
   };
 
-  const dem = (trang: ReportStatus) => runs.filter((r) => r.status === trang).length;
+  /* Đường lùi duy nhất của luồng, và chỉ trưởng phòng mở được nó. Trả lại gỡ
+     luôn dấu đã gửi: bản quay về tay chuyên viên thì không còn là bản đã nộp. */
+  const traLai = (row: ReportRun) => {
+    if (vaiTro !== "TP" || row.status !== "PENDING") return;
+    const luc = dauThoiGian();
+    setChon(row.id);
+    setRuns((truoc) => truoc.map((r) => r.id === row.id ? { ...r, status: "DRAFT", updatedAt: luc } : r));
+    ghiMoc(row.id, "guiBoi", null);
+    notify(`Đã trả “${row.name}” về bản nháp lúc ${luc}. Chuyên viên lập báo cáo nhận lại để sửa.`);
+  };
+
+  const demTrong = (trang: ReportStatus) => rows.filter((r) => r.status === trang).length;
   const bc = rows.find((r) => r.id === chon) ?? rows[0];
   const pb = bc ? versions.filter((v) => v.runId === bc.id) : [];
   const buocHienTai = bc ? CHUOI.indexOf(bc.status) : -1;
-  const nextAction = bc && TIEP[bc.status]?.role === role ? TIEP[bc.status] : undefined;
-  const nhanTrangThai = (trang: ReportStatus) => trang === "REVIEW"
-    ? role === "TAX_LEADER" ? "Cần duyệt" : "Đã gửi duyệt"
-    : statusText[trang];
+  const nextAction = bc && TIEP[bc.status]?.vaiTro === vaiTro ? TIEP[bc.status] : undefined;
+  const coTheTraLai = Boolean(bc && vaiTro === "TP" && bc.status === "PENDING");
+  /* Một dòng duy nhất cho dấu vết duyệt: chốt đè lên gửi vì nó là mốc sau. */
+  const veMoc = (v: ReportVersion) => v.chotBoi ? ` – đã chốt bởi ${v.chotBoi}` : v.guiBoi ? ` – đã gửi bởi ${v.guiBoi}, đang chờ duyệt` : " – chưa gửi";
   const detail = bc && <Panel
     title={`Phiên bản – ${bc.name}`}
-    actions={nextAction && <Button kind="primary" onClick={() => dayTrangThai(bc)}>{nextAction.nhan}</Button>}
+    actions={(nextAction || coTheTraLai) && <div className="inline-controls">
+      {coTheTraLai && <Button onClick={() => traLai(bc)}>Trả lại bản nháp</Button>}
+      {nextAction && <Button kind="primary" onClick={() => dayTrangThai(bc)}>{nextAction.nhan}</Button>}
+    </div>}
   >
     {pb.length === 0
       ? <div className="empty-state"><strong>Báo cáo này chưa có lần chạy nào được lưu</strong></div>
-      : <div className="timeline">{pb.map((v) => <div key={v.id} className={`timeline-step${v.approvedBy ? " is-done" : ""}`}>
+      : <div className="timeline">{pb.map((v) => <div key={v.id} className={`timeline-step${v.chotBoi || v.guiBoi ? " is-done" : ""}`}>
           <i/>
           <span>{v.version}</span>
-          <div><strong>{v.createdAt} – {v.createdBy}</strong><span>{v.note}{v.approvedBy ? ` – duyệt bởi ${v.approvedBy}` : " – chưa duyệt"}</span></div>
+          <div><strong>{v.createdAt} – {v.createdBy}</strong><span>{v.note}{veMoc(v)}</span></div>
         </div>)}</div>}
     <details className="workflow-details">
-      <summary>Xem luồng phát hành</summary>
+      <summary>Xem luồng xử lý</summary>
       <div className="approval-flow">{BUOC.map((b, i) => {
         const qua = buocHienTai > i;
         const dang = buocHienTai === i;
         return <div key={b.trang} className={dang ? "is-current" : qua ? "is-done" : undefined} aria-current={dang ? "step" : undefined}>
           <span>{i + 1}</span>
-          <strong>{b.trang === "REVIEW" ? nhanTrangThai("REVIEW") : b.ten}{dang && <span className="sr-only"> — bước hiện tại</span>}{qua && <span className="sr-only"> — đã qua</span>}</strong>
+          <strong>{b.ten}{dang && <span className="sr-only"> — bước hiện tại</span>}{qua && <span className="sr-only"> — đã qua</span>}</strong>
           <small>{b.mo}</small>
         </div>;
       })}</div>
-      {bc.status === "BLOCKED" && <div className="notice critical"><strong>Báo cáo đang vướng dữ liệu</strong><span>{bc.qualityNote ?? "Chưa đủ điều kiện để vào luồng duyệt."} Xử lý ở màn Lô dữ liệu trước khi khóa số.</span></div>}
+      {bc.status === "BLOCKED" && <div className="notice critical"><strong>Báo cáo đang vướng dữ liệu</strong><span>{bc.qualityNote ?? "Chưa đủ điều kiện để khóa số."} Xử lý ở màn Lô dữ liệu trước khi gửi duyệt.</span></div>}
     </details>
   </Panel>;
 
   return <div className="page-stack reports-page">
-    <PageIntro title={role === "TAX_LEADER" ? "Duyệt báo cáo" : "Báo cáo"}/>
+    <PageIntro title="Báo cáo"/>
     <dialog ref={dialog} className="report-dialog" aria-labelledby="create-report-title" aria-describedby="create-report-note" onClose={() => document.getElementById("global-create-report")?.focus()} onKeyDown={event => {
       if (event.key !== "Tab") return;
       const controls = [...event.currentTarget.querySelectorAll<HTMLElement>('input, select, button:not(:disabled)')];
@@ -194,19 +213,18 @@ export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: strin
         thô, xếp nhãn-trái/số-phải trên mobile trong khi FigureLine xếp
         nhãn-trên-số ở cùng breakpoint. Số đếm chạy theo trạng thái thật, nên
         duyệt một báo cáo là thấy nó dịch. */}
-    <FigureLine items={role === "TAX_LEADER" ? [
-      { label: "Cần duyệt", value: dem("REVIEW"), tone: dem("REVIEW") ? "warning" : "neutral" },
-      { label: "Đã duyệt", value: dem("APPROVED"), tone: "info" },
-      { label: "Đã phát hành", value: dem("PUBLISHED"), tone: "positive" },
-    ] : [
-      { label: "Bản nháp", value: dem("DRAFT") },
-      { label: "Đã gửi duyệt", value: dem("REVIEW"), tone: "info" },
-      { label: "Đang vướng", value: dem("BLOCKED"), tone: dem("BLOCKED") ? "critical" : "neutral" },
-      { label: "Đã phát hành", value: dem("PUBLISHED"), tone: "positive" },
+    {/* Cùng một bộ nhãn cho cả hai vai; chỉ PHẠM VI đếm khác nhau, vì trưởng
+        phòng không thấy bản nháp. Đếm trên `rows` chứ không trên toàn bộ
+        `runs`, nếu không con số lại nói về những hàng họ không xem được. */}
+    <FigureLine items={[
+      { label: "Nháp", value: demTrong("DRAFT") },
+      { label: "Chờ duyệt", value: demTrong("PENDING"), tone: demTrong("PENDING") ? "warning" : "neutral" },
+      { label: "Đã chốt", value: demTrong("FINAL"), tone: "positive" },
+      { label: "Đang vướng", value: demTrong("BLOCKED"), tone: demTrong("BLOCKED") ? "critical" : "neutral" },
     ]}/>
     <CaseLayout label="Chi tiết phiên bản báo cáo" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
-    <Panel title={role === "TAX_LEADER" ? "Báo cáo đã gửi" : "Danh sách báo cáo"} actions={<div className="inline-controls"><Segmented label="Chu kỳ báo cáo" value={cycle} onChange={setCycle} options={[{ value: "ALL", label: "Tất cả" }, { value: "WEEK", label: "Tuần" }, { value: "MONTH", label: "Tháng" }, { value: "YEAR", label: "Năm" }]}/><SearchField value={search} onChange={setSearch} placeholder="Tìm báo cáo hoặc đơn vị"/></div>}>
-      <TableWrap label="danh sách báo cáo"><table>
+    <Panel title="Danh sách báo cáo" actions={<div className="inline-controls"><Segmented label="Chu kỳ báo cáo" value={cycle} onChange={setCycle} options={[{ value: "ALL", label: "Tất cả" }, { value: "WEEK", label: "Tuần" }, { value: "MONTH", label: "Tháng" }, { value: "YEAR", label: "Năm" }]}/><SearchField value={search} onChange={setSearch} placeholder="Tìm báo cáo hoặc đơn vị"/></div>}>
+      <TableWrap label="danh sách báo cáo"><table className="reports-table">
         <thead><tr><th scope="col">Tên báo cáo</th><th scope="col">Kỳ báo cáo</th><th scope="col">Đơn vị / nguồn</th><th scope="col">Cập nhật</th><th scope="col">Cảnh báo dữ liệu</th><th scope="col">Trạng thái</th></tr></thead>
         <tbody>{rows.map((row) => {
           return <tr key={row.id} onClick={(e) => cases.select(row.id, e)} className={row.id === bc?.id ? "is-selected" : undefined}>
@@ -226,7 +244,7 @@ export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: strin
                   MỌI hàng, không riêng hàng chờ duyệt. Chip này vì thế dựng cho mọi
                   hàng: dựng có điều kiện thì vừa bỏ sót trạng thái của năm hàng kia,
                   vừa làm một hàng cao hơn phần còn lại. */}
-              <span className="report-inline-status"><Badge tone={row.status === "REVIEW" && role === "OFFICER" ? "info" : statusTone[row.status]}>{nhanTrangThai(row.status)}</Badge></span></button></td>
+              <span className="report-inline-status"><Badge tone={statusTone[row.status]}>{statusText[row.status]}</Badge></span></button></td>
             <td>{row.period}</td>
             {/*
               Nguồn gộp thành dòng phụ của đơn vị lập, đúng khuôn hai dòng mà
@@ -238,7 +256,7 @@ export function Reports({ actor, owner, role, moTao, onDaMoTao }: { actor: strin
             <td><strong>{row.owner}</strong><small>{row.source}</small></td>
             <td>{row.updatedAt}</td>
             <td>{row.qualityNote ? <small className="quality-note">{row.qualityNote}</small> : <span className="cell-empty">—</span>}</td>
-            <td><Badge tone={row.status === "REVIEW" && role === "OFFICER" ? "info" : statusTone[row.status]}>{nhanTrangThai(row.status)}</Badge></td>
+            <td><Badge tone={statusTone[row.status]}>{statusText[row.status]}</Badge></td>
           </tr>;
         })}{rows.length === 0 && <tr><td colSpan={6}>Không tìm thấy báo cáo. Hãy đổi từ khóa hoặc chu kỳ.</td></tr>}</tbody>
       </table></TableWrap>

@@ -59,7 +59,7 @@ export function Batches() {
     <Panel
       title="Nhật ký lô dữ liệu"
     >
-      <TableWrap label="nhật ký lô dữ liệu"><table>
+      <TableWrap label="nhật ký lô dữ liệu"><table className="batches-table">
         <thead><tr><th scope="col">Mã lô</th><th scope="col">Nguồn / kỳ</th><th scope="col" className="num">File</th><th scope="col" className="num">Số dòng</th><th scope="col" className="num">Chất lượng</th><th scope="col">Cập nhật</th><th scope="col">Trạng thái</th></tr></thead>
         <tbody>{sourceBatches.map((b) => <tr key={b.id} onClick={(e) => cases.select(b.id, e)} className={b.id === lo?.id ? "is-selected" : undefined}>
           {/* Cả hàng bấm được cho chuột; nút ở ô đầu là đích bàn phím. Đặt
