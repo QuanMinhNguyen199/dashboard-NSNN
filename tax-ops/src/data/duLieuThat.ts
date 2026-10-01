@@ -43,6 +43,19 @@ export interface HangThucHien {
   tyLe: number | null;
 }
 
+/** Một dòng trong bảng tạm hoãn xuất cảnh theo trạng thái 06. Đơn vị tiền: ĐỒNG. */
+export interface HangTamHoanTongHop {
+  donVi: string;
+  nntTrangThai06: number | null;
+  tongNoKhongHoatDong: number | null;
+  daTamHoanNNT: number | null;
+  daTamHoanTien: number | null;
+  tyLeDaTamHoan: number | null;
+  chuaTamHoanNNT: number | null;
+  chuaTamHoanTien: number | null;
+  tyLeChuaTamHoan: number | null;
+}
+
 export interface QuyTacNguon {
   noiDung: string;
   giaTri: string | null;
@@ -58,8 +71,47 @@ export interface TongHopThat {
   noTheoDonVi: DonViNo[];
   cuongChe: HangThucHien[];
   tamHoanXuatCanh: HangThucHien[];
-  tamHoanTongHop: { donVi: string; chuaTamHoanNNT: number | null; chuaTamHoanTien: number | null; tyLeChuaTamHoan: number | null }[];
+  tamHoanTongHop: HangTamHoanTongHop[];
   soDong: Record<string, number>;
+}
+
+/*
+  Một dòng người nộp thuế trong BẤT KỲ bốn danh sách chi tiết nào. Đơn vị tiền:
+  ĐỒNG.
+
+  Bốn danh sách dùng chung phần lớn cột (mã số thuế, tên, đơn vị, chương) và
+  khác nhau ở vài cột số. Dựng bốn interface riêng thì bốn lần khai lại cùng
+  một thứ, và mỗi lần thêm danh sách là thêm một bản sao; để mọi cột là tuỳ
+  chọn thì một kiểu phục vụ cả bốn, và chỗ nào dùng cột nào thì khai ở cấu hình
+  của tab đó.
+*/
+export interface HangChiTiet {
+  stt?: string | null;
+  mst?: string | null;
+  ten?: string | null;
+  maCQT?: string | null;
+  donVi?: string | null;
+  loaiNNT?: string | null;
+  chuong?: number | null;
+  /** DS_DN_TangnoTren500tr */
+  noHienTai?: number | null;
+  noDauNam?: number | null;
+  tangGiam?: number | null;
+  /** DS NNT chua cuong che / DS tren 500tr chua Hoan XC */
+  noThang?: number | null;
+  noNgay?: number | null;
+  noDanhGia?: number | null;
+  tongNoDanhGia?: number | null;
+  nguong?: number | null;
+  bienPhap?: string | null;
+  quyetDinh?: string | null;
+  ngayTamHoan?: string | null;
+  /** DS_chua_tam_hoan */
+  tongNoKhongHoatDong?: number | null;
+  nhomXuLy?: string | null;
+  tinhTrang?: string | null;
+  ketLuan?: string | null;
+  ghiChu?: string | null;
 }
 
 /** Một người nộp thuế chưa bị cưỡng chế. Đơn vị tiền: ĐỒNG. */
@@ -108,6 +160,9 @@ async function nap<T>(ten: string): Promise<T | null> {
 
 export const napTongHop = () => nap<TongHopThat>("tong-hop.json");
 export const napChuaCuongChe = () => nap<HangChuaCuongChe[]>("chua-cuong-che.json");
+
+/** Nạp một trong bốn danh sách chi tiết theo tên tệp đã sinh. */
+export const napDanhSach = (ten: string) => nap<HangChiTiet[]>(ten);
 
 /** Tìm một dòng đơn vị theo tên gần đúng; bảng gốc viết đầy đủ "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1". */
 export const timDonVi = (ds: DonViNo[], khoa: string) =>

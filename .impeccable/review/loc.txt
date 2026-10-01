@@ -1,0 +1,26 @@
+So gia tri KHAC NHAU cua moi cot loc (chi dung duoc khi >= 2):
+
+--- no (2249 dong) ---
+   Mã CQT         31 gia tri  -> DUNG   vd ['0101', '0103', '0105']
+   Loại NNT        2 gia tri  -> DUNG   vd ['Cá nhân, hộ kinh doanh', 'Doanh nghiệp, tổ chức']
+   Chương          0 gia tri  -> BO (khong co du lieu)   vd []
+   Nhóm xử lý      0 gia tri  -> BO (khong co du lieu)   vd []
+   Đơn vị         38 gia tri  -> DUNG   vd ['Cuc - Chua phan cong', 'P.KIEM TRA THUE so 4', 'Phòng QLHKD, CN và thu khác']
+--- cc (2455 dong) ---
+   Mã CQT         31 gia tri  -> DUNG   vd ['0101', '0103', '0105']
+   Loại NNT        1 gia tri  -> BO (chi 1 gia tri)   vd ['Doanh nghiệp, tổ chức']
+   Chương          0 gia tri  -> BO (khong co du lieu)   vd []
+   Nhóm xử lý      0 gia tri  -> BO (khong co du lieu)   vd []
+   Đơn vị         32 gia tri  -> DUNG   vd ['Phòng Quản lý các khoản thu từ đất', 'Phòng Quản lý, Hỗ trợ doanh nghiệp số 1', 'Phòng Quản lý, Hỗ trợ doanh nghiệp số 2']
+--- th (253 dong) ---
+   Mã CQT         25 gia tri  -> DUNG   vd ['0101', '0103', '0105']
+   Loại NNT        1 gia tri  -> BO (chi 1 gia tri)   vd ['Doanh nghiệp, tổ chức']
+   Chương          0 gia tri  -> BO (khong co du lieu)   vd []
+   Nhóm xử lý      0 gia tri  -> BO (khong co du lieu)   vd []
+   Đơn vị         27 gia tri  -> DUNG   vd ['Phòng Quản lý các khoản thu từ đất', 'Phòng Quản lý, Hỗ trợ doanh nghiệp số 1', 'Phòng Quản lý, Hỗ trợ doanh nghiệp số 2']
+--- t06 (16169 dong) ---
+   Mã CQT         30 gia tri  -> DUNG   vd ['0101', '0103', '0105']
+   Loại NNT        2 gia tri  -> DUNG   vd ['Doanh nghiệp', 'Doanh nghiệp, tổ chức']
+   Chương          0 gia tri  -> BO (khong co du lieu)   vd []
+   Nhóm xử lý      1 gia tri  -> BO (chi 1 gia tri)   vd ['Tiểu mục đất/nhóm loại trừ']
+   Đơn vị         31 gia tri  -> DUNG   vd ['Phòng Quản lý các khoản thu từ đất', 'Phòng Quản lý, Hỗ trợ doanh nghiệp số 1', 'Phòng Quản lý, Hỗ trợ doanh nghiệp số 2']

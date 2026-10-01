@@ -1,0 +1,6 @@
+So gia tri KHAC NHAU sau khi sua:
+
+  no  : Mã CQT=31 DUNG  |  Loại NNT=2 DUNG  |  Chương=0 bo  |  Nhóm xử lý=0 bo
+  cc  : Mã CQT=31 DUNG  |  Loại NNT=1 bo  |  Chương=81 DUNG  |  Nhóm xử lý=0 bo
+  th  : Mã CQT=25 DUNG  |  Loại NNT=1 bo  |  Chương=30 DUNG  |  Nhóm xử lý=0 bo
+  t06 : Mã CQT=30 DUNG  |  Loại NNT=2 DUNG  |  Chương=51 DUNG  |  Nhóm xử lý=1 bo

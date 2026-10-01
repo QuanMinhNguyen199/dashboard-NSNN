@@ -21,8 +21,9 @@ npm run acceptance   # 20 tiêu chí trên Chrome thật (cần dev server đang
 ```
 
 `npm run dev` và `npm run dev:tax-ops` chạy cổng chung `5174`: đăng nhập bằng
-`lanhdao.nhanuoc` (LDNN) tự chuyển tới `/nsnn/`; `canbo.thue` và `lanhdao.thue`
-vào Tax Ops tại `/`. Mật khẩu mẫu: `demo123`. Chỉ cần forward **5174**, liên kết
+`lanhdao.nhanuoc` (LDNN) tự chuyển tới `/nsnn/`; `cv.ql1`, `tp.ql1`, `cv.ql3`,
+`tp.ql3` và `vanhanh.dulieu` vào Tax Ops tại `/`, mỗi tài khoản mở đúng phần
+màn của phòng và vai mình. Mật khẩu mẫu: `demo123`. Chỉ cần forward **5174**, liên kết
 giữa hai ứng dụng giữ nguyên tên miền và cổng. Đăng xuất ở NSNN quay về màn đăng nhập.
 Đây là phân vai demo bằng sessionStorage, chưa phải xác thực/phân quyền máy chủ.
 

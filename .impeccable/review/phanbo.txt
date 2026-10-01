@@ -1,0 +1,21 @@
+tong dong: 2455
+
+ketLuan: 1 gia tri khac nhau
+    2455  Chưa cưỡng chế
+
+tinhTrang: 1 gia tri khac nhau
+    2455  Không có QĐCC
+
+bienPhap: 1 gia tri khac nhau
+    2455  None
+
+loaiNNT: 1 gia tri khac nhau
+    2455  Doanh nghiệp, tổ chức
+
+maCQT: 31 gia tri khac nhau
+    1145  0101
+     129  0111
+     123  0115
+     119  0129
+     105  0157
+      86  0117

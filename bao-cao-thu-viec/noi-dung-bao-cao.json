@@ -1,0 +1,124 @@
+[
+  [
+    "17/08/2026",
+    "21/08/2026",
+    [
+      [
+        "Tìm hiểu quy định công ty THEHEGEO, Outline, Plane và cách làm việc của vị trí BQA.",
+        "Đã đọc quy định làm việc; truy cập thành công Outline và Plane; tìm hiểu cách tra cứu tài liệu, ghi nhận yêu cầu và phối hợp công việc. Minh chứng: báo cáo onboarding tuần 17–21/08."
+      ],
+      [
+        "Hoàn thành các nội dung học nền tảng về Business Analysis; tìm hiểu quy trình từ yêu cầu đến kiểm thử.",
+        "Hoàn thành 3 nội dung học, tổng 9 giờ: IT Business Analysts (2 giờ), Business Analysis Certification Course (3 giờ), LEARN CBAP (4 giờ). Nắm vai trò BA, User Story, Acceptance Criteria, quản lý yêu cầu và Verify/Validate."
+      ],
+      [
+        "Đọc yêu cầu HKD2026, DN360 và thực hành kiểm thử Agent Thuế trên GeoAgent UAT.",
+        "Đã đọc 2 bộ yêu cầu, xây dựng scenario kiểm thử Agent Thuế, viết 20 test case, thực hiện 10 test và lập 5 bug report. Ghi nhận các vấn đề cần trao đổi với mentor về nguồn dữ liệu, trích dẫn, cách tính và ngưỡng rủi ro."
+      ]
+    ]
+  ],
+  [
+    "24/08/2026",
+    "28/08/2026",
+    [
+      [
+        "Tìm hiểu Calendar/LibreBooking; phân tích chức năng đặt phòng, quản lý tài nguyên và phạm vi phân quyền.",
+        "Lập tài liệu chức năng và đánh giá khả năng đáp ứng, phân biệt chức năng có thể kế thừa với phần THG cần bổ sung. Minh chứng: tài liệu LibreBooking ngày 24/08."
+      ],
+      [
+        "Xây dựng đặc tả, kế hoạch triển khai và tài liệu bàn giao cho các chức năng đặt phòng, tổng quan, danh mục phòng và báo cáo.",
+        "Có bộ tài liệu spec, implement-plan và handoff theo chức năng; mô tả luồng, API sử dụng, trường hợp lỗi và tiêu chí kiểm tra. Minh chứng: các thư mục docs của Calendar."
+      ],
+      [
+        "Tham gia dựng và rà soát giao diện Calendar theo prototype; kiểm tra luồng tìm phòng, đặt lịch, sửa/hủy và chọn người tham dự.",
+        "Hình thành các màn nghiệp vụ và bộ thành phần giao diện dùng chung; bổ sung quản lý phòng, thiết bị và báo cáo dành cho quản trị. Minh chứng: cập nhật Calendar từ 26–28/08."
+      ]
+    ]
+  ],
+  [
+    "31/08/2026",
+    "04/09/2026",
+    [
+      [
+        "Rà soát và hoàn thiện thao tác đặt phòng trực tiếp trên lịch, cách thể hiện lịch nhiều ngày và lịch toàn công ty.",
+        "Cập nhật luồng đặt phòng trên lưới lịch và cách hiển thị sự kiện qua nhiều ngày. Minh chứng: đặc tả calendar-booking và cập nhật ngày 03/09."
+      ],
+      [
+        "Hiệu chỉnh luồng phê duyệt và biểu mẫu: bổ sung lý do từ chối, rà soát thao tác xóa và đường dẫn của từng form.",
+        "Form có URL riêng; luồng từ chối ghi nhận lý do và thao tác xóa được kiểm soát rõ hơn. Minh chứng: cập nhật Calendar ngày 04/09."
+      ]
+    ]
+  ],
+  [
+    "07/09/2026",
+    "11/09/2026",
+    [
+      [
+        "Tiếp tục rà soát Calendar: biểu mẫu đặt phòng, quản lý tài nguyên, trạng thái chờ duyệt và nội dung thông báo.",
+        "Thống nhất thành phần dùng chung; hiệu chỉnh quy tắc thời lượng, điều kiện check-in và trạng thái phê duyệt. Minh chứng: cập nhật Calendar từ 07–09/09."
+      ],
+      [
+        "Kiểm tra cách tổng hợp báo cáo và hiển thị lịch; chuẩn hóa nhãn, tiêu đề bảng và kỳ thống kê.",
+        "Điều chỉnh kỳ báo cáo và số lượng lịch chờ duyệt theo tháng; đồng bộ cách diễn đạt trên giao diện. Minh chứng: tài liệu reports và các cập nhật ngày 08–09/09."
+      ],
+      [
+        "Xây dựng prototype Dashboard Thu NSNN Hà Nội và tài liệu phục vụ trình diễn, góp ý nghiệp vụ.",
+        "Dựng 4 khu vực: Tổng quan, Phân tích thu, Chi tiết phường/xã, So sánh nâng cao; bổ sung bản xem thử khung nhúng và bố cục màn hình hẹp. Số liệu ở giai đoạn này là mô phỏng."
+      ]
+    ]
+  ],
+  [
+    "14/09/2026",
+    "18/09/2026",
+    [
+      [
+        "Hoàn thiện tài liệu nghiệp vụ và thiết kế Dashboard NSNN; rà soát biểu đồ cơ cấu thu, bản đồ, bộ lọc và luồng xem chi tiết.",
+        "Có báo cáo prototype ngày 14/09, tài liệu BA và thiết kế dashboard; cập nhật bố cục, typography và bộ lọc mobile. Phạm vi địa bàn gồm 126 phường/xã."
+      ],
+      [
+        "Phân tích tài liệu và dữ liệu bàn giao; đối chiếu nhu cầu báo cáo theo cơ quan thuế, ngành nghề, dự toán và nguồn TMS/TTR.",
+        "Bổ sung khung phân tích TMS và bộ lọc cấp quản lý; lập roadmap, chỉ rõ nguồn còn thiếu và nội dung chưa đủ điều kiện xác nhận. Minh chứng: cập nhật 16–18/09 và ROADMAP.md."
+      ],
+      [
+        "Đưa dữ liệu tổng hợp đã nhận vào prototype; phân biệt dữ liệu nguồn với các chỉ tiêu còn mô phỏng.",
+        "Tổng hợp danh bạ 473.618 bản ghi và dự toán của 126 phường/xã theo tài liệu ngày 18/09. Phần số thu chi tiết, kết quả kiểm tra và chỉ tiêu sai số dự báo vẫn có giới hạn cần xác nhận."
+      ]
+    ]
+  ],
+  [
+    "21/09/2026",
+    "25/09/2026",
+    [
+      [
+        "Tiếp tục hoàn thiện Dashboard theo dữ liệu TMS/TTR và nhu cầu phân tích thu; rà soát trạng thái tải, bảng phân rã và cách đọc chỉ tiêu.",
+        "Cập nhật khu vực TMS/TTR, bảng cơ quan thuế quản lý địa bàn và phân tích thu. Minh chứng: các cập nhật NSNN ngày 21–23/09."
+      ],
+      [
+        "Rà soát giao diện trên desktop/mobile; điều chỉnh bộ lọc, KPI, biểu đồ xu hướng và danh sách người nộp thuế.",
+        "Cải thiện bộ lọc mobile, thao tác cuộn và cách trình bày KPI; bổ sung công cụ/ảnh kiểm tra giao diện. Minh chứng: các cập nhật NSNN ngày 24–25/09."
+      ],
+      [
+        "Rà soát cách phân loại ngành nghề và phạm vi hiển thị của danh sách người nộp thuế trên dashboard.",
+        "Điều chỉnh danh sách xếp hạng theo ngành, xử lý nhóm chưa phân loại trong phạm vi hiển thị. Minh chứng: cập nhật chức năng danh sách người nộp thuế ngày 25/09."
+      ]
+    ]
+  ],
+  [
+    "28/09/2026",
+    "01/10/2026",
+    [
+      [
+        "Hiệu chỉnh nhận diện Calendar; tiếp tục chuẩn hóa nội dung và cách thể hiện số liệu trên Dashboard NSNN.",
+        "Cập nhật màu nhận diện, thẻ phòng và bảng của Calendar; thống nhất nhãn, tiêu đề và định dạng tiền trên NSNN. Minh chứng: các cập nhật từ 28–30/09."
+      ],
+      [
+        "Phân tích tài liệu khảo sát và xây dựng prototype tax-ops cho tác nghiệp nội bộ; thể hiện luồng báo cáo theo vai trò.",
+        "Có các nhóm chức năng công việc, nợ, rủi ro, hoàn thuế, báo cáo và dữ liệu; phân biệt màn cán bộ với màn lãnh đạo khi gửi/duyệt báo cáo. Đây là prototype, chưa xác nhận quy trình vận hành production."
+      ],
+      [
+        "Chuẩn hóa design system từ prototype tax-ops, chuẩn bị tài liệu và bộ thành phần để đưa vào Figma.",
+        "Chuẩn bị 38 màu, 11 text styles, 20 icon và 16 nhóm component; preview đã kiểm tra ở 1440px và 390px. Bộ import đã tạo; chưa ghi vào Figma do hết lượt kết nối MCP, còn chờ import và kiểm tra canvas."
+      ]
+    ]
+  ]
+]

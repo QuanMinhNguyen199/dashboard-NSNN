@@ -89,6 +89,22 @@
   --info: #3f5470;
   --info-bg: #eef0f4;
 
+  /*
+    ── Màu của DỮ LIỆU, tách hẳn khỏi màu của hành động ──────────────────────
+    Trước đây mọi thanh tỷ lệ và mọi thanh xếp hạng đều tô `--brand`. Đỏ trong
+    hệ này đã mang hai nghĩa — hành động và can thiệp — nên một bảng ba mươi
+    dòng toàn thanh đỏ đọc ra như ba mươi cảnh báo, và lúc cần báo động thật
+    thì không còn màu nào để báo.
+
+    Lam ngọc sẫm là nốt bù của đỏ con dấu: đủ khác để không ai nhầm nó với
+    cảnh báo, đủ trầm để không tranh chỗ với mực. Nó chỉ nói "đây là một đại
+    lượng", không nói tốt hay xấu — đánh giá vẫn do `--critical` và
+    `--positive` đảm nhiệm, và chỉ ở nơi có ngưỡng thật.
+  */
+  --data: #1d5a61;
+  --data-nhat: #dbe8e9;
+  --data-track: #e9e4e2;
+
   /* Ba bậc mực trên nền sơn mài, đều ≥5,7:1. */
   --on-chrome-1: #f2dfe1;
   --on-chrome-2: #d9b9bd;
@@ -126,7 +142,7 @@ body {
 h1, h2, h3, p, ul, ol { margin: 0; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-table { width: 100%; border-collapse: collapse; }
+table { width: 100%; table-layout: fixed; border-collapse: collapse; }
 
 ::selection { color: var(--chrome); background: var(--selection-bg); }
 :where(input, select, textarea) { caret-color: var(--brand); accent-color: var(--brand); }
@@ -174,32 +190,21 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .login-or { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin-top: 24px; color: var(--ink-3); font-size: 12px; }
 .login-or::before, .login-or::after { content: ""; height: 1px; background: var(--line); }
 
-/* Nút đăng nhập một lần dùng lại đúng thành phần `button is-secondary` của hệ,
-   chỉ thêm bề ngang và chiều cao để đứng ngang hàng với nút gửi. Vẽ riêng một
-   diện mạo cho nó là tạo bậc nút thứ tư chỉ tồn tại ở một màn. */
-.login-sso { width: 100%; min-height: 44px; margin-top: 16px; }
+/* Màu nâu của nút SSO theo mẫu được duyệt. */
+.button.is-secondary.login-sso { --sso-bg: #6f321f; --sso-bg-hover: #5d291a; width: 100%; min-height: 44px; margin-top: 24px; justify-content: center; color: var(--surface); background: var(--sso-bg); border-color: var(--sso-bg); }
+.button.is-secondary.login-sso:hover { color: var(--surface); background: var(--sso-bg-hover); border-color: var(--sso-bg-hover); }
 .login-sso-note { margin-top: 10px; padding: 10px 12px; border-radius: var(--radius-control); color: var(--ink-2); background: var(--surface-soft); font-size: 12px; line-height: 1.5; }
 
 .login-data-note { padding-top: 18px; border-top: 1px solid #ffffff1f; color: var(--on-chrome-3); font-size: 12px; }
 .login-panel { display: grid; place-items: center; padding: clamp(28px, 5vw, 72px); background: var(--surface); }
 /* 560px cho hai ô nhập là quá rộng: ô trải dài gấp ba lần nội dung nó chứa và
    đọc ra một biểu mẫu bị kéo giãn. 380px là bề ngang một cụm đăng nhập. */
-.login-form-wrap { width: min(400px, 100%); }
+/* 400px là bề rộng của bản có form hai ô. Nội dung nay là lưới thẻ hai cột,
+   nên con số ấy ép mỗi thẻ xuống còn ~180px và tên phòng gãy làm ba dòng. */
+.login-form-wrap { width: min(560px, 100%); }
 .login-heading h1 { font-size: 22px; font-weight: 650; line-height: 1.25; letter-spacing: -.02em; }
 .login-heading p { margin-top: 7px; color: var(--ink-2); font-size: 13px; }
-.login-form { display: grid; gap: 14px; margin-top: 28px; }
-.login-form label { display: grid; gap: 6px; }
-.login-form label > span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
-.login-form input { min-height: 44px; padding: 0 12px; }
-.password-field { position: relative; display: block; }
-.password-field input { width: 100%; }
-.password-field:has(button) input { padding-right: 58px; }
-.password-field button { position: absolute; top: 50%; right: 5px; translate: 0 -50%; min-height: 34px; min-width: 34px; padding: 0 9px; border: 0; border-radius: var(--radius-chip); color: var(--ink-2); background: none; font-size: 12px; font-weight: 650; }
-.password-field button:hover { color: var(--brand); background: var(--surface-soft); }
-.login-submit { min-height: 44px; margin-top: 2px; border: 1px solid var(--brand); border-radius: var(--radius-control); color: white; background: var(--brand); font-size: 13px; font-weight: 650; }
-.login-submit:hover { border-color: var(--brand-strong); background: var(--brand-strong); }
 
-.login-error { padding: 10px 12px; border-radius: var(--radius-control); color: var(--critical); background: var(--critical-bg); font-size: 12px; }
 
 
 /*
@@ -248,7 +253,7 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
    ra ngoài màn hình. `minmax(0, 1fr)` cho track quyền co lại dưới min-content;
    bảng vẫn cuộn ngang trong vùng cuộn của chính nó. */
 .page-stack { width: min(100%, 1540px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
-.case-layout, .case-list, .case-detail { min-width: 0; }
+.case-layout, .case-list { min-width: 0; }
 /*
   Tên màn đã nằm ở mục điều hướng đang mở trong sidebar; in lại nó ở đầu nội
   dung là nói hai lần và ăn mất dòng đắt nhất của trang. `h1` vẫn còn trong DOM
@@ -313,22 +318,18 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 /* Chú thích nguồn ở chân thân khối: mờ, nhỏ, và không bao giờ chạm vào chiều
    cao đầu khối. Khối không khai nguồn thì đơn giản là không có dòng này. */
 .workbench-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 14px; }
-.case-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(320px, 3fr); align-items: start; gap: 14px; }
-.case-list, .case-detail { min-width: 0; }
-.case-detail { position: sticky; top: calc(var(--topbar-h) + 18px); max-height: calc(100dvh - var(--topbar-h) - 36px); overflow: auto; border-radius: var(--radius-panel); }
-.case-detail .panel-head:has(.panel-actions) { display: grid; }
-.case-detail .detail-grid, .case-detail-dialog .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.case-detail .detail-grid > div:nth-child(odd), .case-detail-dialog .detail-grid > div:nth-child(odd) { border-left: 0; }
-.case-detail .detail-grid > div:nth-child(n + 3), .case-detail-dialog .detail-grid > div:nth-child(n + 3) { border-top: 1px solid var(--line-soft); }
+.case-detail-dialog .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.case-detail-dialog .detail-grid > div:nth-child(odd) { border-left: 0; }
+.case-detail-dialog .detail-grid > div:nth-child(n + 3) { border-top: 1px solid var(--line-soft); }
 .case-detail-dialog { position: fixed; inset: 0 0 0 auto; width: min(100vw, 520px); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: 18px; border: 0; background: var(--canvas); box-shadow: var(--shadow-overlay); overflow-y: auto; }
 .case-detail-dialog::backdrop { background: rgb(36 29 31 / 45%); }
 .case-detail-dialog .panel { width: 100%; }
 .case-detail-close { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 0 12px auto; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); }
 .case-detail-close:hover { background: var(--hover-surface); }
-.case-detail .approval-flow, .case-detail-dialog .approval-flow { grid-template-columns: 1fr; gap: 8px; }
-.case-detail .approval-flow > div, .case-detail-dialog .approval-flow > div { min-height: 48px; padding: 0; }
-.case-detail .approval-flow > div::after, .case-detail-dialog .approval-flow > div::after { display: none; }
-.case-detail .approval-flow small, .case-detail-dialog .approval-flow small { grid-column: 2; }
+.case-detail-dialog .approval-flow { grid-template-columns: 1fr; gap: 8px; }
+.case-detail-dialog .approval-flow > div { min-height: 48px; padding: 0; }
+.case-detail-dialog .approval-flow > div::after { display: none; }
+.case-detail-dialog .approval-flow small { grid-column: 2; }
 .batch-file-list { display: grid; margin-inline: -14px; }
 .batch-file-list > div { display: grid; gap: 4px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); }
 .batch-file-list > div:last-child { border-bottom: 0; }
@@ -339,7 +340,6 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .case-source-note { padding-top: 12px; border-top: 1px solid var(--line-soft); }
 @media (prefers-reduced-motion: no-preference) { .case-detail-dialog[open] { animation: case-detail-enter 180ms var(--ease-out) both; } }
 @keyframes case-detail-enter { from { opacity: .7; transform: translateX(18px); } to { opacity: 1; transform: none; } }
-@media (max-width: 1360px) { .case-layout { display: block; } .case-detail { display: none; } }
 
 .task-list { margin-inline: -14px; }
 .task-row { width: 100%; min-width: 0; min-height: 54px; display: grid; grid-template-columns: minmax(0, 1fr) auto 20px; align-items: center; gap: 10px; padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line-soft); background: var(--surface); text-align: left; transition: background 100ms var(--ease-out); }
@@ -387,7 +387,10 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .segmented-mobile { display: none; }
 .inline-controls { display: flex; align-items: end; gap: 8px; }
 
-.row-select { width: calc(100% + 24px); min-height: 32px; margin: -7px -12px; padding: 7px 12px; display: grid; align-content: center; justify-items: start; gap: 2px; border: 0; border-radius: var(--radius-chip); color: inherit; background: transparent; font: inherit; text-align: left; }
+/* Con của lưới mặc định không nhỏ hơn nội dung nó chứa, nên tên báo cáo dài
+   đẩy tràn cả ô. `min-width: 0` trả quyền quyết định bề rộng về cho lưới. */
+.row-select > * { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.row-select { white-space: normal; width: calc(100% + 24px); min-height: 32px; margin: -7px -12px; padding: 7px 12px; display: grid; align-content: center; justify-items: start; gap: 2px; border: 0; border-radius: var(--radius-chip); color: inherit; background: transparent; font: inherit; text-align: left; }
 .row-select:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .cell-note { color: var(--ink-3); font-size: 12px; }
 .compact-field { display: grid; gap: 3px; }
@@ -405,7 +408,21 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 
 .skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; min-height: 44px; display: flex; align-items: center; padding: 0 14px; border-radius: var(--radius-control); color: white; background: var(--chrome); font-size: 13px; font-weight: 650; text-decoration: none; transform: translateY(-180%); transition: transform 120ms var(--ease-out); }
 .skip-link:focus-visible { transform: none; outline: 2px solid var(--focus); outline-offset: 2px; }
-table { min-width: 780px; }
+/*
+  Sàn bề ngang của bảng. Với `table-layout: fixed`, bề rộng cột là PHẦN TRĂM của
+  bề ngang bảng, nên sàn này quyết định cột hẹp nhất nhận được bao nhiêu pixel ở
+  khổ màn hình nhỏ. 780px từng đủ khi bố cục còn co theo nội dung; với cột khóa
+  cứng thì chữ không ngắt được — ngày hiệu lực, chip trạng thái — bắt đầu tràn.
+  Bảng nào có nhiều cột `nowrap` thì nâng sàn riêng cho nó.
+*/
+table { min-width: 820px; }
+.reports-table { min-width: 880px; }
+.rules-table { min-width: 1100px; }
+
+/* Mã định danh không có chỗ ngắt tự nhiên ("VIETTEL-2026-09-27"), nên ở cột
+   hẹp nó tràn ra ngoài ô. Cho phép ngắt ở bất kỳ đâu: một mã xuống dòng vẫn
+   đọc được, một mã bị cắt đuôi thì không. */
+td code, th code { overflow-wrap: anywhere; }
 
 th { position: sticky; top: 0; z-index: 2; height: 34px; padding: 6px 12px; color: var(--ink-3); background: var(--surface-soft); border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 700; letter-spacing: .02em; text-align: left; white-space: nowrap; }
 td { height: 38px; padding: 7px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
@@ -423,12 +440,6 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 .quality-note { color: var(--critical); }
 .table-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); color: var(--ink-3); font-size: 12px; }
 
-.checklist { min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
-.check-item { min-width: 0; min-height: 46px; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; align-items: center; gap: 9px; border-bottom: 1px solid var(--line-soft); font-size: 13px; }
-.check-item > strong { min-width: 0; overflow-wrap: anywhere; }
-.check-item > .badge { justify-self: end; }
-.check-item > span:not(.badge) { width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid var(--state-edge); border-radius: 50%; color: white; font-size: 11px; font-weight: 700; }
-.check-item.is-done > span:not(.badge) { background: var(--positive); border-color: var(--positive); }
 .status-flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .status-flow > div { display: grid; gap: 4px; padding: 14px 14px 4px; border-left: 1px solid var(--line-soft); }
 .status-flow > div:first-child { border-left: 0; }
@@ -529,12 +540,10 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 
   .button, .button.is-quiet { min-height: 44px; min-width: 44px; }
   
-  .row-select { min-height: 44px; }
+  .row-select { white-space: normal; min-height: 44px; }
   .mobile-drawer .nav-item { min-height: 44px; }
   .mobile-drawer .logout-button { min-height: 44px; }
   .search-field, .search-field input { min-height: 44px; }
-  .password-field button { min-height: 44px; min-width: 44px; }
-  .password-field:has(button) input { padding-right: 66px; }
   .compact-field select { min-height: 44px; }
   .segmented button { min-height: 44px; }
   
@@ -554,7 +563,6 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .login-data-note { margin-top: 16px; padding-top: 14px; }
   .login-panel { display: block; padding: 26px 20px 34px; }
   .login-heading h1 { font-size: 20px; }
-  .login-form { margin-top: 22px; }
   .topbar { position: static; min-height: 56px; padding: 8px 12px; gap: 10px; }
   .workspace { padding: 14px 10px 82px; }
   .page-stack { gap: 12px; }
@@ -590,8 +598,6 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .notice { align-items: flex-start; flex-wrap: wrap; padding: 11px 12px; }
   .notice strong, .notice > span { width: 100%; }
   .notice .button { width: 100%; min-height: 44px; }
-  .checklist { grid-template-columns: 1fr; }
-  .check-item { min-height: 52px; }
   .status-flow { grid-template-columns: 1fr 1fr; }
   .status-flow > div { min-height: 92px; padding: 13px 12px; border-top: 1px solid var(--line-soft); }
   .status-flow > div:nth-child(-n + 2) { border-top: 0; }
@@ -717,55 +723,30 @@ tbody tr.is-selected { background: var(--selected-surface); }
     trống nửa dưới. Giờ cả dải bị chặn ở một chiều cao, hai cột kéo bằng nhau,
     và bên nào tràn thì cuộn trong thân panel của chính nó.
   */
-  .case-layout { align-items: stretch; max-height: calc(100dvh - var(--topbar-h) - 40px); }
-  .case-list, .case-detail { display: flex; flex-direction: column; min-height: 0; gap: 14px; }
-  .case-detail { position: static; top: auto; max-height: none; overflow: visible; }
-  .case-layout .panel { display: flex; flex-direction: column; min-height: 0; }
-  .case-list > :last-child, .case-detail > :last-child { flex: 1; min-height: 0; }
-  .case-layout .panel-body { flex: 1; min-height: 0; overflow: auto; }
-  /* Bảng thôi tự giới hạn chiều cao: dải đã lo việc đó, và để nguyên trần cũ
-     thì bảng dừng sớm rồi chừa một khoảng trống bên dưới. */
-  .case-layout .table-wrap { max-height: none; }
-
   /*
-    Chiều cao dải do BẢNG quyết định, không do khối chi tiết.
+    Khung cao theo BẢNG, không phải bảng nén vào khung.
 
-    Trước đây hai cột cùng nằm trong một hàng lưới cao bằng cái cao hơn, nên
-    một bản ghi có nhiều thông tin kéo cả hai cột lên theo. Ở Lô dữ liệu, chọn
-    lô TTR (8 file) làm dải cao 900px trong khi bảng chỉ cần 473px — nửa dưới
-    cột bảng thành khoảng trống, và chiều cao trang nhảy mỗi lần đổi hàng.
+    Bản trước chặn dải ở `100dvh - măng sét - 40px` rồi cho thân khối cuộn bên
+    trong. Với 2.455 dòng thì đúng; với một trang 10 dòng thì sai: ở 1440 và
+    1366, tên doanh nghiệp bị bóp xuống ba bốn dòng, hàng cao tới 204px, và
+    18/20 trang vẫn phải cuộn — tức chia trang xong vẫn còn thanh cuộn.
 
-    `contain: size` làm thân khối chi tiết tự khai chiều cao nội tại bằng 0, nên
-    nó không còn tham gia quyết định chiều cao hàng lưới; nó vẫn giãn hết hàng
-    nhờ `stretch`, và phần dôi ra đi vào thanh cuộn của chính nó. Đây là cách
-    duy nhất giữ được subgrid canh đầu khối: bỏ thân ra khỏi luồng bằng
-    `position: absolute` thì panel không còn là mục lưới để subgrid bám vào.
+    Bỏ trần đi thì khối cao đúng bằng mười hàng của nó và không còn thanh cuộn
+    dọc nào. Trang dài ra thì cuộn trang, là thao tác người dùng vốn đã quen.
+    Khối chi tiết quay lại `position: sticky` của quy tắc gốc nên nó đi theo tầm
+    mắt thay vì trôi lên mất.
+
+    Đánh đổi đã biết: hai cột không còn cao bằng nhau, và đầu cột chỉ dính trong
+    khung bảng chứ không ghim dưới măng sét khi cuộn trang.
   */
-  .case-detail .panel-body { contain: size; scrollbar-width: thin; scrollbar-color: var(--control-line) transparent; scrollbar-gutter: stable; }
-  /* Đầu hai panel phải cao bằng nhau, nếu không thân của chúng bắt đầu ở hai
-     độ cao khác nhau — đúng chỗ mắt bắt lỗi đầu tiên khi so hai cột. */
-  .case-layout .panel-head { min-height: 66px; }
+  /* Bảng không còn trần chiều cao riêng: một trang chỉ mười dòng. */
+  .case-list .table-wrap { max-height: none; }
+
 
   /* Hộp thoại chi tiết ở khổ hẹp cũng theo cùng luật cuộn. */
   .case-detail-dialog .panel { display: flex; flex-direction: column; max-height: calc(100dvh - 96px); }
   .case-detail-dialog .panel-body { min-height: 0; overflow: auto; }
 
-  /*
-    Đầu hai panel phải nằm trên CÙNG một hàng lưới, không phải cùng một con số
-    min-height đoán trước. Đặt chiều cao cứng thì một đầu có ô tìm kiếm và một
-    đầu có dòng phụ sẽ luôn lệch; subgrid để lưới tự chọn chiều cao bằng cái cao
-    hơn, và thân của cả hai bắt đầu ở cùng một độ cao.
-
-    Chỉ đúng khi mỗi cột có đúng một panel — hiện là vậy ở cả bốn màn. Trình
-    duyệt không hỗ trợ subgrid rơi về cách cũ: hai cột vẫn bằng nhau, chỉ đầu
-    panel là có thể lệch.
-  */
-  @supports (grid-template-rows: subgrid) {
-    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) { grid-template-rows: auto minmax(0, 1fr); }
-    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) > .case-list,
-    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) > .case-detail { display: grid; grid-template-rows: subgrid; grid-row: span 2; gap: 0; }
-    .case-layout:has(> .case-list > .panel:only-child):has(> .case-detail > .panel:only-child) .panel { display: grid; grid-template-rows: subgrid; grid-row: span 2; }
-  }
 }
 
 /*
@@ -837,3 +818,319 @@ tbody tr.is-selected { background: var(--selected-surface); }
 */
 .reports-page .case-list td:nth-child(3), .reports-page .case-list th:nth-child(3) { min-width: 154px; }
 .reports-page .case-list td:nth-child(5), .reports-page .case-list th:nth-child(5) { min-width: 132px; }
+
+/* Phân trang: hai nút vuông và một vị trí đọc được, đặt trong chân bảng. */
+.pager { display: flex; align-items: center; gap: 6px; }
+.pager-nut { min-width: 32px; min-height: 32px; display: grid; place-items: center; border: 1px solid var(--control-line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); }
+.pager-nut:hover:not(:disabled) { border-color: var(--control-line-hover); background: var(--surface-soft); }
+.pager-nut:disabled { color: var(--ink-3); border-color: var(--line); cursor: default; }
+.pager-nut.truoc .icon { rotate: 180deg; }
+.pager-vi-tri { color: var(--ink-2); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pager-vi-tri strong { color: var(--ink); font-weight: 700; }
+/* Quy tắc này phải đứng SAU khối gốc ở trên: cùng độ đặc hiệu thì thứ tự nguồn
+   quyết định, và đặt nó trong khối media phía trên tệp thì nó bị đè mất. */
+@media (max-width: 900px) { .pager-nut { min-width: 44px; min-height: 44px; } }
+
+/*
+  Bảng nợ: cột đơn vị quản lý KHÔNG xuống dòng.
+
+  "Phòng QL thu từ đất" hay "Phòng QLHT DN 4" đều ngắn, chúng chỉ gãy đôi vì
+  cột bị bóp — và mỗi lần gãy là cả hàng cao thêm một dòng, tức một trang 10
+  dòng không còn vừa màn hình. Ghim cột này lại thì phần bề ngang bị tranh trả
+  về cho cột tên, nơi xuống dòng là chuyện có thật chứ không phải do bóp.
+*/
+.debt-table td:nth-child(3), .debt-table th:nth-child(3) { white-space: nowrap; }
+
+/*
+  ── Bề rộng cột cố định ──────────────────────────────────────────────────
+  `table-layout: auto` tính bề rộng cột theo nội dung CỦA RIÊNG trang đang xem,
+  nên sang trang là khung đổi: cùng một bảng mà cột tên lúc rộng lúc hẹp, mắt
+  phải định vị lại từ đầu ở mỗi lần bấm. `fixed` cộng tỷ lệ khai sẵn giữ khung
+  đứng yên qua mọi trang và mọi bộ lọc.
+
+  Mỗi bảng chừa đúng MỘT cột không khai bề rộng — cột chữ dài nhất — để nó hứng
+  phần dư. Chừa hai cột trở lên thì chúng chia đều phần dư, mà "đều" gần như
+  luôn sai với cột chữ. Tỷ lệ dưới đây lấy từ bề rộng tự nhiên đo ở khổ 1600,
+  làm tròn và nhường thêm cho cột co giãn.
+*/
+.debt-table th:nth-child(2) { width: 12%; }   /* mã số thuế, có mã 13 chữ số */
+.debt-table th:nth-child(3) { width: 18%; }
+.debt-table th:nth-child(4), .debt-table th:nth-child(5) { width: 10.5%; }
+.debt-table th:nth-child(6) { width: 16%; }   /* chỉ có ở bộ mô phỏng */
+
+.risk-table th:nth-child(2) { width: 17%; }
+.risk-table th:nth-child(3) { width: 9%; }
+.risk-table th:nth-child(4) { width: 12%; }
+.risk-table th:nth-child(5) { width: 13%; }
+.risk-table th:nth-child(6) { width: 20%; }
+
+.refund-table th:nth-child(2) { width: 16%; }
+.refund-table th:nth-child(3) { width: 17%; }
+.refund-table th:nth-child(4) { width: 8%; }
+.refund-table th:nth-child(5) { width: 12%; }
+.refund-table th:nth-child(6) { width: 13%; }
+.refund-table th:nth-child(7) { width: 15%; }
+
+.reports-table th:nth-child(2) { width: 15%; }
+.reports-table th:nth-child(3) { width: 17%; }
+.reports-table th:nth-child(4) { width: 13%; }
+.reports-table th:nth-child(5) { width: 16%; }
+.reports-table th:nth-child(6) { width: 13%; }
+
+/* Runs: cột co giãn là "Nguồn / kỳ" (cột 2), không phải cột mã. */
+.runs-table th:nth-child(1) { width: 11%; }
+.runs-table th:nth-child(3) { width: 16%; }
+.runs-table th:nth-child(4), .runs-table th:nth-child(5) { width: 15%; }
+.runs-table th:nth-child(6) { width: 7%; }
+.runs-table th:nth-child(7) { width: 17%; }
+
+.batches-table th:nth-child(2) { width: 17%; }
+.batches-table th:nth-child(3) { width: 9%; }
+.batches-table th:nth-child(4) { width: 12%; }
+.batches-table th:nth-child(5) { width: 11%; }
+.batches-table th:nth-child(6) { width: 16%; }
+.batches-table th:nth-child(7) { width: 16%; }
+
+/* Mapping: cột co giãn là "Lý do chưa khớp" (cột 4) — chỗ chữ dài nhất. */
+.mapping-table th:nth-child(1) { width: 26%; }
+.mapping-table th:nth-child(2) { width: 15%; }
+.mapping-table th:nth-child(3) { width: 13%; }
+.mapping-table th:nth-child(5) { width: 12%; }
+
+.rules-table th:nth-child(2) { width: 23%; }
+.rules-table th:nth-child(3) { width: 11%; }
+.rules-table th:nth-child(4) { width: 10%; }
+.rules-table th:nth-child(5) { width: 19%; }
+.rules-table th:nth-child(6) { width: 12%; }
+.rules-table th:nth-child(7) { width: 7%; }
+
+/* `fixed` không co ô theo nội dung nữa, nên chuỗi dài không ngắt được — mã số
+   thuế, tên tệp, đường dẫn — phải tự ngắt thay vì tràn ra khỏi cột. */
+td code, td strong, td span { overflow-wrap: anywhere; }
+
+/*
+  ── Trạng thái bị chặn ───────────────────────────────────────────────────
+  Dùng khi một màn KHÔNG có dữ liệu để trình bày và lý do đó mới là nội dung.
+  Thứ tự: kết luận, việc còn thiếu kèm con số, lối ra, rồi những điều kiện đã
+  đạt lùi xuống cuối ở cỡ chữ nhỏ.
+*/
+.blocked-head { display: grid; gap: 5px; padding: 2px 0 16px; }
+.blocked-head strong { font-size: 15px; font-weight: 700; letter-spacing: -.008em; }
+.blocked-head p { max-width: 68ch; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
+
+.blocker-list { display: grid; gap: 0; margin-inline: -14px; list-style: none; }
+.blocker-list li { min-height: 64px; display: grid; grid-template-columns: 64px minmax(0, 1fr) max-content; align-items: center; gap: 14px; padding: 12px 14px; border-top: 1px solid var(--line-soft); }
+/* Con số đứng trước câu chữ: nó là thứ trả lời "thiếu bao nhiêu" nhanh nhất. */
+.blocker-so { color: var(--critical); font-size: 16px; font-weight: 700; letter-spacing: -.015em; text-align: right; }
+.blocker-noi { display: grid; gap: 2px; min-width: 0; }
+.blocker-noi strong { font-size: 13px; font-weight: 600; }
+.blocker-noi small { max-width: 70ch; color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+
+.blocked-done { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line-soft); color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+
+@media (max-width: 720px) {
+  .blocker-list li { grid-template-columns: 56px minmax(0, 1fr); gap: 10px; padding: 12px; }
+  .blocker-list .button { grid-column: 2; justify-self: start; min-height: 44px; }
+}
+
+/*
+  Bảng tổng hợp theo đơn vị: cột đầu là tên phòng, phần còn lại là số. Cột tên
+  chừa co giãn, sáu cột số chia đều phần còn lại — chúng cùng loại nội dung nên
+  "đều" ở đây là đúng, khác với cột chữ.
+*/
+/*
+  Đầu cột ĐƯỢC xuống dòng ở hai bảng này. Quy tắc `th` chung đặt `nowrap` và
+  chiều cao cứng 34px — đúng với nhãn ngắn, nhưng bảng tổng hợp có nhãn dài như
+  "Nợ khả năng thu" trong cột chỉ rộng 13%, và `fixed` thì cột không nở ra được
+  nữa nên chữ tràn. Cho xuống dòng rẻ hơn là cắt chữ hoặc đặt tên cột sai nghĩa
+  cho vừa chỗ.
+*/
+.tomtat-table th, .debt-table th { height: auto; padding-top: 9px; padding-bottom: 9px; white-space: normal; }
+.tomtat-table th:nth-child(n + 2) { width: 13%; }
+.tomtat-table td span { overflow-wrap: anywhere; }
+/* Dòng tổng ("TỔNG TOÀN NGÀNH", "TỔNG VP THUẾ TP HÀ NỘI") là mốc so sánh, không
+   phải một đơn vị — nền giấy mềm và chữ đậm tách nó khỏi các dòng phòng. */
+.tomtat-table tr.is-tong { background: var(--surface-soft); }
+.tomtat-table tr.is-tong td span, .tomtat-table tr.is-tong strong { font-weight: 700; }
+
+/*
+  Thanh lọc chung Kỳ + Đơn vị (G1).
+
+  Dính dưới măng sét chứ không dính lên mép màn: măng sét cao `--topbar-h` và
+  cũng dính, nên `top: 0` sẽ cho thanh này chui xuống dưới nó. Từ 720px trở
+  xuống măng sét chuyển sang `position: static`, lúc đó mép trên của khung
+  nhìn mới là mốc đúng.
+*/
+.bo-loc-chung { position: sticky; top: var(--topbar-h); z-index: 15; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 3px rgb(41 37 38 / 4%); }
+.bo-loc-muc { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bo-loc-nhan { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+.bo-loc-ky { color: var(--ink-1); font-size: 13px; font-weight: 600; }
+.bo-loc-chon { position: relative; }
+.bo-loc-nut { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); color: var(--ink-1); font-size: 13px; font-weight: 600; cursor: pointer; }
+.bo-loc-nut:hover { border-color: var(--ink-3); }
+/* Màn trong suốt phủ toàn trang: bấm ra ngoài là đóng, và nó là một <button>
+   nên bàn phím cũng có đường thoát không cần Escape. */
+.bo-loc-man { position: fixed; inset: 0; z-index: 1; border: 0; background: transparent; cursor: default; }
+.bo-loc-menu { position: absolute; z-index: 2; top: calc(100% + 6px); left: 0; display: grid; gap: 2px; width: max(240px, 100%); max-height: 320px; overflow-y: auto; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 10px 24px rgb(41 37 38 / 12%); }
+.bo-loc-menu label { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 8px; border-radius: 6px; color: var(--ink-1); font-size: 13px; cursor: pointer; }
+.bo-loc-menu label:hover { background: var(--surface-soft); }
+.bo-loc-menu input { flex: none; width: 16px; height: 16px; accent-color: var(--brand); }
+
+@media (max-width: 720px) {
+  .bo-loc-chung { top: 0; gap: 8px 14px; padding: 10px 12px; }
+  .bo-loc-nut { min-height: 44px; }
+  .bo-loc-menu label { min-height: 44px; }
+}
+
+/*
+  Tài khoản trình diễn ở màn đăng nhập: lưới HAI cột, xếp theo cặp.
+
+  Lưới tự xuống một cột dưới 560px — ở khổ đó hai thẻ cạnh nhau rộng chừng
+  150px mỗi thẻ, không đủ cho tên phòng, và cặp đọc được bằng vị trí sẽ gãy
+  trước cả khi nó giúp được gì.
+*/
+.demo-accounts-list { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; }
+.demo-accounts-list button { width: 100%; height: 100%; display: grid; align-content: start; gap: 2px; padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); text-align: left; cursor: pointer; }
+.demo-accounts-list button:hover { border-color: var(--brand); background: var(--hover-surface); }
+.demo-accounts-list .demo-vai { color: var(--ink); font-size: 13.5px; font-weight: 650; }
+/* Tên đơn vị là dòng dài nhất và là thứ phân biệt hai thẻ cùng vai, nên nó
+   được xuống dòng chứ không cắt. */
+.demo-accounts-list small { color: var(--ink-2); font-size: 12px; line-height: 1.45; }
+.demo-accounts-list code { margin-top: 3px; color: var(--ink-3); font-size: 11.5px; }
+
+@media (max-width: 560px) {
+  .demo-accounts-list { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .demo-accounts-list button { min-height: 44px; }
+}
+
+/*
+  Bảng tổng hợp QL1: hai tầng tiêu đề, cột đơn vị cố định khi cuộn ngang.
+
+  Hai luật dính chồng lên nhau ở đây, và thứ tự z quyết định bảng đọc được hay
+  không. Ô góc trên trái vừa dính trái vừa dính trên nên nó phải nằm trên cả
+  hai; nếu không, dòng tiêu đề trượt qua nó khi cuộn dọc.
+*/
+/* Bề rộng cột do `<colgroup>` dựng trong React quyết định — xem `RONG` trong
+   DebtQL1.tsx. Ở đây chỉ còn cách trình bày. */
+.ql1-table thead th { background: var(--surface-soft); }
+.ql1-table th.nhom { text-align: center; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); white-space: normal; }
+/* Đáy dòng tiêu đề thứ nhất, đo bằng JS và truyền vào qua biến — xem ghi chú
+   `caoDau` trong DebtQL1.tsx. 34px chỉ là giá trị đỡ cho lần dựng đầu. */
+.ql1-table thead tr:nth-child(2) th { top: var(--cao-dau, 34px); }
+.ql1-table th.dv-cot, .ql1-table tbody /* Mã định danh không có chỗ ngắt tự nhiên ("VIETTEL-2026-09-27"), nên ở cột
+   hẹp nó tràn ra ngoài ô. Cho phép ngắt ở bất kỳ đâu: một mã xuống dòng vẫn
+   đọc được, một mã bị cắt đuôi thì không. */
+td code, th code { overflow-wrap: anywhere; }
+
+th { position: sticky; left: 0; z-index: 3; background: var(--surface-soft); text-align: left; }
+/* Tên khối dài hơn một dòng thì XUỐNG DÒNG, không tràn sang cột số bên cạnh:
+   cột này dính trái nên phần tràn sẽ nằm đè lên dữ liệu khi cuộn ngang. */
+.ql1-table tbody th { white-space: normal; }
+.ql1-table th.dv-cot { z-index: 4; }
+.ql1-table tbody th { font-weight: 600; border-right: 1px solid var(--line); }
+.ql1-table tbody th > span { display: block; color: var(--ink); font-size: 13px; }
+.ql1-table td { white-space: nowrap; }
+/* Tiêu đề cột XUỐNG DÒNG. Cột số của QL3 rộng chừng 110px còn nhãn thì dài
+   ("Số DN đề nghị kiểm tra tại DN"); giữ nowrap là chữ bị cắt mất đuôi. */
+.ql1-table thead th { white-space: normal; }
+
+/* Cả ô bấm được, và nút không co giãn theo nội dung cột bên cạnh. */
+.dv-nut { display: block; width: calc(100% + 24px); margin: -7px -12px; padding: 7px 12px; border: 0; background: none; text-align: left; cursor: pointer; }
+.dv-nut:hover { background: var(--hover-surface); }
+/* Tên đơn vị XUỐNG DÒNG trong cột dính. Cột này hẹp lại ở khổ nhỏ, và tên
+   bị cắt đuôi thì hai dòng "Phòng QLHT DN 4" và "Phòng QLHT DN 5" đọc ra
+   giống hệt nhau. */
+.dv-nut span { display: block; color: var(--ink); font-size: 13px; font-weight: 600; white-space: normal; }
+.dv-nut small { display: block; color: var(--ink-3); font-size: 11px; }
+
+/* Dòng tổng và dòng khối: đậm hơn, nền đục hơn, vạch trên để tách khỏi dòng
+   đơn vị phía trước. Tổng toàn ngành nặng hơn tổng khối một bậc. */
+.ql1-table tr.is-tong th, .ql1-table tr.is-tong td { background: var(--surface-soft); font-weight: 700; border-top: 1px solid var(--ink-3); }
+.ql1-table tr.is-khoi th, .ql1-table tr.is-khoi td { background: var(--surface-soft); font-weight: 650; border-top: 1px solid var(--line); }
+
+.delta.is-up { color: var(--critical); }
+.delta.is-down { color: var(--positive); }
+
+/* Tỷ lệ: con số đọc trước, thanh là thứ để quét cột theo chiều dọc. */
+.ty-le { display: inline-grid; gap: 3px; justify-items: end; min-width: 76px; }
+.ty-le b { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.ty-le i { display: block; width: 100%; height: 4px; border-radius: 2px; background: var(--data-track); overflow: hidden; }
+.ty-le i span { display: block; height: 100%; border-radius: 2px; background: var(--data); }
+
+/* Ô cắt bằng dấu ba chấm thay vì tràn: với `table-layout: fixed`, chữ dài hơn
+   cột sẽ chạy đè lên ô kế tiếp chứ không tự dừng. */
+.ql1-ds-table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ql1-ds-table td .quality-note { white-space: normal; }
+
+.bo-loc-select { min-height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink-1); font-size: 13px; font-weight: 600; }
+.bo-loc-seg { display: inline-flex; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
+.bo-loc-seg button { min-height: 28px; padding: 2px 12px; border: 0; border-radius: 6px; background: none; color: var(--ink-2); font-size: 13px; font-weight: 600; cursor: pointer; }
+.bo-loc-seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(41 37 38 / 10%); }
+/* Phụ chú đẩy về cuối thanh: nó là kết quả của bộ lọc, không phải một control. */
+.bo-loc-phu { margin-left: auto; color: var(--ink-3); font-size: 12px; }
+
+@media (max-width: 900px) {
+  .bo-loc-select, .bo-loc-seg button { min-height: 44px; }
+  .ql1-table th.dv-cot, .ql1-table tbody th { min-width: 180px; max-width: 180px; }
+  .dv-nut { min-height: 44px; display: flex; flex-direction: column; justify-content: center; }
+  .bo-loc-phu { margin-left: 0; }
+}
+
+/* Cột STT của bảng tổng hợp: hẹp, canh phải, mực nhạt — nó là số thứ tự trong
+   mẫu Excel, không phải dữ liệu nghiệp vụ. */
+.ql1-table th.stt-cot, .ql1-table td.stt-o { position: sticky; left: 0; z-index: 3; color: var(--ink-3); text-align: right; background: var(--surface-soft); }
+.ql1-table th.stt-cot { z-index: 4; }
+/*
+  Cột đơn vị dính ngay sau cột STT — nhưng chỉ QL1 có cột STT. Mốc trái vì thế
+  là một biến, mặc định 0 và chỉ QL1 đặt lại; khai cứng 46px ở đây từng đẩy
+  bảng QL3 lệch sang phải đúng 46px và để hở một cột trống bên trái.
+*/
+.ql1-table { --dv-trai: 0px; }
+/* Khai bằng LỚP chứ không bằng `:has`: bảng nào có cột STT thì React gắn
+   `.co-stt`, nên mốc trái không phụ thuộc vào việc trình duyệt dò được một
+   phần tử con hay không. */
+.ql1-table.co-stt { --dv-trai: 46px; }
+.ql1-table th.dv-cot, .ql1-table tbody th { left: var(--dv-trai); }
+
+.bang-ghi-chu { margin: 10px 14px 2px; color: var(--ink-3); font-size: 12px; line-height: 1.55; max-width: 92ch; }
+
+/* ── Tab Tổng quan ──────────────────────────────────────────────────────── */
+/* Hai khối cạnh nhau ở khổ rộng, xếp dọc khi hết chỗ. Không khai số cột cứng
+   cho thẻ: để `auto-fit` quyết thì bốn thẻ nợ và ba thẻ cưỡng chế dùng chung
+   một luật, không phải hai luật phải nuôi riêng. */
+.tq-doi { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
+.the-luoi { display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 1px; margin-inline: -14px; background: var(--line-soft); }
+.the-luoi.is-hep { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.the-so { display: grid; align-content: start; gap: 2px; padding: 14px 16px; background: var(--surface); }
+/* Chừa sẵn chỗ cho nhãn hai dòng. Nhãn dài ("Trạng thái 06 chưa tạm hoãn")
+   xuống dòng sẽ đẩy con số của riêng thẻ đó xuống, và ba thẻ cạnh nhau mất
+   mốc chung — thứ mắt dùng để so chúng với nhau. */
+.the-nhan { display: block; min-height: 2.6em; color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .02em; line-height: 1.3; text-transform: uppercase; }
+.the-gia { color: var(--ink); font-size: 24px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.the-dvt { color: var(--ink-3); font-size: 11.5px; }
+.the-moc { display: grid; gap: 3px; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line-soft); }
+.the-moc > div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.the-moc dt { color: var(--ink-3); font-size: 11.5px; }
+.the-moc dd { margin: 0; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Xếp hạng: tên và số đọc trước, thanh chỉ để quét cột theo chiều dọc. */
+.xep-hang { list-style: none; display: grid; gap: 10px; margin: 2px 0 0; padding: 0; }
+.xep-hang li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; }
+.xh-ten { color: var(--ink); font-size: 13px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xh-so { color: var(--ink-2); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.xh-thanh { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--data-track); overflow: hidden; }
+.xh-thanh i { display: block; height: 100%; border-radius: 3px; background: var(--data); }
+
+/* Tên nguồn là chuỗi dài nhất của bảng và là thứ phân biệt các dòng, nên
+   nó XUỐNG DÒNG chứ không bị cắt. */
+.nguon-table th[scope="row"] { font-weight: 600; white-space: normal; }
+.nguon-table th[scope="row"] span { color: var(--ink); font-size: 13px; }
+.nguon-table td { white-space: nowrap; }
+
+/* Đơn vị chưa đạt KPI đăng ký: đổi màu thanh chứ không chỉ thêm chữ — danh
+   sách này được quét bằng mắt để tìm nhóm cần đôn đốc. */
+.xh-thanh i.is-canh-bao { background: var(--critical); }
+.xh-co { color: var(--critical); font-size: 11.5px; font-style: normal; font-weight: 650; }

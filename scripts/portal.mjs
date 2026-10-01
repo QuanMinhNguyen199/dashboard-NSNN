@@ -1,6 +1,8 @@
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
+import { networkInterfaces } from "node:os";
+import { existsSync } from "node:fs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const mode = process.argv[2] ?? "dev";
@@ -20,6 +22,29 @@ function vite(app, args, extraEnv = {}) {
     for (const signal of ["SIGINT", "SIGTERM"]) process.once(signal, () => child.kill(signal));
   });
 }
+/*
+  In sẵn địa chỉ trong mạng nội bộ khi chạy `preview`.
+
+  Bản dựng này là cách chia sẻ hợp lệ duy nhất khi có dữ liệu thật: nó ở lại
+  trong mạng của cơ quan, không đi qua bất kỳ dịch vụ trung gian nào. Vite đã
+  lắng nghe trên 0.0.0.0 sẵn, nhưng không ai nhớ IP máy mình, nên chỗ nào phải
+  tra tay thì chỗ đó không được dùng.
+*/
+function inDiaChiNoiBo() {
+  const dia = Object.values(networkInterfaces()).flat()
+    .filter((n) => n && n.family === "IPv4" && !n.internal)
+    .map((n) => n.address);
+  if (!dia.length) return;
+  const coDuLieuThat = existsSync(resolve(root, "tax-ops/dist/du-lieu-that/tong-hop.json"));
+  console.log("");
+  console.log("  Chia sẻ trong mạng nội bộ:");
+  for (const d of dia) console.log(`    http://${d}:5174/`);
+  console.log(coDuLieuThat
+    ? "  Bản dựng này CÓ dữ liệu thật. Chỉ chia sẻ trong mạng cơ quan; không đưa qua ngrok, tunnel hay dịch vụ lưu trữ ngoài."
+    : "  Bản dựng này chạy dữ liệu mô phỏng. Chạy `python tax-ops/scripts/nap-du-lieu-that.py` rồi dựng lại nếu cần dữ liệu thật.");
+  console.log("");
+}
+
 if (mode === "build") {
   await vite("tax-ops", ["build"]);
   await vite("web", ["build", "--outDir", "../tax-ops/dist/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
@@ -27,6 +52,7 @@ if (mode === "build") {
   if (mode === "dev") {
     await vite("web", ["build", "--outDir", "../tax-ops/public/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
   }
+  if (mode === "preview") setTimeout(inDiaChiNoiBo, 1200);
   await vite("tax-ops", [
     ...(mode === "preview" ? ["preview"] : []),
     "--host", "0.0.0.0", "--port", "5174", "--strictPort",

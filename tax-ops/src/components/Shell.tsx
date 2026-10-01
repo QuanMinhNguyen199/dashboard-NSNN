@@ -1,42 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Button, Icon, useRongToiThieu, type IconName } from "@/components/ui";
+import { Button, Icon, useRongToiThieu } from "@/components/ui";
 import { TaxLogo } from "@/components/TaxLogo";
-import type { UserRole, ViewId } from "@/domain/types";
+import type { ViewId } from "@/domain/types";
+import { NAV, NHAN_VAI, NHOM, navCho } from "@/components/nav";
 import type { DemoUser } from "@/auth/demoAuth";
 
-/*
-  Màn hình mở theo VAI, không theo phòng.
-
-  Đây là chặn ở mức MÀN HÌNH. Nó chưa phải chặn ở mức dòng dữ liệu — khảo sát
-  nói cán bộ xem hồ sơ được giao và phòng xem đơn vị mình, tức lọc DÒNG. Với bản
-  demo thì chặn màn là đủ; khi nối dữ liệu thật thì lọc dòng phải làm ở máy chủ,
-  không làm ở đây.
-
-  `OFFICER` mở toàn bộ: khảo sát cho thấy chính cán bộ là người tải file, làm
-  sạch, ánh xạ và chạy báo cáo — không có vai nào khác làm những việc đó.
-
-  `TAX_LEADER` chỉ mở Tổng quan và Báo cáo: phạm vi xem của lãnh đạo chưa
-  được định nghĩa, nên chừa chỗ chứ không đoán nội dung.
-
-  `STATE_LEADER` không có mục nào. Đây là tài khoản của Dashboard Thu NSNN; họ
-  không có việc gì trong hệ tác nghiệp.
-*/
-export const NAV: { id: ViewId; label: string; short: string; icon: IconName; group: "work" | "business" | "data"; roles: UserRole[] }[] = [
-  { id: "workbench", label: "Tổng quan", short: "Tổng quan", icon: "home", group: "work", roles: ["OFFICER", "TAX_LEADER"] },
-  { id: "debt", label: "Nợ và cưỡng chế", short: "Nợ", icon: "debt", group: "business", roles: ["OFFICER"] },
-  { id: "risk", label: "Kiểm tra và rủi ro", short: "Kiểm tra", icon: "risk", group: "business", roles: ["OFFICER"] },
-  { id: "refund", label: "Hoàn thuế và hỗ trợ", short: "Hoàn thuế", icon: "refund", group: "business", roles: ["OFFICER"] },
-  { id: "reports", label: "Báo cáo", short: "Báo cáo", icon: "report", group: "business", roles: ["OFFICER", "TAX_LEADER"] },
-  { id: "runs", label: "Lượt chạy dữ liệu", short: "Lượt chạy", icon: "clock", group: "data", roles: ["OFFICER"] },
-  { id: "batches", label: "Lô dữ liệu", short: "Lô dữ liệu", icon: "database", group: "data", roles: ["OFFICER"] },
-  { id: "mapping", label: "Ánh xạ quản lý", short: "Ánh xạ", icon: "users", group: "data", roles: ["OFFICER"] },
-  { id: "rules", label: "Quy tắc nghiệp vụ", short: "Quy tắc", icon: "file", group: "data", roles: ["OFFICER"] },
-];
-
-/** Màn hình vai này được mở. Khi nối Keycloak, thay bằng client role trong token. */
-export const navFor = (role: UserRole) => NAV.filter((item) => item.roles.includes(role));
-
-const roleLabels = { OFFICER: "Cán bộ thuế", TAX_LEADER: "Lãnh đạo Thuế", STATE_LEADER: "Lãnh đạo nhà nước" } as const;
 
 const NSNN_URL =
   import.meta.env.VITE_PORTAL === "true" ? `${import.meta.env.BASE_URL}nsnn/` :
@@ -56,7 +24,7 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
-  const duoc = navFor(user.role);
+  const duoc = navCho(user);
   /*
     Dưới 901px măng sét đã chật vì có nút mở điều hướng, kỳ làm việc và nhãn mô
     phỏng. Ở khổ đó hai nút cấp hệ thống rơi xuống một hàng riêng ngay trên nội
@@ -97,8 +65,8 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
   const nav = <>
     <div className="brand"><TaxLogo/><div><strong>Quản lý nghiệp vụ Thuế</strong><span>Thuế TP Hà Nội</span></div></div>
     <nav className="side-nav" aria-label="Nghiệp vụ chính">
-      {([["work", "Điều hành"], ["business", "Nghiệp vụ"], ["data", "Dữ liệu"]] as const).map(([nhom, nhan]) => {
-        const muc = duoc.filter((item) => item.group === nhom);
+      {NHOM.map(({ id: nhom, nhan }) => {
+        const muc = duoc.filter((item) => item.nhom === nhom);
         if (!muc.length) return null;
         return <div className="nav-section" role="group" aria-label={nhan} key={nhom}>
           <span className="nav-group" aria-hidden="true">{nhan}</span>
@@ -107,7 +75,7 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
       })}
     </nav>
     <div className="sidebar-user">
-      <strong>{user.name}</strong><small>{roleLabels[user.role]} – {user.unit}</small>
+      <strong>{user.name}</strong><small>{NHAN_VAI[user.vaiTro]}{user.phong ? ` ${user.phong}` : ""} – {user.unit}</small>
       <button className="logout-button" type="button" onClick={onLogout}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
     </div>
   </>;
@@ -131,7 +99,7 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
     Chỉ cán bộ thấy hai nút này: lãnh đạo Thuế duyệt báo cáo chứ không lập, và
     cũng không phải người nộp dữ liệu đầu vào.
   */
-  const hanhDongChung = user.role === "OFFICER" && <>
+  const hanhDongChung = user.vaiTro === "CV" && <>
     <Button kind="secondary" icon="upload" onClick={onImport}>Nhập dữ liệu</Button>
     <Button id="global-create-report" kind="primary" icon="report" onClick={onCreateReport}>Tạo báo cáo</Button>
   </>;

@@ -1,214 +1,301 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Badge, Button, DetailGrid, Kpi, KpiStrip, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
-import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
-import { debtRows } from "@/data/mock";
-import { napChuaCuongChe, timDonVi, type HangChuaCuongChe } from "@/data/duLieuThat";
+import { Button, PageIntro, Pager, Panel, SearchField, Segmented, TableWrap, integer } from "@/components/ui";
+import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
+import { DebtQL1 } from "@/features/DebtQL1";
+import { napDanhSach, type HangChiTiet, type HangThucHien, type TongHopThat } from "@/data/duLieuThat";
 import { useDuLieuThat } from "@/state/DuLieuThatContext";
-import type { Tone, ViewId } from "@/domain/types";
+import type { ViewId } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
 
-const actionText = { MONITOR: "Theo dõi", ENFORCE: "Đủ điều kiện cưỡng chế", EXIT_SUSPENSION: "Rà tạm hoãn xuất cảnh", REVIEW: "Cần phân loại" } as const;
-const actionTone: Record<keyof typeof actionText, Tone> = { MONITOR: "neutral", ENFORCE: "warning", EXIT_SUSPENSION: "critical", REVIEW: "info" };
 
-/** Phân tuổi nợ theo quy tắc đã chốt: 1-30, 31-60, 61-90, trên 90 ngày. */
-const bacTuoi = (ngay: number) => ngay <= 30 ? "1–30 ngày" : ngay <= 60 ? "31–60 ngày" : ngay <= 90 ? "61–90 ngày" : "Trên 90 ngày";
-
-/*
-  Hai nguồn, MỘT khuôn hàng.
-
-  Bảng này phải dựng được từ bộ mô phỏng lẫn bộ dữ liệu thật, và hai bộ có cột
-  khác nhau: bộ mô phỏng có tuổi nợ và cán bộ quản lý, bộ thật không có nhưng
-  lại có ngưỡng, biện pháp cưỡng chế và kết luận. Rẽ nhánh ở chỗ DỰNG giao diện
-  thì một màn thành hai màn phải nuôi song song. Rẽ ở chỗ ĐỌC dữ liệu thì chỉ
-  còn một đường dựng.
-*/
-interface HangNo {
-  id: string;
-  ten: string;
-  ma: string;
-  donVi: string;
-  donViPhu: string;
-  soChinh: ReactNode;
-  soPhu: ReactNode;
-  nhan: string;
-  tone: Tone;
-  timTheo: string;
-  chiTiet: { label: string; value: ReactNode }[];
-}
 
 /*
   Tên đơn vị trong bộ thật dài tới 40 ký tự ("Phòng Quản lý, Hỗ trợ doanh nghiệp
-  số 1"). Để nguyên thì cột đơn vị nuốt mất bề ngang của cột tên doanh nghiệp,
-  tên bị đẩy xuống ba dòng và chiều cao hàng lệch tới 26px. Tên đầy đủ vẫn nằm
-  nguyên trong khối chi tiết, nên đây là rút gọn hiển thị chứ không mất dữ liệu.
+  số 1"). Để nguyên thì cột đơn vị nuốt mất bề ngang của cột tên doanh nghiệp.
+  Tên đầy đủ vẫn nằm trong khối chi tiết, nên đây là rút gọn hiển thị chứ không
+  mất dữ liệu.
 */
 const rutGonDonVi = (ten: string) => ten
   .replace(/^Phòng Quản lý,\s*Hỗ trợ doanh nghiệp số\s*/i, "Phòng QLHT DN ")
-  .replace(/^Phòng Quản lý các khoản thu từ đất$/i, "Phòng QL thu từ đất");
+  .replace(/^Phòng Quản lý các khoản thu từ đất$/i, "Phòng QL thu từ đất")
+  .replace(/^Phòng Thuế cá nhân, hộ kinh doanh và thu khác$/i, "Phòng Thuế cá nhân – HKD");
 
-/** Đồng sang tỷ đồng. Bộ thật ghi bằng đồng, bộ mô phỏng ghi sẵn bằng tỷ. */
-const tyDong = (d: number | null) => d === null ? "—" : new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(d / 1e9);
+/** Đồng sang tỷ đồng. Mọi danh sách chi tiết ghi bằng đồng. */
+const tyTuDong = (d: number | null | undefined) => d === null || d === undefined ? "—" : new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(d / 1e9);
+/** Bảng nợ theo đơn vị ghi bằng TRIỆU đồng — theo tiêu đề sheet gốc. */
+const tyTuTrieu = (t: number | null | undefined) => t === null || t === undefined ? "—" : new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(t / 1000);
+const phanTram = (x: number | null | undefined) => x === null || x === undefined ? "—" : `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(x * 100)}%`;
 
-const toneKetLuan = (ketLuan: string | null): Tone =>
-  !ketLuan ? "neutral" : /chưa/i.test(ketLuan) ? "critical" : /đã/i.test(ketLuan) ? "positive" : "warning";
+/* ────────────────────────────────────────────────────────────────────────
+   Bốn mục báo cáo nợ của Phòng QL1.
 
-function tuBoThat(r: HangChuaCuongChe, i: number): HangNo {
-  return {
-    id: `${r.mst ?? "x"}-${i}`,
-    ten: r.ten ?? "Không có tên",
-    ma: r.mst ?? "—",
-    donVi: r.donVi ? rutGonDonVi(r.donVi) : "—",
-    donViPhu: r.loaiNNT ?? "",
-    soChinh: <><strong>{tyDong(r.tongNoDanhGia)}</strong><small>tỷ đồng</small></>,
-    soPhu: <><strong>{tyDong(r.noNgay)}</strong><small>&gt; 90 ngày</small></>,
-    nhan: r.ketLuan ?? "Chưa phân loại",
-    tone: toneKetLuan(r.ketLuan),
-    timTheo: `${r.ten ?? ""} ${r.mst ?? ""} ${r.donVi ?? ""}`.toLowerCase(),
-    chiTiet: [
-      { label: "Mã số thuế", value: <code>{r.mst ?? "—"}</code> },
-      { label: "Đơn vị quản lý", value: r.donVi ?? "—" },
-      { label: "Loại người nộp thuế", value: <>{r.loaiNNT ?? "—"} {r.chuong !== null && <small>chương {r.chuong}</small>}</> },
-      { label: "Nợ theo tháng", value: <>{tyDong(r.noThang)} <small>tỷ đồng</small></> },
-      { label: "Nợ dùng đánh giá", value: <>{tyDong(r.noDanhGia)} <small>tỷ đồng</small></> },
-      { label: "Ngưỡng cưỡng chế", value: r.nguong === null ? "—" : <>{integer(r.nguong)} <small>đồng</small></> },
-      { label: "Tình trạng cưỡng chế", value: r.tinhTrang ?? "—" },
-      { label: "Biện pháp hiệu lực", value: r.bienPhap ?? <span className="cell-empty">Chưa có</span> },
-    ],
-  };
+   Bốn mục này không phải bốn màn: chúng dùng chung bộ lọc, chung khuôn "bảng
+   tổng hợp theo đơn vị + danh sách chi tiết", và cán bộ đọc liên tiếp cả bốn
+   trong MỘT lần lập báo cáo tuần. Tách thành bốn mục điều hướng thì bắt họ đi
+   ra đi vào bốn lần cho một việc.
+
+   Mỗi mục khai bảng tổng hợp lấy ở đâu, cột nào, và danh sách chi tiết đi kèm,
+   thay vì dựng bốn khối giao diện song song phải nuôi riêng.
+   ──────────────────────────────────────────────────────────────────────── */
+type TabId = "no" | "cc" | "th" | "t06";
+
+interface CauHinh {
+  id: TabId;
+  nhan: string;
+  dauTomTat: { nhan: string; num?: boolean }[];
+  bangTomTat: (t: TongHopThat) => { donVi: string; laTong: boolean; o: ReactNode[] }[];
+  tep: string;
+  tieuDeDs: string;
+  /* Các cột CÓ THỂ lọc. Ô chọn chỉ được dựng khi cột đó có từ hai giá trị trở
+     lên trong dữ liệu thật — xem ghi chú ở `locDungDuoc`. */
+  locUngVien: { khoa: keyof HangChiTiet; nhan: string }[];
+  dauDs: { nhan: string; num?: boolean }[];
+  oDs: ((r: HangChiTiet) => ReactNode)[];
 }
 
-function tuBoMoPhong(r: (typeof debtRows)[number]): HangNo {
-  return {
-    id: r.id,
-    ten: r.taxpayer,
-    ma: r.maskedTaxId,
-    donVi: r.unit,
-    donViPhu: r.officer,
-    soChinh: <><strong>{money(r.debt)}</strong><small>tỷ đồng</small></>,
-    soPhu: <><strong>{r.age}</strong><small>ngày</small></>,
-    nhan: actionText[r.action],
-    tone: actionTone[r.action],
-    timTheo: `${r.taxpayer} ${r.maskedTaxId} ${r.unit}`.toLowerCase(),
-    chiTiet: [
-      { label: "Số nợ", value: <>{money(r.debt)} <small>tỷ đồng</small></> },
-      { label: "Tuổi nợ", value: <>{r.age} ngày <small>{bacTuoi(r.age)}</small></> },
-      { label: "Đề xuất xử lý", value: <Badge tone={actionTone[r.action]}>{actionText[r.action]}</Badge> },
-      { label: "Cán bộ quản lý", value: <>{r.officer} <small>{r.unit}</small></> },
+const oTien = (v: number | null | undefined) => <><strong>{tyTuDong(v)}</strong><small>tỷ đồng</small></>;
+const oNNT = (v: number | null | undefined) => <><strong>{v === null || v === undefined ? "—" : integer(v)}</strong><small>người nộp thuế</small></>;
+
+/* Cưỡng chế và tạm hoãn XC dùng chung khuôn tám cột, nên dùng chung hàm dựng. */
+const bangThucHien = (ds: HangThucHien[]) => ds.map((r) => ({
+  donVi: rutGonDonVi(r.donVi),
+  laTong: /tổng/i.test(r.donVi),
+  o: [oNNT(r.phaiNNT), oTien(r.phaiTien), oNNT(r.daNNT), oNNT(r.chuaNNT), oTien(r.chuaTien), <strong>{phanTram(r.tyLe)}</strong>],
+}));
+const dauThucHien = [
+  { nhan: "Phải thực hiện", num: true }, { nhan: "Số tiền phải", num: true },
+  { nhan: "Đã thực hiện", num: true }, { nhan: "Chưa thực hiện", num: true },
+  { nhan: "Số tiền chưa", num: true }, { nhan: "Tỷ lệ đã làm", num: true },
+];
+const cotChung = [{ nhan: "Người nộp thuế" }, { nhan: "Mã số thuế" }, { nhan: "Đơn vị quản lý" }];
+
+const CAU_HINH: CauHinh[] = [
+  {
+    id: "no",
+    nhan: "Tình hình nợ",
+    dauTomTat: [{ nhan: "Tổng cộng", num: true }, { nhan: "Nợ khả năng thu", num: true }, { nhan: "Khó thu", num: true }, { nhan: "Đang xử lý", num: true }, { nhan: "So với đầu năm", num: true }],
+    bangTomTat: (t) => t.noTheoDonVi.map((r) => ({
+      donVi: rutGonDonVi(r.ten),
+      laTong: r.laTongHop,
+      o: [
+        <><strong>{tyTuTrieu(r.hienTai.tongCong)}</strong><small>tỷ đồng</small></>,
+        <><strong>{tyTuTrieu(r.hienTai.noKNT)}</strong><small>tỷ đồng</small></>,
+        <><strong>{tyTuTrieu(r.hienTai.khoThu)}</strong><small>tỷ đồng</small></>,
+        <><strong>{tyTuTrieu(r.hienTai.dangXuLy)}</strong><small>tỷ đồng</small></>,
+        <strong className={(r.soVoiDauNamPhanTram.tongCong ?? 0) > 0 ? "tone-critical" : "tone-positive"}>{phanTram(r.soVoiDauNamPhanTram.tongCong)}</strong>,
+      ],
+    })),
+    tep: "no-tang-500.json",
+    tieuDeDs: "Doanh nghiệp tăng nợ khả năng thu từ 500 triệu đồng",
+    locUngVien: [{ khoa: "donVi", nhan: "Đơn vị" }, { khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "loaiNNT", nhan: "Loại NNT" }] as { khoa: keyof HangChiTiet; nhan: string }[],
+    dauDs: [...cotChung, { nhan: "Nợ hiện tại", num: true }, { nhan: "Tăng từ đầu năm", num: true }],
+    oDs: [
+      (r) => <strong>{r.ten ?? "—"}</strong>,
+      (r) => <code>{r.mst ?? "—"}</code>,
+      (r) => <span>{r.donVi ? rutGonDonVi(r.donVi) : "—"}</span>,
+      (r) => oTien(r.noHienTai),
+      (r) => oTien(r.tangGiam),
     ],
-  };
-}
+  },
+  {
+    id: "cc",
+    nhan: "Cưỡng chế nợ thuế",
+    dauTomTat: dauThucHien,
+    bangTomTat: (t) => bangThucHien(t.cuongChe),
+    tep: "chua-cuong-che.json",
+    tieuDeDs: "Người nộp thuế chưa cưỡng chế",
+    locUngVien: [{ khoa: "donVi", nhan: "Đơn vị" }, { khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "loaiNNT", nhan: "Loại NNT" }] as { khoa: keyof HangChiTiet; nhan: string }[],
+    dauDs: [...cotChung, { nhan: "Nợ đánh giá", num: true }, { nhan: "Nợ quá hạn", num: true }],
+    oDs: [
+      (r) => <strong>{r.ten ?? "—"}</strong>,
+      (r) => <code>{r.mst ?? "—"}</code>,
+      (r) => <span>{r.donVi ? rutGonDonVi(r.donVi) : "—"}</span>,
+      (r) => oTien(r.tongNoDanhGia),
+      (r) => <><strong>{tyTuDong(r.noNgay)}</strong><small>&gt; 90 ngày</small></>,
+    ],
+  },
+  {
+    id: "th",
+    nhan: "Tạm hoãn XC từ 500 triệu",
+    dauTomTat: dauThucHien,
+    bangTomTat: (t) => bangThucHien(t.tamHoanXuatCanh),
+    tep: "chua-thxc.json",
+    tieuDeDs: "Người nộp thuế nợ từ 500 triệu chưa tạm hoãn xuất cảnh",
+    locUngVien: [{ khoa: "donVi", nhan: "Đơn vị" }, { khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "loaiNNT", nhan: "Loại NNT" }] as { khoa: keyof HangChiTiet; nhan: string }[],
+    dauDs: [...cotChung, { nhan: "Nợ đánh giá", num: true }, { nhan: "Nợ quá hạn", num: true }],
+    oDs: [
+      (r) => <strong>{r.ten ?? "—"}</strong>,
+      (r) => <code>{r.mst ?? "—"}</code>,
+      (r) => <span>{r.donVi ? rutGonDonVi(r.donVi) : "—"}</span>,
+      (r) => oTien(r.tongNoDanhGia),
+      (r) => <><strong>{tyTuDong(r.noNgay)}</strong><small>&gt; 120 ngày</small></>,
+    ],
+  },
+  {
+    id: "t06",
+    nhan: "Tạm hoãn XC trạng thái 06",
+    dauTomTat: [{ nhan: "Trạng thái 06", num: true }, { nhan: "Nợ KCHĐ", num: true }, { nhan: "Đã tạm hoãn", num: true }, { nhan: "Chưa tạm hoãn", num: true }, { nhan: "Số tiền chưa", num: true }, { nhan: "Tỷ lệ đã làm", num: true }],
+    bangTomTat: (t) => t.tamHoanTongHop.map((r) => ({
+      donVi: rutGonDonVi(r.donVi),
+      laTong: /tổng/i.test(r.donVi),
+      o: [oNNT(r.nntTrangThai06), oTien(r.tongNoKhongHoatDong), oNNT(r.daTamHoanNNT), oNNT(r.chuaTamHoanNNT), oTien(r.chuaTamHoanTien), <strong>{phanTram(r.tyLeDaTamHoan)}</strong>],
+    })),
+    tep: "chua-tam-hoan.json",
+    tieuDeDs: "Người nộp thuế trạng thái 06 chưa tạm hoãn xuất cảnh",
+    locUngVien: [{ khoa: "donVi", nhan: "Đơn vị" }, { khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "loaiNNT", nhan: "Loại NNT" }, { khoa: "nhomXuLy", nhan: "Nhóm xử lý" }] as { khoa: keyof HangChiTiet; nhan: string }[],
+    dauDs: [...cotChung, { nhan: "Nợ KCHĐ", num: true }, { nhan: "Nhóm xử lý" }],
+    oDs: [
+      (r) => <strong>{r.ten ?? "—"}</strong>,
+      (r) => <code>{r.mst ?? "—"}</code>,
+      (r) => <span>{r.donVi ? rutGonDonVi(r.donVi) : "—"}</span>,
+      (r) => oTien(r.tongNoKhongHoatDong),
+      (r) => <span>{r.nhomXuLy ?? "—"}</span>,
+    ],
+  },
+];
+
+/* Mười dòng một trang, không cuộn trong khung — xem The Long List Gets Pages
+   Rule trong DESIGN.md. */
+const MOI_TRANG = 10;
 
 /*
-  Bộ thật có 2.457 dòng. Dựng hết một lúc thì trình duyệt phải bố trí từng ấy ô
-  cho một màn chỉ nhìn thấy vài chục hàng. Cắt ở 200 dòng nợ lớn nhất và nói rõ
-  là đang cắt — im lặng cắt thì người dùng tưởng danh sách chỉ có thế.
+  Hai đường dựng cho cùng một màn, và đó là CÓ CHỦ Ý, không phải nợ kỹ thuật.
+
+  `DebtQL1` là màn của bản demo: bốn mục báo cáo đúng cấu trúc tài liệu QL1,
+  chạy trên dữ liệu giả, không cần tệp nào ngoài mã nguồn. `DebtThat` chỉ dựng
+  khi có tệp thật được bật bằng `?du-lieu-that=1` — nó đọc JSON sinh từ tệp
+  Excel gốc, nên không chạy được ở nơi không có tệp đó.
+
+  Gộp hai đường thành một sẽ phải chọn: hoặc bản demo gãy khi thiếu tệp, hoặc
+  màn dữ liệu thật phải giả lập những cột nó không có.
 */
-const TRAN_HANG = 200;
-
-export function Debt({ onNavigate }: { onNavigate: (view: ViewId) => void }) {
-  const notify = useAction();
+export function Debt({ onNavigate: _onNavigate }: { onNavigate: (view: ViewId) => void }) {
   const { that } = useDuLieuThat();
+  return that ? <DebtThat that={that}/> : <DebtQL1/>;
+}
+
+function DebtThat({ that }: { that: TongHopThat }) {
+  const notify = useAction();
+  const { chon } = useBoLoc();
+  const [tab, setTab] = useState<TabId>("no");
   const [search, setSearch] = useState("");
-  const [donViLoc, setDonViLoc] = useState("ALL");
-  const [boThat, setBoThat] = useState<HangChuaCuongChe[] | null>(null);
+  const [loc, setLoc] = useState<Record<string, string>>({});
+  const [trang, setTrang] = useState(1);
+  const [kho, setKho] = useState<Record<string, HangChiTiet[] | null>>({});
 
+  const cau = CAU_HINH.find((c) => c.id === tab)!;
+  const boDs = kho[cau.tep] ?? null;
+
+  /* Chỉ nạp danh sách của mục ĐANG mở. Nạp cả bốn một lượt là 6,7 MB cho một
+     màn mà người dùng chỉ đọc một mục tại một thời điểm. */
   useEffect(() => {
-    if (!that) return;
+    if (cau.tep in kho) return;
     let con = true;
-    napChuaCuongChe().then((d) => { if (con) setBoThat(d); });
+    napDanhSach(cau.tep).then((d) => { if (con) setKho((truoc) => ({ ...truoc, [cau.tep]: d })); });
     return () => { con = false; };
-  }, [that]);
+  }, [cau.tep, kho]);
 
-  const tatCa = useMemo<HangNo[]>(() => boThat
-    ? [...boThat].sort((a, b) => (b.tongNoDanhGia ?? 0) - (a.tongNoDanhGia ?? 0)).map(tuBoThat)
-    : debtRows.map(tuBoMoPhong), [boThat]);
+  /* Đổi mục thì bộ lọc của mục cũ không còn nghĩa: danh sách giá trị khác hẳn. */
+  useEffect(() => { setLoc({}); setSearch(""); }, [tab]);
+  useEffect(() => { setTrang(1); }, [tab, search, loc, boDs]);
 
-  const danhSachDonVi = useMemo(
-    () => [...new Set(tatCa.map((r) => r.donVi))].sort((a, b) => a.localeCompare(b, "vi")),
-    [tatCa],
+  const tomTatDay = useMemo(() => cau.bangTomTat(that), [cau, that]);
+  /* Danh mục đơn vị lấy từ chính bảng tổng hợp: nó có đủ mọi đơn vị của kỳ,
+     kể cả đơn vị không có dòng nào trong danh sách chi tiết. Dòng tổng không
+     phải một đơn vị nên không vào danh mục. */
+  const donViCo = useMemo(() => tomTatDay.filter((r) => !r.laTong).map((r) => r.donVi), [tomTatDay]);
+  /* Dòng tổng giữ lại khi lọc: nó là mốc để đọc tỷ trọng của phần đang lọc. */
+  const tomTat = useMemo(
+    () => chon.donVi.length === 0 ? tomTatDay : tomTatDay.filter((r) => r.laTong || chon.donVi.includes(r.donVi)),
+    [tomTatDay, chon],
   );
-
-  const locDay = useMemo(
-    () => tatCa.filter((r) => r.timTheo.includes(search.toLowerCase()) && (donViLoc === "ALL" || r.donVi === donViLoc)),
-    [tatCa, search, donViLoc],
-  );
-  const rows = locDay.slice(0, TRAN_HANG);
-
-  const cases = useCaseSelection(rows[0]?.id ?? "");
-  const hoSo = rows.find((row) => row.id === cases.selectedId) ?? rows[0];
-
-  const toanNganh = that ? timDonVi(that.noTheoDonVi, "TỔNG TOÀN NGÀNH") : null;
-  const ccTong = that?.cuongChe.find((c) => /tổng cộng/i.test(c.donVi)) ?? null;
-  const thxcTong = that?.tamHoanXuatCanh.find((c) => /tổng cộng/i.test(c.donVi)) ?? null;
 
   /*
-    Khối chi tiết không nhắc lại các trường đã hiện trên hàng đang chọn bên
-    trái; xem The Row Already Said It Rule trong DESIGN.md.
+    Ô chọn chỉ được dựng cho cột CÓ TỪ HAI giá trị trở lên.
+
+    Bộ dữ liệu thật có những cột hằng số: "Loại NNT" ở danh sách chưa cưỡng chế
+    chỉ có đúng "Doanh nghiệp, tổ chức" trên cả 2.455 dòng, "Nhóm xử lý" ở
+    trạng thái 06 chỉ có một giá trị. Dựng ô chọn cho chúng là dựng một control
+    bấm vào không đổi được gì. Đếm ngay trên dữ liệu thay vì khai cứng, nên khi
+    kỳ sau có thêm giá trị thì ô lọc tự xuất hiện.
   */
-  const detail = hoSo && <Panel title={`Hồ sơ – ${hoSo.ten}`}>
-    <DetailGrid items={hoSo.chiTiet}/>
-    <div className="notice warning">
-      <strong>Hệ thống chưa tự kết luận được cho hồ sơ này</strong>
-      <span>Phân tuổi nợ đã có quy tắc hiệu lực, nhưng ngưỡng cưỡng chế và ngưỡng tạm hoãn xuất cảnh còn ghi khác nhau giữa các nguồn. Cần văn bản căn cứ và ngày hiệu lực trước khi cảnh báo được bật.</span>
-      {/* Nút nằm cạnh chính cảnh báo mà nó trả lời. Để ở đầu khối thì đầu khối
-          cao thấp khác nhau tuỳ bản ghi có hành động hay không. */}
-      <Button kind="quiet" icon="file" onClick={() => onNavigate("rules")}>Xem quy tắc áp dụng</Button>
-    </div>
-  </Panel>;
+  const locDungDuoc = useMemo(() => cau.locUngVien.map((u) => {
+    const giaTri = [...new Set((boDs ?? []).map((r) => r[u.khoa]).filter((v) => v !== null && v !== undefined).map(String))]
+      .sort((a, b) => a.localeCompare(b, "vi", { numeric: true }));
+    return { ...u, giaTri };
+  }).filter((u) => u.giaTri.length >= 2), [cau, boDs]);
+
+  const locDay = useMemo(() => theoDonVi(boDs ?? [], chon, (r) => r.donVi).filter((r) => {
+    if (!`${r.ten ?? ""} ${r.mst ?? ""} ${r.donVi ?? ""}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return Object.entries(loc).every(([khoa, v]) => !v || String(r[khoa as keyof HangChiTiet] ?? "") === v);
+  }), [boDs, search, loc, chon]);
+
+  const soTrang = Math.max(1, Math.ceil(locDay.length / MOI_TRANG));
+  const trangHienTai = Math.min(trang, soTrang);
+  const tu = (trangHienTai - 1) * MOI_TRANG;
+  const rows = locDay.slice(tu, tu + MOI_TRANG);
+  const coLoc = search !== "" || Object.values(loc).some(Boolean);
 
   return <div className="page-stack">
-    <PageIntro title="Nợ và cưỡng chế"/>
+    {/*
+      Kỳ hiện dưới dạng CHỮ, không phải ô chọn: bộ dữ liệu hiện có đúng một kỳ.
+      Hai mốc ngày khác nhau là có thật trong tệp gốc — bảng tổng hợp chốt
+      31/07, danh sách chi tiết chốt 22/07 — nên nói cả hai thay vì chọn bừa.
+    */}
+    <PageIntro title="Nợ và cưỡng chế" description={`Bảng tổng hợp: nợ đến 31/07/2026 · danh sách chi tiết chốt ${that.ngayBaoCao ?? "—"} · tiền quy về tỷ đồng`}/>
 
-    <KpiStrip>
-      {that && toanNganh ? <>
-        <Kpi label="Tổng nợ toàn ngành" value={<>{money((toanNganh.hienTai.tongCong ?? 0) / 1000)} <em>tỷ đồng</em></>} note={`Đến ngày ${that.ngayBaoCao ?? "—"}`}/>
-        <Kpi label="Nợ khả năng thu" value={<>{money((toanNganh.hienTai.noKNT ?? 0) / 1000)} <em>tỷ đồng</em></>} note={`Tăng ${money((toanNganh.soVoiDauNamPhanTram.noKNT ?? 0) * 100)}% so với đầu năm`} tone="warning"/>
-        <Kpi label="Chưa cưỡng chế" value={integer(ccTong?.chuaNNT ?? 0)} note={`${money((ccTong?.chuaTien ?? 0) / 1e9)} tỷ đồng`} tone="warning"/>
-        <Kpi label="Chưa tạm hoãn xuất cảnh" value={integer(thxcTong?.chuaNNT ?? 0)} note={`${money((thxcTong?.chuaTien ?? 0) / 1e9)} tỷ đồng`} tone="critical"/>
-      </> : <>
-        <Kpi label="Tổng số nợ trong phạm vi" value={<>{money(12_486)} <em>tỷ đồng</em></>} note="3.812 người nộp thuế"/>
-        <Kpi label="Nợ trên 90 ngày" value="1.286" note="33,7% danh sách đang theo dõi" tone="warning"/>
-        <Kpi label="Cần rà cưỡng chế" value="742" note="Trên 90 ngày và trên ngưỡng" tone="warning"/>
-        <Kpi label="Cần rà tạm hoãn xuất cảnh" value="64" note="Chưa phải quyết định nghiệp vụ" tone="critical"/>
-      </>}
-    </KpiStrip>
+    {/* Thanh lọc đứng TRÊN cụm tab, vì nó áp cho cả bốn mục. Đặt dưới tab sẽ
+        đọc thành "lọc của mục này", đúng thứ G1 yêu cầu không được hiểu nhầm. */}
+    <BoLocChung ky={`Nợ đến 31/07/2026 · chi tiết chốt ${that.ngayBaoCao ?? "—"}`} donViCo={donViCo} rutGon={rutGonDonVi}/>
 
-    <CaseLayout label="Chi tiết hồ sơ nợ" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close}>
-      <Panel
-        title="Danh sách cần xử lý"
-        actions={<div className="inline-controls">
-          <SearchField value={search} onChange={setSearch} placeholder="Tìm MST, tên hoặc đơn vị"/>
-          <label className="compact-field"><span>Đơn vị</span>
-            <select value={donViLoc} onChange={(event) => setDonViLoc(event.target.value)}>
-              <option value="ALL">Tất cả</option>
-              {danhSachDonVi.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-          </label>
-        </div>}
-      >
-        <TableWrap label="danh sách nợ cần xử lý"><table>
-          <thead><tr>
-            <th scope="col">Người nộp thuế</th>
-            <th scope="col">Mã số thuế</th>
-            <th scope="col">Đơn vị quản lý</th>
-            <th scope="col" className="num">{that ? "Nợ đánh giá" : "Số nợ"}</th>
-            <th scope="col" className="num">{that ? "Nợ quá hạn" : "Tuổi nợ"}</th>
-            <th scope="col">{that ? "Kết luận" : "Đề xuất xử lý"}</th>
-          </tr></thead>
-          <tbody>{rows.map((row) => <tr key={row.id} onClick={(e) => cases.select(row.id, e)} className={row.id === hoSo?.id ? "is-selected" : undefined}>
-            <td><button type="button" className="row-select" aria-pressed={row.id === hoSo?.id} onClick={(e) => { e.stopPropagation(); cases.select(row.id, e); }}><strong>{row.ten}</strong></button></td>
-            <td><code>{row.ma}</code></td>
-            <td><span>{row.donVi}</span><small>{row.donViPhu}</small></td>
-            <td className="num">{row.soChinh}</td>
-            <td className="num">{row.soPhu}</td>
-            <td><Badge tone={row.tone}>{row.nhan}</Badge></td>
-          </tr>)}</tbody>
-        </table></TableWrap>
-        <footer className="table-footer">
-          <span>Hiển thị {integer(rows.length)}/{integer(locDay.length)} bản ghi{locDay.length > TRAN_HANG ? ` – cắt ở ${TRAN_HANG} dòng nợ lớn nhất, dùng ô tìm hoặc bộ lọc đơn vị để thu hẹp` : ""}</span>
-          <Button kind="secondary" onClick={() => notify(`Có ${integer(locDay.length)} bản ghi đang lọc. Bản demo chưa hỗ trợ tải file.`)}>Xuất danh sách đang lọc</Button>
-        </footer>
-      </Panel>
-    </CaseLayout>
+    <Segmented label="Mục báo cáo nợ" value={tab} onChange={setTab} options={CAU_HINH.map((c) => ({ value: c.id, label: c.nhan }))}/>
+
+    <Panel title="Tổng hợp theo đơn vị">
+      <TableWrap label={`tổng hợp ${cau.nhan} theo đơn vị`}><table className="tomtat-table">
+        <thead><tr>
+          <th scope="col">Phòng / Thuế cơ sở</th>
+          {cau.dauTomTat.map((d) => <th key={d.nhan} scope="col" className={d.num ? "num" : undefined}>{d.nhan}</th>)}
+        </tr></thead>
+        <tbody>{tomTat.map((r) => <tr key={r.donVi} className={r.laTong ? "is-tong" : undefined}>
+          <td><span>{r.donVi}</span></td>
+          {r.o.map((o, i) => <td key={i} className={cau.dauTomTat[i]?.num ? "num" : undefined}>{o}</td>)}
+        </tr>)}</tbody>
+      </table></TableWrap>
+    </Panel>
+
+    {/*
+      Không còn cột chi tiết bên phải. Bốn mục này là BÁO CÁO để đọc và kết
+      xuất, không phải hàng đợi xử lý từng hồ sơ: mọi trường của một dòng đã
+      nằm trên chính dòng đó, nên một khối chi tiết chỉ lặp lại chúng và lấy
+      mất 30% bề ngang của bảng.
+    */}
+    <Panel
+      title={cau.tieuDeDs}
+      actions={<div className="inline-controls">
+        <SearchField value={search} onChange={setSearch} placeholder="Tìm MST, tên hoặc đơn vị"/>
+        {locDungDuoc.map((u) => <label className="compact-field" key={String(u.khoa)}><span>{u.nhan}</span>
+          <select value={loc[u.khoa] ?? ""} onChange={(e) => setLoc((t) => ({ ...t, [u.khoa]: e.target.value }))}>
+            <option value="">Tất cả</option>
+            {u.giaTri.map((v) => <option key={v} value={v}>{u.khoa === "donVi" ? rutGonDonVi(v) : v}</option>)}
+          </select>
+        </label>)}
+        {coLoc && <Button kind="quiet" onClick={() => { setLoc({}); setSearch(""); }}>Đặt lại</Button>}
+      </div>}
+    >
+      <TableWrap label={cau.tieuDeDs}><table className="debt-table">
+        <thead><tr>{cau.dauDs.map((d) => <th key={d.nhan} scope="col" className={d.num ? "num" : undefined}>{d.nhan}</th>)}</tr></thead>
+        <tbody>
+          {rows.map((row, i) => <tr key={`${row.mst}-${row.stt}-${i}`}>
+            {cau.oDs.map((o, j) => <td key={j} className={cau.dauDs[j]?.num ? "num" : undefined}>{o(row)}</td>)}
+          </tr>)}
+          {boDs === null && <tr><td className="table-empty" colSpan={cau.dauDs.length}>Đang nạp danh sách…</td></tr>}
+          {boDs !== null && locDay.length === 0 && <tr><td className="table-empty" colSpan={cau.dauDs.length}>Không có bản ghi nào khớp bộ lọc.</td></tr>}
+        </tbody>
+      </table></TableWrap>
+      <footer className="table-footer">
+        <Pager trang={trangHienTai} soTrang={soTrang} onChange={setTrang}/>
+        <Button kind="secondary" onClick={() => notify(`Có ${integer(locDay.length)} bản ghi đang lọc. Bản demo chưa hỗ trợ tải file.`)}>Xuất danh sách đang lọc</Button>
+      </footer>
+    </Panel>
   </div>;
 }

@@ -1,0 +1,41 @@
+
+=== .\QL1 (12 tep) ===
+        36.0 kB  1.BC chốt sổ tháng 8 (2).xlsx
+      2194.8 kB  5.DS rà soát cưỡng chế tài khoản tháng 09.2026 (2).xls
+       375.6 kB  6.danh bạ NNT (2).xls
+       534.9 kB  BAO CAO CONG TAC NO KHOI DN TO CHUC (THANG 7.2026) (2).doc
+        72.5 kB  BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 1 - THANG 7.2026) (2).doc
+       298.5 kB  BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 2 - THANG 7.2026) (2).doc
+       504.6 kB  BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 3 - THANG 7.2026) (2).doc
+       269.3 kB  BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 4 - THANG 7.2026) (2).doc
+     66586.5 kB  BAO CAO DANH GIA CONG TAC NO TUAN. _07.07.2026 (2).xlsx
+      1618.3 kB  BAO CAO DANH GIA CONG TAC NO TUAN. _16.07.2026 (2).xlsx
+      1936.8 kB  BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_20260722 (002) (2).xlsx
+       706.7 kB  BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_THANG7.2026 (2).xlsx
+
+=== .\QL2 (3 tep) ===
+       798.7 kB  2_QLD2_1_kéo dữ liệu.docx
+       242.5 kB  Mẫu báo cáo.xlsx
+         6.7 kB  QLDN 2 kéo dữ liệu (1).docx
+
+=== .\QL3 (4 tep) ===
+        31.5 kB  1_QL3_2_File tho keo TTR ra (da ghep 30 CQT) (1).xls
+      4204.0 kB  1_QL3_3_KQ tong hop cuoi cung (1).xls
+        50.5 kB  1_QL3_4_TH (03092026).xls
+      7406.0 kB  1_QL3_5_TH (BC chon ke hoach) DS TPR RR cao 2026 p.Ktra1 ban giao L3 (ghep 31.110TCS+2.994pQLDN) (da chay lai CQT)- nen.xlsb
+
+=== .\QL4 (6 tep) ===
+       127.9 kB  11.9.2026 BAO CAO HOAN.xlsx
+        15.7 kB  4_QL4_1_BAO_CAO_CUOC_GOI_THEO_NHAN_VIEN_nhung05_22_09_2026_1790074533407.xlsx
+        11.5 kB  4_QL4_2_BC Phieu ghi 260922.xlsx
+        56.2 kB  7.8.2026 BAO CAO HOAN.xlsx
+        31.8 kB  7.8.2026 CCT tồn.xlsx
+        50.6 kB  7.8.2026 VPC tồn.xlsx
+
+=== .\QL5 (6 tep) ===
+        17.7 kB  5_QL5_1_Thuế cơ sở 1 - T9_Rà soát đối tượng.XLSX
+      6614.1 kB  5_QL5_2_Thuế cơ sở 1 - T8_Rà soát đối tượng.XLSX
+       248.7 kB  5_QL5_3_TONG HOP BAO CAO XPVPHC_xử phạt.xlsx
+     17744.7 kB  5_QL5_4_BAO CAO QL DOI TUONG THANG 8.xlsx
+        27.4 kB  5_QL5_5_BC dong MST_tuan3 thang9.xlsx
+        16.3 kB  5_QL5_CÁC BƯỚC KÉO DỮ LIỆU NỘP THỪA.doc

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { NAV, NSNN_LINK, Shell, navFor } from "@/components/Shell";
+import { NSNN_LINK, Shell } from "@/components/Shell";
+import { NAV, navCho } from "@/components/nav";
 import { TaxLogo } from "@/components/TaxLogo";
 import { ImportDialog } from "@/components/ImportDialog";
 import { Batches } from "@/features/Batches";
 import { Mapping } from "@/features/Mapping";
 import { Rules } from "@/features/Rules";
+import { GiamSat } from "@/features/GiamSat";
 import { Debt } from "@/features/Debt";
-import { Refund } from "@/features/Refund";
 import { Reports } from "@/features/Reports";
 import { Runs } from "@/features/Runs";
 import { Risk } from "@/features/Risk";
@@ -14,6 +15,7 @@ import { Workbench } from "@/features/Workbench";
 import type { ViewId } from "@/domain/types";
 import { ActionProvider } from "@/state/ActionContext";
 import { DuLieuThatProvider } from "@/state/DuLieuThatContext";
+import { BoLocProvider } from "@/components/BoLoc";
 import { LoginScreen } from "@/auth/LoginScreen";
 import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAuth";
 
@@ -59,7 +61,7 @@ export function App() {
     xuất.
   */
   useEffect(() => {
-    if (user?.role === "STATE_LEADER") window.location.replace(NSNN_LINK);
+    if (user?.vaiTro === "LANH_DAO_NN") window.location.replace(NSNN_LINK);
   }, [user]);
 
   useEffect(() => {
@@ -73,8 +75,8 @@ export function App() {
       document.title = "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title = { workbench: "Tổng quan", debt: "Nợ và cưỡng chế", risk: "Kiểm tra và rủi ro", refund: "Hoàn thuế và hỗ trợ", reports: "Báo cáo", runs: "Lượt chạy dữ liệu", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ" }[view];
-    document.title = `${title} – Quản lý nghiệp vụ Thuế`;
+    const title: Record<ViewId, string> = { workbench: "Trang công việc", debt: "Báo cáo nợ", risk: "Kiểm tra tại bàn", reports: "Báo cáo", runs: "Lượt chạy dữ liệu", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ", giamsat: "Giám sát dữ liệu" };
+    document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
   const login = (next: DemoUser) => {
@@ -92,7 +94,7 @@ export function App() {
     Vai không mở được màn đang yêu cầu thì rơi về màn đầu tiên của vai đó, không
     hiện trang trắng. Đường dẫn dán tay cũng đi qua đúng luật này.
   */
-  const duoc = navFor(user.role);
+  const duoc = navCho(user);
 
   /*
     Vai không có màn nào trong hệ này thì nói thẳng và chỉ đường, không hiện một
@@ -103,22 +105,22 @@ export function App() {
 
   const moDuoc = duoc.some((item) => item.id === view) ? view : duoc[0].id;
 
-  return <DuLieuThatProvider><ActionProvider>
+  return <DuLieuThatProvider><ActionProvider><BoLocProvider>
     <Shell view={moDuoc} user={user} onView={setView} onLogout={logout} onCreateReport={openReports} onImport={() => setNhapMo(true)}>
-    {moDuoc === "workbench" && <Workbench onNavigate={setView} role={user.role}/>}
+    {moDuoc === "workbench" && <Workbench onNavigate={setView} vaiTro={user.vaiTro}/>}
     {moDuoc === "debt" && <Debt onNavigate={setView}/>}
     {moDuoc === "risk" && <Risk/>}
-    {moDuoc === "refund" && <Refund/>}
-    {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit} role={user.role} moTao={taoBaoCaoMo} onDaMoTao={() => setTaoBaoCaoMo(false)}/>}
+        {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit} vaiTro={user.vaiTro} moTao={taoBaoCaoMo} onDaMoTao={() => setTaoBaoCaoMo(false)}/>}
     {moDuoc === "runs" && <Runs/>}
     {moDuoc === "batches" && <Batches/>}
     {moDuoc === "mapping" && <Mapping/>}
     {moDuoc === "rules" && <Rules/>}
+    {moDuoc === "giamsat" && <GiamSat/>}
     </Shell>
     {/* Hộp thoại nhập nằm NGOÀI Shell vì nút gọi nó có mặt trên mọi màn; dựng
         nó trong từng màn thì mỗi lần đổi màn là một lần dựng lại. */}
     <ImportDialog open={nhapMo} onClose={() => setNhapMo(false)}/>
-  </ActionProvider></DuLieuThatProvider>;
+  </BoLocProvider></ActionProvider></DuLieuThatProvider>;
 }
 
 /*

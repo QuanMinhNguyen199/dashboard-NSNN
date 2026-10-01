@@ -52,7 +52,10 @@ def bang(ws, tu_dong, cot):
         for ten, i in cot.items():
             if i >= len(r):
                 continue
-            d[ten] = so(r[i]) if ten.startswith(("so", "tien", "no", "tong", "ty", "tang", "nguong", "chuong")) else chu(r[i])
+            # "chuong" là MÃ chương ngân sách ("555", "830"), Excel lưu dạng chữ —
+            # ép sang số thì `so()` trả None và cả cột biến mất. Mã số thuế và mã
+            # CQT cũng vậy: giữ nguyên chữ để không mất số 0 ở đầu.
+            d[ten] = so(r[i]) if ten.startswith(("so", "tien", "no", "tong", "ty", "tang", "nguong")) else chu(r[i])
         ra.append(d)
     return ra
 

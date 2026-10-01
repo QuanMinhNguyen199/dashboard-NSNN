@@ -74,7 +74,7 @@ export function Runs() {
         title="Nhật ký lượt chạy"
         actions={<SearchField value={search} onChange={setSearch} placeholder="Tìm mã lượt, nguồn hoặc kỳ"/>}
       >
-        <TableWrap label="nhật ký lượt chạy"><table>
+        <TableWrap label="nhật ký lượt chạy"><table className="runs-table">
           <thead><tr>
             <th scope="col">Mã lượt</th><th scope="col">Nguồn / kỳ</th><th scope="col">Cách chạy</th>
             <th scope="col" className="num">Dòng ở nguồn</th><th scope="col" className="num">Dòng vào kho</th>

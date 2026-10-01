@@ -1,6 +1,6 @@
 import { Badge, Button, FigureLine, Icon, PageIntro, Panel } from "@/components/ui";
 import { DATA_AS_OF, sourceBatches, workItems } from "@/data/mock";
-import type { Tone, UserRole, ViewId } from "@/domain/types";
+import type { Tone, VaiTro, ViewId } from "@/domain/types";
 
 const workTone = { DUE: "warning", OVERDUE: "critical", BLOCKED: "critical", DONE: "positive" } as const;
 const workLabel = { DUE: "Sắp đến hạn", OVERDUE: "Quá hạn", BLOCKED: "Đang vướng", DONE: "Hoàn thành" } as const;
@@ -8,9 +8,9 @@ const batchTone = { READY: "positive", WARNING: "warning", PROCESSING: "info", M
 
 /** Việc quá hạn hoặc đang vướng đầu tiên — đích của hành động chính. */
 const moduleView = (module: string): ViewId =>
-  module.includes("Nợ") ? "debt" : module.includes("Danh bạ") ? "mapping" : module.includes("Hoàn") ? "refund" : "risk";
+  module.includes("Nợ") ? "debt" : module.includes("Danh bạ") ? "mapping" :  "risk";
 
-export function Workbench({ onNavigate, role }: { onNavigate: (view: ViewId) => void; role: UserRole }) {
+export function Workbench({ onNavigate, vaiTro }: { onNavigate: (view: ViewId) => void; vaiTro: VaiTro }) {
   const chuaDu = sourceBatches.filter((batch) => batch.status === "MISSING");
 
   return <div className="page-stack workbench-page">
@@ -23,7 +23,7 @@ export function Workbench({ onNavigate, role }: { onNavigate: (view: ViewId) => 
       { label: "Việc cần xử lý", value: workItems.length, tone: "warning" },
       { label: "Báo cáo chờ duyệt", value: 1, tone: "info" },
       { label: "Lô dữ liệu chưa đủ", value: chuaDu.length, tone: "critical" },
-      { label: "Ngoại lệ ánh xạ", value: 18, tone: "warning", onSelect: role === "OFFICER" ? () => onNavigate("mapping") : undefined },
+      { label: "Ngoại lệ ánh xạ", value: 18, tone: "warning", onSelect: vaiTro === "CV" ? () => onNavigate("mapping") : undefined },
     ]}/>
 
     <div className="workbench-grid">
@@ -35,7 +35,7 @@ export function Workbench({ onNavigate, role }: { onNavigate: (view: ViewId) => 
         </button>)}</div>
       </Panel>
 
-      <Panel title="Tình trạng nguồn dữ liệu" actions={role === "OFFICER" && <Button kind="quiet" onClick={() => onNavigate("batches")}>Xem lô dữ liệu</Button>}>
+      <Panel title="Tình trạng nguồn dữ liệu" actions={vaiTro === "CV" && <Button kind="quiet" onClick={() => onNavigate("batches")}>Xem lô dữ liệu</Button>}>
         <div className="source-list">{sourceBatches.map((batch) => <div className="source-row" key={batch.id}>
           <span className="source-name"><strong>{batch.source}</strong><small>{batch.period}</small></span>
           <span className="source-files"><b>{batch.received}/{batch.expected}</b><small>file đã nhận</small></span>

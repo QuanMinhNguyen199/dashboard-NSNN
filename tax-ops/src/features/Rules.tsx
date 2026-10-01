@@ -23,7 +23,7 @@ export function Rules() {
     ]}/>
 
     <Panel title="Danh mục quy tắc">
-      <TableWrap label="danh mục quy tắc nghiệp vụ"><table>
+      <TableWrap label="danh mục quy tắc nghiệp vụ"><table className="rules-table">
         <thead><tr><th scope="col">Quy tắc</th><th scope="col">Giá trị</th><th scope="col">Phạm vi</th><th scope="col">Hiệu lực từ</th><th scope="col">Văn bản căn cứ</th><th scope="col">Trạng thái</th><th scope="col"><span className="sr-only">Hành động</span></th></tr></thead>
         <tbody>{ruleItems.map((r) => <tr key={r.id}>
           <td><strong>{r.name}</strong></td>

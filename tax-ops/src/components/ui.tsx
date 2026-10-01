@@ -6,9 +6,10 @@ import type { Tone } from "@/domain/types";
 export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "menu" | "close" | "users" | "database" | "external" | "logout" | "key";
+  | "arrow" | "chevronDown" | "menu" | "close" | "users" | "database" | "external" | "logout" | "key";
 
 const paths: Record<IconName, ReactNode> = {
+  chevronDown: <polyline points="6 9 12 15 18 9"/>,
   home: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
   debt: <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5M8 16h3"/></>,
   risk: <><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></>,
@@ -153,6 +154,28 @@ export function Segmented<T extends string>({ label, value, options, onChange }:
 
 export function SearchField({ value, onChange, placeholder = "Tìm kiếm" }: { value: string; onChange: (value: string) => void; placeholder?: string }) {
   return <label className="search-field"><span className="sr-only">{placeholder}</span><Icon name="search" size={17}/><input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder}/></label>;
+}
+
+/*
+  Phân trang cho bảng dài.
+
+  Cuộn trong một khung cao cố định đọc được với vài chục dòng, nhưng với 2.455
+  dòng thì người dùng mất mốc: không biết đang ở đâu, không quay lại được chỗ
+  cũ, và thanh cuộn nhỏ tới mức kéo một pixel là nhảy mấy chục hàng. Trang cho
+  lại hai thứ đó — một vị trí đọc được và một bước nhảy xác định.
+
+  Không dựng khi chỉ có một trang: một cụm điều hướng luôn vô hiệu là nhiễu.
+*/
+export function Pager({ trang, soTrang, onChange }: { trang: number; soTrang: number; onChange: (trang: number) => void }) {
+  if (soTrang <= 1) return null;
+  const di = (muon: number) => onChange(Math.min(Math.max(1, muon), soTrang));
+  return <nav className="pager" aria-label="Phân trang danh sách">
+    <button type="button" className="pager-nut truoc" onClick={() => di(trang - 1)} disabled={trang === 1} aria-label="Trang trước"><Icon name="arrow" size={16}/></button>
+    {/* `role="status"` để người dùng trình đọc màn hình nghe được vị trí mới
+        sau khi bấm, thay vì phải tự đi tìm xem mình đang ở trang nào. */}
+    <span className="pager-vi-tri" role="status">Trang <strong>{trang}</strong>/{soTrang}</span>
+    <button type="button" className="pager-nut" onClick={() => di(trang + 1)} disabled={trang === soTrang} aria-label="Trang sau"><Icon name="arrow" size={16}/></button>
+  </nav>;
 }
 
 export function money(value: number) {

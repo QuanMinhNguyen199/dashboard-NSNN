@@ -1,26 +1,53 @@
 /*
-  Chín màn, tách theo NHÓM CHỨC NĂNG chứ không theo tên phòng.
+  Màn hình chia theo PHÂN HỆ của phòng và phần KHUNG CHUNG.
 
-  "Dữ liệu và danh mục" trước đây gộp ba việc khác hẳn nhau vào một màn rồi chia
-  bằng nút chuyển: tiếp nhận lô, xử lý ngoại lệ ánh xạ, và quản lý quy tắc. Ba
-  việc đó có ba người làm, ba nhịp và ba trạng thái riêng, nên tách thành ba màn.
+  Bản thiết kế đặc tả hai phân hệ: QL1 (đánh giá công tác nợ) và QL3 (kiểm tra
+  tại bàn). Màn hoàn thuế thuộc QL4 và các tab rủi ro thuộc QL2 — hai phòng đó
+  có dữ liệu trong `general_data` nhưng CHƯA có thiết kế, nên không gắn vào
+  điều hướng lần này. Mã của chúng giữ nguyên, không xoá.
 */
 export type ViewId =
   | "workbench"
-  | "debt" | "risk" | "refund"
+  | "debt" | "risk"
   | "reports"
-  | "runs" | "batches" | "mapping" | "rules";
+  | "runs" | "batches" | "mapping" | "rules"
+  | "giamsat";
 /*
-  BA vai, chốt ngày 28/09.
+  Phòng nghiệp vụ và VAI TRÒ tách làm hai trục, theo ma trận ở mục 3 bản thiết kế.
 
-  `STATE_LEADER` cố ý nằm trong danh sách dù KHÔNG vào được Web quản lý. Bỏ hẳn
-  ra thì hệ thống mất khả năng nói "tài khoản này thuộc hệ khác", và người dùng
-  chỉ thấy một lần đăng nhập thất bại không rõ lý do. Có tên trong danh sách thì
-  từ chối được một cách có giải thích.
+  Trước đây chỉ có một trục `UserRole` với `OFFICER` thấy toàn bộ chín màn. Thực
+  tế quyền là tích của hai thứ: PHÒNG quyết định thấy phân hệ nào, VAI TRÒ quyết
+  định bấm được nút nào trong phân hệ đó. Gộp làm một trục thì mỗi lần thêm
+  phòng là nhân đôi số vai.
+
+  Bản thiết kế đặc tả QL1 và QL3; QL2, QL4, QL5 có dữ liệu nhưng chưa có thiết
+  kế nên chưa có phòng tương ứng ở đây.
 */
-export type UserRole = "OFFICER" | "TAX_LEADER" | "STATE_LEADER";
+export type Phong = "QL1" | "QL3" | null;
+
+/*
+  `CV` chuyên viên làm số và gửi duyệt · `TP` trưởng phòng duyệt và chốt số ·
+  `VAN_HANH` theo dõi job kéo, không thuộc phòng nào (Q-77) · `LANH_DAO_NN`
+  là tài khoản của Dashboard Thu NSNN, không vào hệ tác nghiệp.
+*/
+export type VaiTro = "CV" | "TP" | "VAN_HANH" | "LANH_DAO_NN";
 export type Tone = "neutral" | "positive" | "warning" | "critical" | "info";
-export type ReportStatus = "DRAFT" | "REVIEW" | "APPROVED" | "PUBLISHED" | "BLOCKED";
+/*
+  BA trạng thái, không phải năm.
+
+  BRD mục 6 ghi việc của hệ dừng ở "xuất báo cáo kèm nhật ký nguồn gốc"; "ký
+  duyệt, gửi lãnh đạo" là việc NGƯỜI làm, bên ngoài hệ. Hai trạng thái cũ
+  `APPROVED` và `PUBLISHED` giả định lãnh đạo bấm duyệt và phát hành bên trong
+  web này — điều chưa tài liệu nào xác lập, và Q-03 "lãnh đạo nào nhận báo cáo"
+  vẫn chưa có câu trả lời. Khi Q-03 được trả lời thì thêm lại.
+*/
+/*
+  Ba bước của mục G10 bản thiết kế: Nháp → Chờ duyệt → Đã chốt.
+
+  `BLOCKED` không phải bước thứ tư. Nó nói dữ liệu chưa đạt nên chưa gửi được,
+  và nằm ngoài chuỗi — vì thế nó không có mặt trong `CHUOI` ở màn Báo cáo.
+*/
+export type ReportStatus = "DRAFT" | "PENDING" | "FINAL" | "BLOCKED";
 
 export interface WorkItem {
   id: string;
@@ -151,6 +178,9 @@ export interface ReportVersion {
   version: string;
   createdAt: string;
   createdBy: string;
-  approvedBy: string | null;
+  /** Ai gửi bản này lên trưởng phòng; `null` là chưa gửi. */
+  guiBoi: string | null;
+  /** Trưởng phòng đã chốt bản này; `null` là chưa chốt. */
+  chotBoi: string | null;
   note: string;
 }
