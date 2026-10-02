@@ -13,6 +13,7 @@
     "acceptance": "node scripts/acceptance.mjs",
     "test:reports": "node scripts/report-permissions.mjs",
     "test:portal": "node scripts/check-portal.mjs",
+    "test:portal:static": "node scripts/check-static-portal.mjs",
     "soat": "node scripts/soat.mjs"
   },
   "dependencies": {

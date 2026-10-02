@@ -35,11 +35,16 @@ jobs:
           npm ci --prefix web
           npm ci --prefix tax-ops
 
-      # Web quản lý ở gốc repo; dashboard NSNN ở thư mục con nsnn/.
+      # Hai URL riêng, với index.html thật cho từng đường dẫn đăng nhập.
       - name: Build cổng chung
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
         run: npm run build:portal
+
+      - name: Kiểm tra đường dẫn trên hosting tĩnh
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
+        run: npm --prefix tax-ops run test:portal:static
 
       - uses: actions/configure-pages@v5
 

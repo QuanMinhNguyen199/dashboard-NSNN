@@ -23,7 +23,6 @@ export default defineConfig(({ command, mode }) => ({
     configureServer(server) {
       server.middlewares.use(portalRoutes);
     },
-    configurePreviewServer(server) { server.middlewares.use(portalRoutes); },
   }],
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   server: { port: 5174, strictPort: false },

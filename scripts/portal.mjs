@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { networkInterfaces } from "node:os";
 import { existsSync } from "node:fs";
+import { writePortalEntries } from "./static-portal.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const mode = process.argv[2] ?? "dev";
@@ -48,6 +49,7 @@ try {
 if (mode === "build") {
   await vite("tax-ops", ["build"]);
   await vite("web", ["build", "--outDir", "../tax-ops/dist/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
+  await writePortalEntries(resolve(root, "tax-ops/dist"), base);
 } else {
   if (mode === "dev") {
     await vite("web", ["build", "--outDir", "../tax-ops/public/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
