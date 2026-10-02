@@ -33,7 +33,10 @@ function inDiaChiNoiBo() {
   const coDuLieuThat = existsSync(resolve(root, "tax-ops/dist/du-lieu-that/tong-hop.json"));
   console.log("");
   console.log("  Chia sẻ trong mạng nội bộ:");
-  for (const d of dia) console.log(`    http://${d}:5174/`);
+  for (const d of dia) {
+    console.log(`    Web quản lý: http://${d}:5174${base}quan-ly/`);
+    console.log(`    Dashboard NSNN: http://${d}:5174${base}nsnn/`);
+  }
   console.log(coDuLieuThat
     ? "  Bản dựng này CÓ dữ liệu thật. Chỉ chia sẻ trong mạng cơ quan; không đưa qua ngrok, tunnel hay dịch vụ lưu trữ ngoài."
     : "  Bản dựng này chạy dữ liệu mô phỏng. Chạy `python tax-ops/scripts/nap-du-lieu-that.py` rồi dựng lại nếu cần dữ liệu thật.");

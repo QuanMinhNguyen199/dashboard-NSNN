@@ -20,8 +20,10 @@ import { TaxLogo } from "@/components/TaxLogo";
   Hai cột chia việc DỨT KHOÁT: trái là nhận diện, phải là nội dung. Bên trái
   không mang chữ nào của luồng đăng nhập.
 */
-export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) {
+export function LoginScreen({ onLogin, dashboard = false }: { onLogin: (user: DemoUser) => void; dashboard?: boolean }) {
   const [sso, setSso] = useState(false);
+  const portal = import.meta.env.VITE_PORTAL === "true";
+  const accounts = portal ? DEMO_ACCOUNTS.filter(tk => tk.permissions.includes(dashboard ? "NSNN_VIEW" : "TAX_OPS_VIEW")) : DEMO_ACCOUNTS;
 
   /* Bấm là vào thẳng. Vẫn đi qua `authenticate` chứ không dựng thẳng đối tượng
      người dùng: đó là chỗ duy nhất quyết định một phiên hợp lệ trông thế nào,
@@ -38,7 +40,7 @@ export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) 
     <section className="login-context" aria-label="Nhận diện hệ thống">
       <div className="login-mark">
         <TaxLogo/>
-        <strong>Quản lý nghiệp vụ Thuế</strong>
+        <strong>{dashboard ? "Dashboard Thu NSNN" : "Quản lý nghiệp vụ Thuế"}</strong>
         <span className="login-rule" aria-hidden="true"/>
         <small>Thuế thành phố Hà Nội</small>
       </div>
@@ -69,7 +71,7 @@ export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) 
           thì quan hệ ấy đọc được bằng vị trí, không cần đọc chữ.
         */}
         <ul className="demo-accounts-list" aria-label="Tài khoản trình diễn">
-          {DEMO_ACCOUNTS.map((tk) => <li key={tk.username}>
+          {accounts.map((tk) => <li key={tk.username}>
             <button type="button" onClick={() => vao(tk.username, tk.password)}>
               <span className="demo-vai">{tk.vaiTroLabel}</span>
               <small>{tk.unit}</small>
@@ -77,6 +79,9 @@ export function LoginScreen({ onLogin }: { onLogin: (user: DemoUser) => void }) 
             </button>
           </li>)}
         </ul>
+        {portal && <a className="button is-secondary" href={`${import.meta.env.BASE_URL}${dashboard ? "quan-ly/" : "nsnn/"}`}>
+          {dashboard ? "Mở web quản lý" : "Mở Dashboard NSNN"}
+        </a>}
       </div>
     </section>
   </main>;

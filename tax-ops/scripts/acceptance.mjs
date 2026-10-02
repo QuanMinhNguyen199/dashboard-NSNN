@@ -32,6 +32,9 @@ await mkdir(".impeccable/review", { recursive: true });
   bấm đúng thẻ mang mã tài khoản cần dùng, như người xem demo làm.
 */
 async function dangNhap(page, username) {
+  if (username === "lanhdao.nhanuoc" && new URL(page.url()).pathname.endsWith("/quan-ly/")) {
+    await page.goto(`${base}/nsnn/`, { waitUntil: "networkidle0" });
+  }
   await page.waitForSelector(".demo-accounts-list");
   const bamDuoc = await page.evaluate((ma) => {
     const nut = [...document.querySelectorAll(".demo-accounts-list button")]
@@ -79,7 +82,8 @@ const manDangNhap = await page.evaluate(() => ({
   conOnhap: Boolean(document.querySelector('input[name="username"], input[name="password"]')),
   coKeycloak: Boolean(document.querySelector(".login-sso")),
 }));
-if (manDangNhap.soThe !== 6) throw new Error(`Màn đăng nhập có ${manDangNhap.soThe} thẻ vai, đáng lẽ 6.`);
+const expectedAccounts = new URL(page.url()).pathname.endsWith("/quan-ly/") ? 5 : 6;
+if (manDangNhap.soThe !== expectedAccounts) throw new Error(`Màn đăng nhập có ${manDangNhap.soThe} thẻ vai, đáng lẽ ${expectedAccounts}.`);
 if (manDangNhap.conOnhap) throw new Error("Màn đăng nhập vẫn còn ô tài khoản hoặc mật khẩu.");
 if (!manDangNhap.coKeycloak) throw new Error("Màn đăng nhập thiếu lối Keycloak.");
 

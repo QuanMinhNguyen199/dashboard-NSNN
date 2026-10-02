@@ -19,6 +19,7 @@ import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAut
    màn mới vào NAV mà quên chỗ này thì đường dẫn im lặng rơi về Trang công
    việc, và không cổng kiểm nào bắt được vì trang vẫn có tiêu đề hợp lệ. */
 const views: ViewId[] = NAV.map((item) => item.id);
+const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location.pathname === `${import.meta.env.BASE_URL}nsnn/dang-nhap/`;
 
 function readView(): ViewId {
   const value = new URLSearchParams(window.location.search).get("view");
@@ -50,6 +51,7 @@ export function App() {
   */
   useEffect(() => {
     if (user?.vaiTro === "LANH_DAO_NN") window.location.replace(NSNN_LINK);
+    else if (user && dashboardLogin) window.location.replace(`${import.meta.env.BASE_URL}quan-ly/`);
   }, [user]);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export function App() {
 
   useEffect(() => {
     if (!user) {
-      document.title = "Đăng nhập – Quản lý nghiệp vụ Thuế";
+      document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
     const title: Record<ViewId, string> = { workbench: "Công việc theo kỳ", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
@@ -79,7 +81,7 @@ export function App() {
     setUser(null);
   };
 
-  if (!user) return <LoginScreen onLogin={login}/>;
+  if (!user) return <LoginScreen onLogin={login} dashboard={dashboardLogin}/>;
 
   /*
     Vai không mở được màn đang yêu cầu thì rơi về màn đầu tiên của vai đó, không
