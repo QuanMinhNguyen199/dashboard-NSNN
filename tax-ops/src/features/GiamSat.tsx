@@ -22,17 +22,17 @@ export function GiamSat() {
   const tongLech = dataRuns.reduce((t, r) => t + Math.abs(r.rowsSource === null ? 0 : r.rowsSource - r.rowsStore), 0);
 
   return <div className="page-stack">
-    <PageIntro title="Giám sát dữ liệu" description="Theo dõi job kéo và xử lý. Vai này không đọc số liệu nghiệp vụ của phòng nào."/>
+    <PageIntro title="Giám sát dữ liệu"/>
 
     <FigureLine items={[
-      { label: "Job trong ngày", value: dataRuns.length },
+      { label: "Lượt thu thập trong ngày", value: dataRuns.length },
       { label: "Đang chạy", value: dangChay, tone: dangChay ? "info" : "neutral" },
-      { label: "Job hỏng", value: hong, tone: hong ? "critical" : "positive" },
+      { label: "Lượt thu thập bị lỗi", value: hong, tone: hong ? "critical" : "positive" },
       { label: "Dòng lệch khi đối soát", value: integer(tongLech), tone: lech ? "warning" : "positive", note: "Nguồn so với kho" },
     ]}/>
 
-    <Panel title="Nhật ký job">
-      <TableWrap label="nhật ký job kéo dữ liệu"><table className="giamsat-table">
+    <Panel title="Nhật ký thu thập dữ liệu">
+      <TableWrap label="nhật ký thu thập dữ liệu"><table className="giamsat-table">
         <thead><tr>
           <th scope="col">Mã lượt</th><th scope="col">Nguồn</th><th scope="col">Cách chạy</th>
           <th scope="col">Bắt đầu</th><th scope="col" className="num">Dòng nguồn</th>
@@ -41,7 +41,7 @@ export function GiamSat() {
         <tbody>{dataRuns.map((r) => <tr key={r.id}>
           <td><code>{r.id}</code></td>
           <td><span>{r.source}</span><small>{r.period}</small></td>
-          <td>{r.mode === "AUTO" ? "Tự động" : "Tải tay"}</td>
+          <td>{r.mode === "AUTO" ? "Tự động" : "Thủ công"}</td>
           <td>{r.startedAt}</td>
           <td className="num">{r.rowsSource === null ? "—" : integer(r.rowsSource)}</td>
           <td className="num">{integer(r.rowsStore)}</td>

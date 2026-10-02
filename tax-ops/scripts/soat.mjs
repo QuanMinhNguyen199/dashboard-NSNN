@@ -44,7 +44,7 @@ async function dangNhap(ma) {
   đầu, phần còn lại nằm trong ngăn kéo — bấm theo tên sẽ im lặng không đổi màn
   và lượt soát báo cùng một lỗi ba lần cho ba màn khác nhau.
 */
-const MAN = ["workbench", "debt", "risk", "reports", "runs", "batches", "mapping", "rules", "giamsat"];
+const MAN = ["workbench", "debt", "risk", "tinhtrang", "giamsat"];
 
 /* Danh sách mục con của màn đang mở, để soát cả những tab không mở sẵn. */
 const mucCua = () => page.evaluate(() =>

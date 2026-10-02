@@ -113,13 +113,12 @@ export function DetailGrid({ items }: { items: { label: string; value: ReactNode
   đúng của một hành động cấp TRANG. Khi chỗ đó chưa tồn tại (ví dụ trong hộp
   thoại), nút quay về nằm trong luồng nội dung.
 */
-export function PageIntro({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
+export function PageIntro({ title, actions }: { title: string; actions?: ReactNode }) {
   const rong = useRongToiThieu("(min-width: 901px)");
   const oMangSet = useSlot("page-actions-slot");
   const nut = actions && <div className="page-actions">{actions}</div>;
   return <>
     <h1 className="sr-only">{title}</h1>
-    {description && <p className="page-lead">{description}</p>}
     {nut && (rong && oMangSet ? createPortal(nut, oMangSet) : nut)}
   </>;
 }

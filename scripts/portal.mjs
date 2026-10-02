@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { runProcess, ProcessStopped } from "./run-process.mjs";
 import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { networkInterfaces } from "node:os";
@@ -13,14 +13,9 @@ const env = { ...process.env, VITE_PORTAL: "true", VITE_BASE: base };
 // Both applications are served by Tax Ops. NSNN assets use a relative URL on
 // the same origin, so sharing port 5174 also shares the demo login session.
 function vite(app, args, extraEnv = {}) {
-  return new Promise((resolveRun, reject) => {
-    const child = spawn(process.execPath, [resolve(root, app, "node_modules/vite/bin/vite.js"), ...args], {
+  return runProcess(`${app}: Vite`, process.execPath, [resolve(root, app, "node_modules/vite/bin/vite.js"), ...args], {
       cwd: resolve(root, app), env: { ...env, ...extraEnv }, stdio: "inherit",
     });
-    child.on("error", reject);
-    child.on("exit", (code) => code === 0 ? resolveRun() : reject(new Error(`${app}: Vite exited ${code}`)));
-    for (const signal of ["SIGINT", "SIGTERM"]) process.once(signal, () => child.kill(signal));
-  });
 }
 /*
   In sẵn địa chỉ trong mạng nội bộ khi chạy `preview`.
@@ -45,6 +40,8 @@ function inDiaChiNoiBo() {
   console.log("");
 }
 
+let addressTimer;
+try {
 if (mode === "build") {
   await vite("tax-ops", ["build"]);
   await vite("web", ["build", "--outDir", "../tax-ops/dist/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
@@ -52,9 +49,15 @@ if (mode === "build") {
   if (mode === "dev") {
     await vite("web", ["build", "--outDir", "../tax-ops/public/nsnn", "--emptyOutDir"], { VITE_BASE: `${base}nsnn/` });
   }
-  if (mode === "preview") setTimeout(inDiaChiNoiBo, 1200);
+  if (mode === "preview") addressTimer = setTimeout(inDiaChiNoiBo, 1200);
   await vite("tax-ops", [
     ...(mode === "preview" ? ["preview"] : []),
     "--host", "0.0.0.0", "--port", "5174", "--strictPort",
   ]);
+}
+} catch (error) {
+  if (!(error instanceof ProcessStopped && error.requested)) console.error(error.message);
+  process.exitCode = error instanceof ProcessStopped ? error.exitCode : 1;
+} finally {
+  clearTimeout(addressTimer);
 }

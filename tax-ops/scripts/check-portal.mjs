@@ -16,11 +16,10 @@ try {
   await page.setViewport({ width: 1440, height: 900 });
   await page.goto(dashboard.href);
   await page.waitForSelector(".login-page");
-  for (const role of ["Cán bộ thuế", "Lãnh đạo Thuế", "Lãnh đạo nhà nước"]) {
-    await page.evaluate(label => [...document.querySelectorAll(".demo-account-list button")]
-      .find(button => button.textContent.includes(label)).click(), role);
-    await page.click(".login-submit");
-    const state = role === "Lãnh đạo nhà nước";
+  for (const role of ["cv.ql1", "tp.ql1", "cv.ql3", "tp.ql3", "vanhanh.dulieu", "lanhdao.nhanuoc"]) {
+    await page.evaluate(label => [...document.querySelectorAll(".demo-accounts-list button")]
+      .find(button => button.querySelector("code")?.textContent === label).click(), role);
+    const state = role === "lanhdao.nhanuoc";
     const selector = state ? ".dheader" : ".workspace";
     await page.waitForSelector(selector);
     assert.equal(new URL(page.url()).origin, base.origin);
@@ -40,7 +39,10 @@ try {
       await page.setViewport({ width: 390, height: 844 });
       await page.screenshot({ path: fileURLToPath(new URL("portal-nsnn-mobile.png", review)) });
     }
-    if (state) await page.click(".dheader-tools .dapp-switch");
+    if (state) {
+      await page.setViewport({ width: 1440, height: 900 });
+      await page.click(".dheader-tools .dapp-switch");
+    }
     else await page.click(".sidebar .logout-button");
     await page.waitForSelector(".login-page");
     await page.goto(dashboard.href);

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 const dir=path.dirname(fileURLToPath(import.meta.url));
+const expectedColorCount=Object.keys(JSON.parse(fs.readFileSync(path.join(dir,'tokens.json'),'utf8')).colors).length;
 const browser=await puppeteer.launch({channel:'chrome',headless:true});
 const results=[];
 try {
@@ -21,7 +22,7 @@ try {
     await p.evaluate(()=>{document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,0);});
     await p.screenshot({path:path.join(dir,`preview-${width}.png`),fullPage:true});
     const result={width,overflow,colorCount:count,fontsLoaded:fonts,buttonFeedback:!!feedback,errors};results.push(result);
-    if(overflow||count!==38||!fonts||!feedback||errors.length)throw new Error(JSON.stringify(result));
+    if(overflow||count!==expectedColorCount||!fonts||!feedback||errors.length)throw new Error(JSON.stringify(result));
     await p.close();
   }
   fs.writeFileSync(path.join(dir,'validation.json'),JSON.stringify({preview:results,figma:'Not executed: Figma MCP Starter quota exhausted. Plugin syntax checked; canvas import and visual QA pending.'},null,2)+'\n');

@@ -1,0 +1,5610 @@
+[
+  {
+    "file": "NewBRD\\brd-he-thong-du-lieu-tap-trung-tu-dong-hoa-nghiep-vu-to-quan-ly.md",
+    "type": ".md"
+  },
+  {
+    "file": "NewBRD\\design_ql1ql3.md",
+    "type": ".md"
+  },
+  {
+    "file": "NewBRD\\QL1 output\\BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_THANG7.2026.xlsx",
+    "sheets": [
+      {
+        "name": "So_Sanh_No",
+        "rows": 39,
+        "cols": 30,
+        "headers": [
+          [
+            "BÁO CÁO ĐÁNH GIÁ NỢ - NỢ ĐẾN NGÀY 31/07/2026 (ĐVT: TRIỆU ĐỒNG)"
+          ],
+          [
+            "STT",
+            "Phòng/TCS",
+            "Nợ đến ngày báo cáo (31/07/2026)",
+            "Tăng giảm so với đầu năm",
+            "Tăng giảm so với tháng trước",
+            "Tăng giảm so với tuần trước"
+          ],
+          [
+            "Số tuyệt đối",
+            "Số tương đối (%)",
+            "Số tuyệt đối",
+            "Số tương đối (%)",
+            "Số tuyệt đối",
+            "Số tương đối (%)"
+          ],
+          [
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)"
+          ],
+          [
+            "TỔNG TOÀN NGÀNH",
+            "35157665.713518",
+            "25192664.875427",
+            "6662341.733719",
+            "3302659.104372",
+            "6577423.509488",
+            "5941067.449191",
+            "285041.510634",
+            "351314.549663",
+            "0.2301388302636757",
+            "0.308601271762235",
+            "0.04469626654899932",
+            "0.1190354237367718",
+            "1510369.704702",
+            "1722810.402585",
+            "-333679.489008",
+            "121238.791125",
+            "0.04488829367763356",
+            "0.0734052443562673",
+            "-0.0476956084587082",
+            "0.03810838530834113",
+            "-2621792.534351997",
+            "-2618922.6138239987",
+            "11608.890641999431",
+            "-14478.811170000117",
+            "-0.06939730361273282",
+            "-0.0941665992578164",
+            "0.0017455054827654917",
+            "-0.004364850524351613"
+          ]
+        ]
+      },
+      {
+        "name": "DS_DN_TangnoTren500tr",
+        "rows": 2251,
+        "cols": 9,
+        "headers": [
+          [
+            "DANH SÁCH DOANH NGHIỆP, TỔ CHỨC TĂNG NỢ KNT TỪ 500,000,000 ĐỒNG ĐẾN NGÀY 22/07/2026"
+          ],
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "Nợ KNT ngày 22/07/2026",
+            "Nợ KNT đầu năm",
+            "Tăng/giảm",
+            "Phòng/TCS",
+            "Mã CQT",
+            "Loại NNT"
+          ],
+          [
+            "1",
+            "0500468389",
+            "CÔNG TY CỔ PHẦN ĐẦU TƯ DIA",
+            "2680061304709",
+            "1234480380098",
+            "1445580924611",
+            "Thuế cơ sở 24",
+            "0135",
+            "Doanh nghiệp, tổ chức"
+          ],
+          [
+            "2",
+            "0302980690",
+            "CÔNG TY TNHH ĐẦU TƯ ĐỊA ỐC THÀNH PHỐ",
+            "965041258381",
+            "0",
+            "965041258381",
+            "Phòng Quản lý các khoản thu từ đất",
+            "0101",
+            "Doanh nghiệp, tổ chức"
+          ],
+          [
+            "3",
+            "0102143374",
+            "CÔNG TY TNHH C.E.O QUỐC TẾ",
+            "826746200000",
+            "0",
+            "826746200000",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1",
+            "0101",
+            "Doanh nghiệp, tổ chức"
+          ]
+        ]
+      },
+      {
+        "name": "Danh gia Ket qua cuong che",
+        "rows": 38,
+        "cols": 8,
+        "headers": [
+          [
+            "TỔNG HỢP CƯỠNG CHẾ (NGƯỠNG THEO TAB THAM SỐ)"
+          ],
+          [
+            "Địa bàn",
+            "Phải Cưỡng chế",
+            "Đã Cưỡng chế",
+            "Chưa thực hiện CC",
+            "Tỷ lệ đã CC"
+          ],
+          [
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền"
+          ],
+          [
+            "Tổng cộng",
+            "16354",
+            "9210886160707",
+            "13898",
+            "8660731774934",
+            "2455",
+            "550154385773",
+            "0.9187165656158542"
+          ],
+          [
+            "VP Thuế TP HN",
+            "3017",
+            "6862831315546",
+            "1871",
+            "6393218388842",
+            "1145",
+            "469612926704",
+            "0.9315715474981571"
+          ]
+        ]
+      },
+      {
+        "name": "Danh gia Tam hoan XC",
+        "rows": 37,
+        "cols": 8,
+        "headers": [
+          [
+            "TỔNG HỢP TẠM HOÃN XUẤT CẢNH (NGƯỠNG THEO TAB THAM SỐ)"
+          ],
+          [
+            "Địa bàn",
+            "Phải THXC",
+            "Đã THXC",
+            "Chưa tạm hoãn",
+            "Tỷ lệ tạm hoãn"
+          ],
+          [
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền"
+          ],
+          [
+            "Tổng cộng",
+            "956",
+            "6778262754039",
+            "702",
+            "5673514292979",
+            "254",
+            "1104748461060",
+            "0.8370159875549664"
+          ],
+          [
+            "VP Thuế TP HN",
+            "341",
+            "5455899605232",
+            "221",
+            "4518530860822",
+            "120",
+            "937368744410",
+            "0.8281917168140156"
+          ]
+        ]
+      },
+      {
+        "name": "DS NNT chua cuong che",
+        "rows": 2458,
+        "cols": 17,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "CQT",
+            "Phòng/TCS",
+            "Loại NNT",
+            "Chương",
+            "Nợ >90 ngày - Nợ tháng",
+            "Nợ >90 ngày - Nợ ngày",
+            "Nợ dùng đánh giá tại đơn vị",
+            "Tổng nợ dùng đánh giá MST+CQT",
+            "Ngưỡng",
+            "Tình trạng cưỡng chế",
+            "Biện pháp hiệu lực",
+            "Số quyết định hiệu lực",
+            "Kết luận",
+            "Ghi chú"
+          ],
+          [
+            "2",
+            "0102043394",
+            "CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "123997232500",
+            "109787527059",
+            "109787527059",
+            "110016663927",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ],
+          [
+            "3",
+            "0100112388",
+            "Cục phục vụ ngoại giao đoàn",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "11",
+            "98207253817",
+            "95746455057",
+            "95746455057",
+            "95746455057",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ],
+          [
+            "4",
+            "0100105052",
+            "TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT NAM",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "137",
+            "49541531160",
+            "48655678297",
+            "48655678297",
+            "48690172941",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ],
+          [
+            "5",
+            "0111250196",
+            "CÔNG TY CỔ PHẦN QUẢN LÝ VÀ ĐẦU TƯ BẤT ĐỘNG SẢN VMI",
+            "0101",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "32985639415",
+            "47454789728",
+            "32985639415",
+            "32985639415",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ]
+        ]
+      },
+      {
+        "name": "DS tren 500tr chua Hoan XC",
+        "rows": 255,
+        "cols": 16,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "CQT",
+            "Phòng/TCS",
+            "Loại NNT",
+            "Chương",
+            "Nợ >120 ngày - Nợ tháng",
+            "Nợ >120 ngày - Nợ ngày",
+            "Nợ dùng đánh giá tại đơn vị",
+            "Tổng nợ dùng đánh giá MST+CQT",
+            "Ngưỡng theo loại NNT",
+            "Tình trạng tạm hoãn",
+            "Ngày tạm hoãn",
+            "Kết luận",
+            "Ghi chú"
+          ],
+          [
+            "#REF!"
+          ],
+          [
+            "1",
+            "0100276146",
+            "CÔNG TY TNHH HÒA BÌNH",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "445199057701",
+            "193258704838",
+            "193258704838",
+            "193258838274",
+            "500000000",
+            "Không có tạm hoãn",
+            "Chưa tạm hoãn"
+          ],
+          [
+            "2",
+            "0500442020",
+            "CÔNG TY CỔ PHẦN TẬP ĐOÀN XÂY DỰNG VÀ DU LỊCH BÌNH MINH",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "171300214761",
+            "111723178424",
+            "111723178424",
+            "111723178424",
+            "500000000",
+            "Không có tạm hoãn",
+            "Chưa tạm hoãn"
+          ],
+          [
+            "3",
+            "0100112388",
+            "Cục phục vụ ngoại giao đoàn",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "11",
+            "98207253817",
+            "95746455057",
+            "95746455057",
+            "95746455057",
+            "500000000",
+            "Không có tạm hoãn",
+            "Chưa tạm hoãn"
+          ]
+        ]
+      },
+      {
+        "name": "QuyTac_Nguon",
+        "rows": 12,
+        "cols": 2,
+        "headers": [
+          [
+            "Nội dung",
+            "Giá trị/Nguyên tắc"
+          ],
+          [
+            "Ngày báo cáo",
+            "22/07/2026"
+          ],
+          [
+            "Báo cáo nợ hiện tại",
+            "D:\\DTNGOC\\QLHT DN SO 1\\NAM 2026\\TOOL HO TRO\\TOOL_BAO_CAO_NO_TUAN\\NO_NGAY\\DANHGIANONGAY_22.07.2026.xlsx"
+          ],
+          [
+            "Báo cáo đầu năm đúng phạm vi",
+            "D:\\TOOL_BAO_CAO_NO_TUAN\\NO DAU NAM DN.xlsx"
+          ],
+          [
+            "Báo cáo tháng trước đúng phạm vi",
+            "D:\\TOOL_BAO_CAO_NO_TUAN\\NO Dn THANG 6.2026.xlsx"
+          ]
+        ]
+      },
+      {
+        "name": "Bao_cao_tong_hop",
+        "rows": 37,
+        "cols": 9,
+        "headers": [
+          [
+            "BÁO CÁO TẠM HOÃN XUẤT CẢNH TRẠNG THÁI 06 - DOANH NGHIỆP"
+          ],
+          [],
+          [
+            "Phòng/Thuế cơ sở",
+            "NNT trạng thái 06",
+            "Tổng nợ không hoạt động tại địa chỉ đăng ký",
+            "Số NNT đã tạm hoãn",
+            "Số nợ đã tạm hoãn",
+            "Tỷ lệ tạm hoãn về số tiền",
+            "Số NNT chưa tạm hoãn",
+            "Số tiền chưa tạm hoãn",
+            "Tỷ lệ chưa tạm hoãn về số tiền"
+          ],
+          [
+            "Tổng cộng chung",
+            "32681",
+            "2833072556619",
+            "14733",
+            "1993785697071",
+            "0.7037538422420044",
+            "17948",
+            "839286859548",
+            "0.2962461577579955"
+          ],
+          [
+            "VP Thuế TP Hà Nội",
+            "16404",
+            "1856956374091",
+            "6935",
+            "1221663090644",
+            "0.6578846480666608",
+            "9469",
+            "635293283447",
+            "0.34211535193333925"
+          ]
+        ]
+      },
+      {
+        "name": "DS_chua_tam_hoan",
+        "rows": 16170,
+        "cols": 11,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "Cơ quan thuế",
+            "Chương",
+            "Tổng nợ KCHĐ theo MST",
+            "Nhóm xử lý",
+            "Tình trạng tạm hoãn",
+            "Ngày tạm hoãn",
+            "Map Phòng/Thuế cơ sở",
+            "Loại NNT"
+          ],
+          [
+            "1",
+            "0303154993",
+            "Công Ty Cổ Phần Vận Tải Biển Và Bất Động Sản Việt Hải",
+            "0101",
+            "554",
+            "297150535215",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "2",
+            "0104803435",
+            "Công an Huyện ứng Hòa",
+            "0101",
+            "830",
+            "7634000733",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "3",
+            "0500141785",
+            "Công ty Thương mại Hoài đức",
+            "0101",
+            "416",
+            "7404299020",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "4",
+            "0100949539",
+            "Công ty cổ phần Bắc Trung",
+            "0101",
+            "854",
+            "7311012527",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "NewBRD\\QL3 output\\1_QL3_3_KQ tong hop cuoi cung.xls",
+    "sheets": [
+      {
+        "name": "TH DN trong ke hoach nam",
+        "rows": 37,
+        "cols": 17,
+        "headers": [
+          [
+            "TỔNG HỢP KẾT QUẢ KIỂM TRA TẠI TRỤ SỞ CQT ĐỐI VỚI KẾ HOẠCH NĂM 2026"
+          ],
+          [
+            "(Từ ngày 01/01/2026 đến ngày 31/08/2026)"
+          ],
+          [],
+          [
+            "Cơ quan Thuế thực hiện",
+            "Số DN trong Kế hoạch năm 2025 (theo NNT)",
+            "Số DN đã thực hiện (theo NNT)",
+            "Tỷ lệ thực hiện (theo NNT)",
+            "Số DN đã hoàn thành (ko tính hồ sơ chờ giải trình)",
+            "Tỷ lệ hoàn thành/kế hoạch năm",
+            "KPI tháng 8/2026 theo các đơn vị tự đăng ký",
+            "Tỷ lệ hoàn thành/KPI đăng ký",
+            "Số DN chấp nhận",
+            "Số DN chờ giải trình",
+            "Số DN điều chỉnh thuế",
+            "Số DN đề nghị kiểm tra tại DN",
+            "KQ điều chỉnh thuế: Tổng số thuế tăng thu",
+            "KQ điều chỉnh thuế: Giảm khấu trừ",
+            "KQ điều chỉnh thuế: Giảm lỗ",
+            "KQ điều chỉnh thuế: Số tiền phạt",
+            "KQ điều chỉnh thuế: Tiền nộp chậm"
+          ],
+          [
+            "Tổng cộng toàn ngành",
+            "13655.0",
+            "4333.0",
+            "0.31731966312705967",
+            "2833.0",
+            "0.2074697912852435",
+            "2379.0",
+            "1.190836485918453",
+            "2110.0",
+            "1500.0",
+            "387.0",
+            "336.0",
+            "9063048043.0",
+            "84538090.0",
+            "36670620146.0",
+            "133646493.0",
+            "73645206.0"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL1\\1.BC chốt sổ tháng 8 (2).xlsx",
+    "format": "OLE",
+    "streams": [
+      "\u0001CompObj",
+      "\u0005DocumentSummaryInformation",
+      "\u0005SummaryInformation",
+      "1Table",
+      "Data",
+      "WordDocument"
+    ],
+    "text": "CÁCH THỨC TỔNG HỢP KẾT QUẢ LIÊN QUAN ĐẾN NỢ THUẾ\rI. Số lượng hồ sơ cưỡng chế nợ thuế\t:\r\"TH1: Cán bộ quản lý là cán bộ quản lý nợ (được phân công tại chức năng 9,3,6)\r- Vào chức năng 9.4.16.1: \r+ Chọn danh sách: chọn NNT phải CC bằng BP trích tiền, phong tỏa TK\r+ Chọn kỳ tổng hợp danh sách\r+ Cán bộ quản lý nợ: Chọn CBQL nợ\r==> Ấn Thực hiện (F8): Ra danh sách phải thực hiện cưỡng chế tài khoản trong kỳ\rTH2: Cán bộ quản lý khác CB QL nợ:\r- B1: Vào chức năng 2. 2. 7 Xem thông tin phân công quản lý NNT để lấy toàn bộ danh sách NNT được phân công\rB2: Vào chức năng 9.4.16.1:\r+ Chọn danh sách: Chọn NNT phải CC bằng BP trích tiền, phong tỏa TK\r+  Trường MST chọn đa lựa chọn: paste danh sách tại b1 vào đa lựa chọn\r+ chọn kỳ tổng hợp danh sách\r==> Ấn Thực hiện (F8): Ra danh sách phải thực hiện cưỡng chế tài khoản trong kỳ\"\rII. Hồ sơ tạm hoãn xuất cảnh:\r1. Khai thác dữ liệu nợ thuế của người nộp thuế đang bị tạm hoãn xuất cảnh trên địa bàn thành phố tại TMS- chức năng Chức năng 9. 7. 5 Báo cáo tạm hoãn xuất cảnh \rTại dòng Cơ quan thuế: Chọn 0100 (Toàn địa bàn Thành phố Hà Nội)\rTại dòng Loại Thông báo: Tạm hoãn xuất cảnh - mẫu số 01/DS-XC\rThực hiện Kết xuất Excel - thu được danh sách NNT đang bị tạm hoãn xuất cảnh trên địa bàn thành phố\r2. Khai thác dữ liệu nợ thuế của người nộp thuế đang hoạt động trên địa bàn thành phố có nợ thuế thời điểm chốt số liệu (ngày cuối cùng của tháng liền kề) tại TMS - chức năng 9. 9. 4.15 Báo cáo phân loại tiền thuế nợ theo người nộp thuế (Mẫu số 01/NNT-BC). Thông số cụ thể: \r - Kỳ báo cáo: Tháng trước liền kề\r - Cơ quan thuế: 0100 (toàn địa bàn TP Hà Nội)\r- Người nộp thuế: Chọn đa lựa chọn - MST: dán sanh sách MST NNT có trạng thái đang hoạt động trên địa bàn thành phố đã thu được từ Bước 1\rSau khi hệ thống TMS chạy - thực hiện kết xuất excel - thu được danh sách tiền thuế nợ toàn địa bàn TP Hà Nội tính đến ngày cuối cùng của tháng liền kề,\r- Chuẩn hóa, trực quan hóa dữ liệu (bảng biểu, biểu đồ) để tổng hợp số lượng doanh nghiệp có nợ thuế và tổng số tiền thuế nợ: Từ dữ liệu kết xuất excel đã thu được tại bước 2 - sử dụng chức năng pivot table - tổng hợp thành các cột : MST / Tổng số tiền thuế nợ => thu được danh sách NNT đang bị tạm hoãn xuất cảnh và số nợ trên địa bàn toàn TP Hà Nội tính đến ngày cuối cùng của tháng liền kề.\r3. Công bố/ báo cáo trên module dùng chung phục vụ Lãnh đạo thành phố.\rIII. Tăng giảm nợ\r1. Khai thác dữ liệu nợ thuế của người nộp thuế đang hoạt động trên địa bàn thành phố tại TMS- chức năng Chức năng 2.9.1.\rTại dòng Cơ quan thuế: Chọn 0101 đến 9999\rTại dòng Loại người nộp thuế: Chọn 0100 đến 9110\rTại dòng Ngày tạo: chọn ngày tạo từ 01.01.1998 đến 31.12.9999\rTại dòng Trạng thái ĐKT tổ chức: Chọn trạng thái 00 - NNT đang hoạt động\rThực hiện Kết xuất Excel - thu được danh sách NNT đang hoạt động trên địa bàn thành phố\r2. Khai thác dữ liệu nợ thuế của người nộp thuế đang hoạt động trên địa bàn thành phố có số nộp tiền thuế nợ tính đến kỳ chốt sổ tháng liền kề tại TMS - chức năng 9. 9. 4.17 Sổ theo dõi tình hình tiền thuế nợ (Mẫu số 03/NNT-BC) . Thông số cụ thể: \r - Kỳ báo cáo: Tháng trước liền kề\r - Cơ quan thuế: 0100 (toàn địa bàn TP Hà Nội)\r- Người nộp thuế: Chọn đa lựa chọn - MST: dán sanh sách MST NNT có trạng thái đang hoạt động trên địa bàn thành phố đã thu được từ Bước 1\rSau khi hệ thống TMS chạy - thực hiện kết xuất excel - thu được danh sách tình hình thực hiện thu hồi tiền thuế nợ toàn địa bàn TP Hà Nội tính đến ngày cuối cùng của tháng liền kề,\r- Chuẩn hóa, trực quan hóa dữ liệu (bảng biểu, biểu đồ) để tổng hợp số lượng doanh nghiệp có nợ thuế và tổng số tiền thuế nợ: Từ dữ liệu kết xuất excel đã thu được tại bước 2 - Cộng dữ liệu tại cột L+N  => thu được danh sách NNT đang hoạt động có nợ trên địa bàn toàn TP Hà Nội tính đến ngày cuối cùng của tháng liền kề.\rTrường hợp thời gian theo dõi dài, cộng lũy kế kết quả các tháng trong năm lại ==> thu được danh sách tình hình thu hồi nợ đọng theo năm (hoặc theo 3 tháng - 5 tháng tùy nhu cầu người sử dụng)\r3. Khai thác dữ liệu phân công quản lý NNT đối với từng cán bộ và phòng ban trên địa bàn thành phố tại TMS - chức năng 2. 2. 7 Xem thông tin phân công quản lý NNT. Thông số cụ thể:\r- CQT phân công: 0101 (Thuế TP Hà Nội)\r- xóa P_NUMROW:\rSau khi hệ thống TMS chạy - thực hiện kết xuất excel - thu được danh sách phân công quản lý NNT đối với từng cán bộ và phòng ban trên địa bàn TP \r4. Tổng hợp các kết quả thu được từ Bước 1, bước 2, bước 3  thu được dữ liệu thu hồi nợ đọng thuế theo từng cán bộ quản lý / phòng ban / Thuế cơ sở\r"
+  },
+  {
+    "file": "QL1\\5.DS rà soát cưỡng chế tài khoản tháng 09.2026 (2).xls",
+    "format": "xlsx",
+    "sheets": [
+      {
+        "name": "Trang_tính1",
+        "rows": 3804,
+        "cols": 14
+      },
+      {
+        "name": "Trang_tính2",
+        "rows": 3802,
+        "cols": 14
+      },
+      {
+        "name": "01NNT_BC",
+        "rows": 6962,
+        "cols": 53
+      }
+    ]
+  },
+  {
+    "file": "QL1\\6.danh bạ NNT (2).xls",
+    "format": "xlsx",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 3801,
+        "cols": 19
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO CAO CONG TAC NO KHOI DN TO CHUC (THANG 7.2026) (2).doc",
+    "type": ".doc",
+    "format": "xlsx",
+    "sheets": [
+      {
+        "name": "Trang_tính2",
+        "rows": 321,
+        "cols": 1
+      },
+      {
+        "name": "Trang_tính3",
+        "rows": 318,
+        "cols": 12
+      },
+      {
+        "name": "Trang_tính4",
+        "rows": 219,
+        "cols": 5
+      },
+      {
+        "name": "Trang_tính1",
+        "rows": 1332,
+        "cols": 16
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 1 - THANG 7.2026) (2).doc",
+    "type": ".doc",
+    "format": "xls",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 172,
+        "cols": 11
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 2 - THANG 7.2026) (2).doc",
+    "type": ".doc",
+    "format": "OLE",
+    "streams": [
+      "\u0001CompObj",
+      "\u0005DocumentSummaryInformation",
+      "\u0005SummaryInformation",
+      "1Table",
+      "Data",
+      "WordDocument"
+    ],
+    "text": "THUẾ THÀNH PHỐ HÀ NỘI\r\bPHÒNG QLDN1\u000b\u0007\bCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\u000bĐộc lập - Tự do - Hạnh phúc\u000b\u0007\u0007\rBÁO CÁO ĐÁNH GIÁ CÔNG TÁC QLN & CCNT\rKHỐI DOANH NGHIỆP TỔ CHỨC\r(Tháng 7/2026)\r\rĐánh giá tình hình nợ Khối doanh nghiệp, tổ chức:\rNợ khối doanh nghiệp, tổ chức đến ngày 31/7/2026: Tổng nợ (không gồm nợ đã xử lý, chờ điều chỉnh): 35.157 tỷ đồng, tăng thêm: 6.577 tỷ đồng, Tỷ lệ nợ tăng so với đầu năm: 23,0% , \rSo với tháng trước: tổng nợ tăng: 1.510 tỷ đồng, Tỷ lệ tăng nợ so với tháng trước: 4,5%. \rNguyên nhân:\r1. Các khoản phát sinh sau quyết toán năm 2025 (hạn nôp 31/3/2026), các khoản phải nộp theo tờ khai thuế GTGT kỳ tháng 4,5,6,7/2026, theo kỳ Quý 2/2026; các đơn vị đã hoàn thành kê khai nhưng chưa hoàn thành nộp tiền thuế nợ vào tiền chậm nộp vào NSNN, các đơn vị đang bố trí nguồn nộp NSNN.\r2. phát sinh sau quyết toán năm 2025 (hạn nôp 31/3/2026), các khoản phải nộp theo tờ khai thuế GTGT kỳ tháng 4,5,6,7/2026, theo kỳ Quý 2/2026, các đơn vị đã nộp tiền nhưng chứng từ hạch toán chậm, chưa về hệ thống.\rTrong đó:\r+ Khối Văn phòng Thuế TP HN: So với đầu năm, Tổng nợ tăng thêm là 4.154 tỷ đồng, tương ứng tỷ lệ tăng 18,5%, thấp hơn tỷ lệ tăng bình quân chung toàn Thuế Thành phố là 23 %.\r So với tháng trước, Tổng nợ tăng lên là 1.826 tỷ đồng, tương ứng tỷ lệ tăng 7,4%, cao hơn tỷ lệ tăng bình quân chung toàn Thuế Thành phố là 4,5%. \rSo với tuần trước, Tổng nợ giảm đi là (1.985) tỷ đồng, tương ứng tỷ lệ giảm -7%, cao hơn hơn tỷ lệ giảm bình quân chung toàn Thuế Thành phố là -6,9%).\r+ Khối Thuế cơ sở: So với đầu năm, Tổng nợ tăng thêm là 2.423 tỷ đồng, tương ứng tỷ lệ tăng 39,2% cao hơn tỷ lệ tăng bình quân chung toàn Thuế Thành phố 23,0%). \rSo với tháng trước, Tổng nợ giảm là -316 tỷ đồng, tương ứng tỷ lệ giảm -3,5%, (thấp hơn tỷ lệ tăng bình quân chung toàn Thuế Thành phố là tăng nợ 4,5%). \rSo với tuần trước, Tổng nợ giảm là (636) tỷ đồng, tương ứng tỷ lệ giảm là -6,9%, (bằng với tỷ lệ giảm nợ bình quân chung toàn Thuế Thành phố là -6,9%).\r* Các đơn vị có tỷ lệ tăng nợ thấp hơn bình quân chung so với tháng trước / giảm nợ cao hơn bình quân chung so với tháng trước:\r+ Khối các Phòng QLHTDN: Phòng Quản lý, Hỗ trợ doanh nghiệp số 2 giảm nợ -37,0% (giảm -208 tỷ), Phòng Quản lý, Hỗ trợ doanh nghiệp số 3 giảm nợ -22,1% (giảm -296 tỷ), Phòng Quản lý, Hỗ trợ doanh nghiệp số 5 giảm nợ -20,5% (giảm -269 tỷ), Phòng Quản lý, Hỗ trợ doanh nghiệp số 4 giảm nợ -12,8% (giảm -126 tỷ),  Phòng Quản lý, Hỗ trợ doanh nghiệp số 1 giảm nợ --3,1% (giảm -122 tỷ)\r+ Khối Thuế cơ sở: Thuế cơ sở 2 giảm nợ -17,8%, Thuế cơ sở 20: giảm -17,6%, Thuế cơ sở 1 giảm nợ -17,0%;  Thuế cơ sở 5 giảm -14,4%; Thuế cơ sở 21 giảm -14,3%, Thuế cơ sở 23 giảm nợ -13,4%, Thuế cơ sở 7: giảm nợ -11,8%, Thuế cơ sở 12 giảm nợ -11,6%, Thuế cơ sở 14: giảm -9,9%, Thuế cơ sở 10 giảm nợ -8,8%;  Thuế cơ sở 3 giảm -8,5%; Thuế cơ sở 13 giảm -6,6%, Thuế cơ sở 11 giảm nợ -5,9%, Thuế cơ sở 15: giảm -5,2%.\r* Các đơn vị có tỷ lệ tăng nợ cao hơn bình quân chung/ giảm nợ thấp hơn mức bình quân chung \r+ Khối các Phòng QLHTDN: Phòng quản lý các khoản thu từ đất tăng nợ -17,2% (tăng 2.843 tỷ)\r+ Khối Thuế cơ sở: Các đơn vị tăng nợ lớn so với mức bình quân chung: Thuế cơ sở 17: Tăng 124,9%, Thuế cơ sở 22: Tăng nợ 100,3%, Thuế cơ sở 16: Tăng 34,4%, Thuế cơ sở 25: Tăng nợ 24,8%, Thuế cơ sở 19: Tăng 11,6%, Thuế cơ sở 9: Tăng nợ 1,2%\rDANH SÁCH NNT CÓ SỐ NỢ TĂNG CAO SO VỚI ĐẦU NĂM\rSTT\u0007MST\u0007Tên NNT\u0007Tăng/giảm\u0007Phòng/TCS\u0007\u00071\u00070500468389\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ DIA\u00071.445.580.924.611\u0007Thuế cơ sở 24\u0007\u00072\u00070302980690\u0007CÔNG TY TNHH ĐẦU TƯ ĐỊA ỐC THÀNH PHỐ\u0007965.041.258.381\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00073\u00070102143374\u0007CÔNG TY TNHH C.E.O QUỐC TẾ\u0007826.746.200.000\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00074\u00070110463360\u0007CÔNG TY CỔ PHẦN THÁI NAM LAND\u0007678.109.459.649\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00075\u00070110503750\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ THÁI MINH LAND\u0007545.947.934.791\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00076\u00070100520789\u0007CÔNG TY TNHH DUYÊN HÀ\u0007269.987.383.405\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00077\u00070102479462\u0007CÔNG TY CỔ PHẦN THỜI ĐẠI MỚI T&T\u0007222.089.900.031\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u00078\u00070102043394\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH\u0007201.228.066.433\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00079\u00070101410852\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN HDB VIỆT NAM\u0007191.744.503.320\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000710\u00070106793937\u0007CÔNG TY TNHH BẤT ĐỘNG SẢN THẠCH BÀN LAKESIDE\u0007180.871.745.811\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000711\u00070108268436\u0007CÔNG TY CỔ PHẦN SUNSHINE TÂY HỒ\u0007169.190.298.510\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000712\u00070100104267\u0007TỔNG CÔNG TY XÂY DỰNG NÔNG NGHIỆP VIỆT NAM -  CÔNG TY CỔ PHẦN\u0007146.057.719.823\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000713\u00070100111472\u0007CÔNG TY CỔ PHẦN TRUNG TÂM HỘI CHỢ TRIỂN LÃM VIỆT NAM\u0007126.775.790.695\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 4\u0007\u000714\u00070106205215\u0007CÔNG TY TNHH ĐẦU TƯ VÀ PHÁT TRIỂN ĐÔ THỊ GIA LÂM\u0007109.060.529.446\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000715\u00070401883578\u0007CÔNG TY TNHH BẤT ĐỘNG SẢN S-LAND\u0007108.135.521.937\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000716\u00070100760981\u0007CÔNG TY CỔ PHẦN NAM HƯNG.\u000797.293.337.810\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000717\u00070108704763\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN XÂY DỰNG SCG\u000787.138.723.781\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000718\u00070109656689\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ CÔNG NGHỆ UNICLOUD\u000785.170.307.461\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000719\u00070101642109\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN HOUSINCO\u000774.201.071.789\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000720\u00070110943141\u0007CÔNG TY TNHH HÀNG KHÔNG MẶT TRỜI PHÚ QUỐC\u000769.445.140.098\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000721\u00070109153251\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ KINH DOANH ĐỊA ỐC PHƯƠNG ĐÔNG\u000764.063.431.160\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000722\u00070111250196\u0007CÔNG TY CỔ PHẦN QUẢN LÝ VÀ ĐẦU TƯ BẤT ĐỘNG SẢN VMI\u000757.277.239.748\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000723\u00070600082558-007\u0007CHI NHÁNH HÀ TÂY - CÔNG TY CỔ PHẦN TẬP ĐOÀN NAM CƯỜNG HÀ NỘI\u000756.065.521.769\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000724\u00070104564681-001\u0007CÔNG TY CỔ PHẦN XÂY DỰNG, ĐẦU TƯ BẤT ĐỘNG SẢN VIỆT MINH HOÀNG - CHI NHÁNH HÀ NỘI\u000755.350.822.004\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000725\u00070108359563\u0007CÔNG TY CỔ PHẦN SUNSHINE SKY VILLA\u000747.447.353.709\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000726\u00070101496024\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN ĐẦU TƯ TÂY BẮC\u000741.519.588.906\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000727\u00070500447004\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ HẢI PHÁT\u000740.453.257.289\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000728\u00070100203476\u0007TỔNG CÔNG TY CỔ PHẦN THƯƠNG MẠI XÂY DỰNG\u000738.224.824.859\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000729\u00070100105052\u0007TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT NAM\u000736.229.398.481\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000730\u00070300588569-007\u0007CHI NHÁNH CÔNG TY CỔ PHẦN SỮA VIỆT NAM TẠI HÀ NỘI\u000736.107.385.794\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000731\u00070100779573\u0007CÔNG TY TNHH SƠN KOVA\u000734.452.290.280\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000732\u00070100112388\u0007Cục phục vụ ngoại giao đoàn\u000734.384.761.280\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000733\u00072600114002-002\u0007NHÀ MÁY BIA SÀI GÒN - MÊ LINH - CHI NHÁNH CÔNG TY CỔ PHẦN BIA, RƯỢU SÀI GÒN - ĐỒNG XUÂN\u000733.307.684.277\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000734\u00078078646548\u0007LÊ THIÊN QUÂN\u000732.372.754.500\u0007Thuế cơ sở 25\u0007\u000735\u00070100105140\u0007CÔNG TY CỔ PHẦN SÔNG ĐÀ 12\u000731.131.266.977\u0007Thuế cơ sở 15\u0007\u000736\u00070500238120\u0007CÔNG TY CỔ PHẦN CÔNG TRÌNH GIAO THÔNG 116\u000729.933.345.130\u0007Thuế cơ sở 14\u0007\u000737\u00070109313811\u0007CÔNG TY CỔ PHẦN QUẢN LÝ KHÁCH SẠN ARIYANA\u000728.949.965.878\u0007Thuế cơ sở 2\u0007\u000738\u00070105462837\u0007CÔNG TY CỔ PHẦN KHOA HỌC CÔNG NGHỆ & TRUYỀN THÔNG VN\u000728.776.729.331\u0007Thuế cơ sở 7\u0007\u000739\u00078125188489\u0007Vũ Văn Sơn\u000728.444.935.719\u0007Thuế cơ sở 16\u0007\u000740\u00070100689376\u0007CÔNG TY CỔ PHẦN TƯ VẤN ĐẦU TƯ VÀ XÂY DỰNG BƯU ĐIỆN\u000728.432.881.483\u0007Thuế cơ sở 4\u0007\u000741\u00070103711478\u0007CÔNG TY CỔ PHẦN XÂY DỰNG HỢP LỰC\u000728.354.964.676\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000742\u00070304683887\u0007CÔNG TY CỔ PHẦN THƯƠNG MẠI - QUẢNG CÁO - XÂY DỰNG - ĐỊA ỐC VIỆT HÂN\u000727.251.858.214\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000743\u00070100525353\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN TELIN\u000725.103.781.728\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000744\u00070101324219\u0007CÔNG TY CỔ PHẦN 216\u000723.956.475.254\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 4\u0007\u000745\u00075400240573\u0007CÔNG TY CP CƠ KHÍ - LẮP MÁY SÔNG ĐÀ\u000722.836.663.466\u0007Thuế cơ sở 15\u0007\u000746\u00070200124891-027\u0007CÔNG TY TNHH QUẢN LÝ NỢ VÀ KHAI THÁC TÀI SẢN NGÂN HÀNG TMCP HÀNG HẢI VIỆT NAM\u000722.203.820.124\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 4\u0007\u000747\u00072500203964\u0007CÔNG TY TNHH XÂY DỰNG HOÀNG VÂN\u000722.111.620.411\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000748\u00070101637370\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ PHÁT TRIỂN NHÀ HÀ NỘI SỐ 41\u000721.942.423.164\u0007Thuế cơ sở 6\u0007\u000749\u00078578771970\u0007Trần Ngọc Ngân\u000721.639.012.500\u0007Thuế cơ sở 22\u0007\u000750\u00078606579982\u0007Nguyễn Xuân Trường\u000721.058.358.961\u0007Thuế cơ sở 22\u0007\u000751\u00070100276146\u0007CÔNG TY TNHH HÒA BÌNH\u000720.827.852.737\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000752\u00070102349978\u0007CÔNG TY CỔ PHẦN CÔNG NGHỆ THƯƠNG MẠI GIGA1\u000720.688.062.709\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000753\u00070101409688\u0007Khu liên hợp thể thao quốc gia\u000720.669.115.646\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000754\u00070106339402\u0007CÔNG TY TNHH DỊCH VỤ BẢO VỆ VINCOM\u000720.290.693.678\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 4\u0007\u000755\u00070107514576\u0007CÔNG TY TNHH MISUMI VIỆT NAM\u000720.203.105.610\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u000756\u00070100106779\u0007CÔNG TY CỔ PHẦN KHÁCH SẠN THẮNG LỢI\u000720.198.147.525\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 4\u0007\u0007\rII. Đánh giá công tác cưỡng chế nợ thuế Khối doanh nghiệp, tổ chức:\rKết quả thực hiện chung toàn Thuế TP Hà Nội:\r+ Tổng số tiền phải cưỡng chế: 9.210,9 tỷ đồng.\r+ Tổng số tiền đã thực hiện cưỡng chế: 8.660,7 tỷ đồng.\r+ Số tiền chưa thực hiện cưỡng chế: 550,2 đồng.\rTỷ lệ cưỡng chế chung: 91.9%. Trong đó:\r+ Khối Văn phòng Thuế TP HN (Các phòng QLHTDN): Tỷ lệ thực hiện đạt 93.2%. Số tiền đã thực hiện cưỡng chế là 6.393,2 tỷ đồng; số tiền chưa thực hiện cưỡng chế là 469,6 tỷ đồng.\r+ Khối Thuế cơ sở: Tỷ lệ thực hiện đạt 96.6%Tổng số tiền đã thực hiện cưỡng chế là 2.267,5 tỷ đồng; số tiền chưa thực hiện cưỡng chế là 80,5 tỷ đồng.\rCác đơn vị có tỷ lệ thực hiện cao hơn bình quân chung\rKhối các Phòng QLHTDN: Phòng QLHTDN 5 (đạt tỷ lệ 96.7%) và Phòng QLHTDN 1 (đạt tỷ lệ 96.2%), Phòng QLHTDN 4 (đạt tỷ lệ 95.5%) \rKhối Thuế cơ sở: Thuế cơ sở 3 (đạt tỷ lệ 100%), Thuế cơ sở 22 (đạt tỷ lệ 99.9%), Thuế cơ sở 19 (đạt tỷ lệ 99.4%), Thuế cơ sở 16 (đạt tỷ lệ 99.1%), \rThuế cơ sở 17 (đạt tỷ lệ 99%)\rCác đơn vị có tỷ lệ thực hiện thấp hơn bình quân chung\rKhối các Phòng QLHTDN: Phòng Thuế cá nhân, hộ kinh doanh thu khác (đạt tỷ lệ 41.9%), Phòng QLHTDN 3 (đạt tỷ lệ 87%), Phòng QLHTDN 2 (đạt tỷ lệ 88.9)%\rKhối Thuế cơ sở: Thuế cơ sở 20 (đạt tỷ lệ 83.5%), Thuế cơ sở 18 (đạt tỷ lệ 88.7%), Thuế cơ sở 25 (đạt tỷ lệ 88.8%)\r\rDANH SÁCH NNT NỢ LỚN QUÁ HẠN CHƯA CƯỠNG CHẾ:\r(Các trường hợp nợ trên 90 ngày, ngưỡng nợ trên 1 tỷ đồng)\rSTT\u0007MST\u0007Tên NNT\u0007Nợ dùng đánh giá tại đơn vị\u0007Phòng/TCS\u0007\u00071\u00070102043394\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH\u0007109.787.527.059\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00072\u00070100112388\u0007Cục phục vụ ngoại giao đoàn\u000795.746.455.057\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00073\u00070100105052\u0007TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT NAM\u000748.655.678.297\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00074\u00070111250196\u0007CÔNG TY CỔ PHẦN QUẢN LÝ VÀ ĐẦU TƯ BẤT ĐỘNG SẢN VMI\u000732.985.639.415\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00075\u00070101659769\u0007CÔNG TY CỔ PHẦN  ĐẦU TƯ XÂY DỰNG PHÁT TRIỂN ĐÔNG ĐÔ\u000715.564.308.336\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00076\u00070102479462\u0007CÔNG TY CỔ PHẦN THỜI ĐẠI MỚI T&T\u000714.667.614.697\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u00077\u00070106218422\u0007Bệnh viện đa khoa Gia Lâm\u000710.025.326.080\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00078\u00070103598783\u0007CÔNG TY CỔ PHẦN PHÁT TRIỂN NHÀ PHONG PHÚ - DAEWON – THỦ ĐỨC\u00079.788.328.724\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00079\u00072500226947\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ DU LỊCH AN PHÁT\u00079.309.978.214\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000710\u00070105391248\u0007Bệnh viện Đa khoa Y học cổ truyền Hà Nội\u00079.196.478.054\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000711\u00070101555946\u0007Bệnh viện ung bướu Hà Nội\u00078.692.865.227\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000712\u00070110047057\u0007CÔNG TY CỔ PHẦN CÔNG NGHỆ UMEEHOMES PLUS\u00077.375.676.935\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 4\u0007\u000713\u00070101958173\u0007Bệnh viện bệnh nhiệt đới Trung ương\u00076.918.083.702\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000714\u00070101589695\u0007Học Viện Tư pháp\u00076.110.857.194\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000715\u00070106387290\u0007CÔNG TY CỔ PHẦN XÂY DỰNG HITECHCONS VIỆT NAM\u00075.715.839.883\u0007Thuế cơ sở 15\u0007\u000716\u00070101451859\u0007Bệnh viện nội tiết Trung ương\u00074.136.652.199\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000717\u00072300149170\u0007CÔNG TY CỔ PHẦN KHAI SƠN\u00073.382.693.836\u0007Thuế cơ sở 11\u0007\u000718\u00070100101650\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN NGÀNH NƯỚC VÀ MÔI TRƯỜNG\u00072.862.967.501\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000719\u00070102307343\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN CMH VIỆT NAM\u00072.833.008.540\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000720\u00070500474488\u0007Bệnh viện y học cổ truyền Hà Đông\u00072.548.087.925\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000721\u00070106488901\u0007CÔNG TY TNHH THƯƠNG MẠI K & K TOÀN CẦU\u00072.367.469.162\u0007Thuế cơ sở 15\u0007\u000722\u00070100849534\u0007Chi cục Hải quan khu vực I\u00071.986.783.563\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000723\u00070101837394\u0007CÔNG TY TNHH MỘT THÀNH VIÊN QUẢN LÝ VÀ PHÁT TRIỂN NHÀ HÀ NỘI\u00071.923.071.583\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000724\u00070105853894\u0007CÔNG TY TNHH CƠ ĐIỆN VÀ XÂY DỰNG QUỐC TẾ HOA NAM\u00071.783.500.239\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u000725\u00070106488637\u0007CÔNG TY CỔ PHẦN CÔNG NGHỆ ĐỨC TRUNG\u00071.764.838.504\u0007Thuế cơ sở 21\u0007\u000726\u00070110208868\u0007CÔNG TY TNHH JAEKYONG TECH\u00071.638.248.983\u0007Thuế cơ sở 18\u0007\u000727\u00070101837394\u0007CÔNG TY TNHH MỘT THÀNH VIÊN QUẢN LÝ VÀ PHÁT TRIỂN NHÀ HÀ NỘI\u00071.565.370.706\u0007Thuế cơ sở 4\u0007\u000728\u00070101452595\u0007CÔNG TY CỔ PHẦN NAM DƯỢC\u00071.545.081.767\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000729\u00070100237468\u0007CÔNG TY TNHH THỦ ĐÔ II\u00071.514.291.307\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000730\u00070101437389\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ SÔNG ĐÀ - VIỆT ĐỨC\u00071.476.972.891\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000731\u00070102333618\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ PHÁT TRIỂN LŨNG LÔ 5\u00071.414.258.685\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000732\u00070106093653\u0007CÔNG TY TNHH THƯƠNG MẠI DỊCH VỤ HHH VIỆT NAM\u00071.338.931.082\u0007Thuế cơ sở 20\u0007\u000733\u00070100104563\u0007CÔNG TY CỔ PHẦN Ô TÔ TMT\u00071.324.168.348\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000734\u00070100100287\u0007CÔNG TY CỔ PHẦN TƯ VẤN VÀ DỊCH VỤ KỸ THUẬT ĐIỆN\u00071.300.040.325\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000735\u00070200170658\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ, THƯƠNG MẠI VÀ DỊCH VỤ - VINACOMIN\u00071.212.146.195\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000736\u00070111057185\u0007CÔNG TY CỔ PHẦN BÊ TÔNG THƯƠNG PHẨM HÀ THÀNH\u00071.158.489.756\u0007Thuế cơ sở 15\u0007\u000737\u00070100120300\u0007Trung tâm nghiên cứu, sản xuất vắc xin và sinh phẩm y tế\u00071.137.197.880\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000738\u00070305130620002\u0007CÔNG TY TNHH DỊCH VỤ HÀNG KHÔNG HƯƠNG GIANG- CHI NHÁNH HÀ NỘI\u00071.016.312.178\u0007Thuế cơ sở 1\u0007\u0007III. Đánh giá công tác tạm hoãn xuất cảnh Khối doanh nghiệp, tổ chức \r1. Đối với Doanh nghiệp, tổ chức TT-00 đang hoạt động:\rKết quả thực hiện chung toàn Thuế TP Hà Nội:\r+ Tổng số tiền phải thực hiện tạm hoãn xuất cảnh (THXC): 6.778,3 tỷ đồng.\r+ Tổng số tiền đã thực hiện THXC: 5.673,5 tỷ đồng.\r+ Số tiền chưa thực hiện THXC: 1.104,8 đồng.\r+ Tỷ lệ tạm hoãn chung: 83.7%. Trong đó:\r+ Khối Văn phòng Thuế TP HN (Các phòng QLHTDN): Tỷ lệ thực hiện đạt 82.8%. Số tiền đã thực hiện THXC là 4.518,5 tỷ đồng; số tiền chưa thực hiện THXC là 937,4 tỷ đồng.\r+ Khối Thuế cơ sở: Tỷ lệ thực hiện đạt 87.3%. Tổng số tiền đã thực hiện THXC là 1.163,2 tỷ đồng; số tiền chưa thực hiện THXC là 153,2 tỷ đồng.\rCác đơn vị có tỷ lệ thực hiện cao hơn bình quân chung\rKhối các Phòng QLHTDN: Phòng QLHTDN 5 (đạt tỷ lệ 99.2%), Phòng QLHTDN 4 (đạt tỷ lệ 98.9%), Phòng QLHTDN 2 (đạt tỷ lệ 94.7%)\rKhối Thuế cơ sở: Thuế cơ sở 16 (đạt tỷ lệ 100%),  Thuế cơ sở 24 (đạt tỷ lệ 100%), Thuế cơ sở 25 (đạt tỷ lệ 100%), Thuế cơ sở 22 (đạt tỷ lệ 100%) \rCác đơn vị có tỷ lệ thực hiện thấp hơn bình quân chung\rKhối các Phòng QLHTDN: Phòng Quản lý các khoản thu từ đất (đạt tỷ lệ 76.3%), QLHTDN 3 (đạt tỷ lệ 88.6%)   \rKhối Thuế cơ sở: Thuế cơ sở 1 (đạt tỷ lệ 33.2%), Thuế cơ sở 2 (đạt tỷ lệ 65.4%), Thuế cơ sở 18 (đạt tỷ lệ 72.5%), Thuế cơ sở 21 (đạt tỷ lệ 75.8%)\r\rDANH SÁCH NNT NỢ LỚN CHƯA THỰC HIỆN TẠM HOÃN XUẤT CẢNH\r(Các trường hợp nợ trên 121 ngày, ngưỡng nợ trên 3 tỷ đồng)\rSTT\u0007MST\u0007Tên NNT\u0007Nợ dùng đánh giá tại đơn vị\u0007Phòng/TCS\u0007\u00071\u00070100276146\u0007CÔNG TY TNHH HÒA BÌNH\u0007193.258.704.838\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00072\u00070500442020\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN XÂY DỰNG VÀ DU LỊCH BÌNH MINH\u0007111.723.178.424\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00073\u00070100112388\u0007Cục phục vụ ngoại giao đoàn\u000795.746.455.057\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00074\u00070109153251\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ KINH DOANH ĐỊA ỐC PHƯƠNG ĐÔNG\u000764.063.389.149\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u00075\u00070100105052\u0007TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT NAM\u000748.655.678.297\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00076\u00070102043394\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH\u000736.995.535.435\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00077\u00070100106271\u0007CÔNG TY TRÁCH NHIỆM HỮU HẠN MỘT THÀNH VIÊN CÔNG VIÊN THỐNG NHẤT\u000736.450.203.746\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00078\u00070300626775004\u0007CHI NHÁNH CÔNG TY TNHH MEKONG AUTO\u000727.566.299.482\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00079\u00070109313811\u0007CÔNG TY CỔ PHẦN QUẢN LÝ KHÁCH SẠN ARIYANA\u000717.763.025.056\u0007Thuế cơ sở 2\u0007\u000710\u00070100106754\u0007Công ty sản xuất công nghiệp và xây lắp Hà Nội\u000717.698.356.006\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000711\u00070100106747\u0007Công Ty Cổ Phần Xuất Nhập Khẩu Tạp Phẩm\u000712.129.775.575\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000712\u00070104504731\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN GIÁO DỤC - TDS VIỆT NAM\u000710.913.086.168\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000713\u00070109432720\u0007CÔNG TY CỔ PHẦN KS GROUP\u000710.859.858.723\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000714\u00070106218422\u0007Bệnh viện đa khoa Gia Lâm\u000710.025.326.080\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000715\u00070103598783\u0007CÔNG TY CỔ PHẦN PHÁT TRIỂN NHÀ PHONG PHÚ - DAEWON – THỦ ĐỨC\u00079.788.312.223\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000716\u00070101069590\u0007HTX hải phong\u00079.774.019.259\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000717\u00072500226947\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ DU LỊCH AN PHÁT\u00079.309.978.214\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000718\u00070105391248\u0007Bệnh viện Đa khoa Y học cổ truyền Hà Nội\u00079.196.478.054\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000719\u00070106217404\u0007CÔNG TY TNHH THƯƠNG MẠI VÀ XÂY DỰNG HDT HÀ NỘI\u00079.159.917.560\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000720\u00070101516552\u0007CÔNG TY CỔ PHẦN THIẾT KẾ XÂY DỰNG STELLAR\u00078.569.681.638\u0007Thuế cơ sở 1\u0007\u000721\u00070104861959\u0007CÔNG TY TNHH XÂY DỰNG DÂN DỤNG VÀ THƯƠNG MẠI THÁI MINH\u00078.309.689.391\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000722\u00070101622053\u0007Công Ty Cổ Phần Đầu Tư Kinh Doanh Và Dịch Vụ Nhà Hà Nội\u00078.041.566.973\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000723\u00070110050927\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN HẠ TẦNG VÀ DỆT MAY ĐÔNG BẮC\u00077.515.505.096\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000724\u00070102274553\u0007CÔNG TY CỔ PHẦN BITEXCO\u00077.495.613.146\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000725\u00070100109716\u0007CÔNG TY TNHH MỘT THÀNH VIÊN NHÀ XUẤT BẢN THẾ GIỚI\u00077.158.745.942\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000726\u00070102193826\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ  XÂY DỰNG CONSTREXIM\u00076.970.221.698\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000727\u00070101958173\u0007Bệnh viện bệnh nhiệt đới Trung ương\u00076.918.083.702\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000728\u00070100510043\u0007CÔNG TY CỔ PHẦN ĐỊA ỐC DẦU KHÍ VIỄN THÔNG\u00076.845.367.528\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000729\u00070100104274\u0007TỔNG CÔNG TY XÂY DỰNG CÔNG TRÌNH GIAO THÔNG 1 -  CÔNG TY CP\u00076.388.179.437\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000730\u00070101589695\u0007Học Viện Tư pháp\u00076.110.857.194\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000731\u00070100106514004\u0007CHI NHÁNH CÔNG TY CỔ PHẦN SẢN XUẤT VÀ THƯƠNG MẠI ĐẠI THANH - NHÀ MÁY GỐM XÂY DỰNG NGỌC SƠN\u00075.490.886.890\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000732\u00070101617462\u0007CÔNG TY CỔ PHẦN THƯƠNG MẠI BMV\u00075.111.048.031\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000733\u00070100109709\u0007Nhà xuất bản khoa học và kỹ thuật\u00074.939.254.646\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000734\u00070110559418\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ KINH DOANH BẤT ĐỘNG SẢN RAMOND HOLDINGS\u00074.783.618.330\u0007Thuế cơ sở 1\u0007\u000735\u00070100235051\u0007Hợp tác xã Sinh Lực\u00074.710.960.394\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000736\u00070101929133\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN VIỆT- TRUNG\u00074.647.514.578\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000737\u00070100100103\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ XÂY DỰNG VÀ THUỶ TINH HÀ NỘI\u00074.626.001.173\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000738\u00070102379059\u0007Bảo tàng lịch sử Quốc Gia\u00074.620.953.401\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000739\u00070101479607\u0007CÔNG TY CỔ PHẦN TẬP ĐOÀN CÔNG NGHỆ T-TECH VIỆT NAM\u00074.364.184.788\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000740\u00070101451859\u0007Bệnh viện nội tiết Trung ương\u00074.136.652.199\u0007Phòng Quản lý các khoản thu từ đất\u0007\u000741\u00070106861993\u0007CÔNG TY CỔ PHẦN THƯƠNG MẠI QUỐC TẾ VÀ PCCC BẮC TRUNG NAM\u00073.837.731.285\u0007Thuế cơ sở 13\u0007\u000742\u00070101430344\u0007CÔNG TY TNHH MỘT THÀNH VIÊN XÂY LẮP VÀ KẾT CẤU THÉP ĐÔNG ANH\u00073.614.110.969\u0007Thuế cơ sở 6\u0007\u000743\u00070100367474\u0007HỢP TÁC XÃ CÔNG NGHIỆP PHƯƠNG ĐÔNG 4\u00073.035.890.408\u0007Phòng Quản lý các khoản thu từ đất\u0007\u00072. Đối với doanh nghiệp, tổ chức TT06:\rKết quả thực hiện chung toàn Thuế TP Hà Nội:\r+ Tổng số tiền phải thực hiện tạm hoãn xuất cảnh (THXC): 2.833,1 tỷ đồng.\r+ Tổng số tiền đã thực hiện THXC: 1.993,8 tỷ đồng.\r+ Số tiền chưa thực hiện THXC: 839,3 tỷ đồng.\r+ Tỷ lệ tạm hoãn chung: 70.4%. Trong đó:\r+ Khối Văn phòng Thuế TP HN (Các phòng QLHTDN): Tỷ lệ thực hiện đạt 65.8%. Số tiền đã thực hiện THXC là 1.221,6 tỷ đồng; số tiền chưa thực hiện THXC là 635,3 tỷ đồng.\r+ Khối Thuế cơ sở: Tỷ lệ thực hiện đạt 80.5%. Tổng số tiền đã thực hiện THXC là 786,3 tỷ đồng; số tiền chưa thực hiện THXC là 189,8 tỷ đồng.\rCác đơn vị có tỷ lệ thực hiện cao hơn bình quân chung\rKhối các Phòng QLHTDN: Phòng QLHTDN 4 (đạt tỷ lệ 95.5%) và Phòng QLHTDN 1 (đạt tỷ lệ 92.7%), Phòng QLHTDN 3 (đạt tỷ lệ 88.3%).\rKhối Thuế cơ sở: Thuế cơ sở 24 (đạt tỷ lệ  99.4%), Thuế cơ sở 12 (đạt tỷ lệ 96.9%), Thuế cơ sở 21 (đạt tỷ lệ 96.7%), \tThuế cơ sở 16 (đạt tỷ lệ 95.7%), Thuế cơ sở 18 (đạt tỷ lệ 93.7%), Thuế cơ sở 23 (đạt tỷ lệ 91.6%) \r\rCác đơn vị có tỷ lệ thực hiện thấp hơn bình quân chung\rKhối các Phòng QLHTDN: Phòng QLHTDN 5 (đạt tỷ lệ 2.5%), Phòng QLHTDN 2 (đạt tỷ lệ 35.8%) \rKhối Thuế cơ sở: Thuế cơ sở 17 (đạt tỷ lệ 14.4%) và Thuế cơ sở 20 (đạt tỷ lệ 47.6%), Thuế cơ sở 4 (đạt tỷ lệ 68.9%), Thuế cơ sở 19 (đạt tỷ lệ 62.5%) \r\rDANH SÁCH NNT TT06 NỢ LỚN CHƯA THỰC HIỆN TẠM HOÃN XUẤT CẢNH\rSTT\u0007Tên NNT\u0007Tổng nợ \u0007Phòng/Thuế cơ sở\u0007\u00071\u0007Công ty công trình giao thông 246\u00074.770.181.305\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u00072\u0007Công ty TNHH Listone Vina\u00074.743.274.649\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u00073\u0007CÔNG TY TNHH MỘT THÀNH VIÊN SÔNG HỒNG AN DƯƠNG\u00074.028.631.036\u0007Thuế cơ sở 7\u0007\u00074\u0007Công Ty TNHH đèn hình ORION HANEL\u00074.016.176.478\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u00075\u0007Công ty JRP International Pte Ltd - Thầu THGT số 5 DA XD nhà khách Cảng Hàng không QT Nội Bài HN\u00073.802.935.580\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u00076\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ ALOHOME\u00072.868.527.307\u0007Thuế cơ sở 8\u0007\u00077\u0007Tổng công ty Muối\u00072.838.389.618\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u00078\u0007CÔNG TY TNHH KYUNG SUN VIỆT NAM\u00072.728.649.512\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u00079\u0007Công ty TNHH ôtô Thăng Long\u00072.561.762.122\u0007Thuế cơ sở 15\u0007\u000710\u0007CÔNG TY CỔ PHẦN DỊCH VỤ, ĐẦU TƯ, XÂY DỰNG ĐỒNG TIẾN\u00072.467.283.593\u0007Thuế cơ sở 6\u0007\u000711\u0007Công Ty Cổ Phần Đầu Tư Xây Dựng Và Kinh Doanh Bất Động Sản Phú Tài\u00072.297.848.185\u0007Thuế cơ sở 15\u0007\u000712\u0007TRUNG TÂM ANH NGỮ  CLEVERLEARN VIỆT NAM\u00072.289.477.191\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u000713\u0007Công ty liên doanh hữu hạn phát triển an thông Việt Nam\u00072.243.205.604\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u000714\u0007HTX Nắng Xuân\u00072.181.922.097\u0007Thuế cơ sở 3\u0007\u000715\u0007CÔNG TY TNHH HOÀNG HÀ SAO MAI\u00072.132.261.935\u0007Thuế cơ sở 20\u0007\u000716\u0007CÔNG TY TNHH ĐẦU TƯ XÂY DỰNG VÀ THƯƠNG MẠI VŨ HÀ\u00071.934.777.636\u0007Thuế cơ sở 6\u0007\u000717\u0007Công Ty Cổ Phần Phát Triển Hạ Tầng Công Nghiệp Đông Nam\u00071.922.411.453\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u000718\u0007Công ty TNHH xây dựng SEMS\u00071.880.334.240\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 2\u0007\u000719\u0007CÔNG TY TNHH TM & DV NEW STARS\u00071.860.231.494\u0007Thuế cơ sở 8\u0007\u000720\u0007Công ty kinh doanh chế biến xuất nhập khẩu lương thực Hà nội\u00071.851.497.227\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000721\u0007công ty may xuất khẩu thành công\u00071.820.402.575\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 3\u0007\u000722\u0007CÔNG TY CỔ PHẦN XÂY DỰNG LONG GIANG\u00071.702.762.039\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 1\u0007\u000723\u0007Công ty Tiếp thị-đầu tư nông nghiệp và phát triển nông thôn\u00071.590.197.367\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000724\u0007Công Ty TNHH Lương Thực Minh Sơn\u00071.548.021.675\u0007Thuế cơ sở 20\u0007\u000725\u0007CÔNG TY CỔ PHẦN SINOTRUK VIỆT NAM\u00071.492.437.688\u0007Thuế cơ sở 6\u0007\u000726\u0007Công Ty TNHH Đầu Tư Xây Dựng & Xuất Nhập Khẩu Newday\u00071.425.346.319\u0007Thuế cơ sở 6\u0007\u000727\u0007CÔNG TY CỔ PHẦN TÍCH HỢP HỆ THỐNG THÔNG TIN TOÀN CẦU GB\u00071.383.858.265\u0007Thuế cơ sở 13\u0007\u000728\u0007CÔNG TY CỔ PHẦN ĐẦU TƯ VÀ XÂY DỰNG LÂM VIÊN\u00071.344.111.881\u0007Thuế cơ sở 5\u0007\u000729\u0007CÔNG TY CỔ PHẦN THƯƠNG MẠI VÀ DỊCH VỤ CƠ ĐIỆN TUẤN MINH\u00071.301.611.039\u0007Thuế cơ sở 8\u0007\u000730\u0007Công Ty Cổ Phần Visla\u00071.281.256.442\u0007Thuế cơ sở 20\u0007\u000731\u0007Công ty TNHH Toàn thắng\u00071.242.073.706\u0007Thuế cơ sở 5\u0007\u000732\u0007Công Ty TNHH Quốc Tế Illho (Việt Nam)\u00071.226.948.549\u0007Thuế cơ sở 2\u0007\u000733\u0007Công Ty TNHH Quốc Tế Illho (Việt Nam)\u00071.226.948.549\u0007Thuế cơ sở 5\u0007\u000734\u0007Công Ty TNHH Đông Quan\u00071.154.856.811\u0007Thuế cơ sở 6\u0007\u000735\u0007Công ty tư vấn đầu tư nước ngoài về công nghiệp\u00071.047.834.583\u0007Phòng Quản lý, Hỗ trợ doanh nghiệp số 5\u0007\u000736\u0007CÔNG TY TNHH GIẢI PHÁP CƠ ĐIỆN HOÀNG LONG PHÁT\u00071.003.103.732\u0007Thuế cơ sở 8\u0007\u0007Phòng QLHTDN số 1 báo cáo!\r"
+  },
+  {
+    "file": "QL1\\BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 3 - THANG 7.2026) (2).doc",
+    "type": ".doc",
+    "format": "xlsx",
+    "sheets": [
+      {
+        "name": "Ket qua Cuong che",
+        "rows": 36,
+        "cols": 8
+      },
+      {
+        "name": "DS tren nguong chua CC",
+        "rows": 9216,
+        "cols": 5
+      },
+      {
+        "name": "Danh gia Tam hoan XC",
+        "rows": 36,
+        "cols": 8
+      },
+      {
+        "name": "DS tren 500tr chua Hoan XC",
+        "rows": 88,
+        "cols": 5
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO CAO CONG TAC NO KHOI DN TO CHUC (TUAN 4 - THANG 7.2026) (2).doc",
+    "type": ".doc",
+    "format": "xlsx",
+    "sheets": [
+      {
+        "name": "So_Sanh_No",
+        "rows": 39,
+        "cols": 30
+      },
+      {
+        "name": "DanhSachNNTtangNoTren500tr",
+        "rows": 2165,
+        "cols": 8
+      },
+      {
+        "name": "DS_DN_TangnoTren500tr",
+        "rows": 1280,
+        "cols": 8
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO CAO DANH GIA CONG TAC NO TUAN. _07.07.2026 (2).xlsx",
+    "format": "Excel XML",
+    "sheets": [
+      {
+        "name": "NNT"
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO CAO DANH GIA CONG TAC NO TUAN. _16.07.2026 (2).xlsx",
+    "sheets": [
+      {
+        "name": "So_Sanh_No",
+        "rows": 39,
+        "cols": 30,
+        "headers": [
+          [
+            "BÁO CÁO ĐÁNH GIÁ NỢ - NỢ ĐẾN NGÀY 31/07/2026 (ĐVT: TRIỆU ĐỒNG)"
+          ],
+          [
+            "STT",
+            "Phòng/TCS",
+            "Nợ đến ngày báo cáo (31/07/2026)",
+            "Tăng giảm so với đầu năm",
+            "Tăng giảm so với tháng trước",
+            "Tăng giảm so với tuần trước"
+          ],
+          [
+            "Số tuyệt đối",
+            "Số tương đối (%)",
+            "Số tuyệt đối",
+            "Số tương đối (%)",
+            "Số tuyệt đối",
+            "Số tương đối (%)"
+          ],
+          [
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)",
+            "Tổng cộng (B)",
+            "Nợ KNT (C)",
+            "Khó thu (D)",
+            "Đang xử lý (E)"
+          ],
+          [
+            "TỔNG TOÀN NGÀNH",
+            "35157665.713518",
+            "25192664.875427",
+            "6662341.733719",
+            "3302659.104372",
+            "6577423.509488",
+            "5941067.449191",
+            "285041.510634",
+            "351314.549663",
+            "0.2301388302636757",
+            "0.308601271762235",
+            "0.04469626654899932",
+            "0.1190354237367718",
+            "1510369.704702",
+            "1722810.402585",
+            "-333679.489008",
+            "121238.791125",
+            "0.04488829367763356",
+            "0.0734052443562673",
+            "-0.0476956084587082",
+            "0.03810838530834113",
+            "-2621792.534351997",
+            "-2618922.6138239987",
+            "11608.890641999431",
+            "-14478.811170000117",
+            "-0.06939730361273282",
+            "-0.0941665992578164",
+            "0.0017455054827654917",
+            "-0.004364850524351613"
+          ]
+        ]
+      },
+      {
+        "name": "DS_DN_TangnoTren500tr",
+        "rows": 2251,
+        "cols": 9,
+        "headers": [
+          [
+            "DANH SÁCH DOANH NGHIỆP, TỔ CHỨC TĂNG NỢ KNT TỪ 500,000,000 ĐỒNG ĐẾN NGÀY 22/07/2026"
+          ],
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "Nợ KNT ngày 22/07/2026",
+            "Nợ KNT đầu năm",
+            "Tăng/giảm",
+            "Phòng/TCS",
+            "Mã CQT",
+            "Loại NNT"
+          ],
+          [
+            "1",
+            "0500468389",
+            "CÔNG TY CỔ PHẦN ĐẦU TƯ DIA",
+            "2680061304709",
+            "1234480380098",
+            "1445580924611",
+            "Thuế cơ sở 24",
+            "0135",
+            "Doanh nghiệp, tổ chức"
+          ],
+          [
+            "2",
+            "0302980690",
+            "CÔNG TY TNHH ĐẦU TƯ ĐỊA ỐC THÀNH PHỐ",
+            "965041258381",
+            "0",
+            "965041258381",
+            "Phòng Quản lý các khoản thu từ đất",
+            "0101",
+            "Doanh nghiệp, tổ chức"
+          ],
+          [
+            "3",
+            "0102143374",
+            "CÔNG TY TNHH C.E.O QUỐC TẾ",
+            "826746200000",
+            "0",
+            "826746200000",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1",
+            "0101",
+            "Doanh nghiệp, tổ chức"
+          ]
+        ]
+      },
+      {
+        "name": "Danh gia Ket qua cuong che",
+        "rows": 38,
+        "cols": 8,
+        "headers": [
+          [
+            "TỔNG HỢP CƯỠNG CHẾ (NGƯỠNG THEO TAB THAM SỐ)"
+          ],
+          [
+            "Địa bàn",
+            "Phải Cưỡng chế",
+            "Đã Cưỡng chế",
+            "Chưa thực hiện CC",
+            "Tỷ lệ đã CC"
+          ],
+          [
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền"
+          ],
+          [
+            "Tổng cộng",
+            "16354",
+            "9210886160707",
+            "13898",
+            "8660731774934",
+            "2455",
+            "550154385773",
+            "0.9187165656158542"
+          ],
+          [
+            "VP Thuế TP HN",
+            "3017",
+            "6862831315546",
+            "1871",
+            "6393218388842",
+            "1145",
+            "469612926704",
+            "0.9315715474981571"
+          ]
+        ]
+      },
+      {
+        "name": "Danh gia Tam hoan XC",
+        "rows": 37,
+        "cols": 8,
+        "headers": [
+          [
+            "TỔNG HỢP TẠM HOÃN XUẤT CẢNH (NGƯỠNG THEO TAB THAM SỐ)"
+          ],
+          [
+            "Địa bàn",
+            "Phải THXC",
+            "Đã THXC",
+            "Chưa tạm hoãn",
+            "Tỷ lệ tạm hoãn"
+          ],
+          [
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền",
+            "NNT",
+            "Số tiền"
+          ],
+          [
+            "Tổng cộng",
+            "956",
+            "6778262754039",
+            "702",
+            "5673514292979",
+            "254",
+            "1104748461060",
+            "0.8370159875549664"
+          ],
+          [
+            "VP Thuế TP HN",
+            "341",
+            "5455899605232",
+            "221",
+            "4518530860822",
+            "120",
+            "937368744410",
+            "0.8281917168140156"
+          ]
+        ]
+      },
+      {
+        "name": "DS NNT chua cuong che",
+        "rows": 2458,
+        "cols": 17,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "CQT",
+            "Phòng/TCS",
+            "Loại NNT",
+            "Chương",
+            "Nợ >90 ngày - Nợ tháng",
+            "Nợ >90 ngày - Nợ ngày",
+            "Nợ dùng đánh giá tại đơn vị",
+            "Tổng nợ dùng đánh giá MST+CQT",
+            "Ngưỡng",
+            "Tình trạng cưỡng chế",
+            "Biện pháp hiệu lực",
+            "Số quyết định hiệu lực",
+            "Kết luận",
+            "Ghi chú"
+          ],
+          [
+            "2",
+            "0102043394",
+            "CÔNG TY CỔ PHẦN ĐẦU TƯ MAI LINH",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "123997232500",
+            "109787527059",
+            "109787527059",
+            "110016663927",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ],
+          [
+            "3",
+            "0100112388",
+            "Cục phục vụ ngoại giao đoàn",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "11",
+            "98207253817",
+            "95746455057",
+            "95746455057",
+            "95746455057",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ],
+          [
+            "4",
+            "0100105052",
+            "TỔNG CÔNG TY ĐƯỜNG SẮT VIỆT NAM",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "137",
+            "49541531160",
+            "48655678297",
+            "48655678297",
+            "48690172941",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ],
+          [
+            "5",
+            "0111250196",
+            "CÔNG TY CỔ PHẦN QUẢN LÝ VÀ ĐẦU TƯ BẤT ĐỘNG SẢN VMI",
+            "0101",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "32985639415",
+            "47454789728",
+            "32985639415",
+            "32985639415",
+            "3000000",
+            "Không có QĐCC",
+            "Chưa cưỡng chế"
+          ]
+        ]
+      },
+      {
+        "name": "DS tren 500tr chua Hoan XC",
+        "rows": 255,
+        "cols": 16,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "CQT",
+            "Phòng/TCS",
+            "Loại NNT",
+            "Chương",
+            "Nợ >120 ngày - Nợ tháng",
+            "Nợ >120 ngày - Nợ ngày",
+            "Nợ dùng đánh giá tại đơn vị",
+            "Tổng nợ dùng đánh giá MST+CQT",
+            "Ngưỡng theo loại NNT",
+            "Tình trạng tạm hoãn",
+            "Ngày tạm hoãn",
+            "Kết luận",
+            "Ghi chú"
+          ],
+          [
+            "#REF!"
+          ],
+          [
+            "1",
+            "0100276146",
+            "CÔNG TY TNHH HÒA BÌNH",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "445199057701",
+            "193258704838",
+            "193258704838",
+            "193258838274",
+            "500000000",
+            "Không có tạm hoãn",
+            "Chưa tạm hoãn"
+          ],
+          [
+            "2",
+            "0500442020",
+            "CÔNG TY CỔ PHẦN TẬP ĐOÀN XÂY DỰNG VÀ DU LỊCH BÌNH MINH",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "555",
+            "171300214761",
+            "111723178424",
+            "111723178424",
+            "111723178424",
+            "500000000",
+            "Không có tạm hoãn",
+            "Chưa tạm hoãn"
+          ],
+          [
+            "3",
+            "0100112388",
+            "Cục phục vụ ngoại giao đoàn",
+            "0101",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp, tổ chức",
+            "11",
+            "98207253817",
+            "95746455057",
+            "95746455057",
+            "95746455057",
+            "500000000",
+            "Không có tạm hoãn",
+            "Chưa tạm hoãn"
+          ]
+        ]
+      },
+      {
+        "name": "QuyTac_Nguon",
+        "rows": 12,
+        "cols": 2,
+        "headers": [
+          [
+            "Nội dung",
+            "Giá trị/Nguyên tắc"
+          ],
+          [
+            "Ngày báo cáo",
+            "22/07/2026"
+          ],
+          [
+            "Báo cáo nợ hiện tại",
+            "D:\\DTNGOC\\QLHT DN SO 1\\NAM 2026\\TOOL HO TRO\\TOOL_BAO_CAO_NO_TUAN\\NO_NGAY\\DANHGIANONGAY_22.07.2026.xlsx"
+          ],
+          [
+            "Báo cáo đầu năm đúng phạm vi",
+            "D:\\TOOL_BAO_CAO_NO_TUAN\\NO DAU NAM DN.xlsx"
+          ],
+          [
+            "Báo cáo tháng trước đúng phạm vi",
+            "D:\\TOOL_BAO_CAO_NO_TUAN\\NO Dn THANG 6.2026.xlsx"
+          ]
+        ]
+      },
+      {
+        "name": "Bao_cao_tong_hop",
+        "rows": 37,
+        "cols": 9,
+        "headers": [
+          [
+            "BÁO CÁO TẠM HOÃN XUẤT CẢNH TRẠNG THÁI 06 - DOANH NGHIỆP"
+          ],
+          [],
+          [
+            "Phòng/Thuế cơ sở",
+            "NNT trạng thái 06",
+            "Tổng nợ không hoạt động tại địa chỉ đăng ký",
+            "Số NNT đã tạm hoãn",
+            "Số nợ đã tạm hoãn",
+            "Tỷ lệ tạm hoãn về số tiền",
+            "Số NNT chưa tạm hoãn",
+            "Số tiền chưa tạm hoãn",
+            "Tỷ lệ chưa tạm hoãn về số tiền"
+          ],
+          [
+            "Tổng cộng chung",
+            "32681",
+            "2833072556619",
+            "14733",
+            "1993785697071",
+            "0.7037538422420044",
+            "17948",
+            "839286859548",
+            "0.2962461577579955"
+          ],
+          [
+            "VP Thuế TP Hà Nội",
+            "16404",
+            "1856956374091",
+            "6935",
+            "1221663090644",
+            "0.6578846480666608",
+            "9469",
+            "635293283447",
+            "0.34211535193333925"
+          ]
+        ]
+      },
+      {
+        "name": "DS_chua_tam_hoan",
+        "rows": 16170,
+        "cols": 11,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "Cơ quan thuế",
+            "Chương",
+            "Tổng nợ KCHĐ theo MST",
+            "Nhóm xử lý",
+            "Tình trạng tạm hoãn",
+            "Ngày tạm hoãn",
+            "Map Phòng/Thuế cơ sở",
+            "Loại NNT"
+          ],
+          [
+            "1",
+            "0303154993",
+            "Công Ty Cổ Phần Vận Tải Biển Và Bất Động Sản Việt Hải",
+            "0101",
+            "554",
+            "297150535215",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "2",
+            "0104803435",
+            "Công an Huyện ứng Hòa",
+            "0101",
+            "830",
+            "7634000733",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "3",
+            "0500141785",
+            "Công ty Thương mại Hoài đức",
+            "0101",
+            "416",
+            "7404299020",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "4",
+            "0100949539",
+            "Công ty cổ phần Bắc Trung",
+            "0101",
+            "854",
+            "7311012527",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_20260722 (002) (2).xlsx",
+    "sheets": [
+      {
+        "name": "Bao_cao_tong_hop",
+        "rows": 37,
+        "cols": 9,
+        "headers": [
+          [
+            "BÁO CÁO TẠM HOÃN XUẤT CẢNH TRẠNG THÁI 06 - DOANH NGHIỆP"
+          ],
+          [],
+          [
+            "Phòng/Thuế cơ sở",
+            "NNT trạng thái 06",
+            "Tổng nợ không hoạt động tại địa chỉ đăng ký",
+            "Số NNT đã tạm hoãn",
+            "Số nợ đã tạm hoãn",
+            "Tỷ lệ tạm hoãn về số tiền",
+            "Số NNT chưa tạm hoãn",
+            "Số tiền chưa tạm hoãn",
+            "Tỷ lệ chưa tạm hoãn về số tiền"
+          ],
+          [
+            "Tổng cộng chung",
+            "38783",
+            "2815153602337",
+            "12468",
+            "1940144099220",
+            "0.6891787707815976",
+            "26315",
+            "875009503117",
+            "0.3108212292184024"
+          ],
+          [
+            "VP Thuế TP Hà Nội",
+            "1976",
+            "286326525547",
+            "524",
+            "217741400970",
+            "0.7604653482733584",
+            "1452",
+            "68585124577",
+            "0.23953465172664162"
+          ]
+        ]
+      },
+      {
+        "name": "DS_chua_tam_hoan",
+        "rows": 26315,
+        "cols": 11,
+        "headers": [
+          [
+            "STT",
+            "MST",
+            "Tên NNT",
+            "Cơ quan thuế",
+            "Chương",
+            "Tổng nợ KCHĐ theo MST",
+            "Nhóm xử lý",
+            "Tình trạng tạm hoãn",
+            "Ngày tạm hoãn",
+            "Map Phòng/Thuế cơ sở",
+            "Loại NNT"
+          ],
+          [
+            "11658",
+            "0303154993",
+            "Công Ty Cổ Phần Vận Tải Biển Và Bất Động Sản Việt Hải",
+            "0101",
+            "554",
+            "297150535215",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "20",
+            "0100107229-014",
+            "Chi Nhánh Công Ty Cổ Phần Xuất Nhập Khẩu Tổng Hợp Và Chuyển Giao Công Nghệ Việt Nam Tại Hà Nội",
+            "0101",
+            "554",
+            "11312491187",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ],
+          [
+            "14416",
+            "0100107229-014",
+            "Chi Nhánh Công Ty Cổ Phần Xuất Nhập Khẩu Tổng Hợp Và Chuyển Giao Công Nghệ Việt Nam Tại Hà Nội",
+            "0107",
+            "554",
+            "11312491187",
+            "Chưa tạm hoãn",
+            "Thuế cơ sở 11",
+            "Doanh nghiệp, tổ chức"
+          ],
+          [
+            "158",
+            "0100423672-002",
+            "NHÀ MÁY MAY XUẤT KHẨU HÀ PHÚ",
+            "0101",
+            "854",
+            "8410808500",
+            "Tiểu mục đất/nhóm loại trừ",
+            "Chưa tạm hoãn",
+            "Phòng Quản lý các khoản thu từ đất",
+            "Doanh nghiệp"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL1\\BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_THANG7.2026 (2).xlsx",
+    "sheets": [
+      {
+        "name": "Trang_tính1",
+        "rows": 3803,
+        "cols": 22,
+        "headers": [
+          [
+            "3371125.908744",
+            "2805949.03469",
+            "72263.715798",
+            "131254.757632",
+            "63588.938436",
+            "267107.411866",
+            "50585.34216",
+            "1202782.240518",
+            "1285474.040146",
+            "2538841.622824",
+            "549480.271814",
+            "110684.420723",
+            "15696.60224",
+            "58877.431579",
+            "833722.107614"
+          ],
+          [
+            "3371125908744",
+            "2805949034690",
+            "72263715798",
+            "131254757632",
+            "63588938436",
+            "267107411866",
+            "50585342160",
+            "1202782240518",
+            "1285474040146",
+            "2538841622824",
+            "549480271814",
+            "110684420723",
+            "15696602240",
+            "58877431579",
+            "833722107614"
+          ],
+          [
+            "MST",
+            "Tên NNT",
+            "Tổng nợ",
+            "Tổng nợ khả thu",
+            "Khoản nợ từ 01-30 ngày",
+            "Khoản nợ từ 31-60 ngày",
+            "Khoản nợ từ 61-90 ngày",
+            "Tổng nợ dưới 90 ngày",
+            "Khoản nợ từ 91-120 ngày",
+            "Khoản nợ từ 121-365 ngày",
+            "Khoản nợ từ 366 ngày trở lên",
+            "Tổng nợ trên 90 ngày",
+            "Tổng nợ khó thu",
+            "Nợ khó thu bỏ địa chỉ",
+            "Tổng Nợ đang xử lý",
+            "Tổng Tiền thuế đang chờ điều chỉnh",
+            "Tổng Nợ đã xử lý",
+            "Trích tiền TK",
+            "Hóa đơn"
+          ],
+          [
+            "0100100103",
+            "CÔNG TY CỔ PHẦN ĐẦU TƯ XÂY DỰNG VÀ THUỶ TINH HÀ NỘI",
+            "Trương Công Minh",
+            "TP Hà Nội-Thuế Hà Nội",
+            "01/ĐK-TCT(TChức, DNghiệp, CTy)",
+            "5090369",
+            "5090369",
+            "0",
+            "880142",
+            "0",
+            "880142",
+            "3924339",
+            "139579",
+            "146309",
+            "4210227",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "#N/A",
+            "#N/A"
+          ],
+          [
+            "0100100287",
+            "CÔNG TY CỔ PHẦN TƯ VẤN VÀ DỊCH VỤ KỸ THUẬT ĐIỆN",
+            "Tạ Quang Nghĩa",
+            "TP Hà Nội-Thuế Hà Nội",
+            "01/ĐK-TCT(TChức, DNghiệp, CTy)",
+            "109565218",
+            "109565218",
+            "0",
+            "109565218",
+            "0",
+            "109565218",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1370521072",
+            "#N/A"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL2\\2_QLD2_1_kéo dữ liệu.docx",
+    "format": "zip",
+    "contents": [
+      {
+        "r1_cqt0101_2026-09-24_e498aa05-7646-4c95-994c-a772b9be4d55.xlsx": {
+          "format": "xlsx",
+          "sheets": [
+            {
+              "name": "Sheet1",
+              "rows": 5637,
+              "cols": 33
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "file": "QL2\\Mẫu báo cáo.xlsx",
+    "sheets": [
+      {
+        "name": "foxz",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "Tong hop 01GTGT",
+        "rows": 1000,
+        "cols": 45,
+        "headers": [
+          [
+            "CỤC THUẾ"
+          ],
+          [
+            " THUẾ TỈNH",
+            "0"
+          ],
+          [
+            "BÁO CÁO KẾT QUẢ THỰC HIỆN ĐỐI CHIẾU DỮ LIỆU TỜ KHAI THUẾ GTGT VÀ HÓA ĐƠN ĐIỆN TỬ (TỜ KHAI 01/GTGT)"
+          ],
+          [
+            "Từ kỳ báo cáo tháng 1/2026 đến kỳ báo cáo tháng 05/2026"
+          ],
+          []
+        ]
+      },
+      {
+        "name": "Tong hop 03,04GTGT",
+        "rows": 999,
+        "cols": 34,
+        "headers": [
+          [
+            "CỤC THUẾ"
+          ],
+          [
+            "                                                               THUẾ TỈNH"
+          ],
+          [
+            "BÁO CÁO KẾT QUẢ THỰC HIỆN ĐỐI CHIẾU DỮ LIỆU TỜ KHAI THUẾ GTGT VÀ HĐĐT (TK 03,04/GTGT)"
+          ],
+          [
+            "Từ kỳ báo cáo tháng 1/2025 đến kỳ báo cáo tháng 05/2025"
+          ],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL2\\QLDN 2 kéo dữ liệu (1).docx",
+    "format": "zip",
+    "contents": [
+      {
+        "r18_cqt0100_2026-09-24_f2e0389b-17ae-4e44-9ae0-186a51def642.xlsx": {
+          "format": "xlsx",
+          "sheets": [
+            {
+              "name": "Sheet1",
+              "rows": 9,
+              "cols": 7
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "file": "QL3\\1_QL3_2_File tho keo TTR ra (da ghep 30 CQT) (1).xls",
+    "format": "OLE",
+    "streams": [
+      "\u0001CompObj",
+      "\u0005DocumentSummaryInformation",
+      "\u0005SummaryInformation",
+      "1Table",
+      "Data",
+      "WordDocument"
+    ],
+    "text": "CÁCH THỨC TỔNG HỢP KẾT QUẢ KIỂM TRA TẠI BÀN THEO KẾ HOẠCH NĂM\rVào TMS, tra cứu tờ khai, gõ MST,  hiển thị tờ khai để lấy trang web IE cũ\rGõ địa chỉ webttr.han.tct.vn để vào TTR\rKéo báo cáo: vào tab Báo cáo tổng hợp => 6. Báo cáo kết quả kiểm tra hồ sơ khai thuế tại CQT:\r+ Loại báo cáo: Chi tiết\r+ kỳ báo cáo: Từ tháng 01/2026 đến tháng 09/2026\r+ cơ quan thuế:\r* Từng thuế cơ sở\r* VP thuế TP Hà Nội: kéo từng phòng QLDN bằng cách gõ thêm phòng đội ở bên dưới: QLDN1 là 10100P1, QLDN2 là 10100P2 ….\r+ Ấn xem báo cáo sẽ ra được file Excel\rSau khi kéo ra được 30 file excel (25 thuế cơ sở và 5 phòng QLDN) thì xử lý ghép 30 file thành 1 file tổng của 30 đơn vị\rThao tác xử lý file Excel tổng hợp kết quả 30 đơn vị như sau:\r+ Thêm cột CQT quản lý vào cột đầu tiên (cạnh cột STT)\r+ Xử lý fill đầy vào những cột có thông tin MST nhưng trống tên NNT bằng cách vào TMS để tra tên NNT theo MST đó rồi điền vào\r+ Những cột trống cả MST và tên NNT thì fill đầy bằng cách kéo dán từ trên dòng gần nhất bên trên mà đủ thông tin tên NNT và MST kéo dán xuống dưới\r+ Lọc các cột: hồ sơ chấp nhận, hồ sơ chờ giải trình, hồ sơ điều chỉnh, hồ sơ ấn định, hồ sơ đề nghị kiểm tra tại DN lấy giá trị = 0 tại tất cả các cột này rồi xóa các dòng = 0 đấy đi\r+ vlook up với file excel kế hoạch kiểm tra tại bàn để xác định kết quả các DN thuộc kế hoạch năm.\r+ File tổng hợp này đang đếm theo số lượng tờ khai (mỗi dòng tương ứng với 1 tờ khai (GTGT, TNDN, TNCN, khác) và kỳ kê khai (năm hoặc tháng) => phải chuyển từ đếm theo số lượng tờ khai sang đếm theo DN bằng cách chỉ lấy loại tờ khai là thuế TNDN, kỳ kê khai năm 2025 để đếm theo DN thôi.\r+ Khi lọc theo DN thuộc kế hoạch năm để vlookup bên trên và lọc chỉ lấy loại tờ khai là thuế TNDN và kỳ kê khai năm 2025 mà 1 MST lại vừa có trạng thái hồ sơ chấp nhận, vừa có trạng thái hồ sơ điều chỉnh thì phải xóa bớt trạng thái kém hơn đi để chỉ ghi nhận 1 trạng thái cao nhất theo thứ tự từ thấp lên cao là: hồ sơ chờ giải trình, hồ sơ chấp nhận, hồ sơ điều chỉnh, hồ sơ ấn định, hồ sơ đề nghị kiểm tra tại DN.\r+ Sau khi xử lý xong thì pivot ra mẫu file cuối cùng là thống kê theo CQT\r"
+  },
+  {
+    "file": "QL3\\1_QL3_3_KQ tong hop cuoi cung (1).xls",
+    "sheets": [
+      {
+        "name": "Data",
+        "rows": 10015,
+        "cols": 26,
+        "headers": [
+          [
+            "Thuế Thành phố Hà Nội",
+            "Mẫu số 09/QTKT"
+          ],
+          [
+            "VP THÀNH PHỐ HÀ NỘI - THUẾ THÀNH PHỐ HÀ NỘI"
+          ],
+          [],
+          [],
+          [
+            "BÁO CÁO CHI TIẾT KẾT QUẢ KIỂM TRA HỒ SƠ KHAI THUẾ TẠI CƠ QUAN THUẾ"
+          ]
+        ]
+      },
+      {
+        "name": "Tiếp theo...1",
+        "rows": 2185,
+        "cols": 26,
+        "headers": [
+          [
+            "9066",
+            "CôNG TY TNHH MT TECH Hà NộI",
+            "0109460527",
+            "X",
+            "Thuế thu nhập doanh nghiệp",
+            "2025",
+            "1.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ],
+          [
+            "9067",
+            "CôNG TY Cổ PHầN ĐầU Tư PV - GREEN",
+            "0106200577",
+            "X",
+            "Thuế thu nhập doanh nghiệp",
+            "2025",
+            "1.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ],
+          [
+            "9068",
+            "CôNG TY Cổ PHầN ĐầU Tư XâY DựNG Và PHáT TRIểN TMDPC",
+            "0105173440",
+            "X",
+            "Thuế thu nhập doanh nghiệp",
+            "2025",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "1.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ],
+          [
+            "9069",
+            "CôNG TY TNHH XD TM Và DU LịCH LONG NHậT",
+            "0108806885",
+            "X",
+            "Thuế thu nhập doanh nghiệp",
+            "2025",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ],
+          [
+            "9070",
+            "CôNG TY Cổ PHầN KếT CấU XâY DựNG QUANG MINH",
+            "0107402738",
+            "X",
+            "Thuế thu nhập doanh nghiệp",
+            "2025",
+            "1.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0",
+            "0.0"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL3\\1_QL3_4_TH (03092026).xls",
+    "sheets": [
+      {
+        "name": "TH DN trong ke hoach nam",
+        "rows": 37,
+        "cols": 17,
+        "headers": [
+          [
+            "TỔNG HỢP KẾT QUẢ KIỂM TRA TẠI TRỤ SỞ CQT ĐỐI VỚI KẾ HOẠCH NĂM 2026"
+          ],
+          [
+            "(Từ ngày 01/01/2026 đến ngày 31/08/2026)"
+          ],
+          [],
+          [
+            "Cơ quan Thuế thực hiện",
+            "Số DN trong Kế hoạch năm 2025 (theo NNT)",
+            "Số DN đã thực hiện (theo NNT)",
+            "Tỷ lệ thực hiện (theo NNT)",
+            "Số DN đã hoàn thành (ko tính hồ sơ chờ giải trình)",
+            "Tỷ lệ hoàn thành/kế hoạch năm",
+            "KPI tháng 8/2026 theo các đơn vị tự đăng ký",
+            "Tỷ lệ hoàn thành/KPI đăng ký",
+            "Số DN chấp nhận",
+            "Số DN chờ giải trình",
+            "Số DN điều chỉnh thuế",
+            "Số DN đề nghị kiểm tra tại DN",
+            "KQ điều chỉnh thuế: Tổng số thuế tăng thu",
+            "KQ điều chỉnh thuế: Giảm khấu trừ",
+            "KQ điều chỉnh thuế: Giảm lỗ",
+            "KQ điều chỉnh thuế: Số tiền phạt",
+            "KQ điều chỉnh thuế: Tiền nộp chậm"
+          ],
+          [
+            "Tổng cộng toàn ngành",
+            "13655.0",
+            "4333.0",
+            "0.31731966312705967",
+            "2833.0",
+            "0.2074697912852435",
+            "2379.0",
+            "1.190836485918453",
+            "2110.0",
+            "1500.0",
+            "387.0",
+            "336.0",
+            "9063048043.0",
+            "84538090.0",
+            "36670620146.0",
+            "133646493.0",
+            "73645206.0"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL3\\1_QL3_5_TH (BC chon ke hoach) DS TPR RR cao 2026 p.Ktra1 ban giao L3 (ghep 31.110TCS+2.994pQLDN) (da chay lai CQT)- nen.xlsb",
+    "format": "xls",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 4340,
+        "cols": 10
+      },
+      {
+        "name": "Sheet2",
+        "rows": 4720,
+        "cols": 12
+      },
+      {
+        "name": "Sheet6",
+        "rows": 35,
+        "cols": 11
+      },
+      {
+        "name": "Sheet7",
+        "rows": 33,
+        "cols": 11
+      },
+      {
+        "name": "Sheet9",
+        "rows": 68,
+        "cols": 29
+      },
+      {
+        "name": "TH DN trong ke hoach nam",
+        "rows": 37,
+        "cols": 17
+      },
+      {
+        "name": "Sheet4",
+        "rows": 4336,
+        "cols": 11
+      },
+      {
+        "name": "Data",
+        "rows": 6158,
+        "cols": 30
+      },
+      {
+        "name": "Sheet3",
+        "rows": 4336,
+        "cols": 2
+      }
+    ]
+  },
+  {
+    "file": "QL4\\11.9.2026 BAO CAO HOAN.xlsx",
+    "sheets": [
+      {
+        "name": "Sheet",
+        "rows": 254,
+        "cols": 17,
+        "headers": [
+          [
+            "DANH SÁCH PHIẾU GHI"
+          ],
+          [],
+          [
+            "ID",
+            "Ngày tạo",
+            "Trạng thái",
+            "Chủ đề",
+            "Phân loại",
+            "Mô tả",
+            "Tạo bởi",
+            "Chuyên viên tiếp nhận",
+            "Chuyên viên liên quan",
+            "CCCD/MST",
+            "expirationDate",
+            "Tiến độ",
+            "Đơn vị xử lý",
+            "Hạn xử lý không đúng quy trình"
+          ],
+          [
+            "3878",
+            "17:18 22/09/2026",
+            "Đã đóng",
+            "Thuế sử dụng đất phi nông nghiệp",
+            "Cá nhân",
+            "\nVào lúc 16h59' ngày 22/09/2026. Bộ phận trực tổng đài nhận được cuộc gọi được chuyển tiếp từ TCS1 - TP Hà Nội của NNT Trần Thị Kim Liên\n- Địa chỉ điểm đất 1: C",
+            "Thuế cơ sở 6",
+            "Thuế cơ sở 6",
+            "",
+            "019175000040",
+            "18:00 24/09/2026",
+            "Đúng tiến độ",
+            "Thuế cơ sở 6",
+            "Thuế cơ sở 6"
+          ],
+          [
+            "3858",
+            "16:16 22/09/2026",
+            "Đã phân công ",
+            "Thuế TNDN",
+            "",
+            "NNT muốn hỏi về 02 Thông báo của Thuế cơ sở 18",
+            "Phòng QLĐ",
+            "Thuế cơ sở 18",
+            "",
+            "NNT chưa cung cấp",
+            "12:00 23/09/2026",
+            "Đang xử lý",
+            "Thuế cơ sở 18",
+            "Thuế cơ sở 18",
+            " XL_CS18"
+          ]
+        ]
+      },
+      {
+        "name": "Sheet3",
+        "rows": 38,
+        "cols": 5,
+        "headers": [
+          [],
+          [],
+          [
+            "Count of ID",
+            "Column Labels"
+          ],
+          [
+            "Đang xử lý",
+            "Hoàn thành",
+            "Grand Total"
+          ],
+          [
+            "Row Labels",
+            "Trong hạn",
+            "Hết hạn"
+          ]
+        ]
+      },
+      {
+        "name": "User",
+        "rows": 105,
+        "cols": 5,
+        "headers": [
+          [
+            "STT",
+            "User",
+            "Tên đơn vị",
+            "Người xử lý",
+            "Email"
+          ],
+          [
+            "1",
+            "Phòng QLDN1",
+            "Phòng QLDN1",
+            "User trực tổng đài",
+            "qldn1han@gdt.gov.vn"
+          ],
+          [
+            "TP_QLDN1",
+            "Phòng QLDN1",
+            "User lãnh đạo",
+            "tdcuong01@gdt.gov.vn"
+          ],
+          [
+            "XL_QLDN1",
+            "Phòng QLDN1",
+            "User nhập kết quả xử lý",
+            "vtp_qldn1han@gdt.gov.vn"
+          ],
+          [
+            "2",
+            "Phòng QLDN2",
+            "Phòng QLDN2",
+            "User trực tổng đài",
+            "qldn2han@gdt.gov.vn"
+          ]
+        ]
+      },
+      {
+        "name": "Sai hạn",
+        "rows": 36,
+        "cols": 2,
+        "headers": [
+          [],
+          [],
+          [
+            "Row Labels",
+            "Count of Hạn xử lý không đúng quy trình"
+          ],
+          [
+            "Phòng CNTK"
+          ],
+          [
+            "Phòng QLDN1"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL4\\4_QL4_1_BAO_CAO_CUOC_GOI_THEO_NHAN_VIEN_nhung05_22_09_2026_1790074533407.xlsx",
+    "format": "docx",
+    "text": "CÁCH KÉO DỮ  LIỆU BÁO CÁO HOÀN TNCN:\nKéo dữ liệu 1.5.1:\n- Mục đích: tổng hợp đầu mã hồ sơ ZV06 và có phân công phòng xử lý\n- Cách kéo:\n+ Điền Nhóm hồ sơ: ZV06\n+ Điền Loại HS: 0036\n+ Điền ngày nhận: ….. (thường lấy theo từng tháng)\n+ Số bản ghi tối đa: 99.999\n+ Bấm đồng hồ (F8)\n+ Kết xuất bảng tính\nKéo dữ liệu từ 6.29.1\n- Mục đích: tổng hợp đầu hồ sơ nộp qua DVC và check lại với 1.5.1 xem có thiếu không và phòng nào xử lý\n- Cách kéo:\n+ Điền CQT: 0101 – Lấy VPC, 0103 – 0157 – Lấy TCS\n+ Điền ngày nhận: ….. (thường lấy theo từng tháng)\n+ Bấm đồng hồ (F8)\n+ Kết xuất bảng tính\n- Sau đó vlookup 2 file dữ liệu để xem có sai lệch thiếu đầu hồ sơ không? Và xem phân công phòng xử lý sau đó gửi dữ liệu về các phòng và TCS."
+  },
+  {
+    "file": "QL4\\4_QL4_2_BC Phieu ghi 260922.xlsx",
+    "sheets": [
+      {
+        "name": "01",
+        "rows": 39,
+        "cols": 13,
+        "headers": [
+          [
+            "BÁO CÁO SẢN LƯỢNG THEO NHÂN VIÊN"
+          ],
+          [
+            "Thuế TP Hà Nội [nhung05@gdt.gov.vn]"
+          ],
+          [
+            "Từ ngày 22-09-2026 đến ngày 22-09-2026"
+          ],
+          [
+            "STT",
+            "Nhân viên",
+            "Gọi đi - Trả lời",
+            "Gọi đi - Không trả lời",
+            "Gọi đi - Tổng",
+            "Gọi đi - Thời gian (giây)",
+            "Gọi đến - Trả lời",
+            "Gọi đến - Không trả lời",
+            "Gọi đến - Tổng",
+            "Gọi đến - Thời gian (giây)",
+            "Tỉ lệ nhỡ (%)",
+            "Thời gian gọi trung bình (giây)",
+            "Gọi nội bộ"
+          ],
+          [
+            "3",
+            "Phòng CNTK",
+            "0",
+            "5",
+            "5",
+            "0",
+            "1",
+            "0",
+            "1",
+            "376",
+            "0",
+            "376",
+            "0"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL4\\7.8.2026 BAO CAO HOAN.xlsx",
+    "sheets": [
+      {
+        "name": "foxz_19",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_20",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_21",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_22",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_23",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_24",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_25",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_26",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_27",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_28",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_29",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_30",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_31",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_32",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_33",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_34",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_35",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_36",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_37",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_38",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_39",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_40",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_41",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_42",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_43",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_44",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_45",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_46",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_47",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_48",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_49",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_2",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_3",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_4",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_5",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_6",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_7",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_8",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_9",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_10",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_11",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_12",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_13",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_14",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_15",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_16",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_17",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "foxz_18",
+        "rows": 1,
+        "cols": 1,
+        "headers": []
+      },
+      {
+        "name": "BAOCAOTUANCHUAN",
+        "rows": 47,
+        "cols": 30,
+        "headers": [
+          [
+            ""
+          ],
+          [],
+          [],
+          [
+            ""
+          ],
+          [
+            "TIẾN ĐỘ GIẢI QUYẾT HỒ SƠ HOÀN THUẾ THU NHẬP CÁ NHÂN NĂM 2026",
+            ""
+          ]
+        ]
+      },
+      {
+        "name": "CHẤM ĐIỂM",
+        "rows": 38,
+        "cols": 8,
+        "headers": [
+          [
+            "STT",
+            "Lĩnh vực",
+            "Chỉ tiêu",
+            "Phòng đánh giá",
+            "Công thức",
+            "Kỳ báo cáo",
+            "Tính điểm",
+            "Đơn vị được đánh giá"
+          ],
+          [
+            "1",
+            "Công tác thu NSNN",
+            "Tỷ lệ số thực thu NSNN",
+            "Phòng NVDTPC",
+            "Số thực thu lũy kế/Số DTPL",
+            "Tuần/Tháng",
+            "- Cao hơn từ 0-5%: Cộng 1 điểm\n- Cao hơn 5%: Cộng 0,5 điểm\n- Thấp từ 5%-0%: 0 điểm\n- Thấp từ 5%-10%: Trừ 0,5 điểm\n- Thấp dưới 10%: Trừ 1 điểm",
+            "- Các phòng QLDN\n- Các Thuế cơ sở"
+          ],
+          [
+            "2",
+            "Tỷ lệ thực thu tháng/ước thu tháng",
+            "Phòng NVDTPC",
+            "Số thực thu tháng/Số ước thu tháng",
+            "Tháng",
+            "- Cao hơn từ 0-10%: Cộng 1 điểm\n- Cao hơn 10%: Cộng 0,5 điểm\n- Thấp từ 10%-0%: Trừ 0,5 điểm\n- Thấp hơn 10%: Trừ 1 điểm",
+            "- Các phòng QLDN\n- Các Thuế cơ sở"
+          ],
+          [
+            "3",
+            "Tỷ lệ thu NSNN tăng giảm so với cùng kỳ",
+            "Phòng NVDTPC",
+            "Số thu lũy kế tháng báo cáo/Số thu lũy kế cùng kỳ",
+            "Tháng",
+            "- Cao hơn từ 0-5%: Cộng 1 điểm\n- Cao hơn 5%: Cộng 0,5 điểm\n- Thấp từ 5%-0%: 0 điểm\n- Thấp từ 5%-10%: Trừ 0,5 điểm\n- Thấp dưới 10%: Trừ 1 điểm",
+            "- Các phòng QLDN\n- Các Thuế cơ sở"
+          ],
+          [
+            "4",
+            "Công tác Quản lý nợ",
+            "Tỷ lệ nợ tăng/giảm so với đầu năm",
+            "Phòng NVDTPC",
+            "(Tổng nợ kỳ báo cáo - Tổng nợ đầu năm)/Tổng nợ đầu năm",
+            "Tuần/Tháng",
+            "- Cao hơn từ 5%: Trừ 1 điểm\n- Cao hơn  từ 0- 5%: Trừ 0,5 điểm\n- Thấp từ 5%-0%: Cộng 0,5 điểm\n- Thấp hơn 5%: Cộng 1 điểm",
+            "- Các phòng QLDN\n- Các Thuế cơ sở"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL4\\7.8.2026 CCT tồn.xlsx",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 68,
+        "cols": 63,
+        "headers": [
+          [
+            "CQT",
+            "MST",
+            "Tên NNT",
+            "Người thay đổi cuối cùng",
+            "Số ngày quá hạn",
+            "Số hồ sơ QHS đề nghị hoàn",
+            "Kỳ từ",
+            "Ngày nhận hồ sơ",
+            "Tổng đề nghị hoàn",
+            "Số lệnh",
+            "Ngày lệnh",
+            "Trạng thái lệnh hoàn",
+            "Trạng thái xử lý lệnh hoàn",
+            "Tên cán bộ",
+            "Trạng thái hồ sơ hoàn",
+            "Mã cán bộ",
+            "Mã CQCT",
+            "Lý do từ chối l.hoàn từ KBNN",
+            "Số QĐ",
+            "Ngày QĐ",
+            "Số TB",
+            "Ngày hạch toán lệnh hoàn",
+            "Khớp Tổng thu nhập chịu thuế [20]",
+            "Trạng thái KĐT",
+            "Hình thức xử lý hoàn TNCN",
+            "Hồ sơ quá hạn",
+            "Khớp Tổng số thuế đề nghị hoàn trả [45]",
+            "Lý do chấp nhận GTBS",
+            "Tất cả CQCT không còn nợ tiểu mục 1001",
+            "Khớp STK ngân hàng",
+            "Không thay đổi CT20-CT47 trừ CT24",
+            "Tờ khai QTT không kèm theo HS giảm thuế",
+            "CCCD tồn tại duy nhất tại 1 MST",
+            "Cá nhân đã QTT TNCN của các kỳ trước",
+            "CQCT có số KT khớp số KK tr.năm (Hết HL)"
+          ],
+          [
+            "0107",
+            "8237842477",
+            "Nguyễn Thành Kiên",
+            "",
+            "0",
+            "260507/ZV06/0036/0107/020775816",
+            "25CN",
+            "2026-04-28 00:00:00",
+            "0",
+            "",
+            "",
+            "",
+            "",
+            "5",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "false",
+            "true",
+            "",
+            "true",
+            "true",
+            "true",
+            "true",
+            "false",
+            "true",
+            "false"
+          ],
+          [
+            "0117",
+            "8068144958",
+            "HỘ KINH DOANH NGUYỄN THỊ THANH HOA",
+            "",
+            "50",
+            "260717/ZV06/0036/0117/028248791",
+            "25CN",
+            "2026-07-16 00:00:00",
+            "2183845",
+            "",
+            "",
+            "",
+            "",
+            "5",
+            "",
+            "0107694449",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "true",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "true",
+            "false",
+            "true",
+            "false"
+          ],
+          [
+            "0117",
+            "8001044491",
+            "Nguyễn Thị Minh Ngọc",
+            "LIEN01.HAN",
+            "39",
+            "260728/ZV06/0036/0117/030615328",
+            "25CN",
+            "2026-07-27 00:00:00",
+            "9662732",
+            "",
+            "15",
+            "",
+            "",
+            "0",
+            "",
+            "0107504578",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "true",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "true",
+            "false",
+            "true",
+            "false"
+          ],
+          [
+            "0107",
+            "8524065880",
+            "Nguyễn Thị Hằng",
+            "",
+            "0",
+            "260818/ZV06/0036/0107/033775024",
+            "25CN",
+            "2026-08-16 00:00:00",
+            "9182396",
+            "",
+            "",
+            "",
+            "",
+            "5",
+            "",
+            "0109696226",
+            "",
+            "",
+            "",
+            "false",
+            "Tự động có rà soát",
+            "false",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "true",
+            "false",
+            "true",
+            "false"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL4\\7.8.2026 VPC tồn.xlsx",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 131,
+        "cols": 63,
+        "headers": [
+          [
+            "CQT",
+            "MST",
+            "Tên NNT",
+            "Người thay đổi cuối cùng",
+            "Số ngày quá hạn",
+            "Số hồ sơ QHS đề nghị hoàn",
+            "Kỳ từ",
+            "Ngày nhận hồ sơ",
+            "Tổng đề nghị hoàn",
+            "Số lệnh",
+            "Ngày lệnh",
+            "Trạng thái lệnh hoàn",
+            "Trạng thái xử lý lệnh hoàn",
+            "Tên cán bộ",
+            "Trạng thái hồ sơ hoàn",
+            "Mã cán bộ",
+            "Mã CQCT",
+            "Lý do từ chối l.hoàn từ KBNN",
+            "Số QĐ",
+            "Ngày QĐ",
+            "Số TB",
+            "Ngày hạch toán lệnh hoàn",
+            "Khớp Tổng thu nhập chịu thuế [20]",
+            "Trạng thái KĐT",
+            "Hình thức xử lý hoàn TNCN",
+            "Hồ sơ quá hạn",
+            "Khớp Tổng số thuế đề nghị hoàn trả [45]",
+            "Lý do chấp nhận GTBS",
+            "Tất cả CQCT không còn nợ tiểu mục 1001",
+            "Khớp STK ngân hàng",
+            "Không thay đổi CT20-CT47 trừ CT24",
+            "PHONG XU LY",
+            "CCCD tồn tại duy nhất tại 1 MST",
+            "Cá nhân đã QTT TNCN của các kỳ trước",
+            "CQCT có số KT khớp số KK tr.năm (Hết HL)"
+          ],
+          [
+            "0101",
+            "8032274784",
+            "Hoàng Sĩ Thính",
+            "",
+            "127",
+            "260510/ZV06/0036/0101/021106440",
+            "25CN",
+            "2026-04-25 00:00:00",
+            "1542288",
+            "",
+            "",
+            "",
+            "",
+            "5",
+            "",
+            "0101619572",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "true",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 5",
+            "false",
+            "true",
+            "false"
+          ],
+          [
+            "0101",
+            "8070348123",
+            "Nguyễn Xuân Long",
+            "DMCUONG.HAN",
+            "46",
+            "260718/ZV06/0036/0101/028518729",
+            "25CN",
+            "2026-07-18 00:00:00",
+            "8553030",
+            "",
+            "15",
+            "",
+            "",
+            "0",
+            "",
+            "0105479189",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "true",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 4",
+            "false",
+            "true",
+            "false"
+          ],
+          [
+            "0101",
+            "8097412249",
+            "Phạm Thị Chung",
+            "MQPHONG.HAN",
+            "44",
+            "260722/ZV06/0036/0101/029338450",
+            "25CN",
+            "2026-07-22 00:00:00",
+            "4459619",
+            "",
+            "15",
+            "",
+            "",
+            "0",
+            "",
+            "0104376504",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "true",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 5",
+            "false",
+            "true",
+            "false"
+          ],
+          [
+            "0101",
+            "0102792001",
+            "Nguyễn Thị Hoa",
+            "NDHAI03.HAN",
+            "43",
+            "260723/ZV06/0036/0101/029543980",
+            "25CN",
+            "2026-07-23 00:00:00",
+            "3296001",
+            "",
+            "15",
+            "",
+            "",
+            "0",
+            "",
+            "0102061812",
+            "",
+            "",
+            "",
+            "true",
+            "Tự động có rà soát",
+            "true",
+            "false",
+            "",
+            "true",
+            "true",
+            "false",
+            "Phòng Quản lý, Hỗ trợ doanh nghiệp số 4",
+            "false",
+            "true",
+            "false"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL5\\5_QL5_1_Thuế cơ sở 1 - T9_Rà soát đối tượng.XLSX",
+    "sheets": [
+      {
+        "name": "Nop thua",
+        "rows": 53,
+        "cols": 11,
+        "headers": [
+          [
+            "CỤC THUẾ"
+          ],
+          [
+            "THUẾ TP HÀ NỘI"
+          ],
+          [
+            "BÁO CÁO THÁNG KK 8"
+          ],
+          [
+            "Kỳ: __REPORT_PERIOD__"
+          ],
+          []
+        ]
+      },
+      {
+        "name": "Sheet1",
+        "rows": 17,
+        "cols": 8,
+        "headers": [
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL5\\5_QL5_2_Thuế cơ sở 1 - T8_Rà soát đối tượng.XLSX",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 105967,
+        "cols": 18,
+        "headers": [
+          [
+            "Mã số thuế",
+            "Tên NNT",
+            "Chương",
+            "Nội dung kinh tế (Tiểu mục)",
+            "Dư đầu kỳ: Phải nộp (1)",
+            "Dư đầu kỳ: Nộp thừa/ Tạm nộp (2)",
+            "Dư đầu kỳ: Được hoàn (3)",
+            "Phải nộp trong kỳ (4)",
+            "Phải nộp theo truy thu, xử phạt (5)",
+            "Miễn, giảm (6)",
+            "Xóa nợ (7)",
+            "Đã nộp (8)",
+            "Được hoàn nộp thừa (9)",
+            "Được hoàn khấu trừ (10)",
+            "Đã hoàn (11)",
+            "Dư cuối kỳ: Phải nộp (12)",
+            "Dư cuối kỳ: Nộp thừa/ Tạm nộp (13)",
+            "Dư cuối kỳ: Được hoàn (14)"
+          ],
+          [
+            "0100100463",
+            "CÔNG TY CỔ PHẦN HÀM LONG",
+            "757",
+            "1001",
+            "0",
+            "2370000",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "2370000",
+            "0"
+          ],
+          [
+            "0100102608-021",
+            "TRUNG TÂM NGHIÊN CỨU VÀ PHÁT TRIỂN GẠO VIỆT - CHI NHÁNH TỔNG CÔNG TY LƯƠNG THỰC MIỀN BẮC",
+            "757",
+            "1001",
+            "0",
+            "1830352",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1830352",
+            "0"
+          ],
+          [
+            "0100106602",
+            "CÔNG TY CỔ PHẦN DU LỊCH KHÁCH SẠN PHÙNG HƯNG",
+            "757",
+            "1001",
+            "0",
+            "2689233",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "2689233",
+            "0"
+          ],
+          [
+            "0100106627",
+            "CÔNG TY CỔ PHẦN PHÚ GIA",
+            "757",
+            "1001",
+            "0",
+            "267714",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "267714",
+            "0"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL5\\5_QL5_3_TONG HOP BAO CAO XPVPHC_xử phạt.xlsx",
+    "sheets": [
+      {
+        "name": "Sheet1",
+        "rows": 3239,
+        "cols": 8,
+        "headers": [
+          [
+            "Mã số thuế",
+            "Tên NNT",
+            "Chương",
+            "Nội dung kinh tế (Tiểu mục)",
+            "Dư cuối kỳ: Phải nộp (12)",
+            "Dư cuối kỳ: Nộp thừa/ Tạm nộp (13)",
+            "Dư cuối kỳ: Được hoàn (14)",
+            "Thừa"
+          ],
+          [
+            "0100107074",
+            "CÔNG TY CỔ PHẦN ĐẦU TƯ XÂY DỰNG VÀ DU LỊCH",
+            "757",
+            "1001",
+            "0",
+            "170738048",
+            "0",
+            "170738048"
+          ],
+          [
+            "0100107268",
+            "CÔNG TY CỔ PHẦN THUỶ TẠ",
+            "757",
+            "1001",
+            "0",
+            "18226165",
+            "0",
+            "18226165"
+          ],
+          [
+            "0100107606",
+            "Báo ảnh Việt nam",
+            "757",
+            "1001",
+            "0",
+            "15000000",
+            "0",
+            "15000000"
+          ],
+          [
+            "0100107701",
+            "CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU MÁY HÀ NỘI",
+            "757",
+            "1001",
+            "0",
+            "44047088",
+            "0",
+            "44047088"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL5\\5_QL5_4_BAO CAO QL DOI TUONG THANG 8.xlsx",
+    "sheets": [
+      {
+        "name": "TONG HOP",
+        "rows": 42,
+        "cols": 23,
+        "headers": [
+          [
+            "CỤC THUẾ"
+          ],
+          [
+            "THUẾ TP HÀ NỘI"
+          ],
+          [
+            "BÁO CÁO QUYẾT ĐỊNH VPHC"
+          ],
+          [
+            "Kỳ: __REPORT_PERIOD__"
+          ],
+          []
+        ]
+      },
+      {
+        "name": "QLDN1",
+        "rows": 174,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "QLDN2",
+        "rows": 167,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "QLDN3",
+        "rows": 213,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "QLDN4",
+        "rows": 172,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "QLDN5",
+        "rows": 172,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS1",
+        "rows": 278,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS2",
+        "rows": 522,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS3",
+        "rows": 393,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS4",
+        "rows": 1496,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS5",
+        "rows": 1415,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS6",
+        "rows": 745,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS7",
+        "rows": 402,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS8",
+        "rows": 1035,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS9",
+        "rows": 417,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS10",
+        "rows": 298,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS11",
+        "rows": 628,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS12",
+        "rows": 268,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS13",
+        "rows": 976,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS14",
+        "rows": 454,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS15",
+        "rows": 1308,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS16",
+        "rows": 52,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS17",
+        "rows": 125,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS18",
+        "rows": 270,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS19",
+        "rows": 258,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS20",
+        "rows": 107,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS21",
+        "rows": 317,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS22",
+        "rows": 530,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS23",
+        "rows": 356,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS24",
+        "rows": 135,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      },
+      {
+        "name": "TCS25",
+        "rows": 71,
+        "cols": 31,
+        "headers": [
+          [
+            "DANH SÁCH THEO DÕI KẾT QUẢ XỬ LÝ VI PHẠM ĐỐI VỚI NNT NỘP TỜ KHAI THUẾ QUÁ THỜI HẠN QUY ĐỊNH"
+          ],
+          [],
+          [
+            "Từ ngày: 05/12/2020 - Đến ngày: 31/12/2026"
+          ],
+          [
+            "Cơ quan thuế",
+            "Người nộp thuế",
+            "Mã số thuế",
+            "Chương",
+            "Hồ sơ khai thuế",
+            "Tên hồ sơ khai thuế",
+            "Kỳ tính thuế",
+            "Tên kỳ tính thuế",
+            "Hạn nộp",
+            "Ngày gia hạn",
+            "Ngày nộp tờ khai",
+            "Trạng thái NVKK",
+            "Số quyết định ấn định",
+            "Ngày quyêt định ấn định",
+            "Số tiền ấn định",
+            "Số quyết định vi phạm",
+            "Ngày quyết định phạt vi phạm",
+            "Số tiền vi phạm",
+            "Số biên bản - điện tử",
+            "Ngày biên bản - điện tử",
+            "Số biên bản thủ công",
+            "Ngày biên bản thủ công",
+            "Số quyết định phạt cảnh cáo",
+            "Ngày quyết định phạt cảnh cáo",
+            "Số ngày quá hạn",
+            "Số ngày nộp quá hạn",
+            "Số quyết định vi phạm - điện tử",
+            "Ngày quyết định vi phạm - điện tử",
+            "Số tiền vi phạm trên quyết định điện tử",
+            "Số quyết định phạt cảnh cáo - điện tử",
+            "Ngày quyết định phạt cảnh cáo - điện tử"
+          ],
+          [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)",
+            "(7)",
+            "(8)",
+            "(09)",
+            "(10)",
+            "(11)",
+            "(12)",
+            "(13)",
+            "(14)",
+            "(15)",
+            "(16)",
+            "(17)",
+            "(18)",
+            "(19)",
+            "(20)",
+            "(21)",
+            "(22)",
+            "(23)",
+            "(24)",
+            "(25)",
+            "(26)",
+            "(27)",
+            "(28)",
+            "(29)",
+            "(30)",
+            "(31)"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL5\\5_QL5_5_BC dong MST_tuan3 thang9.xlsx",
+    "sheets": [
+      {
+        "name": "TONG HOP",
+        "rows": 28,
+        "cols": 6,
+        "headers": [
+          [
+            "STT",
+            "Phần công tác",
+            "Phân công",
+            "Chi tiết các công tác báo cáo",
+            "Tuần",
+            "Tháng "
+          ],
+          [
+            "1",
+            "Kê khai",
+            "QLDN5",
+            "Quản lý đối tượng",
+            "x"
+          ],
+          [
+            "Tỷ lệ nộp TK",
+            "x"
+          ],
+          [
+            "XNNS, Điều chỉnh chứng từ, đối chiếu nộp thừa, HS xử lý bù trừ",
+            "x"
+          ],
+          [
+            "Đóng MST",
+            "x",
+            "x"
+          ]
+        ]
+      },
+      {
+        "name": "báo cáo QLDN5",
+        "rows": 32,
+        "cols": 2,
+        "headers": [
+          [
+            "BÁO CÁO CÔNG TÁC QUẢN LÝ DOANH NGHIỆP THEO PHÂN CÔNG"
+          ],
+          [
+            "Kính gửi: Phòng quản lý, hỗ trợ doanh nghiệp số 3"
+          ],
+          [],
+          [
+            "Căn cứ dự kiến phân công công tác báo cáo khối quản lý doanh nghiệp, Phòng QLHTDN số 5 có ý kiến theo từng nội dung như sau:"
+          ],
+          [
+            "1. Công tác quản lý đối tượng (BC tháng): Thống nhất về mẫu biểu."
+          ]
+        ]
+      },
+      {
+        "name": "Dữ liệu nợ QLDN1",
+        "rows": 8,
+        "cols": 8,
+        "headers": [
+          [
+            "Chỉ tiêu",
+            "Cơ chế lấy báo cáo",
+            "Cách thức lấy chỉ tiêu báo cáo",
+            "Bộ phận lấy dữ liệu",
+            "Tần suất"
+          ],
+          [
+            "Báo cáo tuần",
+            "Báo cáo giao ban tháng",
+            "Báo cáo tổng kết năm"
+          ],
+          [
+            "Kết quả thực hiện chỉ tiêu giảm nợ",
+            "Lấy từ TMS",
+            "Lấy theo số nợ ngày tại chức năng 9.9.2.7 Báo cáo nợ theo ngày, thu được số nợ khả năng thu theo tuổi nợ, nợ khó thu, nợ chờ điều chỉnh, nợ đang xử lý tính đến ",
+            "Lấy theo dữ liệu chốt sổ nợ tại chức năng 9. 9. 4.15 Báo cáo phân loại tiền thuế nợ theo người nộp thuế (Mẫu số 01/NNT-BC), thu được số nợ khả năng thu theo tuổ",
+            "Lấy theo dữ liệu chốt sổ nợ tại chức năng 9. 9. 4.15 Báo cáo phân loại tiền thuế nợ theo người nộp thuế (Mẫu số 01/NNT-BC), thu được số nợ khả năng thu theo tuổ",
+            "Phòng đầu mối (QLDN1)",
+            "Báo cáo Tuần/Tháng/năm"
+          ],
+          [
+            "Số nợ mới phát sinh",
+            "Lấy từ TMS",
+            "Lấy theo số nợ ngày tại chức năng 9.9.2.7 Báo cáo nợ theo ngày, thu được số nợ mới phát sinh tại cột Khoản nợ từ 01-30 ngày là nợ mới phát sinh",
+            "Lấy theo dữ liệu chốt sổ nợ tại chức năng 9. 9. 4.15 Báo cáo phân loại tiền thuế nợ theo người nộp thuế (Mẫu số 01/NNT-BC), thu được số nợ mới phát sinh tại cột",
+            "Lấy theo dữ liệu chốt sổ nợ tại chức năng 9. 9. 4.15 Báo cáo phân loại tiền thuế nợ theo người nộp thuế (Mẫu số 01/NNT-BC), thu được số nợ mới phát sinh tại cột",
+            "Phòng đầu mối (QLDN1)",
+            "Báo cáo Tuần/Tháng"
+          ],
+          [
+            "Kết quả thực hiện cưỡng chế nợ thuế",
+            "Lấy từ TMS",
+            "1. Khai thác dữ liệu nợ thuế của người nộp thuế trên địa bàn thành phố có nợ thuế thời điểm chốt số liệu (ngày cuối cùng của tháng liền kề) tại TMS - chức năng ",
+            "Các bước lấy dữ liệu tương tự báo cáo tuần ==> căn cứ dữ liệu theo dõi lũy tiến tử BC tuần, xây dựng cơ sở dữ liệu báo cáo tháng",
+            "Các bước lấy dữ liệu tương tự báo cáo tuần ==> căn cứ dữ liệu theo dõi lũy tiến tử BC tháng, xây dựng cơ sở dữ liệu báo cáo năm",
+            "Phòng đầu mối (QLDN1)",
+            "Báo cáo Tuần/Tháng/năm"
+          ]
+        ]
+      },
+      {
+        "name": "1.QLĐT",
+        "rows": 43,
+        "cols": 16,
+        "headers": [
+          [
+            "CỤC THUẾ"
+          ],
+          [
+            "THUẾ TP HÀ NỘI"
+          ],
+          [
+            "CÔNG TÁC QUẢN LÝ ĐỐI TƯỢNG"
+          ],
+          [
+            "Kỳ: __REPORT_PERIOD__"
+          ],
+          [
+            "__HEADER_START__",
+            "__HEADER_END__"
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "file": "QL5\\5_QL5_CÁC BƯỚC KÉO DỮ LIỆU NỘP THỪA.doc",
+    "type": ".doc",
+    "format": "xlsx",
+    "sheets": [
+      {
+        "name": "Tuan2_thang9",
+        "rows": 42,
+        "cols": 18
+      }
+    ]
+  }
+]

@@ -12,7 +12,7 @@ const cachChayText = { AUTO: "Tự động", MANUAL: "Thủ công" } as const;
 /** Chênh lệch giữa số dòng ở nguồn và số dòng vào kho. Không đo được thì null. */
 const lech = (r: DataRun) => r.rowsSource === null ? null : r.rowsSource - r.rowsStore;
 
-export function Runs() {
+export function Runs({ readOnly = false }: { readOnly?: boolean }) {
   const notify = useAction();
   const [search, setSearch] = useState("");
   const cases = useCaseSelection(dataRuns[0]?.id ?? "");
@@ -37,21 +37,21 @@ export function Runs() {
   >
     <DetailGrid items={[
       { label: "Tham số kỳ", value: luot.period },
-      { label: "Phạm vi kéo", value: luot.scope },
+      { label: "Phạm vi thu thập", value: luot.scope },
       { label: "Cách chạy", value: <>{cachChayText[luot.mode]} <small>bắt đầu {luot.startedAt}</small></> },
-      { label: "Phiên bản vùng thô", value: <>v{luot.version} <small>không ghi đè bản trước</small></> },
+      { label: "Phiên bản dữ liệu gốc", value: <>v{luot.version} <small>không ghi đè bản trước</small></> },
       { label: "Số dòng ở nguồn", value: luot.rowsSource === null ? <>Chưa đếm được <small>lượt chưa hoàn tất</small></> : integer(luot.rowsSource) },
       { label: "Số dòng vào kho", value: integer(luot.rowsStore) },
       { label: "Chênh lệch đối soát", value: lech(luot) === null ? "—" : lech(luot) === 0 ? <>0 <small>khớp</small></> : <>{integer(Math.abs(lech(luot)!))} <small>dòng chưa vào kho</small></> },
       { label: "Kết quả", value: <Badge tone={trangThaiTone[luot.status]}>{trangThaiText[luot.status]}</Badge> },
     ]}/>
     <div className={`notice ${luot.status === "OK" ? "positive" : luot.status === "RUNNING" ? "info" : luot.status === "FAILED" ? "critical" : "warning"}`}>
-      <strong>{luot.status === "OK" ? "Lượt chạy đạt đối soát" : luot.status === "RUNNING" ? "Lượt đang chạy" : luot.status === "FAILED" ? "Lượt chạy hỏng" : "Số dòng không khớp"}</strong>
+      <strong>{luot.status === "OK" ? "Lượt chạy đạt đối soát" : luot.status === "RUNNING" ? "Lượt đang chạy" : luot.status === "FAILED" ? "Lượt thu thập bị lỗi" : "Số dòng không khớp"}</strong>
       <span>{luot.note}</span>
       {/* Nút nằm cạnh chính dải báo kết quả mà nó trả lời; để ở đầu khối thì
           đầu khối cao thấp khác nhau tuỳ lượt có lỗi hay không. */}
       {luot.status !== "OK" && luot.status !== "RUNNING" && (
-        <Button kind="quiet" icon="upload" onClick={() => notify("Bản demo chưa hỗ trợ nhập tệp thủ công cho lượt chạy này.")}>Nhập tệp thủ công cho lượt này</Button>
+        !readOnly && <Button kind="quiet" icon="upload" onClick={() => notify("Bản demo chưa hỗ trợ nhập tệp thủ công cho lượt chạy này.")}>Nhập tệp thủ công cho lượt này</Button>
       )}
     </div>
   </Panel>;
@@ -59,13 +59,13 @@ export function Runs() {
   return <div className="page-stack">
     <PageIntro
       title="Lượt chạy dữ liệu"
-      actions={<Button kind="primary" icon="upload" onClick={() => notify("Bản demo chưa nối hệ nguồn nên chưa chạy thật được.")}>Chạy lại theo tham số cũ</Button>}
+      actions={!readOnly && <Button kind="primary" icon="upload" onClick={() => notify("Chưa kết nối hệ thống nguồn. Không thể thu thập lại dữ liệu trong bản mô phỏng.")}>Chạy lại theo tham số cũ</Button>}
     />
 
     <FigureLine items={[
       { label: "Lượt chạy trong ngày", value: dataRuns.length },
-      { label: "Nguồn kéo được tự động", value: `${tuDong}/5`, note: "TTR cần nhập tệp thủ công" },
-      { label: "Lượt lỗi đang mở", value: loiDangMo, tone: loiDangMo ? "critical" : "positive" },
+      { label: "Nguồn thu thập tự động", value: `${tuDong}/5`, note: "TTR cần nhập tệp thủ công" },
+      { label: "Lượt thu thập cần xử lý", value: loiDangMo, tone: loiDangMo ? "critical" : "positive" },
       { label: "Dòng lệch khi đối soát", value: integer(dongLech), tone: dongLech ? "warning" : "positive", note: "Nguồn so với kho" },
     ]}/>
 

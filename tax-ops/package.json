@@ -5,16 +5,21 @@
   "type": "module",
   "description": "Web quản lý nghiệp vụ nội bộ cho cán bộ Thuế TP Hà Nội",
   "scripts": {
-    "dev": "vite",
+    "dev": "node ../scripts/portal.mjs dev",
+    "dev:standalone": "vite",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "preview": "vite preview",
     "acceptance": "node scripts/acceptance.mjs",
+    "test:reports": "node scripts/report-permissions.mjs",
+    "test:portal": "node scripts/check-portal.mjs",
     "soat": "node scripts/soat.mjs"
   },
   "dependencies": {
+    "docx": "^9.8.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",

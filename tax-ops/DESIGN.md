@@ -1,44 +1,47 @@
 ---
 name: Quản lý nghiệp vụ Thuế TP Hà Nội
-description: Bàn làm việc nghiệp vụ trên giấy ấm, khung sơn mài đỏ sẫm, bảng số dày thông tin mà vẫn tĩnh.
+description: Bàn làm việc nghiệp vụ dùng chung bảng màu navy, xanh dữ liệu và trung tính của Dashboard Thu NSNN.
 colors:
-  canvas: "#f6f4f2"
+  canvas: "#f2f5f9"
   surface: "#ffffff"
-  surface-soft: "#f6f4f2"
-  surface-tint: "#fbf1f1"
-  hover-surface: "#f6f4f2"
-  selected-surface: "#f7e5e7"
-  selection-bg: "#f7dfe1"
-  line: "#e4dedc"
-  line-soft: "#f0eceb"
-  control-line: "#d8d0ce"
-  control-line-hover: "#b2a5a6"
-  state-edge: "#8a797c"
-  ink: "#241d1f"
-  ink-2: "#4f4547"
-  ink-3: "#6f6366"
-  chrome: "#3a1016"
-  seal: "#cf2333"
-  gold: "#f3c602"
-  brand: "#9a1c2a"
-  brand-strong: "#7a1521"
-  focus: "#241d1f"
-  focus-on-chrome: "#f3c602"
-  positive: "#14653a"
+  surface-soft: "#f7f9fc"
+  surface-tint: "#eef4fc"
+  hover-surface: "#f7f9fc"
+  selected-surface: "#dbe8f8"
+  selection-bg: "#dbe8f8"
+  line: "#dbe3ed"
+  line-soft: "#eaeff6"
+  control-line: "#c6d2e0"
+  control-line-hover: "#86b6ef"
+  state-edge: "#75869b"
+  ink: "#16263c"
+  ink-2: "#485666"
+  ink-3: "#63707f"
+  chrome: "#0e2a47"
+  brand: "#1657a8"
+  brand-strong: "#1c5cab"
+  focus: "#1657a8"
+  focus-on-chrome: "#ffffff"
+  positive: "#187044"
   positive-bg: "#eaf4ee"
-  warning: "#7a5810"
-  warning-bg: "#fbf3df"
-  critical: "#c0261c"
+  warning: "#7a5a12"
+  warning-bg: "#fdf5dd"
+  critical: "#b3352f"
   critical-bg: "#fdefed"
-  info: "#3f5470"
-  info-bg: "#eef0f4"
-  on-chrome-1: "#f2dfe1"
-  on-chrome-2: "#d9b9bd"
-  on-chrome-3: "#b08f95"
-  on-chrome-note: "#e8c77a"
-  positive-on-chrome: "#7fd0a4"
-  scroll-thumb: "#d2c9c7"
-  scroll-thumb-hover: "#b0a3a4"
+  info: "#1657a8"
+  info-bg: "#eef4fc"
+  on-chrome-1: "#ffffff"
+  on-chrome-2: "#d3e1f0"
+  on-chrome-3: "#86b6ef"
+  on-chrome-note: "#dbe8f8"
+  positive-on-chrome: "#ffffff"
+  data: "#1657a8"
+  data-secondary: "#3987e5"
+  data-family: "#86b6ef"
+  data-reference: "#75869b"
+  data-track: "#e7edf5"
+  scroll-thumb: "#c3cedd"
+  scroll-thumb-hover: "#9aa9bd"
 typography:
   display:
     fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
@@ -218,17 +221,17 @@ components:
 
 ## Overview
 
-**Creative North Star: "Bàn làm việc sơn mài"**
+**Creative North Star: "Bàn làm việc trên hệ màu NSNN"**
 
-Hệ này là một bàn làm việc nghiệp vụ, không phải một dashboard quan sát. Mặt làm việc là giấy ấm (`--canvas #f6f4f2`) với các khối trắng đặt lên trên; khung bao quanh — sidebar, drawer, cột trái màn đăng nhập, toast, scrim — là sơn mài đỏ sẫm (`--chrome #3a1016`). Hai vật liệu đó tách bạch có chủ ý: người dùng luôn biết đâu là công cụ, đâu là nội dung. Khung sơn mài thay cho navy của bản trước, vì navy không còn liên quan gì tới con dấu cơ quan, còn nền trắng toàn phần làm hệ mất cạnh và đọc ra phần mềm quản trị chung chung.
+Đây là bàn làm việc nghiệp vụ, không phải dashboard quan sát. Tax Ops dùng chung palette của Dashboard Thu NSNN để hai ứng dụng trong cùng hệ sinh thái nhận diện nhất quán: navy thể chế (`--chrome #0e2a47`) làm khung điều hướng và vùng nhận diện; nền xám xanh (`--canvas #f2f5f9`) cùng bề mặt trắng dành cho nội dung; xanh thương hiệu (`--brand #1657a8`) dành cho hành động.
 
-Bảng màu được dựng lại từ chính con dấu Thuế TP Hà Nội: đỏ `#cf2333` và vàng `#f3c602` đo trực tiếp trên file logo, không ước lượng bằng mắt. Từ đó sinh ra ba vai riêng của sắc đỏ, và việc tách ba vai này là quy tắc chi phối toàn hệ. Trung tính ngả ấm, ám đỏ rất nhạt, vì xám xanh lạnh đặt cạnh đỏ đọc ra "ghép nhầm hai bộ".
+Thang xanh NSNN dùng cho hành động và dữ liệu; trạng thái tăng/giảm, cảnh báo và lỗi tiếp tục có màu semantic riêng. Logo Thuế hiện hữu được giữ nguyên, nhưng màu logo không còn được dùng làm màu giao diện thay thế cho palette chung.
 
 Mật độ cao và tĩnh. Thước đo là Stripe Dashboard: bảng dài đọc được, số có trọng lượng, trạng thái rõ mà không ồn. Sản phẩm đi theo chuẩn mực của loại sản phẩm một cách có chủ đích — đây là lựa chọn đã ghi trong PRODUCT.md, không phải mặc định do thiếu quyết định — nên quy ước phải được thực thi đầy đủ, không mỉa mai và không lén cài nét lạ. Lằn ranh người dùng đặt ra vẫn đứng: giao diện không được trông như sản phẩm tiêu dùng.
 
 **Key Characteristics:**
-- Giấy ấm làm mặt nền, sơn mài đỏ sẫm làm khung; hai vật liệu không trộn vào nhau.
-- Ba vai của sắc đỏ tách rành mạch: dấu ấn, hành động, can thiệp.
+- Navy thể chế làm khung; nền xám xanh, bề mặt trắng và đường viền xanh xám tạo lớp nội dung.
+- Xanh thương hiệu dành cho hành động; thang xanh dữ liệu đơn sắc dành cho đại lượng; trạng thái giữ ngôn ngữ semantic riêng.
 - Một bộ chữ duy nhất, Public Sans, tự host trong mã nguồn; chữ số dùng `tabular-nums` trên toàn thân trang.
 - Khối nội dung có viền mảnh 1px và bóng hai lớp rất nhẹ; không có thẻ nổi.
 - Bậc chữ ngắn (10 → 22px, thêm một bậc `clamp` tới 26px ở màn đăng nhập); phân cấp do đường kẻ và cân nặng gánh.
@@ -237,41 +240,36 @@ Mật độ cao và tĩnh. Thước đo là Stripe Dashboard: bảng dài đọc
 
 ## Colors
 
-Bảng màu ấm, ám đỏ, một nốt lạnh duy nhất; phần lớn diện tích là trắng và giấy, màu chỉ xuất hiện khi mang nghĩa.
+Tax Ops và Dashboard Thu NSNN dùng chung bảng màu semantic. Màu xác lập thẩm quyền và điều hướng; phần lớn diện tích vẫn là nền sáng, còn màu bão hòa chỉ xuất hiện khi mang ý nghĩa.
 
-### Primary
-- **Đỏ hành động** (`--brand`): đỏ mận sẫm. Dùng cho nút chính, liên kết, `caret-color`/`accent-color` của ô nhập, bước đang xử lý trong luồng duyệt, mũi tên hàng khi hover, mục điều hướng đáy đang mở. Đây là màu duy nhất được phép nói "bấm vào đây".
-- **Đỏ hành động đậm** (`--brand-strong`): hover và active của nút chính, và màu chữ của mục điều hướng đang mở khi nó lật sang nền trắng.
-- **Đỏ con dấu** (`--seal`) và **vàng con dấu** (`--gold`): hai sắc đo từ logo, là gốc của cả bảng màu. Cần nói thẳng trạng thái hiện tại của chúng trong mã: `--seal` được khai báo nhưng **chưa có một lần `var()` nào** — đỏ con dấu chỉ tồn tại trong ảnh `public/tax-logo.png`; `--gold` có đúng một tham chiếu, ở một quy tắc hiện không bắt được phần tử nào (xem mục Navigation). Sắc vàng thật sự sống trong hệ qua hai token khác: `--focus-on-chrome` và `--on-chrome-note`. Giữ `--seal` và `--gold` như hai token gốc của bảng màu, nhưng đừng coi chúng là màu đang được vẽ.
+### Brand and Data
+- **Navy thể chế** (`--chrome #0e2a47`): sidebar, drawer, cột nhận diện đăng nhập, toast và skip-link. Đây là khung điều hướng, không phải dark theme.
+- **Xanh thương hiệu** (`--brand #1657a8`): nút chính, liên kết, tab/mục được chọn, focus trên nền sáng và thao tác có thể bấm. `--brand-strong #1c5cab` dành cho hover/active.
+- **Thang dữ liệu xanh**: `--data-primary #1657a8`, `--data-secondary #3987e5`, `--data-family #86b6ef` và `--data-reference #75869b`. Đại lượng cùng hệ dùng chung ngôn ngữ xanh; xanh lá/đỏ không dùng làm màu trang trí cho biểu đồ.
 
-### Secondary
-- **Sơn mài đỏ sẫm** (`--chrome`): vật liệu của khung — sidebar, drawer mobile, cột trái màn đăng nhập, toast, skip-link, và màu chữ của vùng bôi chọn. Ba bậc mực trên nó (`--on-chrome-1`, `--on-chrome-2`, `--on-chrome-3`) đều ≥5,7:1, nên bậc mờ nhất vẫn dùng được cho nhãn nhóm chứ không phải chỉ để trang trí. `--on-chrome-note` là bậc vàng ấm dành riêng cho dòng vai trò và đơn vị của người đang đăng nhập.
-
-### Tertiary
-Màu trạng thái, mỗi màu đi kèm một nền rất nhạt dùng cho dải `.notice` và chip:
-- **Xanh xác nhận** (`--positive` / `--positive-bg`): việc đã xong, bước đã duyệt, trạng thái rỗng lành tính. Trên nền sơn mài đổi sang `--positive-on-chrome`.
-- **Nâu vàng cảnh báo** (`--warning` / `--warning-bg`): sắp đến hạn, dữ liệu mô phỏng, điều cần biết trước khi tin con số.
-- **Đỏ can thiệp** (`--critical` / `--critical-bg`): sáng và ngả cam hơn đỏ hành động, để hai thứ không đọc thành một. Chỉ xuất hiện khi người dùng phải xử lý.
-- **Xanh thép** (`--info` / `--info-bg`): nốt lạnh duy nhất còn lại, dành cho tin trung tính không đòi hành động.
+### Status
+- **Xanh xác nhận** (`--positive #187044` / `--positive-bg #eaf4ee`): hoàn tất, đã duyệt và trạng thái lành tính.
+- **Vàng lưu ý** (`--warning #7a5a12` / `--warning-bg #fdf5dd`): chờ duyệt, dữ liệu mô phỏng hoặc điều cần đọc trước khi tin con số.
+- **Đỏ cần xử lý** (`--critical #b3352f` / `--critical-bg #fdefed`): chỉ việc cần can thiệp. Không dùng đỏ cho hành động thông thường.
+- **Thông tin** (`--info #1657a8` / `--info-bg #eef4fc`): thông báo trung tính; trạng thái luôn có nhãn chữ hoặc icon đi kèm.
 
 ### Neutral
-- **Giấy ấm** (`--canvas`): nền của `html`, `body`, mặt làm việc, ngăn chi tiết và màn từ chối quyền.
-- **Trắng** (`--surface`): mặt của mọi khối nội dung, ô nhập, topbar, hàng bảng, và của mục điều hướng đang mở.
-- **Giấy mềm** (`--surface-soft`) và **giấy hồng** (`--surface-tint`): nền đầu cột bảng, nền hover của nút phụ, nền hover của nút mờ, dải nhắc cuộn ngang.
-- **Hồng chọn** (`--selected-surface`): hàng đang chọn trong bảng. Nền này giữ nguyên cả khi hover, vì "đang chọn" mạnh hơn "đang trỏ tới". `--selection-bg` là nền bôi chọn văn bản.
-- **Đường kẻ** (`--line`) và **đường kẻ mờ** (`--line-soft`): hai bậc, không ba. `--line` cho ranh giới khối và vạch dưới đầu cột; `--line-soft` cho mọi vạch chia bên trong khối.
-- **Mực** (`--ink`, `--ink-2`, `--ink-3`): ba bậc. Bậc mờ nhất đạt 5,75:1 trên trắng, 5,24:1 trên giấy và 5,19:1 trên nền ám đỏ — nó là bậc nhỏ nhất được phép, không có bậc thứ tư.
-- **Viền điều khiển** (`--control-line`, hover `--control-line-hover`) và **viền mang trạng thái** (`--state-edge`, ≥3:1 với cả nền trắng lẫn đường kẻ kề nó, dùng cho vòng tròn bước và nút phân đoạn đang bật).
+- **Canvas** (`--canvas #f2f5f9`), **surface** (`--surface #ffffff`) và **surface sunken** (`--surface-soft #f7f9fc`) phân lớp nền, khối nội dung và vùng lùi.
+- **Blue 050** (`--surface-tint #eef4fc`) dành cho hover/nhấn nhẹ; **Blue 100** (`--selected-surface #dbe8f8`) cho hàng được chọn.
+- **Đường kẻ** (`--line #dbe3ed`) và **divider** (`--line-soft #eaeff6`) tạo cấu trúc. Viền điều khiển `#c6d2e0`; hover `#86b6ef`.
+- **Mực** (`--ink #16263c`, `--ink-2 #485666`, `--ink-3 #63707f`) tạo ba cấp chữ trên nền sáng. Trên navy dùng `--on-chrome-1 #ffffff`, `--on-chrome-2 #d3e1f0` và `--on-chrome-3 #86b6ef`.
 
 ### Named Rules
 
-**The Three Reds Rule.** Đỏ trong hệ này mang ba việc và ba việc đó không bao giờ được nhòe vào nhau: `--seal` chỉ nhận diện, `--brand` chỉ hành động, `--critical` chỉ can thiệp. Một màu không thể vừa là thương hiệu vừa là cảnh báo — nếu nút lưu và dòng báo lỗi cùng một sắc đỏ thì người dùng hết cách phân biệt "bấm được" với "có chuyện".
+**The Shared NSNN Palette Rule.** UI chrome, neutral surfaces, text, action blue, data blues and status colors follow the shared Dashboard NSNN tokens. The Tax Ops logo stays as supplied; its red and gold are identity artwork, not alternate action or status tokens.
 
-**The Ink Focus Rule.** Vòng focus là mực `--focus`, không phải đỏ. Đỏ đã mang hai nghĩa, nên một vòng đỏ quanh ô đang chọn sẽ đọc thành "ô này có vấn đề". Mực là màu duy nhất không mang nghĩa nào và nó đạt 15:1 trên mọi bề mặt sáng. Trên nền sơn mài vòng mực biến mất, nên ở đó — và chỉ ở đó — focus đổi sang vàng con dấu `--focus-on-chrome` (10,18:1).
+**The Blue Action, Blue Data Rule.** Brand blue is reserved for action and selection. Data series use the registered blue scale; positive, negative and warning colors retain their semantic meanings and never become decorative series colors.
 
-**The Neutral Numeral Rule.** Chữ số giữ màu mực trung tính. Màu trạng thái nằm ở nhãn, ở chip và ở dải thông báo, không nằm trong con số. Một con số đỏ đọc ra "số này sai" chứ không đọc ra "số này lớn".
+**The Blue Focus Rule.** Focus uses `--focus #1657a8` on light surfaces and white `--focus-on-chrome` on navy. Keep a visible 2px outline and preserve the existing keyboard focus order.
 
-**The Warm Grey Rule.** Không đưa xám xanh lạnh vào trung tính; nó phá sự liền mạch với con dấu. Trung tính ám đỏ rất nhạt đọc ra "cùng một hệ". Ngoại lệ duy nhất đã đăng ký là `--info`.
+**The Neutral Numeral Rule.** Numeric values stay ink-colored. Status color belongs on the label, chip or notice, not on a number that only needs emphasis.
+
+**The Two Neutral Lines Rule.** Use `--line` for panel boundaries and table-header rules; use `--line-soft` for internal separators. Do not introduce a third neutral divider.
 
 ## Typography
 
@@ -316,10 +314,10 @@ Măng sét mang cả hai bậc thao tác từ 901px trở lên. Topbar có một
 
 Nhịp khoảng cách chạy theo bậc 4 / 8 / 10 / 12 / 14 / 16 / 18 / 20. Đệm trong khối là `0 14px 12px` (12px từ 720px xuống). Các dải toàn chiều rộng bên trong khối — bảng, danh sách việc, danh sách nguồn, bảng xếp hạng, lưới chi tiết — dùng `margin-inline: -14px` để chạm hẳn mép khối trong khi phần chữ vẫn thụt vào. Hàng bảng cao 38px, ô chi tiết và ô tổng hợp cao tối thiểu 56px, hàng việc 54px, đầu khối 54px.
 
-Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-layout` nay chỉ còn **một cột** — danh sách chiếm trọn bề ngang, chi tiết nằm trong `<dialog>` trượt từ mép phải. Màn đăng nhập là lưới hai cột `minmax(300px, 36%) / minmax(0, 1fr)`: cột trái sơn mài, cột phải trắng. 42% của bản trước là 670px sơn mài ở khổ 1600 cho một con dấu và hai dòng chữ — mảng màu lớn hơn thứ nó chứa; 36% giữ được vai trò làm khung mà không thành khoảng trống. Cụm form rộng `min(380px, 100%)` — hai ô nhập trải 560px đọc ra một biểu mẫu bị kéo giãn, vì ô dài gấp mấy lần nội dung nó chứa.
+Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-layout` nay chỉ còn **một cột** — danh sách chiếm trọn bề ngang, chi tiết nằm trong `<dialog>` trượt từ mép phải. Màn đăng nhập là lưới hai cột `minmax(300px, 36%) / minmax(0, 1fr)`: cột trái navy, cột phải trắng. 36% giữ được vai trò làm khung mà không thành khoảng trống. Cụm form rộng `min(380px, 100%)` — hai ô nhập trải 560px đọc ra một biểu mẫu bị kéo giãn, vì ô dài gấp mấy lần nội dung nó chứa.
 
 **Điểm ngắt.**
-- **Mọi khổ** — chọn một hàng mở `<dialog>` trượt từ mép phải, rộng `min(100vw, 520px)`, cao toàn màn, nền giấy ấm. Không còn điểm ngắt 1361px và không có luật chặn chiều cao nào áp cho dải, vì khi danh sách đứng một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
+- **Mọi khổ** — chọn một hàng mở `<dialog>` trượt từ mép phải, rộng `min(100vw, 520px)`, cao toàn màn, nền `--canvas`. Không còn điểm ngắt 1361px và không có luật chặn chiều cao nào áp cho dải, vì khi danh sách đứng một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
 - **901px** — ranh giới của thao tác: trên nó nút nằm trong măng sét, dưới nó nút nằm trong nội dung. Áp cho cả thao tác cấp trang lẫn cấp hệ thống.
 - **1180px** — lưới hai cột duỗi thành một; luồng trạng thái từ năm cột xuống ba.
 - **900px** — sidebar ẩn, topbar và mặt làm việc bỏ lùi trái, nút mở menu hiện, thanh điều hướng đáy hiện lên (nền `#fffffff2`, `backdrop-filter: blur(14px)`), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
@@ -341,12 +339,12 @@ Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-lay
 
 ## Elevation & Depth
 
-Hệ gần như phẳng. Độ sâu chủ yếu đến từ vật liệu — sơn mài đỏ sẫm làm khung, trắng làm mặt, giấy ấm làm nền — và từ hai bậc đường kẻ. Bóng chỉ nhận ba nhóm việc: đóng khung khối, phản hồi khi trỏ tới, và nâng lớp phủ.
+Hệ gần như phẳng. Độ sâu chủ yếu đến từ lớp navy làm khung, trắng làm mặt, canvas xám xanh làm nền và hai bậc đường kẻ. Bóng chỉ nhận ba nhóm việc: đóng khung khối, phản hồi khi trỏ tới, và nâng lớp phủ.
 
 ### Shadow Vocabulary
 - **Khối nội dung** (`box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 14px rgb(41 37 38 / 4%)`, kèm `border: 1px solid var(--line)`): áp cho `.panel`, `.kpi-strip`, `.figure-line`. Hai lớp rất nhạt, đủ để khối tách khỏi giấy mà không đọc thành thẻ nổi.
 - **Nút có nền** (`0 1px 1px #29252614` cho nút chính, `0 1px 1px #2925260f` cho nút phụ): tắt hẳn khi `:active`, kèm `translateY(.5px)` để cú bấm có trọng lượng.
-- **Mục điều hướng đang mở** (`0 2px 5px rgb(0 0 0 / 10%)`): thanh trắng nổi lên khỏi nền sơn mài.
+- **Mục điều hướng đang mở** (`0 2px 5px rgb(0 0 0 / 10%)`): thanh trắng nổi lên khỏi nền navy.
 - **Nâng khi trỏ tới** (`0 3px 8px rgb(41 37 38 / 10%)` kèm `translateY(-2px)`): chỉ hàng bảng, hàng việc và ô tổng hợp bấm được.
 - **Nút phân đoạn đang bật** (`0 1px 2px #2925261f` kèm viền `--state-edge`): một mảnh trắng nhô lên khỏi rãnh xám.
 - **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): ngăn chi tiết, drawer mobile, toast, hộp thoại báo cáo. Nền mờ phía sau là `rgb(36 29 31 / 45%)`, scrim của drawer là `#29252680`.
@@ -380,7 +378,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 - **Shape:** bo nhẹ (6px), cao 32px trên desktop và 44px từ 900px xuống, chữ 13px/600, `white-space: nowrap`, icon 17px đặt trước nhãn.
 - **Primary:** nền và viền `--brand`, chữ trắng, bóng 1px. Hover chuyển `--brand-strong`; `:active` bỏ bóng và lún nửa pixel.
 - **Secondary:** nền trắng, viền `--control-line`, chữ mực. Hover đổi viền sang `--control-line-hover` và nền sang giấy mềm.
-- **Quiet:** không nền, không viền, chữ `--brand`, đệm ngang 8px. Hover nhận nền giấy hồng `--surface-tint`. Trên mobile nó bỏ đệm ngang và căn trái trong đầu khối thay vì kéo rộng như hai loại kia.
+- **Quiet:** không nền, không viền, chữ `--brand`, đệm ngang 8px. Hover nhận nền xanh nhạt `--surface-tint`. Trên mobile nó bỏ đệm ngang và căn trái trong đầu khối thay vì kéo rộng như hai loại kia.
 - **Disabled:** `opacity: .45`, bỏ bóng, bỏ dịch chuyển, `cursor: not-allowed`.
 - **Focus:** vòng mực 2px, `outline-offset: 2px`, kế thừa từ quy tắc chung chứ không định nghĩa lại.
 - **Nút gửi của màn đăng nhập** là biến thể riêng: cao 44px, chiếm trọn bề ngang form, cùng bảng màu với nút chính.
@@ -392,7 +390,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 
 ### Cards / Containers (Panel)
 - **Corner Style:** 10px, `overflow: hidden`.
-- **Background:** trắng trên nền giấy ấm.
+- **Background:** trắng trên canvas xám xanh.
 - **Border & Shadow:** có khung — viền 1px `--line` và bóng hai lớp rất nhẹ (xem Elevation & Depth). Stylesheet còn giữ một khai báo cũ hơn viết `border: 0` cho `.panel`, nhưng nó bị quy tắc muộn hơn ghi đè; trạng thái đang chạy là khối **có** viền và bóng.
 - **Đầu khối:** cao tối thiểu 54px, đệm `13px 16px`, vạch dưới `--line`. Tiêu đề 14px/700, không kèm nhãn nguồn — xem **The Panel Is Not A Bibliography Rule** bên dưới. Dòng mô tả (`max-width: 72ch`, màu `--ink-3`) là tùy chọn và **không dùng ở khối chi tiết** — xem quy tắc dưới. Khi đầu khối có vùng thao tác, nó chuyển sang lưới (`display: grid`) để thao tác xuống dòng dưới tiêu đề thay vì bóp tiêu đề; đó là lý do đầu khối chi tiết ở Nợ và Lô dữ liệu cao hơn ở Hoàn thuế và Báo cáo, chứ không phải vì còn sót dòng phụ. Chiều cao đầu khối vì thế là kết quả của nội dung, không phải một con số đặt trước — đúng lý do hàng lưới chung phải là subgrid.
 - **Internal Padding:** `0 14px 12px`, xuống `0 12px 12px` từ 720px.
@@ -427,7 +425,7 @@ Không vá được bằng `overflow-y: visible` trên `.table-wrap`: CSS quy đ
 ### Login
 **The Two Columns Do Two Jobs Rule.** Cột trái là NHẬN DIỆN, cột phải là NỘI DUNG, và không cột nào lấn sang việc của cột kia. Bản trước đặt "Đăng nhập theo vai trò nghiệp vụ" bên trái rồi "Đăng nhập" bên phải — cùng một câu nói hai lần, cách nhau nửa màn hình, và người đọc phải tự đoán câu nào mới là tiêu đề thật. Cột nhận diện không được mang chữ nào của luồng đăng nhập: không tiêu đề, không nút, không đường dẫn.
 
-Cột trái vì thế chỉ có một khối duy nhất đặt giữa chiều cao (`margin: auto 0` trong cột flex): con dấu 112px, tên hệ bậc `Display` có `text-wrap: balance` và `max-width: 14ch`, một vạch `56×2px` màu `--gold`, rồi tên cơ quan 14px. Vạch vàng là lần dùng sắc vàng con dấu duy nhất trên màn này. Ghi chú dữ liệu mô phỏng ghim đáy sau một vạch `#ffffff1f`.
+Cột trái vì thế chỉ có một khối duy nhất đặt giữa chiều cao (`margin: auto 0` trong cột flex): con dấu 112px, tên hệ bậc `Display` có `text-wrap: balance` và `max-width: 14ch`, một vạch `56×2px` màu `--brand`, rồi tên cơ quan 14px. Ghi chú dữ liệu mô phỏng ghim đáy sau một vạch `#ffffff1f`.
 
 Cột phải mang toàn bộ phần đọc và làm: `<h1>Đăng nhập</h1>` — thẻ h1 duy nhất của trang — dòng phụ, hai ô nhập, nút gửi, rồi lối đăng nhập một lần.
 
@@ -440,12 +438,13 @@ Từ 720px xuống, dải nhận diện co thành một hàng ngang cao tự nhi
 **The Login Is Not A Control Panel Rule.** Màn đăng nhập không mang bảng chọn tài khoản mẫu. Một danh sách in sẵn tên đăng nhập và mật khẩu chung ngay cạnh ô nhập là bộ phận của bản trình diễn chứ không phải của sản phẩm: nó làm màn đầu tiên người xem nhìn thấy tự khai mình là đồ giả, và mọi nhận xét về sau đều bị đặt trong khung đó. Hệ quả phải chịu và không được lách: **ô nhập bắt đầu rỗng**. Điền sẵn một tài khoản cũng là tự khai là demo, chỉ kín đáo hơn. Tài khoản demo vẫn nằm trong `demoAuth`; chỉ lối vào nhanh bị gỡ.
 
 ### Navigation
-- **Sidebar** rộng 252px, nền sơn mài, cuộn dọc riêng, đệm `20px 14px 14px`. Chín màn chia ba nhóm; nhóm "Dữ liệu" mở đầu bằng **Lượt chạy dữ liệu** rồi tới các màn ghi dữ liệu đã về. Chữ làm điều hướng: mục **không có icon**, chỉ có nhãn 14px. Ba nhóm ("Điều hành" / "Nghiệp vụ" / "Dữ liệu") ngăn nhau bằng `margin-top: 24px` và một vạch `#ffffff2b`; nhãn nhóm là bậc `nav-group`, `aria-hidden` vì `role="group"` đã mang tên. Nhóm là tiêu đề cấu trúc, các mục bên dưới mới là đích điều hướng.
+- **Sidebar** rộng 252px, nền navy, cuộn dọc riêng, đệm `20px 14px 14px`. Các màn cấp hệ thống chia theo nhóm; nhóm "Dữ liệu" mở đầu bằng **Tình trạng dữ liệu**. Chữ làm điều hướng: mục **không có icon**, chỉ có nhãn 14px. Ba nhóm ("Điều hành" / "Nghiệp vụ" / "Dữ liệu") ngăn nhau bằng `margin-top: 24px` và một vạch `#ffffff2b`; nhãn nhóm là bậc `nav-group`, `aria-hidden` vì `role="group"` đã mang tên. Nhóm là tiêu đề cấu trúc, các mục bên dưới mới là đích điều hướng.
+- **QL1 submenu:** khi mở **Báo cáo công tác nợ**, sidebar bung bảy mục con — Tổng quan, So sánh nợ, Kết quả cưỡng chế, Tạm hoãn xuất cảnh, Tạm hoãn XC · trạng thái 06, Quy tắc và nguồn, Dữ liệu gốc. Đây là các vùng trong cùng báo cáo QL1, không phải bảy màn cấp hệ thống; submenu phản ánh mục đang mở và không thay đổi quyền truy cập.
 - **Mục nghỉ:** chữ `--on-chrome-1` cân nặng 400, nền trong suốt, cao 38px. Khai báo `font-weight: 550` cũ đã bị gỡ: nó bị một quy tắc sau đè mất nên chưa bao giờ có hiệu lực, và 550 cạnh 600 của mục đang mở là bậc không ai nhìn ra.
 - **Hover:** nền `#ffffff14`, chữ trắng, trượt phải 3px — chỉ khi có chuột thật và không yêu cầu giảm chuyển động.
-- **Đang mở:** một tín hiệu đặc và duy nhất — mục lật thành **thanh trắng** (`background: var(--surface)`, viền cùng màu), chữ `--brand-strong` cân nặng 600, bóng nhẹ. Vạch vàng bên trái đã bị tắt bằng `::before { content: none }`. Stylesheet còn một quy tắc tô vàng cho `svg` bên trong mục đang mở, nhưng mục điều hướng hiện không dựng icon nào, nên quy tắc đó không bắt được phần tử nào — trạng thái thật là trắng-trên-sơn-mài, không có điểm vàng.
-- **Mobile:** dưới 900px sidebar ẩn, thay bằng thanh đáy tối đa sáu ô (icon 20px trên nhãn 10px; ô đang mở nhận chữ `--brand` và vạch trên 2px `--brand`) và một drawer sơn mài `min(84vw, 320px)` dùng lại đúng nội dung sidebar, có scrim, bẫy Tab, `Escape` để đóng, `inert` cắt nhánh nền khỏi cây trợ năng, và focus trả về nút đã mở nó.
-- **Skip-link** ẩn phía trên khung nhìn, bật ra khi nhận focus: nền sơn mài, chữ trắng, cao 44px, góc trên trái.
+- **Đang mở:** một tín hiệu đặc và duy nhất — mục cấp hệ thống lật thành **thanh trắng** (`background: var(--surface)`, viền cùng màu), chữ xanh `--brand-strong` cân nặng 600, bóng nhẹ. Mục QL1 đang chọn dùng nền navy sáng nhẹ, chữ trắng và vạch xanh dữ liệu.
+- **Mobile:** dưới 900px sidebar ẩn, thay bằng thanh đáy tối đa sáu ô (icon 20px trên nhãn 10px; ô đang mở nhận chữ `--brand` và vạch trên 2px `--brand`) và một drawer navy `min(84vw, 320px)` dùng lại đúng nội dung sidebar, gồm cả submenu QL1 khi phân hệ mở. Drawer có scrim, bẫy Tab, `Escape` để đóng, `inert` cắt nhánh nền khỏi cây trợ năng, và focus trả về nút đã mở nó. Chọn một mục QL1 sẽ đóng drawer.
+- **Skip-link** ẩn phía trên khung nhìn, bật ra khi nhận focus: nền navy, chữ trắng, cao 44px, góc trên trái.
 
 **The Panel Is Not A Bibliography Rule.** Khối không mang nhãn "Nguồn: …". Prop `source` của `Panel` và lớp `.panel-source` đã bị gỡ khỏi cả chín màn. Lý do: nhãn đó chiếm một dòng ở mọi khối để nói một thứ người dùng không hành động được, và khi nối dữ liệu thật nó in ra nguyên tên tệp — `BAO_CAO_DANH_GIA_CONG_TAC_NO_DN_TO_CHUC_20260730 - Có chú thích.xlsx` — dài gấp đôi bề ngang cột, kèm cả lỗi bảng mã của chính tên tệp. Nguồn dữ liệu thuộc về tài liệu, không thuộc về chân từng khối. Tên tệp chỉ còn hiện ở nơi nó LÀ dữ liệu: danh sách file trong một lô.
 
@@ -463,7 +462,7 @@ Cột cố định cũ có ba giá đắt. Nó chiếm 30% bề ngang suốt th�
 
 Thanh trượt giữ nguyên hành vi đã có: `Escape` đóng, focus trả về đúng hàng vừa bấm, scrim phủ nền. Hệ quả cho CSS: toàn bộ nhánh `.case-detail` biến mất, kéo theo `contain: size`, subgrid canh đầu khối và trần chiều cao theo khung nhìn — ba cơ chế chỉ tồn tại để hai cột cao bằng nhau.
 
-**The Four Reports Are One Screen Rule.** Màn Nợ mang bốn mục báo cáo của Phòng QL1 — tình hình nợ, cưỡng chế, tạm hoãn XC từ 500 triệu, tạm hoãn XC trạng thái 06 — trong một cụm `Segmented`, không phải bốn mục điều hướng. Chúng dùng chung bộ lọc, chung khuôn "bảng tổng hợp theo đơn vị rồi danh sách chi tiết", và cán bộ đọc liên tiếp cả bốn trong MỘT lần lập báo cáo tuần; tách ra là bắt họ đi ra đi vào bốn lần cho một việc.
+**The Four Reports Are One Workflow Rule.** Bốn mục nghiệp vụ của QL1 dùng chung kỳ, bộ lọc và khuôn "bảng tổng hợp theo đơn vị rồi danh sách chi tiết"; chúng vẫn thuộc cùng một phân hệ và một lần lập báo cáo. Bảy vùng QL1 được chọn từ submenu dưới **Báo cáo công tác nợ** trong sidebar, thay cho dải `Segmented` ngang; chúng không trở thành bảy màn cấp hệ thống hay đổi vị trí bộ lọc dữ liệu.
 
 Bốn mục khai bằng **cấu hình**, không bằng bốn khối giao diện song song: mỗi mục nói bảng tổng hợp lấy ở đâu, cột nào, danh sách chi tiết là tệp nào. Dựng bốn khối riêng thì mỗi lần sửa khuôn bảng phải sửa bốn chỗ. Bốn danh sách chi tiết dùng chung một kiểu `HangChiTiet` với mọi cột là tuỳ chọn, vì chúng trùng nhau phần lớn và khác nhau ở vài cột số.
 
@@ -528,6 +527,35 @@ Hai phép đo trong đó phải trừ hao, vì nếu không chúng báo nhầm c
 - **Vùng bấm cả hàng cố ý tràn.** `.row-select` và `.dv-nut` nới rộng hơn ô 24px rồi kéo lại bằng lề âm, nên ô nào chứa chúng cũng có đúng 2px scroll mà không chữ nào bị cắt. Ngưỡng báo đặt ở 4px.
 - **Ô dính che ô dính là đúng việc.** Dòng tiêu đề dính che hàng đang cuộn qua nó, và thanh điều hướng đáy che đáy khung nhìn — cả hai đều theo thiết kế. Phép kiểm hỏi `elementFromPoint` rồi bỏ qua phần tử dính và lớp phủ cố định; chỉ báo khi một ô **thường** lọt lên trên cột dính.
 
+### Danh sách màn
+**The Screen List Comes From The Document Rule.** Menu trái có đúng những màn §1.2 bản thiết kế gọi tên: khung chung (gồm **Tình trạng dữ liệu**), phân hệ của phòng, và **Giám sát dữ liệu** cho vai Vận hành. Bốn màn đã gỡ, mỗi màn kèm chỗ nội dung của nó chuyển đến:
+
+| Màn đã gỡ | Vì sao | Nội dung chuyển đi đâu |
+|---|---|---|
+| Báo cáo | Tài liệu không có màn danh sách báo cáo. Mục 3 vẽ luồng duyệt chạy trên chính phân hệ | Thanh duyệt ở đầu phân hệ |
+| Lượt chạy dữ liệu · Lô dữ liệu | §1.2 gọi tên MỘT màn, "Tình trạng dữ liệu" | Hai mục của màn đó |
+| Ánh xạ quản lý | Không có trong tài liệu như một màn; nó là chất lượng dữ liệu của kỳ | Mục "Gắn về phòng" |
+| Quy tắc nghiệp vụ | §4.2 đặt nó làm tab 9 BÊN TRONG phân hệ QL1 | Tab "Ngưỡng đang áp dụng" |
+
+Ba màn dữ liệu tách rời bắt người dùng mở lần lượt cả ba mới trả lời được một câu hỏi duy nhất — kỳ này dữ liệu đã về đủ chưa — và không chỗ nào cho họ biết là còn hai chỗ nữa phải xem. Ngưỡng tách khỏi bảng số thì nó mất ngữ cảnh: một con số ngưỡng chỉ có nghĩa cùng bảng nó đang áp vào.
+
+**The Approval Lives Where The Numbers Live Rule.** Trạng thái duyệt và ba nút của nó nằm ngay đầu phân hệ, cùng màn với bảng số mà chúng nói về. Đặt ở một màn riêng thì trưởng phòng phải rời khỏi số vừa đọc để đi tìm nút duyệt, và lúc bấm thì không còn nhìn thấy thứ mình đang duyệt. Khóa trạng thái là `phân hệ + kỳ`, nên đổi kỳ ở thanh lọc là thấy ngay kỳ ấy đang ở bước nào.
+
+Trả lại **bắt buộc có lý do** — sơ đồ luồng ghi thẳng "Trả lại + lý do". Trả lại không nói vì sao thì chuyên viên nhận về một bản nháp mà không biết sửa gì, nên vòng duyệt thứ hai hỏng y như vòng thứ nhất. Lý do hiện lại trên thanh duyệt của chuyên viên, không chỉ trong một thông báo thoáng qua.
+
+**The Fallback Button Appears Only When Needed Rule.** Nút tải tay nằm ở màn Tình trạng dữ liệu và chỉ dựng khi thật sự có nguồn thiếu — G12: "Tải tay chỉ là dự phòng… nút chỉ hiện khi nguồn thiếu". Măng sét hiện ở mọi màn và mọi lúc, nên đặt nó ở đó là nói ngược lại điều tài liệu dặn. Măng sét nay không còn nút cấp hệ thống nào.
+
+### Chữ trên giao diện
+**The Label Is The Department's Word Rule.** G4 ghi "giữ đúng tên chỉ tiêu nguyên văn như file Excel của phòng", nên tên cột không đổi: "Nợ KNT ngày báo cáo", "Tổng nợ đánh giá MST+CQT", "Số DN đã hoàn thành (ko tính hồ sơ chờ giải trình)". Thứ được viết lại là chữ của HỆ THỐNG — tên mục, câu rỗng, thông báo, nhãn nút:
+
+- Tên mục lấy theo §4.2 chứ không tự đặt: "So sánh nợ", "Kết quả cưỡng chế", "Tạm hoãn xuất cảnh", "Trạng thái 06".
+- Nhãn control nói thứ người dùng chọn, không nói thuật ngữ thống kê: "Số tiền / Phần trăm" thay cho "Tuyệt đối / Tương đối".
+- Câu rỗng nói rõ tập nào đang rỗng: "Không có người nộp thuế nào khớp bộ lọc đang đặt", không phải "Không có bản ghi nào".
+- Thông báo nói việc đã xảy ra và hệ quả: "Đã gửi báo cáo tuần… lên trưởng phòng. Số liệu khóa lại cho tới khi có kết quả duyệt."
+- Lỗi nhập nói cần làm gì và để làm gì: "Nhập lý do trả lại để chuyên viên biết cần sửa gì", thay cho thông báo mặc định tiếng Anh của trình duyệt.
+
+**The Total Row Does Not Need A Colour Rule.** Dòng tổng và dòng khối nổi bằng cân nặng chữ và vạch trên, không bằng mảng màu. Tô đặc `--brand` rồi đặt chữ trắng lên làm mất vai trò hành động của màu xanh; mũi tên tăng giảm trong chính hai dòng ấy vẫn mang màu nghĩa. Giữ dòng tổng trung tính để so sánh số liệu và hướng biến động không bị nhiễu.
+
 ### Blocked State
 Dùng khi một màn **không có dữ liệu để trình bày** và chính lý do đó mới là nội dung. Thứ tự: kết luận một dòng, từng việc còn thiếu kèm con số đứng trước câu chữ, lối ra bằng một nút, rồi những điều kiện ĐÃ đạt lùi xuống cuối ở cỡ 12px màu `--ink-3`.
 
@@ -574,7 +602,7 @@ Mỗi bảng chừa đúng **một** cột không khai bề rộng — cột ch�
 Hai hệ quả phải xử lý cùng lúc. Thứ nhất, `fixed` không co ô theo nội dung nữa nên chuỗi dài không ngắt được sẽ tràn: mã số thuế, tên tệp và đường dẫn nhận `overflow-wrap: anywhere`. Thứ hai, bề rộng cột là phần trăm của bề ngang bảng, nên **sàn `min-width` của bảng quyết định cột hẹp nhất nhận bao nhiêu pixel** ở khổ màn hình nhỏ; sàn 780px cũ làm ngày hiệu lực và chip trạng thái tràn ở 768px và 390px. Sàn chung nâng lên 820px, bảng Báo cáo 880px, bảng Quy tắc 1100px vì nó có nhiều cột `nowrap` nhất.
 
 ### Tables
-Bảng rộng tối thiểu 780px, nằm trong vùng cuộn có trần `min(62vh, 560px)` — trần này được gỡ khi bảng nằm trong dải hai cột, vì ở đó dải đã lo chiều cao. Vùng cuộn mang `tabIndex={0}`, `role="region"` và `aria-label` — đã là điểm dừng Tab thì phải có tên, nếu không người dùng trình đọc màn hình gặp một loạt điểm dừng câm. Đầu cột sticky, nền giấy mềm, chữ `--ink-2` bậc `column-head`. Ô cao 38px (44px từ 720px), vạch dưới `--line-soft`, hàng cuối bỏ vạch. Hàng đang chọn nhận nền `--selected-surface` và chữ nặng 500. Chân bảng là một dải 12px màu `--ink-3` có vạch trên. Dưới 900px hiện dải nhắc "Vuốt ngang để xem thêm" nền giấy hồng, chữ `--brand`.
+Bảng rộng tối thiểu 780px, nằm trong vùng cuộn có trần `min(62vh, 560px)` — trần này được gỡ khi bảng nằm trong dải hai cột, vì ở đó dải đã lo chiều cao. Vùng cuộn mang `tabIndex={0}`, `role="region"` và `aria-label` — đã là điểm dừng Tab thì phải có tên, nếu không người dùng trình đọc màn hình gặp một loạt điểm dừng câm. Đầu cột sticky, nền `--surface-soft`, chữ `--ink-2` bậc `column-head`. Ô cao 38px (44px từ 720px), vạch dưới `--line-soft`, hàng cuối bỏ vạch. Hàng đang chọn nhận nền `--selected-surface` và chữ nặng 500. Chân bảng là một dải 12px màu `--ink-3` có vạch trên. Dưới 900px hiện dải nhắc "Vuốt ngang để xem thêm" nền `--surface-tint`, chữ `--brand`.
 
 **The Constant Column Earns Nothing Rule.** Một cột — hay một dòng phụ — mang **cùng một giá trị ở mọi hàng** thì không phân biệt được hàng nào với hàng nào, mà vẫn ăn bề ngang hoặc chiều cao của những cột đang thiếu chỗ. Bộ dữ liệu thật ở màn Nợ có bốn trường như vậy, đều hằng số trên cả 2.455 dòng: `ketLuan` = "Chưa cưỡng chế", `tinhTrang` = "Không có QĐCC", `bienPhap` rỗng, `loaiNNT` = "Doanh nghiệp, tổ chức". Gỡ cột Kết luận và dòng phụ loại người nộp thuế kéo hàng cao nhất từ 204px xuống 120px và trả đủ bề ngang cho cột tên. Trạng thái không mất: nó nằm ở tiêu đề khối ("Người nộp thuế chưa cưỡng chế") và ở dải tổng hợp phía trên. **Kiểm tra phân bố giá trị trước khi dựng một cột**; cột đẹp mà hằng số vẫn là cột rỗng nghĩa.
 
@@ -600,13 +628,13 @@ Hệ quả cho giao diện: mỗi màn đọc được cả hai bộ phải rẽ
 **Dòng tổng hợp là một hàng, không phải bốn thẻ.** Bốn ô "số to, nhãn nhỏ, màu nhấn" xếp ngang là khuôn mẫu mở màn của mọi bản dựng máy sinh; ở đây bốn con số là đếm hàng đợi chứ không phải kết luận, nên chúng đọc như một dòng cộng đặt ngay dưới mô tả trang — vẫn đủ thông tin, không chiếm mất vị trí của việc cần làm. Dòng phụ được giữ lại vì nó mang dữ liệu thật; thứ bị bỏ là cái thẻ, không phải nội dung. Ô bấm được dựng bằng `<button>`, ô chỉ đọc bằng `<div>`, và chỉ ô bấm được mới có hover. Cùng khuôn hình với `KpiStrip`: bốn cột trên desktop, hai cột từ 720px, các ô ngăn nhau bằng `--line-soft` bên trong một khung chung.
 
 ### Toast
-Nền sơn mài, chữ trắng, bo 10px, cố định góc phải dưới, rộng `min(420px, calc(100vw - 28px))`, bóng lớp phủ, icon xác nhận `--positive-on-chrome`, nút đóng 30px chỉ hiện nền khi hover. Trên mobile nó nhấc lên trên thanh điều hướng đáy bằng `bottom: calc(74px + env(safe-area-inset-bottom))`.
+Nền navy, chữ trắng, bo 10px, cố định góc phải dưới, rộng `min(420px, calc(100vw - 28px))`, bóng lớp phủ, icon xác nhận `--positive-on-chrome`, nút đóng 30px chỉ hiện nền khi hover. Trên mobile nó nhấc lên trên thanh điều hướng đáy bằng `bottom: calc(74px + env(safe-area-inset-bottom))`.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** giữ ba vai của đỏ tách bạch: `--seal` nhận diện, `--brand` hành động, `--critical` can thiệp.
-- **Do** dùng mực `--focus` cho vòng focus, và chỉ đổi sang vàng `--focus-on-chrome` trên nền sơn mài. Quy tắc `:where(.sidebar, .mobile-drawer, .login-context) …:focus-visible` phải nằm **sau** quy tắc chung: `:where()` không cộng độ ưu tiên, đặt trước thì shorthand `outline` phía trên ghi đè lại màu.
+- **Do** dùng xanh `--focus` cho vòng focus trên bề mặt sáng và trắng `--focus-on-chrome` trên nền navy. Quy tắc `:where(.sidebar, .mobile-drawer, .login-context) …:focus-visible` phải nằm **sau** quy tắc chung: `:where()` không cộng độ ưu tiên, đặt trước thì shorthand `outline` phía trên ghi đè lại màu.
 - **Do** căn mọi thứ trong ô chi tiết về một mép trái, kể cả `<dd>`.
 - **Do** để dải thông báo xuống dòng khi cột hẹp thay vì bóp chữ thành mỗi dòng một từ.
 - **Do** giữ `<h1>` trong DOM ở dạng `sr-only` trên mỗi màn, đúng thứ tự tiêu đề.
@@ -626,8 +654,8 @@ Nền sơn mài, chữ trắng, bo 10px, cố định góc phải dưới, rộn
 
 ### Don't:
 - **Don't** tô màu trạng thái vào con số. Màu sống ở nhãn, chip và dải thông báo.
-- **Don't** thêm xám xanh lạnh vào trung tính; nó phá sự liền mạch với con dấu.
-- **Don't** cho mục điều hướng đang mở một tín hiệu thứ hai. Thanh trắng trên nền sơn mài đã là tương phản mạnh nhất hệ này có.
+- **Don't** thêm màu ngoài palette chung NSNN nếu màu đó không mang vai semantic đã đăng ký.
+- **Don't** cho mục điều hướng đang mở một tín hiệu thứ hai. Thanh trắng trên nền navy đã là tương phản mạnh nhất hệ này có.
 - **Don't** nâng hoặc đổ bóng một khối chỉ để đọc khi rê chuột; hover chỉ thuộc về thứ bấm được.
 - **Don't** dựng lại dòng tổng hợp thành bốn thẻ riêng có viền.
 - **Don't** đưa tiêu đề trang hiện lại lên đầu nội dung; sidebar đã nói tên màn.

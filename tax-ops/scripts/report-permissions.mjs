@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import { mkdir, mkdtemp, readdir, stat } from 'node:fs/promises';
+import path from 'node:path';
+import puppeteer from 'puppeteer-core';
+const base=(process.argv[2]??'http://127.0.0.1:5174').replace(/\/$/,'');
+await mkdir('.impeccable/review',{recursive:true});
+const downloads=await mkdtemp(path.resolve('.impeccable/review/report-exports-'));
+const browser=await puppeteer.launch({channel:'chrome',headless:true});
+try {
+ const p=await browser.newPage();const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+ const cdp=await p.createCDPSession();await cdp.send('Page.setDownloadBehavior',{behavior:'allow',downloadPath:downloads});
+ await p.setViewport({width:1440,height:1000});await p.goto(base);await p.evaluate(()=>sessionStorage.clear());
+ const login=async(username,vaiTro,view='debt')=>{await p.evaluate((u)=>sessionStorage.setItem('tax-ops-demo-user',JSON.stringify(u)),{username,vaiTro});await p.goto(`${base}/?view=${view}`,{waitUntil:'networkidle0'});await p.waitForSelector('.workspace');};
+ const click=async(label)=>{const clicked=await p.evaluate(l=>{const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===l&&b.getBoundingClientRect().width>0);if(!b)return false;b.click();return true;},label);assert.ok(clicked,`Missing button ${label}`);};
+ const download=async(label,ext)=>{const before=await readdir(downloads);await click(label);for(let i=0;i<150;i++){await new Promise(r=>setTimeout(r,100));const file=(await readdir(downloads)).find(f=>!before.includes(f)&&f.endsWith(ext));if(file&&(await stat(path.join(downloads,file))).size>0)return file;}throw Error(`Download failed: ${label}`);};
+ await login('cv.ql1','CV');
+ let buttons=await p.$$eval('.duyet-nut button',els=>els.map(e=>e.textContent.trim()));assert.deepEqual(buttons,['Gửi trưởng phòng duyệt']);assert.equal(await p.$('#tralai-title'),null);
+ const guard=await p.evaluate(async()=>{const {canChangeApproval:c}=await import('/src/domain/approval.ts');return [c({phong:'QL1',vaiTro:'CV'},'QL1|t-3107','PENDING','approve'),c({phong:'QL3',vaiTro:'TP'},'QL1|t-3107','PENDING','approve'),c({phong:'QL1',vaiTro:'TP'},'QL1|t-3107','FINAL','approve'),c({phong:'QL1',vaiTro:'TP'},'QL1|t-3107','PENDING','approve')];});assert.deepEqual(guard,[false,false,false,true]);
+ console.log('QL1 Excel:',await download('Xuất cả bộ báo cáo','.xlsx'));
+ console.log('QL1 Word:',await download('Xuất báo cáo Word','.docx'));
+ await click('Kết quả cưỡng chế');console.log('QL1 summary:',await download('Xuất Excel','.xlsx'));console.log('QL1 list:',await download('Xuất danh sách đang lọc','.xlsx'));
+ await p.screenshot({path:'.impeccable/review/report-actions-desktop.png',fullPage:true});
+ await click('Gửi trưởng phòng duyệt');assert.equal(await p.$eval('.thanh-duyet .badge',e=>e.textContent.trim()),'Chờ duyệt');assert.equal(await p.$$eval('.duyet-nut button',e=>e.length),0);
+ await login('tp.ql1','TP');buttons=await p.$$eval('.duyet-nut button',els=>els.map(e=>e.textContent.trim()));assert.deepEqual(buttons,['Trả lại','Duyệt và chốt số']);await click('Duyệt và chốt số');assert.equal(await p.$eval('.thanh-duyet .badge',e=>e.textContent.trim()),'Đã chốt');console.log('QL1 final:',await download('Xuất cả bộ báo cáo','.xlsx'));
+ await p.goto(`${base}/?view=tinhtrang`,{waitUntil:'networkidle0'});assert.equal(await p.evaluate(()=>[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Tải tệp bổ sung'))),false);await click('Đơn vị quản lý NNT');assert.equal(await p.$$eval('.mapping-table button',e=>e.length),0);
+ await login('cv.ql1','CV','workbench');assert.equal(await p.$eval('.task-list',e=>/Duyệt|Chốt/.test(e.textContent)),false);
+ await p.goto(`${base}/?view=debt`,{waitUntil:'networkidle0'});await p.setViewport({width:390,height:844});await p.screenshot({path:'.impeccable/review/report-actions-mobile.png',fullPage:true});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ await login('cv.ql3','CV','risk');console.log('QL3 Excel:',await download('Xuất báo cáo Excel','.xlsx'));
+ assert.deepEqual(errors,[]);console.log(`PASS: roles, report downloads, closed period, read-only manager, mobile. Files: ${downloads}`);
+} finally {await browser.close();}

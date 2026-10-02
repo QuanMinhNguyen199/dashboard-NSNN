@@ -4,7 +4,7 @@ import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { DebtQL1 } from "@/features/DebtQL1";
 import { napDanhSach, type HangChiTiet, type HangThucHien, type TongHopThat } from "@/data/duLieuThat";
 import { useDuLieuThat } from "@/state/DuLieuThatContext";
-import type { ViewId } from "@/domain/types";
+import type { VaiTro } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
 
 
@@ -169,9 +169,9 @@ const MOI_TRANG = 10;
   Gộp hai đường thành một sẽ phải chọn: hoặc bản demo gãy khi thiếu tệp, hoặc
   màn dữ liệu thật phải giả lập những cột nó không có.
 */
-export function Debt({ onNavigate: _onNavigate }: { onNavigate: (view: ViewId) => void }) {
+export function Debt({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const { that } = useDuLieuThat();
-  return that ? <DebtThat that={that}/> : <DebtQL1/>;
+  return that ? <DebtThat that={that}/> : <DebtQL1 actor={actor} vaiTro={vaiTro}/>;
 }
 
 function DebtThat({ that }: { that: TongHopThat }) {
@@ -242,7 +242,7 @@ function DebtThat({ that }: { that: TongHopThat }) {
       Hai mốc ngày khác nhau là có thật trong tệp gốc — bảng tổng hợp chốt
       31/07, danh sách chi tiết chốt 22/07 — nên nói cả hai thay vì chọn bừa.
     */}
-    <PageIntro title="Nợ và cưỡng chế" description={`Bảng tổng hợp: nợ đến 31/07/2026 · danh sách chi tiết chốt ${that.ngayBaoCao ?? "—"} · tiền quy về tỷ đồng`}/>
+    <PageIntro title="Nợ và cưỡng chế"/>
 
     {/* Thanh lọc đứng TRÊN cụm tab, vì nó áp cho cả bốn mục. Đặt dưới tab sẽ
         đọc thành "lọc của mục này", đúng thứ G1 yêu cầu không được hiểu nhầm. */}

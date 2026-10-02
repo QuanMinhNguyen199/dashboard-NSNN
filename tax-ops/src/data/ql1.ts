@@ -250,7 +250,7 @@ export function danhSachQL1(hatKy: number, tab: TabQL1, soDong = 120): HangQL1[]
     const noThang = Math.round(noNgay * (0.88 + r() * 0.2) * 10) / 10;
     const noDanhGia = Math.round(noNgay * (0.7 + r() * 0.3) * 10) / 10;
     const tinhTrang = nhat(r, TINH_TRANG[tab]);
-    const daLam = tinhTrang.startsWith("Đã");
+    const daLam = tinhTrang === "Đã cưỡng chế" || tinhTrang === "Đã tạm hoãn";
     return {
       id: `${tab}-${i}`,
       mst: `0${dau}•••${duoi.slice(-3)}`,

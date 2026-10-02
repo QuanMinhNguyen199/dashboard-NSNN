@@ -1,12 +1,18 @@
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button, PageIntro, Panel, Segmented, TableWrap, integer, money } from "@/components/ui";
 import { BoLocChung, useBoLoc } from "@/components/BoLoc";
+import { ExportButton } from "@/components/ExportButton";
+import { useDuyet } from "@/state/DuyetContext";
+import { ql3Workbook, type ReportMeta } from "@/domain/reportExport";
+import { exportExcel } from "@/domain/reportFiles";
 import { useAction } from "@/state/ActionContext";
 import {
   DON_VI_QL3, KY_QL3, KY_QL3_THEO_ID, congQL3, danhGiaQL3,
   type DonViQL3, type ODanhGiaQL3,
 } from "@/data/ql3";
 import { NGUON_QL3 } from "@/data/nguonDuLieu";
+import { ThanhDuyet } from "@/features/ThanhDuyet";
+import type { VaiTro } from "@/domain/types";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 
 /* Bốn tab của §5.2 bản thiết kế. */
@@ -45,7 +51,7 @@ const NHOM_COT = (thangKPI: string, nam: string): NhomCot[] => [
       { nhan: "Đã thực hiện", o: (t) => SO(t.daThucHien), rong: 108 },
       { nhan: "Tỷ lệ thực hiện", o: (t) => <TyLe x={t.daThucHien / t.keHoach}/>, rong: 112 },
       { nhan: "Đã hoàn thành", o: (t) => SO(t.daHoanThanh), rong: 112 },
-      { nhan: "Tỷ lệ / kế hoạch", o: (t) => <TyLe x={t.daHoanThanh / t.keHoach}/>, rong: 116 },
+      { nhan: "Tỷ lệ hoàn thành/kế hoạch", o: (t) => <TyLe x={t.daHoanThanh / t.keHoach}/>, rong: 116 },
     ],
   },
   {
@@ -80,8 +86,9 @@ const NHOM_COT = (thangKPI: string, nam: string): NhomCot[] => [
 
 const RONG_DV = 196;
 
-export function RiskQL3() {
+export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const notify = useAction();
+  const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
   const [tab, setTab] = useState<TabQL3>("tongquan");
   const ky = KY_QL3_THEO_ID[chon.ky] ?? KY_QL3[0];
@@ -115,7 +122,7 @@ export function RiskQL3() {
 
   const chonDonVi = (dv: DonViQL3) => {
     datDonVi([dv.ten]);
-    notify(`Đã lọc về ${dv.ten}. Bỏ lọc ở thanh đầu trang để xem lại toàn ngành.`);
+    notify(`Đã lọc về ${dv.ten}. Bấm Đặt lại ở thanh đầu trang để xem lại toàn ngành.`);
   };
 
   const hangDonVi = (dv: DonViQL3) => <tr key={dv.id}>
@@ -128,11 +135,12 @@ export function RiskQL3() {
     {cotPhang.map((c, i) => <td key={i}>{c.o(o)}</td>)}
   </tr>;
 
+  const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL3|${ky.id}`).trangThai };
+  const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
   return <div className="page-stack ql1-page">
-    <PageIntro
-      title="Kiểm tra tại bàn · Phòng QL3"
-      description="Kết quả kiểm tra hồ sơ khai thuế tại trụ sở cơ quan thuế, đối với doanh nghiệp trong kế hoạch năm. Số liệu trong bản demo là dữ liệu giả."
-    />
+    <PageIntro title="Kiểm tra tại bàn · Phòng QL3" actions={<ExportButton onExport={exportReport}>Xuất báo cáo Excel</ExportButton>}/>
+
+    <ThanhDuyet khoa={`QL3|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} actor={actor} vaiTro={vaiTro}/>
 
     {/*
       Kỳ của QL3 là LŨY KẾ từ 01/01, không phải tuần hay tháng rời như QL1,
@@ -145,14 +153,14 @@ export function RiskQL3() {
     />
 
     <Segmented
-      label="Mục báo cáo kiểm tra tại bàn"
+      label="Mục của báo cáo kiểm tra tại bàn"
       value={tab}
       onChange={setTab}
       options={[
         { value: "tongquan" as TabQL3, label: "Tổng quan" },
         { value: "ketqua" as TabQL3, label: "Kết quả tổng hợp" },
         { value: "nguon" as TabQL3, label: "Dữ liệu gốc" },
-        { value: "doichieu" as TabQL3, label: "Đối chiếu bản làm tay" },
+        { value: "doichieu" as TabQL3, label: "Đối chiếu báo cáo thủ công" },
       ]}
     />
 
@@ -165,25 +173,23 @@ export function RiskQL3() {
       chốt. Nên nó nói thẳng mình chưa có dữ liệu thay vì dựng một bảng rỗng
       trông như đã chạy; xem Blocked State trong DESIGN.md.
     */}
-    {tab === "doichieu" && <Panel title="Đối chiếu với bản làm tay của phòng">
+    {tab === "doichieu" && <Panel title="Đối chiếu báo cáo do phòng lập">
       <div className="blocked-head">
-        <strong>Chưa có bản làm tay nào được tải lên cho kỳ này</strong>
+        <strong>Chưa có báo cáo thủ công để đối chiếu</strong>
         <p>
-          Đối chiếu cần hai phía. Số hệ thống của kỳ lũy kế đến {ky.denNgay} đã có; bản phòng tự lập
-          chưa nhận được, nên chưa so được ô nào.
+          Chưa có tệp báo cáo do phòng lập cho kỳ lũy kế đến {ky.denNgay}.
         </p>
       </div>
       <ol className="blocker-list">
         <li>
           <span className="blocker-so">0/1</span>
           <span className="blocker-noi">
-            <strong>Chưa nhận bản làm tay của kỳ</strong>
-            <small>Tiêu chí nghiệm thu NT-01 đòi chạy song song tối thiểu hai kỳ, nên bước này phải có bản phòng lập mới bắt đầu được.</small>
+            <strong>Chưa nhận báo cáo thủ công của kỳ</strong>
+            <small>Sử dụng báo cáo cùng kỳ và cùng phạm vi đơn vị để đối chiếu.</small>
           </span>
-          <Button kind="secondary" onClick={() => notify("Bản demo chưa dựng chức năng tải lên. Bản thật nhận file Excel phòng tự lập rồi so từng ô.")}>Tải bản làm tay lên</Button>
+          <Button kind="secondary" onClick={() => notify("Chức năng tải báo cáo đối chiếu chưa có trong bản mô phỏng.")}>Tải báo cáo đối chiếu</Button>
         </li>
       </ol>
-      <p className="blocked-done">Đã đạt: số hệ thống của kỳ đã chốt · danh mục đơn vị đã khớp giữa hai bên.</p>
     </Panel>}
 
     {tab === "ketqua" && <Panel title="Tổng hợp kết quả theo đơn vị" subtitle={`Lũy kế đến ${ky.denNgay}`}>
@@ -215,10 +221,10 @@ export function RiskQL3() {
           </table></TableWrap>}
       <footer className="table-footer">
         <p className="bang-ghi-chu">
-          Đã hoàn thành không tính hồ sơ chờ giải trình, nên nó luôn nhỏ hơn đã thực hiện.
-          Tỷ lệ theo KPI vượt 100% là bình thường vì KPI do đơn vị tự đăng ký theo tháng.
+          Cột "đã hoàn thành" không tính hồ sơ đang chờ giải trình, nên luôn nhỏ hơn "đã thực hiện".
+          Tỷ lệ theo KPI vượt 100% là bình thường, vì KPI do từng đơn vị tự đăng ký theo tháng.
         </p>
-        <Button kind="secondary" onClick={() => notify(`Bản demo chưa hỗ trợ tải file. Bản thật kết xuất đúng 17 cột của mẫu đã duyệt.`)}>Xuất Excel theo mẫu</Button>
+        <ExportButton onExport={exportReport}>Xuất Excel</ExportButton>
       </footer>
     </Panel>}
   </div>;
@@ -255,13 +261,13 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
   const tongTT = trangThai.reduce((t, x) => t + x.v, 0);
 
   return <>
-    <Panel title="Tiến độ kế hoạch năm" subtitle={`Lũy kế đến ${ky.denNgay} · số lấy từ mục Kết quả tổng hợp`}>
+    <Panel title="Tiến độ kế hoạch năm" subtitle={`Lũy kế đến ${ky.denNgay}`}>
       <div className="the-luoi">
         <div className="the-so"><span className="the-nhan">Trong kế hoạch</span><strong className="the-gia">{integer(toan.keHoach)}</strong><span className="the-dvt">doanh nghiệp</span></div>
         <div className="the-so"><span className="the-nhan">Đã thực hiện</span><strong className="the-gia">{integer(toan.daThucHien)}</strong><span className="the-dvt">{pt2(toan.daThucHien / toan.keHoach)} kế hoạch</span></div>
         <div className="the-so"><span className="the-nhan">Đã hoàn thành</span><strong className="the-gia">{integer(toan.daHoanThanh)}</strong><span className="the-dvt">không tính chờ giải trình</span></div>
-        <div className="the-so"><span className="the-nhan">Tỷ lệ / kế hoạch</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.keHoach)}</strong><span className="the-dvt">theo số doanh nghiệp</span></div>
-        <div className="the-so"><span className="the-nhan">Tỷ lệ / KPI {ky.thangKPI}</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.kpiDangKy)}</strong><span className="the-dvt">KPI đơn vị tự đăng ký</span></div>
+        <div className="the-so"><span className="the-nhan">Tỷ lệ hoàn thành/kế hoạch</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.keHoach)}</strong><span className="the-dvt">theo số doanh nghiệp</span></div>
+        <div className="the-so"><span className="the-nhan">Tỷ lệ hoàn thành/KPI {ky.thangKPI}</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.kpiDangKy)}</strong><span className="the-dvt">KPI đơn vị tự đăng ký</span></div>
       </div>
     </Panel>
 

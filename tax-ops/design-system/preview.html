@@ -31,89 +31,85 @@
 
 
 :root {
-  /*
-    Bảng màu lấy từ chính con dấu: đỏ #cf2333 và vàng #f3c602 đo trực tiếp trên
-    file logo, không ước lượng bằng mắt. Ba vai của sắc đỏ được tách rành mạch,
-    vì một màu không thể vừa là thương hiệu vừa là cảnh báo:
-
-      dấu ấn    — đỏ con dấu, chỉ dùng cho nhận diện;
-      hành động — đỏ mận sẫm, dùng cho nút và liên kết;
-      can thiệp — đỏ tươi hơn, chỉ xuất hiện khi người dùng phải xử lý.
-
-    Nền chuyển sang giấy ấm. Xám xanh lạnh đặt cạnh đỏ đọc ra "ghép nhầm"; xám
-    ám đỏ rất nhạt đọc ra "cùng một hệ".
-  */
-  --canvas: #f6f4f2;
+  --canvas: #f2f5f9;
   --surface: #ffffff;
-  --surface-soft: #f6f4f2;
-  --surface-tint: #fbf1f1;
-  --hover-surface: #f6f4f2;
-  --selected-surface: #f7e5e7;
+  --surface-soft: #f7f9fc;
+  --surface-tint: #eef4fc;
+  --hover-surface: #f7f9fc;
+  --selected-surface: #dbe8f8;
 
-  --line: #e4dedc;
-  --line-soft: #f0eceb;
+  --line: #dbe3ed;
+  --line-soft: #eaeff6;
 
-  --ink: #241d1f;
-  --ink-2: #4f4547;
-  /* Bậc mờ nhất: 5,75:1 trên trắng, 5,24:1 trên giấy, 5,19:1 trên nền ám đỏ. */
-  --ink-3: #6f6366;
+  --ink: #16263c;
+  --ink-2: #485666;
+  --ink-3: #63707f;
 
-  /*
-    Khung nhận diện là sơn mài đỏ sẫm — không phải navy, cũng không phải nền
-    trắng. Nền trắng làm hệ mất khung và đọc ra phần mềm quản trị chung chung;
-    navy thì không còn liên quan gì tới con dấu.
-  */
-  --chrome: #3a1016;
-  --chrome-2: #4d1620;
-  --seal: #cf2333;
-  --gold: #f3c602;
+  --navy: #0e2a47;
+  --chrome: #0e2a47;
+  --chrome-2: #0d366b;
+  --navy-ink: #d3e1f0;
+  --ink-on-dark: #ffffff;
+  --on-dark-fill: #ffffff14;
+  --on-dark-fill-hover: #ffffff26;
+  --on-dark-line: #ffffff3d;
+  --on-dark-line-hover: #ffffff66;
+  --on-dark-hairline: #ffffff12;
 
-  --brand: #9a1c2a;
-  --brand-strong: #7a1521;
-  /*
-    Vòng focus dùng mực, không dùng đỏ. Đỏ trong hệ này đã mang hai nghĩa —
-    hành động và can thiệp — nên một vòng đỏ quanh ô đang chọn sẽ đọc thành
-    "ô này có vấn đề". Mực là màu duy nhất không mang nghĩa nào, và nó đạt
-    15:1 trên mọi bề mặt sáng.
-  */
-  --focus: #241d1f;
-  /* Trên nền sơn mài, vòng mực biến mất; vàng con dấu đạt 10,18:1 ở đó. */
-  --focus-on-chrome: #f3c602;
+  --blue-050: #eef4fc;
+  --blue-100: #dbe8f8;
+  --blue-250: #86b6ef;
+  --blue-350: #5598e7;
+  --blue-450: #2a78d6;
+  --blue-550: #1c5cab;
+  --blue-700: #0d366b;
+  --brand: #1657a8;
+  --brand-strong: #1c5cab;
+  --focus: #1657a8;
+  --focus-on-chrome: #ffffff;
 
-  --positive: #14653a;
+  --positive: #187044;
   --positive-bg: #eaf4ee;
-  --warning: #7a5810;
-  --warning-bg: #fbf3df;
-  /* Sáng và ngả cam hơn đỏ hành động, để hai thứ không đọc thành một. */
-  --critical: #c0261c;
+  --warning: #7a5a12;
+  --warning-bg: #fdf5dd;
+  --critical: #b3352f;
   --critical-bg: #fdefed;
-  /* Nốt lạnh duy nhất còn lại, dành cho tin trung tính không đòi xử lý. */
-  --info: #3f5470;
-  --info-bg: #eef0f4;
+  --info: #1657a8;
+  --info-bg: #eef4fc;
 
-  /* Ba bậc mực trên nền sơn mài, đều ≥5,7:1. */
-  --on-chrome-1: #f2dfe1;
-  --on-chrome-2: #d9b9bd;
-  --on-chrome-3: #b08f95;
-  --on-chrome-note: #e8c77a;
-  --positive-on-chrome: #7fd0a4;
+  --data-primary: #1657a8;
+  --data: #1657a8;
+  --data-secondary: #3987e5;
+  --data-family: #86b6ef;
+  --data-reference: #75869b;
+  --data-nhat: #dbe8f8;
+  --data-track: #e7edf5;
+  --donut-1: #0d366b;
+  --donut-2: #1657a8;
+  --donut-3: #3987e5;
+  --donut-4: #6f93c4;
+  --nodata: #646c77;
 
-  --control-line: #d8d0ce;
-  --control-line-hover: #b2a5a6;
+  --on-chrome-1: #ffffff;
+  --on-chrome-2: #d3e1f0;
+  --on-chrome-3: #86b6ef;
+  --on-chrome-note: #dbe8f8;
+  --positive-on-chrome: #ffffff;
 
-  /* Viền mang trạng thái: ≥3:1 với cả nền trắng lẫn đường kẻ kề nó. */
-  --state-edge: #8a797c;
+  --control-line: #c6d2e0;
+  --control-line-hover: #86b6ef;
+  --state-edge: #75869b;
 
-  --selection-bg: #f7dfe1;
-  --scroll-thumb: #d2c9c7;
-  --scroll-thumb-hover: #b0a3a4;
+  --selection-bg: #dbe8f8;
+  --scroll-thumb: #c3cedd;
+  --scroll-thumb-hover: #9aa9bd;
 
   --topbar-h: 60px;
   --radius-panel: 10px;
   --radius-control: 6px;
   --radius-chip: 4px;
   --radius-hairline: 2px;
-  --shadow-overlay: 0 18px 48px #29131833;
+  --shadow-overlay: 0 18px 48px #0e2a4733;
   --ease-out: cubic-bezier(.16, 1, .3, 1);
 }
 
@@ -149,23 +145,20 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 
 .ops-app { min-height: 100vh; }
 
-/* 42% ở khổ 1600 là 670px sơn mài cho một con dấu và hai dòng chữ — mảng màu
-   lớn hơn thứ nó chứa. 36% giữ được vai trò làm khung mà không thành khoảng
-   trống, và trả bề ngang về cho cột nội dung. */
+/* 42% ở khổ 1600 là 670px navy cho logo và hai dòng chữ — mảng màu lớn hơn
+  thứ nó chứa. 36% giữ được vai trò làm khung mà không thành khoảng trống. */
 .login-page { min-height: 100dvh; display: grid; grid-template-columns: minmax(300px, 36%) minmax(0, 1fr); background: var(--surface); }
-/* Cửa vào mang đúng khung của hệ bên trong. Một cột giấy sáng dẫn vào một
-   ứng dụng có khung sơn mài là hứa một giọng rồi đổi giọng ngay sau khi
-   đăng nhập. */
+/* Màn đăng nhập dùng chung navy thể chế với khung điều hướng sau đăng nhập. */
 .login-context { min-height: 100dvh; display: flex; flex-direction: column; padding: clamp(28px, 5vw, 72px); color: var(--on-chrome-2); background: var(--chrome); }
 /*
   Khối nhận diện là TẤT CẢ những gì cột trái mang: con dấu, tên hệ, một vạch
-  vàng, tên cơ quan. Nó đặt ở giữa chiều cao bằng `margin: auto 0` trong một
+  vạch xanh, tên cơ quan. Nó đặt ở giữa chiều cao bằng `margin: auto 0` trong một
   cột flex, nên ghi chú dữ liệu mô phỏng ở dưới luôn bị đẩy xuống đáy.
 */
 .login-mark { margin: auto 0; display: grid; justify-items: start; }
 .login-mark .tax-logo { width: 112px; height: 112px; }
 .login-mark strong { margin-top: 28px; max-width: 14ch; color: white; font-size: clamp(24px, 2.2vw, 30px); font-weight: 650; line-height: 1.25; letter-spacing: -.022em; text-wrap: balance; }
-.login-rule { width: 56px; height: 2px; margin: 22px 0; background: var(--gold); }
+.login-rule { width: 56px; height: 2px; margin: 22px 0; background: var(--brand); }
 .login-mark small { color: var(--on-chrome-2); font-size: 14px; line-height: 1.5; }
 
 /*
@@ -176,39 +169,23 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .login-or { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; margin-top: 24px; color: var(--ink-3); font-size: 12px; }
 .login-or::before, .login-or::after { content: ""; height: 1px; background: var(--line); }
 
-/* Nút đăng nhập một lần dùng lại đúng thành phần `button is-secondary` của hệ,
-   chỉ thêm bề ngang và chiều cao để đứng ngang hàng với nút gửi. Vẽ riêng một
-   diện mạo cho nó là tạo bậc nút thứ tư chỉ tồn tại ở một màn. */
-.login-sso { width: 100%; min-height: 44px; margin-top: 16px; }
+.button.is-secondary.login-sso { --sso-bg: var(--brand); --sso-bg-hover: var(--brand-strong); width: 100%; min-height: 44px; margin-top: 24px; justify-content: center; color: var(--surface); background: var(--sso-bg); border-color: var(--sso-bg); }
+.button.is-secondary.login-sso:hover { color: var(--surface); background: var(--sso-bg-hover); border-color: var(--sso-bg-hover); }
 .login-sso-note { margin-top: 10px; padding: 10px 12px; border-radius: var(--radius-control); color: var(--ink-2); background: var(--surface-soft); font-size: 12px; line-height: 1.5; }
 
 .login-data-note { padding-top: 18px; border-top: 1px solid #ffffff1f; color: var(--on-chrome-3); font-size: 12px; }
 .login-panel { display: grid; place-items: center; padding: clamp(28px, 5vw, 72px); background: var(--surface); }
 /* 560px cho hai ô nhập là quá rộng: ô trải dài gấp ba lần nội dung nó chứa và
    đọc ra một biểu mẫu bị kéo giãn. 380px là bề ngang một cụm đăng nhập. */
-.login-form-wrap { width: min(400px, 100%); }
+/* 400px là bề rộng của bản có form hai ô. Nội dung nay là lưới thẻ hai cột,
+   nên con số ấy ép mỗi thẻ xuống còn ~180px và tên phòng gãy làm ba dòng. */
+.login-form-wrap { width: min(560px, 100%); }
 .login-heading h1 { font-size: 22px; font-weight: 650; line-height: 1.25; letter-spacing: -.02em; }
 .login-heading p { margin-top: 7px; color: var(--ink-2); font-size: 13px; }
-.login-form { display: grid; gap: 14px; margin-top: 28px; }
-.login-form label { display: grid; gap: 6px; }
-.login-form label > span { color: var(--ink-2); font-size: 12px; font-weight: 650; }
-.login-form input { min-height: 44px; padding: 0 12px; }
-.password-field { position: relative; display: block; }
-.password-field input { width: 100%; }
-.password-field:has(button) input { padding-right: 58px; }
-.password-field button { position: absolute; top: 50%; right: 5px; translate: 0 -50%; min-height: 34px; min-width: 34px; padding: 0 9px; border: 0; border-radius: var(--radius-chip); color: var(--ink-2); background: none; font-size: 12px; font-weight: 650; }
-.password-field button:hover { color: var(--brand); background: var(--surface-soft); }
-.login-submit { min-height: 44px; margin-top: 2px; border: 1px solid var(--brand); border-radius: var(--radius-control); color: white; background: var(--brand); font-size: 13px; font-weight: 650; }
-.login-submit:hover { border-color: var(--brand-strong); background: var(--brand-strong); }
-
-.login-error { padding: 10px 12px; border-radius: var(--radius-control); color: var(--critical); background: var(--critical-bg); font-size: 12px; }
 
 
-/*
-  Sidebar là KHUNG, không phải một phần của mặt làm việc. Nền sơn mài đỏ sẫm cho
-  hệ một cạnh rõ và một sức nặng thể chế; sidebar trắng làm mọi thứ trôi thành
-  một mặt phẳng và đọc ra phần mềm quản trị chung chung.
-*/
+
+/* Sidebar navy tạo khung điều hướng dùng chung với Dashboard Thu NSNN. */
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: 252px; display: flex; flex-direction: column; padding: 16px 12px; color: var(--on-chrome-2); background: var(--chrome); }
 .brand { display: flex; align-items: center; gap: 10px; padding: 2px 6px 14px; border-bottom: 1px solid #ffffff1f; }
 .brand strong, .brand span { display: block; }
@@ -221,11 +198,10 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .nav-item:hover { color: white; background: #ffffff14; }
 .nav-item:hover svg { color: var(--on-chrome-1); }
 
-/* Mục đang mở nhận MỘT tín hiệu đặc: nền sáng lên, chữ trắng, và một vạch vàng
-   3px — vàng là nét ấn của hệ, chỉ xuất hiện trên nền sơn mài. */
+/* Mục đang mở nhận một tín hiệu rõ: nền sáng và chữ xanh hành động. */
 .nav-item.is-active { position: relative; color: var(--brand-strong); background: var(--surface); border-color: var(--surface); font-weight: 600; box-shadow: 0 2px 5px rgb(0 0 0 / 10%); }
 .nav-item.is-active::before { content: none; }
-.nav-item.is-active svg { color: var(--gold); }
+.nav-item.is-active svg { color: var(--brand); }
 .sidebar-user { margin-top: auto; padding: 12px 10px 4px; border-top: 1px solid #ffffff1f; }
 .sidebar-user span, .sidebar-user strong, .sidebar-user small { display: block; }
 .sidebar-user span { color: var(--on-chrome-3); font-size: 11px; }
@@ -235,7 +211,7 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .sidebar-user .logout-button span { color: inherit; font-size: 12px; font-weight: 600; }
 .logout-button:hover { color: white; }
 
-.topbar { position: sticky; top: 0; z-index: 20; min-height: var(--topbar-h); margin-left: 252px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface);  box-shadow: 0 1px 3px rgb(41 37 38 / 3%); }
+ .topbar { position: sticky; top: 0; z-index: 20; min-height: var(--topbar-h); margin-left: 252px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface);  box-shadow: 0 1px 3px rgb(22 38 60 / 3%); }
 
 select, input { min-height: 32px; border: 1px solid var(--control-line); border-radius: var(--radius-control); background: var(--surface); transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
 select:hover:not(:disabled), input:hover:not(:disabled) { border-color: var(--control-line-hover); }
@@ -258,7 +234,6 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
   trang mà người dùng bàn phím không biết mình đang ở đâu.
 */
 h1.sr-only { font-size: 14px; font-weight: 700; }
-.page-lead { max-width: 72ch; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
 .page-actions { flex: none; display: flex; align-items: center; gap: 8px; }
 .topbar-actions { flex: none; display: contents; }
 
@@ -268,10 +243,10 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 @keyframes workspace-enter { from { opacity: .35; transform: translateX(8px); } to { opacity: 1; transform: none; } }
 
 .button { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 11px; border: 1px solid transparent; border-radius: var(--radius-control); font-size: 13px; font-weight: 600; white-space: nowrap; transition: background 120ms var(--ease-out), border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
-.button.is-primary { color: white; background: var(--brand); border-color: var(--brand); box-shadow: 0 1px 1px #29252614; }
+.button.is-primary { color: white; background: var(--brand); border-color: var(--brand); box-shadow: 0 1px 1px #16263c14; }
 .button.is-primary:hover { background: var(--brand-strong); border-color: var(--brand-strong); }
 .button.is-primary:active { box-shadow: none; transform: translateY(.5px); }
-.button.is-secondary { color: var(--ink); background: var(--surface); border-color: var(--control-line); box-shadow: 0 1px 1px #2925260f; }
+.button.is-secondary { color: var(--ink); background: var(--surface); border-color: var(--control-line); box-shadow: 0 1px 1px #16263c0f; }
 .button.is-secondary:hover { border-color: var(--control-line-hover); background: var(--surface-soft); }
 .button.is-secondary:active { box-shadow: none; transform: translateY(.5px); }
 .button.is-quiet { min-height: 32px; padding: 0 8px; color: var(--brand); background: transparent; }
@@ -319,7 +294,7 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .case-detail-dialog .detail-grid > div:nth-child(odd) { border-left: 0; }
 .case-detail-dialog .detail-grid > div:nth-child(n + 3) { border-top: 1px solid var(--line-soft); }
 .case-detail-dialog { position: fixed; inset: 0 0 0 auto; width: min(100vw, 520px); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: 18px; border: 0; background: var(--canvas); box-shadow: var(--shadow-overlay); overflow-y: auto; }
-.case-detail-dialog::backdrop { background: rgb(36 29 31 / 45%); }
+.case-detail-dialog::backdrop { background: rgb(14 42 71 / 45%); }
 .case-detail-dialog .panel { width: 100%; }
 .case-detail-close { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 0 12px auto; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); }
 .case-detail-close:hover { background: var(--hover-surface); }
@@ -379,12 +354,15 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .segmented { width: fit-content; display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--radius-panel); background: var(--line); }
 .segmented button { min-height: 32px; padding: 0 11px; border: 1px solid transparent; border-radius: var(--radius-control); color: var(--ink-2); background: transparent; font-size: 13px; font-weight: 600; transition: color 120ms var(--ease-out), background 120ms var(--ease-out); }
 .segmented button:hover { color: var(--ink); background: var(--hover-surface); }
-.segmented button.is-active { color: var(--ink); border-color: var(--state-edge); background: var(--surface); box-shadow: 0 1px 2px #2925261f; }
+.segmented button.is-active { color: var(--ink); border-color: var(--state-edge); background: var(--surface); box-shadow: 0 1px 2px #16263c1f; }
 .segmented button.is-active:hover { background: var(--surface); }
 .segmented-mobile { display: none; }
 .inline-controls { display: flex; align-items: end; gap: 8px; }
 
-.row-select { width: calc(100% + 24px); min-height: 32px; margin: -7px -12px; padding: 7px 12px; display: grid; align-content: center; justify-items: start; gap: 2px; border: 0; border-radius: var(--radius-chip); color: inherit; background: transparent; font: inherit; text-align: left; }
+/* Con của lưới mặc định không nhỏ hơn nội dung nó chứa, nên tên báo cáo dài
+   đẩy tràn cả ô. `min-width: 0` trả quyền quyết định bề rộng về cho lưới. */
+.row-select > * { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.row-select { white-space: normal; width: calc(100% + 24px); min-height: 32px; margin: -7px -12px; padding: 7px 12px; display: grid; align-content: center; justify-items: start; gap: 2px; border: 0; border-radius: var(--radius-chip); color: inherit; background: transparent; font: inherit; text-align: left; }
 .row-select:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
 .cell-note { color: var(--ink-3); font-size: 12px; }
 .compact-field { display: grid; gap: 3px; }
@@ -412,6 +390,11 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 table { min-width: 820px; }
 .reports-table { min-width: 880px; }
 .rules-table { min-width: 1100px; }
+
+/* Mã định danh không có chỗ ngắt tự nhiên ("VIETTEL-2026-09-27"), nên ở cột
+   hẹp nó tràn ra ngoài ô. Cho phép ngắt ở bất kỳ đâu: một mã xuống dòng vẫn
+   đọc được, một mã bị cắt đuôi thì không. */
+td code, th code { overflow-wrap: anywhere; }
 
 th { position: sticky; top: 0; z-index: 2; height: 34px; padding: 6px 12px; color: var(--ink-3); background: var(--surface-soft); border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 700; letter-spacing: .02em; text-align: left; white-space: nowrap; }
 td { height: 38px; padding: 7px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
@@ -519,22 +502,20 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .topbar, .workspace { margin-left: 0; }
   .menu-button { display: grid; }
   .workspace { padding-bottom: 86px; }
-  .mobile-nav { position: fixed; inset: auto 0 0 0; z-index: 40; min-height: 64px; display: grid; grid-template-columns: repeat(6, 1fr); padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: #fffffff2; backdrop-filter: blur(14px); box-shadow: 0 -6px 20px #29252612; }
+  .mobile-nav { position: fixed; inset: auto 0 0 0; z-index: 40; min-height: 64px; display: grid; grid-template-columns: repeat(6, 1fr); padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: #fffffff2; backdrop-filter: blur(14px); box-shadow: 0 -6px 20px #16263c12; }
   .mobile-nav button { min-width: 0; min-height: 62px; display: grid; place-items: center; align-content: center; gap: 3px; padding: 5px 2px; border: 0; border-top: 2px solid transparent; color: var(--ink-3); background: transparent; }
   .mobile-nav button span { max-width: 100%; overflow: hidden; font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
   .mobile-nav button.is-active { color: var(--brand); border-top-color: var(--brand); }
-  .nav-scrim { position: fixed; inset: 0; z-index: 80; display: block; background: #29252680; }
+  .nav-scrim { position: fixed; inset: 0; z-index: 80; display: block; background: #0e2a4780; }
   .mobile-drawer { width: min(84vw, 320px); height: 100%; display: flex; flex-direction: column; padding: 16px 12px; color: var(--on-chrome-2); background: var(--chrome); box-shadow: var(--shadow-overlay); }
   .drawer-close { position: absolute; top: 12px; left: min(calc(84vw - 52px), 268px); width: 44px; height: 44px; display: grid; place-items: center; border: 0; color: white; background: transparent; }
 
   .button, .button.is-quiet { min-height: 44px; min-width: 44px; }
   
-  .row-select { min-height: 44px; }
+  .row-select { white-space: normal; min-height: 44px; }
   .mobile-drawer .nav-item { min-height: 44px; }
   .mobile-drawer .logout-button { min-height: 44px; }
   .search-field, .search-field input { min-height: 44px; }
-  .password-field button { min-height: 44px; min-width: 44px; }
-  .password-field:has(button) input { padding-right: 66px; }
   .compact-field select { min-height: 44px; }
   .segmented button { min-height: 44px; }
   
@@ -554,7 +535,6 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .login-data-note { margin-top: 16px; padding-top: 14px; }
   .login-panel { display: block; padding: 26px 20px 34px; }
   .login-heading h1 { font-size: 20px; }
-  .login-form { margin-top: 22px; }
   .topbar { position: static; min-height: 56px; padding: 8px 12px; gap: 10px; }
   .workspace { padding: 14px 10px 82px; }
   .page-stack { gap: 12px; }
@@ -650,7 +630,7 @@ tbody tr:has(.row-select:not(:disabled)) { cursor: pointer; }
   :is(tbody tr:has(.row-select:not(:disabled)), button.task-row:not(:disabled), .figure-line > button:not(:disabled)):hover {
     z-index: 1;
     transform: translateY(-2px);
-    box-shadow: 0 3px 8px rgb(41 37 38 / 10%);
+    box-shadow: 0 3px 8px rgb(22 38 60 / 10%);
   }
 }
 
@@ -679,12 +659,12 @@ tbody tr.is-selected { background: var(--selected-surface); }
 }
 
 /* UX pass: explicit surface boundaries, readable metadata and quiet navigation. */
-.panel, .kpi-strip, .figure-line { border: 1px solid var(--line); box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 14px rgb(41 37 38 / 4%); }
+.panel, .kpi-strip, .figure-line { border: 1px solid var(--line); box-shadow: 0 1px 2px rgb(22 38 60 / 5%), 0 5px 14px rgb(22 38 60 / 4%); }
 .nav-item:not(.is-active) span { font-weight: 400; }
 .nav-item.is-active span { font-weight: 600; }
 .task-copy small, .task-meta small, .source-name small, .source-files small, .source-quality > div, .detail-grid dt, .timeline-step span, td small { font-size: 12px; }
 .report-dialog { width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow-overlay); overflow-y: auto; }
-.report-dialog::backdrop { background: rgb(36 29 31 / 45%); }
+.report-dialog::backdrop { background: rgb(14 42 71 / 45%); }
 .report-form { display: grid; gap: 16px; }
 .report-form h2 { font-size: 20px; }
 .report-form > p { color: var(--ink-2); font-size: 13px; }
@@ -944,6 +924,237 @@ td code, td strong, td span { overflow-wrap: anywhere; }
    phải một đơn vị — nền giấy mềm và chữ đậm tách nó khỏi các dòng phòng. */
 .tomtat-table tr.is-tong { background: var(--surface-soft); }
 .tomtat-table tr.is-tong td span, .tomtat-table tr.is-tong strong { font-weight: 700; }
+
+/*
+  Thanh lọc chung Kỳ + Đơn vị (G1).
+
+  Dính dưới măng sét chứ không dính lên mép màn: măng sét cao `--topbar-h` và
+  cũng dính, nên `top: 0` sẽ cho thanh này chui xuống dưới nó. Từ 720px trở
+  xuống măng sét chuyển sang `position: static`, lúc đó mép trên của khung
+  nhìn mới là mốc đúng.
+*/
+.bo-loc-chung { position: sticky; top: var(--topbar-h); z-index: 15; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 3px rgb(22 38 60 / 4%); }
+.bo-loc-muc { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bo-loc-nhan { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+.bo-loc-ky { color: var(--ink-1); font-size: 13px; font-weight: 600; }
+.bo-loc-chon { position: relative; }
+.bo-loc-nut { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); color: var(--ink-1); font-size: 13px; font-weight: 600; cursor: pointer; }
+.bo-loc-nut:hover { border-color: var(--ink-3); }
+/* Màn trong suốt phủ toàn trang: bấm ra ngoài là đóng, và nó là một <button>
+   nên bàn phím cũng có đường thoát không cần Escape. */
+.bo-loc-man { position: fixed; inset: 0; z-index: 1; border: 0; background: transparent; cursor: default; }
+.bo-loc-menu { position: absolute; z-index: 2; top: calc(100% + 6px); left: 0; display: grid; gap: 2px; width: max(240px, 100%); max-height: 320px; overflow-y: auto; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 10px 24px rgb(22 38 60 / 12%); }
+.bo-loc-menu label { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 8px; border-radius: 6px; color: var(--ink-1); font-size: 13px; cursor: pointer; }
+.bo-loc-menu label:hover { background: var(--surface-soft); }
+.bo-loc-menu input { flex: none; width: 16px; height: 16px; accent-color: var(--brand); }
+
+@media (max-width: 720px) {
+  .bo-loc-chung { top: 0; gap: 8px 14px; padding: 10px 12px; }
+  .bo-loc-nut { min-height: 44px; }
+  .bo-loc-menu label { min-height: 44px; }
+}
+
+/*
+  Tài khoản trình diễn ở màn đăng nhập: lưới HAI cột, xếp theo cặp.
+
+  Lưới tự xuống một cột dưới 560px — ở khổ đó hai thẻ cạnh nhau rộng chừng
+  150px mỗi thẻ, không đủ cho tên phòng, và cặp đọc được bằng vị trí sẽ gãy
+  trước cả khi nó giúp được gì.
+*/
+.demo-accounts-list { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; }
+.demo-accounts-list button { width: 100%; height: 100%; display: grid; align-content: start; gap: 2px; padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); text-align: left; cursor: pointer; }
+.demo-accounts-list button:hover { border-color: var(--brand); background: var(--hover-surface); }
+.demo-accounts-list .demo-vai { color: var(--ink); font-size: 13.5px; font-weight: 650; }
+/* Tên đơn vị là dòng dài nhất và là thứ phân biệt hai thẻ cùng vai, nên nó
+   được xuống dòng chứ không cắt. */
+.demo-accounts-list small { color: var(--ink-2); font-size: 12px; line-height: 1.45; }
+.demo-accounts-list code { margin-top: 3px; color: var(--ink-3); font-size: 11.5px; }
+
+@media (max-width: 560px) {
+  .demo-accounts-list { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .demo-accounts-list button { min-height: 44px; }
+}
+
+/*
+  Bảng tổng hợp QL1: hai tầng tiêu đề, cột đơn vị cố định khi cuộn ngang.
+
+  Hai luật dính chồng lên nhau ở đây, và thứ tự z quyết định bảng đọc được hay
+  không. Ô góc trên trái vừa dính trái vừa dính trên nên nó phải nằm trên cả
+  hai; nếu không, dòng tiêu đề trượt qua nó khi cuộn dọc.
+*/
+/* Bề rộng cột do `<colgroup>` dựng trong React quyết định — xem `RONG` trong
+   DebtQL1.tsx. Ở đây chỉ còn cách trình bày. */
+.ql1-table thead th { background: var(--surface-soft); }
+.ql1-table th.nhom { text-align: center; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); white-space: normal; }
+/* Đáy dòng tiêu đề thứ nhất, đo bằng JS và truyền vào qua biến — xem ghi chú
+   `caoDau` trong DebtQL1.tsx. 34px chỉ là giá trị đỡ cho lần dựng đầu. */
+.ql1-table thead tr:nth-child(2) th { top: var(--cao-dau, 34px); }
+.ql1-table th.dv-cot, .ql1-table tbody th { position: sticky; top: auto; left: 0; z-index: 3; background: var(--surface-soft); text-align: left; }
+/* Tên khối dài hơn một dòng thì XUỐNG DÒNG, không tràn sang cột số bên cạnh:
+   cột này dính trái nên phần tràn sẽ nằm đè lên dữ liệu khi cuộn ngang. */
+.ql1-table tbody th { white-space: normal; }
+.ql1-table th.dv-cot { z-index: 4; }
+.ql1-table tbody th { font-weight: 600; border-right: 1px solid var(--line); }
+.ql1-table tbody th > span { display: block; color: var(--ink); font-size: 13px; }
+.ql1-table td { white-space: nowrap; }
+/* Tiêu đề cột XUỐNG DÒNG. Cột số của QL3 rộng chừng 110px còn nhãn thì dài
+   ("Số DN đề nghị kiểm tra tại DN"); giữ nowrap là chữ bị cắt mất đuôi. */
+.ql1-table thead th { white-space: normal; }
+
+/* Cả ô bấm được, và nút không co giãn theo nội dung cột bên cạnh. */
+.dv-nut { display: block; width: calc(100% + 24px); margin: -7px -12px; padding: 7px 12px; border: 0; background: none; text-align: left; cursor: pointer; }
+.dv-nut:hover { background: var(--hover-surface); }
+/* Tên đơn vị XUỐNG DÒNG trong cột dính. Cột này hẹp lại ở khổ nhỏ, và tên
+   bị cắt đuôi thì hai dòng "Phòng QLHT DN 4" và "Phòng QLHT DN 5" đọc ra
+   giống hệt nhau. */
+.dv-nut span { display: block; color: var(--ink); font-size: 13px; font-weight: 600; white-space: normal; }
+.dv-nut small { display: block; color: var(--ink-3); font-size: 11px; }
+
+/* Dòng tổng và dòng khối: đậm hơn, nền đục hơn, vạch trên để tách khỏi dòng
+   đơn vị phía trước. Tổng toàn ngành nặng hơn tổng khối một bậc. */
+/*
+  Dòng tổng và dòng khối nổi bằng CÂN NẶNG và VẠCH, không bằng một mảng màu.
+
+  Bản trước tô đặc `--brand` và `--brand-strong` rồi đặt chữ trắng lên. Nó bắt
+  mắt, nhưng mũi tên tăng giảm trong chính hai dòng ấy vẫn mang màu nghĩa —
+  xanh cho giảm, đỏ cho tăng — và xanh trên nền đỏ chỉ đạt 1,15:1, tức là
+  không đọc được. Muốn giữ mảng đỏ thì phải bỏ màu nghĩa của mũi tên, mà mũi
+  tên mới là thứ người ta quét dọc cả bảng để tìm.
+
+  Thêm nữa, đỏ trong hệ này là màu của hành động và can thiệp; trải nó thành
+  hai băng ngang giữa bảng số là đúng thứ đã gỡ khỏi các thanh tỷ lệ.
+*/
+.ql1-table tr.is-tong th, .ql1-table tr.is-tong td { background: var(--surface-tint); font-weight: 700; border-top: 2px solid var(--ink-3); }
+.ql1-table tr.is-khoi th, .ql1-table tr.is-khoi td { background: var(--surface-soft); font-weight: 650; border-top: 1px solid var(--ink-3); }
+
+.ql1-table tr:is(.is-tong, .is-khoi) th > span { color: inherit; }
+/*
+  Dòng tổng và dòng khối KHÔNG đổi màu mũi tên tăng giảm.
+
+  Màu focus và màu chữ trên chrome chỉ dành cho nền navy; không dùng chúng làm
+  màu cho số liệu trên nền sáng. Dòng tổng đã nặng hơn phần còn lại bằng cân
+  nặng chữ và nền, không cần mượn thêm màu.
+*/
+/* Thanh tỷ lệ ở dòng tổng dùng chung màu dữ liệu với mọi dòng khác: đổi màu
+   theo dòng làm hai thanh cạnh nhau không so được với nhau nữa. */
+
+.delta.is-up { color: var(--critical); }
+.delta.is-down { color: var(--positive); }
+
+/* Tỷ lệ: con số đọc trước, thanh là thứ để quét cột theo chiều dọc. */
+.ty-le { display: inline-grid; gap: 3px; justify-items: end; min-width: 76px; }
+.ty-le b { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.ty-le i { display: block; width: 100%; height: 4px; border-radius: 2px; background: var(--data-track); overflow: hidden; }
+.ty-le i span { display: block; height: 100%; border-radius: 2px; background: var(--data); }
+
+/* Ô cắt bằng dấu ba chấm thay vì tràn: với `table-layout: fixed`, chữ dài hơn
+   cột sẽ chạy đè lên ô kế tiếp chứ không tự dừng. */
+.ql1-ds-table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ql1-ds-table td .quality-note { white-space: normal; }
+
+.bo-loc-select { min-height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink-1); font-size: 13px; font-weight: 600; }
+.bo-loc-seg { display: inline-flex; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
+.bo-loc-seg button { min-height: 28px; padding: 2px 12px; border: 0; border-radius: 6px; background: none; color: var(--ink-2); font-size: 13px; font-weight: 600; cursor: pointer; }
+.bo-loc-seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(22 38 60 / 10%); }
+/* Phụ chú đẩy về cuối thanh: nó là kết quả của bộ lọc, không phải một control. */
+.bo-loc-phu { margin-left: auto; color: var(--ink-3); font-size: 12px; }
+
+@media (max-width: 900px) {
+  .bo-loc-select, .bo-loc-seg button { min-height: 44px; }
+  .ql1-table th.dv-cot, .ql1-table tbody th { min-width: 180px; max-width: 180px; }
+  .dv-nut { min-height: 44px; display: flex; flex-direction: column; justify-content: center; }
+  .bo-loc-phu { margin-left: 0; }
+}
+
+/* Cột STT của bảng tổng hợp: hẹp, canh phải, mực nhạt — nó là số thứ tự trong
+   mẫu Excel, không phải dữ liệu nghiệp vụ. */
+.ql1-table th.stt-cot, .ql1-table td.stt-o { position: sticky; left: 0; z-index: 3; color: var(--ink-3); text-align: right; background: var(--surface-soft); }
+.ql1-table th.stt-cot { z-index: 4; }
+/*
+  Cột đơn vị dính ngay sau cột STT — nhưng chỉ QL1 có cột STT. Mốc trái vì thế
+  là một biến, mặc định 0 và chỉ QL1 đặt lại; khai cứng 46px ở đây từng đẩy
+  bảng QL3 lệch sang phải đúng 46px và để hở một cột trống bên trái.
+*/
+.ql1-table { --dv-trai: 0px; }
+/* Khai bằng LỚP chứ không bằng `:has`: bảng nào có cột STT thì React gắn
+   `.co-stt`, nên mốc trái không phụ thuộc vào việc trình duyệt dò được một
+   phần tử con hay không. */
+.ql1-table.co-stt { --dv-trai: 46px; }
+.ql1-table th.dv-cot, .ql1-table tbody th { left: var(--dv-trai); }
+
+.bang-ghi-chu { margin: 10px 14px 2px; color: var(--ink-3); font-size: 12px; line-height: 1.55; max-width: 92ch; }
+
+/* ── Tab Tổng quan ──────────────────────────────────────────────────────── */
+/* Hai khối cạnh nhau ở khổ rộng, xếp dọc khi hết chỗ. Không khai số cột cứng
+   cho thẻ: để `auto-fit` quyết thì bốn thẻ nợ và ba thẻ cưỡng chế dùng chung
+   một luật, không phải hai luật phải nuôi riêng. */
+.tq-doi { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
+.the-luoi { display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 1px; margin-inline: -14px; background: var(--line-soft); }
+.the-luoi.is-hep { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.the-so { display: grid; align-content: start; gap: 2px; padding: 14px 16px; background: var(--surface); }
+/* Chừa sẵn chỗ cho nhãn hai dòng. Nhãn dài ("Trạng thái 06 chưa tạm hoãn")
+   xuống dòng sẽ đẩy con số của riêng thẻ đó xuống, và ba thẻ cạnh nhau mất
+   mốc chung — thứ mắt dùng để so chúng với nhau. */
+.the-nhan { display: block; min-height: 2.6em; color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .02em; line-height: 1.3; text-transform: uppercase; }
+.the-gia { color: var(--ink); font-size: 24px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.the-dvt { color: var(--ink-3); font-size: 11.5px; }
+.the-moc { display: grid; gap: 3px; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line-soft); }
+.the-moc > div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.the-moc dt { color: var(--ink-3); font-size: 11.5px; }
+.the-moc dd { margin: 0; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Xếp hạng: tên và số đọc trước, thanh chỉ để quét cột theo chiều dọc. */
+.xep-hang { list-style: none; display: grid; gap: 10px; margin: 2px 0 0; padding: 0; }
+.xep-hang li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; }
+.xh-ten { color: var(--ink); font-size: 13px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.xh-so { color: var(--ink-2); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.xh-thanh { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--data-track); overflow: hidden; }
+.xh-thanh i { display: block; height: 100%; border-radius: 3px; background: var(--data); }
+
+/* Tên nguồn là chuỗi dài nhất của bảng và là thứ phân biệt các dòng, nên
+   nó XUỐNG DÒNG chứ không bị cắt. */
+.nguon-table th[scope="row"] { font-weight: 600; white-space: normal; }
+.nguon-table th[scope="row"] span { color: var(--ink); font-size: 13px; }
+.nguon-table td { white-space: nowrap; }
+
+/* Đơn vị chưa đạt KPI đăng ký: đổi màu thanh chứ không chỉ thêm chữ — danh
+   sách này được quét bằng mắt để tìm nhóm cần đôn đốc. */
+.xh-thanh i.is-canh-bao { background: var(--critical); }
+.xh-co { color: var(--critical); font-size: 11.5px; font-style: normal; font-weight: 650; }
+
+/* Keep both QL1 header rows on one opaque sticky surface, including at zoom. */
+.ql1-table.co-stt { border-collapse: separate; border-spacing: 0; }
+.ql1-table.co-stt thead { position: sticky; top: 0; z-index: 5; background: var(--surface-soft); }
+.ql1-table.co-stt thead th { position: static; }
+.ql1-table.co-stt thead th.stt-cot,
+.ql1-table.co-stt thead th.dv-cot { position: sticky; top: auto; }
+.ql1-table.co-stt tbody th,
+.ql1-table.co-stt tbody .stt-o { top: auto; }
+
+/* Dòng dẫn ngữ cảnh của màn (G2). Lùi một bậc so với nội dung: nó trả lời
+   "đang xem cái gì", không phải thứ người dùng đọc lại mỗi lần vào màn. */
+
+/*
+  Thanh duyệt của kỳ, đứng ngay đầu phân hệ.
+  Ba vùng: trạng thái (trái) · dấu vết (giữa, co giãn) · thao tác (phải).
+*/
+.thanh-duyet { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto; align-items: center; gap: 10px 20px; padding: 12px 16px; border: 1px solid var(--line); border-left: 3px solid var(--data); border-radius: var(--radius-panel); background: var(--surface); }
+.duyet-trai { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.duyet-chu { display: grid; gap: 1px; min-width: 0; }
+.duyet-chu strong { color: var(--ink); font-size: 13.5px; font-weight: 650; }
+.duyet-chu span { color: var(--ink-2); font-size: 12.5px; line-height: 1.45; }
+.duyet-vet { display: grid; gap: 2px; min-width: 0; color: var(--ink-3); font-size: 12px; }
+.duyet-tralai { color: var(--critical); font-weight: 600; }
+.duyet-nut { display: flex; align-items: center; gap: 8px; }
+
+@media (max-width: 900px) {
+  .thanh-duyet { grid-template-columns: minmax(0, 1fr); }
+  .duyet-nut { flex-wrap: wrap; }
+  .duyet-nut .button { flex: 1 1 140px; }
+}
 </style>
 <style>
 .ds-nav{position:fixed;inset:0 auto 0 0;width:240px;padding:34px 24px;background:var(--chrome);color:var(--on-chrome-1);overflow:auto}
@@ -958,15 +1169,15 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 <aside class="ds-nav"><strong>Tax Ops</strong><p>Design system · Phiên bản 1.0</p><nav aria-label="Mục lục"><a href="#start">Hướng dẫn</a><a href="#colors">Màu sắc</a><a href="#type">Typography</a><a href="#space">Khoảng cách</a><a href="#controls">Điều khiển</a><a href="#status">Trạng thái</a><a href="#data">Dữ liệu</a><a href="#icons">Icon</a></nav></aside>
-<main class="ds-main"><header id="start"><h1>Design system<br>Quản lý nghiệp vụ Thuế</h1><p class="intro">Nền giấy ấm, khung đỏ sẫm và typography dày thông tin. Bộ thành phần được trích từ prototype tax-ops để thiết kế nhất quán và tái sử dụng trong Figma.</p><div class="ds-meta"><span>Public Sans · Tiếng Việt</span><span>Desktop 32px / cảm ứng 44px</span><span>Dữ liệu ví dụ là mô phỏng</span></div></header>
+<main class="ds-main"><header id="start"><h1>Design system<br>Quản lý nghiệp vụ Thuế</h1><p class="intro">Palette navy thể chế, xanh dữ liệu và nền xám xanh dùng chung với Dashboard Thu NSNN. Bộ thành phần được trích từ prototype tax-ops để thiết kế nhất quán và tái sử dụng trong Figma.</p><div class="ds-meta"><span>Public Sans · Tiếng Việt</span><span>Desktop 32px / cảm ứng 44px</span><span>Dữ liệu ví dụ là mô phỏng</span></div></header>
 <section><h2>Sử dụng trong Figma</h2><p>Trong Figma Desktop, chọn Plugins → Development → Import plugin from manifest, mở <code>figma-plugin/manifest.json</code>, rồi chạy “Tax Ops — Design System” trong file thiết kế. Plugin tạo 1 trang mới gồm 6 khu vực; không thay đổi các màn hiện có.</p><p class="ds-note">Bản này là gói import. Chưa được ghi hoặc kiểm tra trực tiếp trong Figma do kết nối MCP đã hết lượt.</p><a class="docs-link" href="README.md">Hướng dẫn và phạm vi bản v1</a></section>
-<section id="colors"><h2>Màu sắc</h2><p>Ba vai riêng của màu đỏ: nhận diện, hành động và cảnh báo. Chữ số nghiệp vụ giữ màu mực trung tính.</p><div class="swatches"><div class="swatch"><div style="background:#f6f4f2" class="paint"></div><strong>canvas</strong><code>#f6f4f2</code></div><div class="swatch"><div style="background:#ffffff" class="paint"></div><strong>surface</strong><code>#ffffff</code></div><div class="swatch"><div style="background:#f6f4f2" class="paint"></div><strong>surface-soft</strong><code>#f6f4f2</code></div><div class="swatch"><div style="background:#fbf1f1" class="paint"></div><strong>surface-tint</strong><code>#fbf1f1</code></div><div class="swatch"><div style="background:#f6f4f2" class="paint"></div><strong>hover-surface</strong><code>#f6f4f2</code></div><div class="swatch"><div style="background:#f7e5e7" class="paint"></div><strong>selected-surface</strong><code>#f7e5e7</code></div><div class="swatch"><div style="background:#e4dedc" class="paint"></div><strong>line</strong><code>#e4dedc</code></div><div class="swatch"><div style="background:#f0eceb" class="paint"></div><strong>line-soft</strong><code>#f0eceb</code></div><div class="swatch"><div style="background:#241d1f" class="paint"></div><strong>ink</strong><code>#241d1f</code></div><div class="swatch"><div style="background:#4f4547" class="paint"></div><strong>ink-2</strong><code>#4f4547</code></div><div class="swatch"><div style="background:#6f6366" class="paint"></div><strong>ink-3</strong><code>#6f6366</code></div><div class="swatch"><div style="background:#3a1016" class="paint"></div><strong>chrome</strong><code>#3a1016</code></div><div class="swatch"><div style="background:#4d1620" class="paint"></div><strong>chrome-2</strong><code>#4d1620</code></div><div class="swatch"><div style="background:#cf2333" class="paint"></div><strong>seal</strong><code>#cf2333</code></div><div class="swatch"><div style="background:#f3c602" class="paint"></div><strong>gold</strong><code>#f3c602</code></div><div class="swatch"><div style="background:#9a1c2a" class="paint"></div><strong>brand</strong><code>#9a1c2a</code></div><div class="swatch"><div style="background:#7a1521" class="paint"></div><strong>brand-strong</strong><code>#7a1521</code></div><div class="swatch"><div style="background:#241d1f" class="paint"></div><strong>focus</strong><code>#241d1f</code></div><div class="swatch"><div style="background:#f3c602" class="paint"></div><strong>focus-on-chrome</strong><code>#f3c602</code></div><div class="swatch"><div style="background:#14653a" class="paint"></div><strong>positive</strong><code>#14653a</code></div><div class="swatch"><div style="background:#eaf4ee" class="paint"></div><strong>positive-bg</strong><code>#eaf4ee</code></div><div class="swatch"><div style="background:#7a5810" class="paint"></div><strong>warning</strong><code>#7a5810</code></div><div class="swatch"><div style="background:#fbf3df" class="paint"></div><strong>warning-bg</strong><code>#fbf3df</code></div><div class="swatch"><div style="background:#c0261c" class="paint"></div><strong>critical</strong><code>#c0261c</code></div><div class="swatch"><div style="background:#fdefed" class="paint"></div><strong>critical-bg</strong><code>#fdefed</code></div><div class="swatch"><div style="background:#3f5470" class="paint"></div><strong>info</strong><code>#3f5470</code></div><div class="swatch"><div style="background:#eef0f4" class="paint"></div><strong>info-bg</strong><code>#eef0f4</code></div><div class="swatch"><div style="background:#f2dfe1" class="paint"></div><strong>on-chrome-1</strong><code>#f2dfe1</code></div><div class="swatch"><div style="background:#d9b9bd" class="paint"></div><strong>on-chrome-2</strong><code>#d9b9bd</code></div><div class="swatch"><div style="background:#b08f95" class="paint"></div><strong>on-chrome-3</strong><code>#b08f95</code></div><div class="swatch"><div style="background:#e8c77a" class="paint"></div><strong>on-chrome-note</strong><code>#e8c77a</code></div><div class="swatch"><div style="background:#7fd0a4" class="paint"></div><strong>positive-on-chrome</strong><code>#7fd0a4</code></div><div class="swatch"><div style="background:#d8d0ce" class="paint"></div><strong>control-line</strong><code>#d8d0ce</code></div><div class="swatch"><div style="background:#b2a5a6" class="paint"></div><strong>control-line-hover</strong><code>#b2a5a6</code></div><div class="swatch"><div style="background:#8a797c" class="paint"></div><strong>state-edge</strong><code>#8a797c</code></div><div class="swatch"><div style="background:#f7dfe1" class="paint"></div><strong>selection-bg</strong><code>#f7dfe1</code></div><div class="swatch"><div style="background:#d2c9c7" class="paint"></div><strong>scroll-thumb</strong><code>#d2c9c7</code></div><div class="swatch"><div style="background:#b0a3a4" class="paint"></div><strong>scroll-thumb-hover</strong><code>#b0a3a4</code></div></div></section>
+<section id="colors"><h2>Màu sắc</h2><p>Navy tạo khung thể chế; xanh thương hiệu dành cho hành động và thang xanh cho dữ liệu. Trạng thái semantic luôn đi cùng nhãn chữ; số liệu giữ màu mực trung tính.</p><div class="swatches"><div class="swatch"><div style="background:#f2f5f9" class="paint"></div><strong>canvas</strong><code>#f2f5f9</code></div><div class="swatch"><div style="background:#ffffff" class="paint"></div><strong>surface</strong><code>#ffffff</code></div><div class="swatch"><div style="background:#f7f9fc" class="paint"></div><strong>surface-soft</strong><code>#f7f9fc</code></div><div class="swatch"><div style="background:#eef4fc" class="paint"></div><strong>surface-tint</strong><code>#eef4fc</code></div><div class="swatch"><div style="background:#f7f9fc" class="paint"></div><strong>hover-surface</strong><code>#f7f9fc</code></div><div class="swatch"><div style="background:#dbe8f8" class="paint"></div><strong>selected-surface</strong><code>#dbe8f8</code></div><div class="swatch"><div style="background:#dbe3ed" class="paint"></div><strong>line</strong><code>#dbe3ed</code></div><div class="swatch"><div style="background:#eaeff6" class="paint"></div><strong>line-soft</strong><code>#eaeff6</code></div><div class="swatch"><div style="background:#16263c" class="paint"></div><strong>ink</strong><code>#16263c</code></div><div class="swatch"><div style="background:#485666" class="paint"></div><strong>ink-2</strong><code>#485666</code></div><div class="swatch"><div style="background:#63707f" class="paint"></div><strong>ink-3</strong><code>#63707f</code></div><div class="swatch"><div style="background:#0e2a47" class="paint"></div><strong>navy</strong><code>#0e2a47</code></div><div class="swatch"><div style="background:#0e2a47" class="paint"></div><strong>chrome</strong><code>#0e2a47</code></div><div class="swatch"><div style="background:#0d366b" class="paint"></div><strong>chrome-2</strong><code>#0d366b</code></div><div class="swatch"><div style="background:#d3e1f0" class="paint"></div><strong>navy-ink</strong><code>#d3e1f0</code></div><div class="swatch"><div style="background:#ffffff" class="paint"></div><strong>ink-on-dark</strong><code>#ffffff</code></div><div class="swatch"><div style="background:#eef4fc" class="paint"></div><strong>blue-050</strong><code>#eef4fc</code></div><div class="swatch"><div style="background:#dbe8f8" class="paint"></div><strong>blue-100</strong><code>#dbe8f8</code></div><div class="swatch"><div style="background:#86b6ef" class="paint"></div><strong>blue-250</strong><code>#86b6ef</code></div><div class="swatch"><div style="background:#5598e7" class="paint"></div><strong>blue-350</strong><code>#5598e7</code></div><div class="swatch"><div style="background:#2a78d6" class="paint"></div><strong>blue-450</strong><code>#2a78d6</code></div><div class="swatch"><div style="background:#1c5cab" class="paint"></div><strong>blue-550</strong><code>#1c5cab</code></div><div class="swatch"><div style="background:#0d366b" class="paint"></div><strong>blue-700</strong><code>#0d366b</code></div><div class="swatch"><div style="background:#1657a8" class="paint"></div><strong>brand</strong><code>#1657a8</code></div><div class="swatch"><div style="background:#1c5cab" class="paint"></div><strong>brand-strong</strong><code>#1c5cab</code></div><div class="swatch"><div style="background:#1657a8" class="paint"></div><strong>focus</strong><code>#1657a8</code></div><div class="swatch"><div style="background:#ffffff" class="paint"></div><strong>focus-on-chrome</strong><code>#ffffff</code></div><div class="swatch"><div style="background:#187044" class="paint"></div><strong>positive</strong><code>#187044</code></div><div class="swatch"><div style="background:#eaf4ee" class="paint"></div><strong>positive-bg</strong><code>#eaf4ee</code></div><div class="swatch"><div style="background:#7a5a12" class="paint"></div><strong>warning</strong><code>#7a5a12</code></div><div class="swatch"><div style="background:#fdf5dd" class="paint"></div><strong>warning-bg</strong><code>#fdf5dd</code></div><div class="swatch"><div style="background:#b3352f" class="paint"></div><strong>critical</strong><code>#b3352f</code></div><div class="swatch"><div style="background:#fdefed" class="paint"></div><strong>critical-bg</strong><code>#fdefed</code></div><div class="swatch"><div style="background:#1657a8" class="paint"></div><strong>info</strong><code>#1657a8</code></div><div class="swatch"><div style="background:#eef4fc" class="paint"></div><strong>info-bg</strong><code>#eef4fc</code></div><div class="swatch"><div style="background:#1657a8" class="paint"></div><strong>data-primary</strong><code>#1657a8</code></div><div class="swatch"><div style="background:#1657a8" class="paint"></div><strong>data</strong><code>#1657a8</code></div><div class="swatch"><div style="background:#3987e5" class="paint"></div><strong>data-secondary</strong><code>#3987e5</code></div><div class="swatch"><div style="background:#86b6ef" class="paint"></div><strong>data-family</strong><code>#86b6ef</code></div><div class="swatch"><div style="background:#75869b" class="paint"></div><strong>data-reference</strong><code>#75869b</code></div><div class="swatch"><div style="background:#dbe8f8" class="paint"></div><strong>data-nhat</strong><code>#dbe8f8</code></div><div class="swatch"><div style="background:#e7edf5" class="paint"></div><strong>data-track</strong><code>#e7edf5</code></div><div class="swatch"><div style="background:#0d366b" class="paint"></div><strong>donut-1</strong><code>#0d366b</code></div><div class="swatch"><div style="background:#1657a8" class="paint"></div><strong>donut-2</strong><code>#1657a8</code></div><div class="swatch"><div style="background:#3987e5" class="paint"></div><strong>donut-3</strong><code>#3987e5</code></div><div class="swatch"><div style="background:#6f93c4" class="paint"></div><strong>donut-4</strong><code>#6f93c4</code></div><div class="swatch"><div style="background:#646c77" class="paint"></div><strong>nodata</strong><code>#646c77</code></div><div class="swatch"><div style="background:#ffffff" class="paint"></div><strong>on-chrome-1</strong><code>#ffffff</code></div><div class="swatch"><div style="background:#d3e1f0" class="paint"></div><strong>on-chrome-2</strong><code>#d3e1f0</code></div><div class="swatch"><div style="background:#86b6ef" class="paint"></div><strong>on-chrome-3</strong><code>#86b6ef</code></div><div class="swatch"><div style="background:#dbe8f8" class="paint"></div><strong>on-chrome-note</strong><code>#dbe8f8</code></div><div class="swatch"><div style="background:#ffffff" class="paint"></div><strong>positive-on-chrome</strong><code>#ffffff</code></div><div class="swatch"><div style="background:#c6d2e0" class="paint"></div><strong>control-line</strong><code>#c6d2e0</code></div><div class="swatch"><div style="background:#86b6ef" class="paint"></div><strong>control-line-hover</strong><code>#86b6ef</code></div><div class="swatch"><div style="background:#75869b" class="paint"></div><strong>state-edge</strong><code>#75869b</code></div><div class="swatch"><div style="background:#dbe8f8" class="paint"></div><strong>selection-bg</strong><code>#dbe8f8</code></div><div class="swatch"><div style="background:#c3cedd" class="paint"></div><strong>scroll-thumb</strong><code>#c3cedd</code></div><div class="swatch"><div style="background:#9aa9bd" class="paint"></div><strong>scroll-thumb-hover</strong><code>#9aa9bd</code></div></div></section>
 <section id="type"><h2>Typography</h2><p>Public Sans với dấu tiếng Việt, chữ số tabular và trọng lượng 400–700. Cỡ 30px chỉ dùng cho khối nhận diện.</p><div class="type-row"><code>Display<small>30px / 650 / 37.5px</small></code><span style="font-size:30px;font-weight:650;line-height:37.5px;letter-spacing:-0.66px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Heading<small>20px / 650 / 25px</small></code><span style="font-size:20px;font-weight:650;line-height:25px;letter-spacing:-0.4px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Metric<small>18px / 650 / 22.5px</small></code><span style="font-size:18px;font-weight:650;line-height:22.5px;letter-spacing:-0.27px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Title<small>14px / 700 / 21px</small></code><span style="font-size:14px;font-weight:700;line-height:21px;letter-spacing:-0.112px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Body<small>14px / 400 / 21px</small></code><span style="font-size:14px;font-weight:400;line-height:21px;letter-spacing:0px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Body strong<small>13px / 600 / 19.5px</small></code><span style="font-size:13px;font-weight:600;line-height:19.5px;letter-spacing:0px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Lead<small>13px / 400 / 19.5px</small></code><span style="font-size:13px;font-weight:400;line-height:19.5px;letter-spacing:0px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Label<small>12px / 600 / 16.8px</small></code><span style="font-size:12px;font-weight:600;line-height:16.8px;letter-spacing:0px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Caption<small>12px / 400 / 18px</small></code><span style="font-size:12px;font-weight:400;line-height:18px;letter-spacing:0px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Column head<small>11px / 700 / 16.5px</small></code><span style="font-size:11px;font-weight:700;line-height:16.5px;letter-spacing:0.22px">Quản lý nghiệp vụ Thuế</span></div><div class="type-row"><code>Navigation<small>14px / 600 / 21px</small></code><span style="font-size:14px;font-weight:600;line-height:21px;letter-spacing:0px">Quản lý nghiệp vụ Thuế</span></div></section>
 <section id="space"><h2>Khoảng cách & hình dạng</h2><p>Khoảng cách giữ đúng mật độ của prototype. Bo góc: chip 4px, ô nhập 6px, panel 10px, dialog 12px.</p><div class="spacing"><div><i style="height:4px"></i>4px</div><div><i style="height:8px"></i>8px</div><div><i style="height:12px"></i>12px</div><div><i style="height:16px"></i>16px</div><div><i style="height:20px"></i>20px</div><div><i style="height:24px"></i>24px</div><div><i style="height:32px"></i>32px</div><div><i style="height:48px"></i>48px</div></div></section>
 <section id="controls"><h2>Điều khiển</h2><p>Hover và focus có thể thử trực tiếp. Nút dưới đây chỉ minh họa trạng thái, không tạo báo cáo nghiệp vụ.</p><h3>Button</h3><div class="specimen"><div class="demo-row"><code>primary</code><button type="button" class="button is-primary" ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><span>Tạo báo cáo</span></button><button type="button" class="button is-primary" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><span>Không khả dụng</span></button></div><div class="demo-row"><code>secondary</code><button type="button" class="button is-secondary" ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><span>Tạo báo cáo</span></button><button type="button" class="button is-secondary" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><span>Không khả dụng</span></button></div><div class="demo-row"><code>quiet</code><button type="button" class="button is-quiet" ><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><span>Tạo báo cáo</span></button><button type="button" class="button is-quiet" disabled><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><span>Không khả dụng</span></button></div><p class="preview-message" role="status" id="feedback"></p></div><h3>Input & Select</h3><div class="specimen fields"><label>Tìm người nộp thuế<input placeholder="Tên hoặc mã số thuế"></label><label>Kỳ báo cáo<select><option>Tháng 10/2026</option>Tháng 09/2026</option></select></label><label>Tên báo cáo<input value="" placeholder="Nhập tên báo cáo" aria-invalid="true" aria-describedby="error"><small id="error">Nhập tên báo cáo để tiếp tục.</small></label><label>Không khả dụng<input value="Dữ liệu đang được khóa" disabled></label></div><h3>Segmented</h3><div class="specimen"><div class="segmented" role="group" aria-label="Mẫu trạng thái"><button class="is-active" aria-pressed="true">Tất cả</button><button aria-pressed="false">Chờ duyệt</button><button aria-pressed="false">Đã phát hành</button></div><label class="segmented-mobile"><span>Trạng thái</span><select id="mobile-segment"><option>Tất cả</option><option>Chờ duyệt</option><option>Đã phát hành</option></select></label><p class="ds-note" id="segment-status" role="status">Đang minh họa: Tất cả</p></div><h3>Navigation</h3><div class="specimen navigation-demo"><button class="nav-item is-active" aria-current="page">Trang công việc</button><button class="nav-item">Nợ và cưỡng chế</button><button class="nav-item">Báo cáo</button></div></section>
-<section id="status"><h2>Trạng thái & phản hồi</h2><p>Luôn đi kèm nhãn chữ. Chỉ trạng thái cần can thiệp mới dùng badge nền đỏ nhạt.</p><div class="specimen demo-row"><span class="badge tone-neutral">Bản nháp</span><span class="badge tone-positive">Đã duyệt</span><span class="badge tone-warning">Chờ duyệt</span><span class="badge tone-info">Đang xử lý</span><span class="badge tone-critical">Cần xử lý</span></div><div class="specimen"><div class="notice warning"><strong>Dữ liệu mô phỏng</strong><span>Số liệu dùng để minh họa giao diện.</span></div><div class="notice critical"><strong>Chưa đủ dữ liệu</strong><span>Kiểm tra lô nguồn trước khi lập báo cáo.</span></div><div class="notice positive"><strong>Đã kiểm tra</strong><span>Lô dữ liệu đã hoàn tất đối chiếu.</span></div><div class="notice info"><strong>Kỳ báo cáo</strong><span>Đang hiển thị tháng 10/2026.</span></div></div></section>
-<section id="data"><h2>Mẫu dữ liệu nghiệp vụ</h2><p>Số căn phải; tiêu đề cột 11px; hàng 38px. Trạng thái được thể hiện bằng nhãn chữ và màu.</p><div class="sample-table panel"><table><caption class="sr-only">Báo cáo minh họa</caption><thead><tr><th scope="col">Tên báo cáo</th><th scope="col">Kỳ báo cáo</th><th scope="col">Trạng thái</th><th scope="col" class="num">Số bản ghi</th></tr></thead><tbody><tr><td><strong>Tổng hợp nợ thuế</strong><small>Dữ liệu mô phỏng</small></td><td>Tháng 10/2026</td><td><span class="badge tone-warning">Chờ duyệt</span></td><td class="num">1.280</td></tr><tr class="is-selected"><td><strong>Theo dõi hoàn thuế</strong><small>Hàng đang chọn</small></td><td>Tháng 10/2026</td><td><span class="badge tone-positive">Đã duyệt</span></td><td class="num">248</td></tr><tr><td><strong>Đối chiếu hóa đơn</strong><small>Dữ liệu mô phỏng</small></td><td>Tháng 10/2026</td><td><span class="badge tone-critical">Cần xử lý</span></td><td class="num">36</td></tr></tbody></table></div><h3>Quy tắc sử dụng</h3><ul class="rule-list"><li>Desktop: nút và ô nhập cao tối thiểu 32px; ở màn ≤900px tăng lên 44px.</li><li>Vòng focus 2px màu mực; trên nền đỏ sẫm dùng vàng.</li><li>Giữ nguyên font Public Sans và token semantic khi tạo component mới.</li><li>Trong Figma, kéo instance từ Assets; sửa label và icon qua component properties.</li><li>Không dùng màu đỏ cho số tiền hoặc số lượng chỉ để nhấn mạnh.</li></ul></section>
-<section id="icons"><h2>Icon</h2><p>20 icon SVG gốc từ tax-ops, nét 1.6px trên lưới 24px. Trong Figma, icon của Button có thể thay bằng instance swap.</p><div class="icon-grid"><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><code>home</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5M8 16h3"/></svg><code>debt</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><code>risk</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h12a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg><code>refund</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><code>report</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><code>data</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><code>clock</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 16H3L12 3Z"/><path d="M12 9v4M12 16.5v.1"/></svg><code>alert</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><code>check</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><code>file</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><code>search</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v5h16v-5"/></svg><code>upload</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg><code>arrow</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><code>menu</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><code>close</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 4v2"/></svg><code>users</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></svg><code>database</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M19 13v6H5V5h6"/></svg><code>external</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg><code>logout</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.2"/><path d="m11 12 8.5-8.5M16.5 6.5 19 9M14 9l2.5 2.5"/></svg><code>key</code></div></div></section>
+<section id="status"><h2>Trạng thái & phản hồi</h2><p>Luôn đi kèm nhãn chữ. Đỏ chỉ dùng cho trạng thái cần can thiệp, không thay thế xanh hành động.</p><div class="specimen demo-row"><span class="badge tone-neutral">Bản nháp</span><span class="badge tone-positive">Đã duyệt</span><span class="badge tone-warning">Chờ duyệt</span><span class="badge tone-info">Đang xử lý</span><span class="badge tone-critical">Cần xử lý</span></div><div class="specimen"><div class="notice warning"><strong>Dữ liệu mô phỏng</strong><span>Số liệu dùng để minh họa giao diện.</span></div><div class="notice critical"><strong>Chưa đủ dữ liệu</strong><span>Kiểm tra lô nguồn trước khi lập báo cáo.</span></div><div class="notice positive"><strong>Đã kiểm tra</strong><span>Lô dữ liệu đã hoàn tất đối chiếu.</span></div><div class="notice info"><strong>Kỳ báo cáo</strong><span>Đang hiển thị tháng 10/2026.</span></div></div></section>
+<section id="data"><h2>Mẫu dữ liệu nghiệp vụ</h2><p>Số căn phải; tiêu đề cột 11px; hàng 38px. Trạng thái được thể hiện bằng nhãn chữ và màu.</p><div class="sample-table panel"><table><caption class="sr-only">Báo cáo minh họa</caption><thead><tr><th scope="col">Tên báo cáo</th><th scope="col">Kỳ báo cáo</th><th scope="col">Trạng thái</th><th scope="col" class="num">Số bản ghi</th></tr></thead><tbody><tr><td><strong>Tổng hợp nợ thuế</strong><small>Dữ liệu mô phỏng</small></td><td>Tháng 10/2026</td><td><span class="badge tone-warning">Chờ duyệt</span></td><td class="num">1.280</td></tr><tr class="is-selected"><td><strong>Theo dõi hoàn thuế</strong><small>Hàng đang chọn</small></td><td>Tháng 10/2026</td><td><span class="badge tone-positive">Đã duyệt</span></td><td class="num">248</td></tr><tr><td><strong>Đối chiếu hóa đơn</strong><small>Dữ liệu mô phỏng</small></td><td>Tháng 10/2026</td><td><span class="badge tone-critical">Cần xử lý</span></td><td class="num">36</td></tr></tbody></table></div><h3>Quy tắc sử dụng</h3><ul class="rule-list"><li>Desktop: nút và ô nhập cao tối thiểu 32px; ở màn ≤900px tăng lên 44px.</li><li>Vòng focus 2px xanh hành động; trên nền navy dùng trắng.</li><li>Giữ nguyên font Public Sans và token semantic khi tạo component mới.</li><li>Trong Figma, kéo instance từ Assets; sửa label và icon qua component properties.</li><li>Không dùng màu trạng thái cho số tiền hoặc số lượng chỉ để nhấn mạnh.</li></ul></section>
+<section id="icons"><h2>Icon</h2><p>20 icon SVG gốc từ tax-ops, nét 1.6px trên lưới 24px. Trong Figma, icon của Button có thể thay bằng instance swap.</p><div class="icon-grid"><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg><code>chevronDown</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><code>home</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5M8 16h3"/></svg><code>debt</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg><code>risk</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h12a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg><code>refund</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg><code>report</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg><code>data</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><code>clock</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 16H3L12 3Z"/><path d="M12 9v4M12 16.5v.1"/></svg><code>alert</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><code>check</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg><code>file</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><code>search</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v5h16v-5"/></svg><code>upload</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg><code>arrow</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><code>menu</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg><code>close</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 4v2"/></svg><code>users</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></svg><code>database</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M19 13v6H5V5h6"/></svg><code>external</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg><code>logout</code></div><div class="icon-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4.2"/><path d="m11 12 8.5-8.5M16.5 6.5 19 9M14 9l2.5 2.5"/></svg><code>key</code></div></div></section>
 </main><script>
 document.querySelectorAll('.demo-row button:not(:disabled)').forEach(b=>b.addEventListener('click',()=>{document.getElementById('feedback').textContent='Đã thử nút '+b.className.split('is-')[1]+'. Đây là mẫu giao diện.';}));
 document.querySelectorAll('.segmented button').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('button').forEach(n=>{n.classList.toggle('is-active',n===b);n.setAttribute('aria-pressed',String(n===b));});document.getElementById('segment-status').textContent='Đang minh họa: '+b.textContent;}));
