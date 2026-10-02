@@ -84,6 +84,8 @@ duyệt báo cáo.
 
 `npm run test:portal` kiểm tra đăng nhập, chuyển phân hệ, tải lại và đăng xuất cho cả sáu tài khoản.
 
+Bản GitHub Pages phải dựng bằng `npm run build:portal` ở thư mục gốc, với `VITE_BASE=/dashboard-NSNN/` (hoặc tên repository tương ứng). Bước build tạo `quan-ly/index.html` và `nsnn/dang-nhap/index.html`; không phụ thuộc vào định tuyến của Vite. Sau build, chạy `npm --prefix tax-ops run test:portal:static` từ thư mục gốc với cùng `VITE_BASE` để kiểm tra trên máy chủ tĩnh không có SPA fallback. Workflow Pages chạy kiểm tra này trước khi phát hành.
+
 `npm run build` chạy TypeScript strict và build production. `npm run acceptance`
 kiểm tra cả sáu workspace ở desktop 1440px và mobile 390px, bao gồm tràn trang,
 vùng chạm và lỗi JavaScript.
