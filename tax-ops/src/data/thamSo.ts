@@ -39,18 +39,19 @@ const tien = (d: number) => new Intl.NumberFormat("vi-VN").format(d) + " đồng
   gõ lại là mở đường cho bảng nói một đằng và hệ chạy một nẻo.
 */
 export const ruleItems: BusinessRule[] = [
-  { id: "r1", name: "Đơn vị tổ chức", value: "30 cơ quan thuế", effectiveFrom: "01/01/2026", document: "BRD mục 9.2 — YC-KD-03", scope: "Toàn ngành", status: "ACTIVE" },
+  { id: "r1", name: "Đơn vị tổ chức", value: "30 cơ quan thuế", effectiveFrom: null, document: "BRD mục 9.2 — YC-KD-03", scope: "Toàn ngành", status: "ACTIVE" },
   { id: "r2", name: "Trạng thái kiểm tra tại bàn", value: "5 trạng thái, giữ trạng thái cao nhất", effectiveFrom: "01/01/2026", document: "BRD mục 8.3 — BR-QL3-01", scope: "Kiểm tra tại bàn", status: "ACTIVE" },
   { id: "r3", name: "Trạng thái xác minh hóa đơn", value: "6 mã dùng, bỏ đã hủy và thay thế", effectiveFrom: "01/01/2026", document: "BRD mục 8.2 — BR-QL2-04", scope: "Xác minh hóa đơn", status: "ACTIVE" },
-  { id: "r4", name: "Phân tuổi nợ", value: "1–30 · 31–60 · 61–90 · 91–120 · 121–365 · trên 365 ngày", effectiveFrom: "01/01/2026", document: "BRD mục 8.1 — BR-QL1-01", scope: "Nợ và cưỡng chế", status: "ACTIVE" },
+  { id: "r4", name: "Phân tuổi nợ", value: "1–30 · 31–60 · 61–90 · 91–120 · 121–365 · trên 365 ngày", effectiveFrom: null, document: "BRD mục 8.1 — BR-QL1-01", scope: "Nợ và cưỡng chế", status: "ACTIVE" },
 
   /*
     Ba ngưỡng này trước đây để trạng thái "chờ văn bản" và "đang mâu thuẫn" vì
-    các file nguồn ghi khác nhau. BRD mục 9.4 nay chốt giá trị, nên chúng bật.
+    các file nguồn ghi khác nhau. BRD mục 9.4 ghi giá trị tham chiếu; thiết kế QL1+QL3 §4.2 vẫn yêu cầu
+    xác nhận ngưỡng cưỡng chế/tạm hoãn và ngày hiệu lực trước khi áp dụng thật.
   */
-  { id: "r5", name: "Ngưỡng cưỡng chế", value: `Trên ${NGUONG.cuongCheNgay} ngày và trên ${tien(NGUONG.cuongCheTien)}`, effectiveFrom: "01/10/2026", document: "BRD mục 9.4 — YC-QT-02", scope: "Nợ và cưỡng chế", status: "ACTIVE" },
-  { id: "r6", name: "Ngưỡng tạm hoãn xuất cảnh", value: `Trên ${NGUONG.thxcNgay} ngày và trên ${tien(NGUONG.thxcTien)}`, effectiveFrom: "01/10/2026", document: "BRD mục 9.4 — YC-QT-02", scope: "Nợ và cưỡng chế", status: "ACTIVE" },
-  { id: "r7", name: "Ngưỡng tăng nợ khả năng thu", value: `Từ ${tien(NGUONG.tangNoKNT)}`, effectiveFrom: "01/10/2026", document: "BRD mục 9.4 — YC-QT-02", scope: "Nợ và cưỡng chế", status: "ACTIVE" },
+  { id: "r5", name: "Ngưỡng cưỡng chế", value: `Trên ${NGUONG.cuongCheNgay} ngày và trên ${tien(NGUONG.cuongCheTien)}`, effectiveFrom: null, document: "BRD mục 9.4 — YC-QT-02", scope: "Nợ và cưỡng chế", status: "PENDING" },
+  { id: "r6", name: "Ngưỡng tạm hoãn xuất cảnh", value: `Trên ${NGUONG.thxcNgay} ngày và trên ${tien(NGUONG.thxcTien)}`, effectiveFrom: null, document: "BRD mục 9.4 — YC-QT-02", scope: "Nợ và cưỡng chế", status: "PENDING" },
+  { id: "r7", name: "Ngưỡng tăng nợ khả năng thu", value: `Từ ${tien(NGUONG.tangNoKNT)}`, effectiveFrom: null, document: "BRD mục 9.4 — YC-QT-02", scope: "Nợ và cưỡng chế", status: "ACTIVE" },
   { id: "r8", name: "Ngưỡng nộp thừa gửi rà soát", value: `Trên ${tien(NGUONG.nopThua)}`, effectiveFrom: "01/10/2026", document: "BRD mục 9.4 — YC-QT-02", scope: "Kê khai và nộp thừa", status: "ACTIVE" },
   { id: "r9", name: "Ngưỡng hệ số K", value: `${NGUONG.heSoK} · ngành dịch vụ ${NGUONG.heSoKDichVu}`, effectiveFrom: "01/10/2026", document: "BRD mục 9.4 — YC-QT-02", scope: "Cảnh báo rủi ro", status: "ACTIVE" },
 

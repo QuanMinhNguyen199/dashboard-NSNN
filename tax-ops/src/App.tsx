@@ -2,20 +2,16 @@ import { useEffect, useState } from "react";
 import { NSNN_LINK, Shell } from "@/components/Shell";
 import { NAV, navCho } from "@/components/nav";
 import { TaxLogo } from "@/components/TaxLogo";
-import { ImportDialog } from "@/components/ImportDialog";
-import { Batches } from "@/features/Batches";
-import { Mapping } from "@/features/Mapping";
-import { Rules } from "@/features/Rules";
 import { GiamSat } from "@/features/GiamSat";
 import { Debt } from "@/features/Debt";
-import { Reports } from "@/features/Reports";
-import { Runs } from "@/features/Runs";
 import { Risk } from "@/features/Risk";
 import { Workbench } from "@/features/Workbench";
+import { TinhTrangDuLieu } from "@/features/TinhTrangDuLieu";
 import type { ViewId } from "@/domain/types";
 import { ActionProvider } from "@/state/ActionContext";
 import { DuLieuThatProvider } from "@/state/DuLieuThatContext";
 import { BoLocProvider } from "@/components/BoLoc";
+import { DuyetProvider } from "@/state/DuyetContext";
 import { LoginScreen } from "@/auth/LoginScreen";
 import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAuth";
 
@@ -26,14 +22,13 @@ const views: ViewId[] = NAV.map((item) => item.id);
 
 function readView(): ViewId {
   const value = new URLSearchParams(window.location.search).get("view");
+  if (value === "reports") return readDemoSession()?.phong === "QL3" ? "risk" : "debt";
   return views.includes(value as ViewId) ? value as ViewId : "workbench";
 }
 
 export function App() {
   const [view, setViewState] = useState<ViewId>(readView);
   const [user, setUser] = useState<DemoUser | null>(readDemoSession);
-  const [nhapMo, setNhapMo] = useState(false);
-  const [taoBaoCaoMo, setTaoBaoCaoMo] = useState(false);
   const setView = (next: ViewId) => {
     if (next === view) return;
     const query = new URLSearchParams(window.location.search);
@@ -41,13 +36,6 @@ export function App() {
     window.history.pushState({}, "", `${window.location.pathname}?${query}`);
     setViewState(next);
     window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  };
-
-  /* Mở màn Báo cáo VÀ yêu cầu nó bật form tạo. Cờ được màn Báo cáo trả lại
-     ngay sau khi dùng, nên bấm lại lần nữa vẫn mở được form. */
-  const openReports = () => {
-    setView("reports");
-    setTaoBaoCaoMo(true);
   };
 
   /*
@@ -75,13 +63,16 @@ export function App() {
       document.title = "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { workbench: "Trang công việc", debt: "Báo cáo nợ", risk: "Kiểm tra tại bàn", reports: "Báo cáo", runs: "Lượt chạy dữ liệu", batches: "Lô dữ liệu", mapping: "Ánh xạ quản lý", rules: "Quy tắc nghiệp vụ", giamsat: "Giám sát dữ liệu" };
+    const title: Record<ViewId, string> = { workbench: "Công việc theo kỳ", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
   const login = (next: DemoUser) => {
     writeDemoSession(next);
     setUser(next);
+    if (new URLSearchParams(window.location.search).get("view") === "reports") {
+      setViewState(next.phong === "QL3" ? "risk" : "debt");
+    }
   };
   const logout = () => {
     writeDemoSession(null);
@@ -105,22 +96,15 @@ export function App() {
 
   const moDuoc = duoc.some((item) => item.id === view) ? view : duoc[0].id;
 
-  return <DuLieuThatProvider><ActionProvider><BoLocProvider>
-    <Shell view={moDuoc} user={user} onView={setView} onLogout={logout} onCreateReport={openReports} onImport={() => setNhapMo(true)}>
-    {moDuoc === "workbench" && <Workbench onNavigate={setView} vaiTro={user.vaiTro}/>}
-    {moDuoc === "debt" && <Debt onNavigate={setView}/>}
-    {moDuoc === "risk" && <Risk/>}
-        {moDuoc === "reports" && <Reports actor={user.name} owner={user.unit} vaiTro={user.vaiTro} moTao={taoBaoCaoMo} onDaMoTao={() => setTaoBaoCaoMo(false)}/>}
-    {moDuoc === "runs" && <Runs/>}
-    {moDuoc === "batches" && <Batches/>}
-    {moDuoc === "mapping" && <Mapping/>}
-    {moDuoc === "rules" && <Rules/>}
+  return <DuLieuThatProvider><ActionProvider><BoLocProvider><DuyetProvider user={user}>
+    <Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
+    {moDuoc === "workbench" && <Workbench onNavigate={setView} vaiTro={user.vaiTro} phong={user.phong}/>}
+    {moDuoc === "debt" && <Debt actor={user.name} vaiTro={user.vaiTro}/>}
+    {moDuoc === "risk" && <Risk actor={user.name} vaiTro={user.vaiTro}/>}
+    {moDuoc === "tinhtrang" && <TinhTrangDuLieu vaiTro={user.vaiTro}/>}
     {moDuoc === "giamsat" && <GiamSat/>}
     </Shell>
-    {/* Hộp thoại nhập nằm NGOÀI Shell vì nút gọi nó có mặt trên mọi màn; dựng
-        nó trong từng màn thì mỗi lần đổi màn là một lần dựng lại. */}
-    <ImportDialog open={nhapMo} onClose={() => setNhapMo(false)}/>
-  </BoLocProvider></ActionProvider></DuLieuThatProvider>;
+  </DuyetProvider></BoLocProvider></ActionProvider></DuLieuThatProvider>;
 }
 
 /*

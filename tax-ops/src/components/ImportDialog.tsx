@@ -51,8 +51,8 @@ export function ImportDialog({ open, onClose }: { open: boolean; onClose: () => 
     if (!event.shiftKey && document.activeElement === cuoi) { event.preventDefault(); dau?.focus(); }
   }}>
     <form onSubmit={nhap} className="report-form">
-      <h2 id="import-title">Nhập dữ liệu</h2>
-      <p>Nhận bản kết xuất từ TMS, TTR, ứng dụng HĐĐT, ứng dụng xác minh hóa đơn hoặc tổng đài Viettel. Nộp được cả file nén của nhiều đơn vị trong một kỳ.</p>
+      <h2 id="import-title">Tải tay (dự phòng)</h2>
+      <p>Dùng khi hệ thống chưa kéo được nguồn về. Nhận bản kết xuất từ TMS, TTR, ứng dụng hóa đơn điện tử, ứng dụng xác minh hóa đơn hoặc tổng đài. Nộp được cả file nén gồm nhiều đơn vị của cùng một kỳ.</p>
 
 
       {/* Ô chọn tệp gốc của trình duyệt in nhãn theo ngôn ngữ trình duyệt
@@ -60,10 +60,10 @@ export function ImportDialog({ open, onClose }: { open: boolean; onClose: () => 
           toàn tiếng Việt thì đó là hai chữ lạc; nên ô gốc bị ẩn khỏi cả luồng
           Tab lẫn cây trợ năng, còn nút tiếng Việt bên dưới là control thật. */}
       <div className="file-field">
-        <span id="file-field-label">Tệp nộp <small>Excel, CSV hoặc ZIP</small></span>
+        <span id="file-field-label">File kết xuất <small>Excel, CSV hoặc ZIP</small></span>
         <div className="file-pick">
-          <Button kind="secondary" type="button" icon="file" aria-describedby="file-field-label" onClick={() => file.current?.click()}>Chọn tệp</Button>
-          <span>{ten.length ? `${ten.length} tệp đã chọn` : "Chưa chọn tệp nào"}</span>
+          <Button kind="secondary" type="button" icon="file" aria-describedby="file-field-label" onClick={() => file.current?.click()}>Chọn file</Button>
+          <span>{ten.length ? `Đã chọn ${ten.length} file` : "Chưa chọn file nào"}</span>
         </div>
         <input ref={file} className="sr-only" type="file" multiple accept={DINH_DANG} tabIndex={-1} aria-hidden="true"
           onChange={(e) => { setTen([...(e.target.files ?? [])].map((f) => f.name)); setLoi(""); }}/>

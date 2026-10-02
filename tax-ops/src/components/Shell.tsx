@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Button, Icon, useRongToiThieu } from "@/components/ui";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { Icon, useRongToiThieu } from "@/components/ui";
+import { QL1NavigationProvider, QL1SidebarItems } from "@/components/QL1Navigation";
 import { TaxLogo } from "@/components/TaxLogo";
 import type { ViewId } from "@/domain/types";
 import { NAV, NHAN_VAI, NHOM, navCho } from "@/components/nav";
@@ -19,7 +20,7 @@ export const NSNN_LINK = (() => {
   return url.href;
 })();
 
-export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId) => void; onLogout: () => void; onCreateReport: () => void; onImport: () => void; children: ReactNode }) {
+export function Shell({ view, user, onView, onLogout, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId) => void; onLogout: () => void; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -70,7 +71,10 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
         if (!muc.length) return null;
         return <div className="nav-section" role="group" aria-label={nhan} key={nhom}>
           <span className="nav-group" aria-hidden="true">{nhan}</span>
-          {muc.map((item) => <NavItem key={item.id} item={item} active={view === item.id} onView={onView}/>)}
+          {muc.map((item) => <Fragment key={item.id}>
+            <NavItem item={item} active={view === item.id} onView={onView}/>
+            {item.id === "debt" && <QL1SidebarItems visible={view === "debt" && user.phong === "QL1"} onNavigate={() => setMenuOpen(false)}/>}
+          </Fragment>)}
         </div>;
       })}
     </nav>
@@ -88,25 +92,22 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
   const chan = menuOpen ? ({ inert: "" } as Record<string, string>) : {};
 
   /*
-    Hai hành động này thuộc về HỆ THỐNG chứ không thuộc một màn.
+    Măng sét không còn nút cấp hệ thống nào.
 
-    Trước đây mỗi màn nghiệp vụ tự dựng nút riêng — "Tạo báo cáo tuần" ở Nợ,
-    "Tạo báo cáo tháng 9" ở Kiểm tra, "Tạo báo cáo kỳ này" ở Hoàn thuế — ba
-    nhãn cho cùng một việc, và kỳ báo cáo bị đóng cứng vào nhãn nút trong khi
-    người dùng chọn kỳ ở trong hộp thoại. Gộp về một nút "Tạo báo cáo" đứng cố
-    định một chỗ thì nó luôn ở đó dù đang mở màn nào, và kỳ do hộp thoại hỏi.
+    "Tạo báo cáo" đi cùng màn Báo cáo đã gỡ: luồng duyệt nay chạy trên chính
+    phân hệ, và bản nháp của kỳ do hệ sinh tự động chứ không do người bấm tạo
+    — mục 3 bản thiết kế vẽ đúng thế ("Hệ thống kéo + xử lý tự động → Sinh báo
+    cáo mẫu bản nháp").
 
-    Chỉ cán bộ thấy hai nút này: lãnh đạo Thuế duyệt báo cáo chứ không lập, và
-    cũng không phải người nộp dữ liệu đầu vào.
+    "Nhập dữ liệu" chuyển vào màn Tình trạng dữ liệu. G12 ghi "Tải tay chỉ là
+    dự phòng… nút chỉ hiện khi nguồn thiếu", mà măng sét thì hiện ở mọi màn và
+    mọi lúc — đặt nó ở đó là nói ngược lại điều tài liệu dặn.
   */
-  const hanhDongChung = user.vaiTro === "CV" && <>
-    <Button kind="secondary" icon="upload" onClick={onImport}>Nhập dữ liệu</Button>
-    <Button id="global-create-report" kind="primary" icon="report" onClick={onCreateReport}>Tạo báo cáo</Button>
-  </>;
+  const hanhDongChung = null;
 
-  return <div className="ops-app">
-    {/* Điều hướng có 8 mục cộng nút đăng xuất, nên không có lối tắt thì mỗi lần
-        đổi màn là chín lần Tab trước khi chạm nội dung. */}
+  return <QL1NavigationProvider><div className="ops-app">
+    {/* Điều hướng cộng nút đăng xuất đứng trước nội dung, nên không có lối tắt
+        thì mỗi lần đổi màn là mấy lần Tab trước khi chạm nội dung. */}
     <a className="skip-link" href="#workspace">Bỏ qua điều hướng, tới nội dung</a>
     <aside className="sidebar" {...chan}>{nav}</aside>
     <header className="topbar" {...chan}>
@@ -126,7 +127,7 @@ export function Shell({ view, user, onView, onLogout, onCreateReport, onImport, 
       {duoc.length > 5 && <button type="button" className={duoc.slice(5).some((i) => i.id === view) ? "is-active" : undefined} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>}
     </nav>
     {menuOpen && <div className="nav-scrim" onClick={() => setMenuOpen(false)}><aside ref={drawerRef} className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Điều hướng nghiệp vụ" onKeyDown={onDrawerKeyDown} onClick={(event) => event.stopPropagation()}><button ref={closeRef} type="button" className="drawer-close" onClick={() => setMenuOpen(false)} aria-label="Đóng điều hướng"><Icon name="close"/></button>{nav}</aside></div>}
-  </div>;
+  </div></QL1NavigationProvider>;
 }
 
 function NavItem({ item, active, onView }: { item: (typeof NAV)[number]; active: boolean; onView: (view: ViewId) => void }) {

@@ -11,14 +11,14 @@ Audience: cán bộ xử lý nghiệp vụ ngồi cả ca làm trên màn 1366�
 
 Unresolved: chưa có dữ liệu thật để đo mật độ hàng tối ưu; chưa chốt có đưa bàn phím tắt vào bản này không.
 
-## Direction contract — 29/09/2026
+## Direction contract — 02/10/2026
 
-User selected: trắng–xám ấm, đỏ/vàng theo logo Thuế được cung cấp. User explicitly requests visible borders, edges and shadows. This replaces the previous navy/no-border/no-shadow direction.
+User selected: dùng chung bảng màu của Dashboard Thu NSNN cho Quản lý Thuế. Giữ logo Thuế hiện hữu, nhưng không dùng đỏ/vàng logo làm màu hành động hoặc màu giao diện. User explicitly requests visible borders, edges and shadows. This replaces the previous navy/no-border/no-shadow direction and the red/gold palette selected on 29/09.
 
 Operate: prioritize scanable work lists, source status and selectable records. Keep all eight modules and existing role routing.
 
-Visual contract: light sidebar, white panels on neutral gray, 1px panel boundaries and restrained two-layer shadows. Logo-derived red marks selected navigation and primary actions; gold is reserved for identity. Neutral KPI values; semantic status color stays in labels. Outline icons share 1.6px strokes; remove repeated warning icons from task rows.
+Visual contract: navy institutional chrome, white panels on blue-gray canvas, 1px panel boundaries and restrained two-layer shadows. NSNN brand blue marks selected navigation and primary actions; its blue scale represents data. Neutral KPI values; semantic status color stays in labels. Outline icons share 1.6px strokes; remove repeated warning icons from task rows.
 
-Interaction: hover lift only on actionable rows and buttons. Outer panels and read-only values remain still. Preserve keyboard focus, mobile drawer, 44px touch targets and reduced-motion support.
+Interaction: hover lift only on actionable rows and buttons. Outer panels and read-only values remain still. QL1's seven report sections are a nested submenu beneath the active QL1 module in the sidebar and mobile drawer, replacing the horizontal segmented selector; shared period/unit filters stay in place. Preserve keyboard focus, mobile drawer, 44px touch targets and reduced-motion support.
 
 Validation: eight desktop/mobile screens pass acceptance; see DESIGN.md for exact colors, radii and typography.

@@ -11,7 +11,7 @@ import { lechDong, lechNgayChot, type NguonDuLieu } from "@/data/nguonDuLieu";
 
   Màn này tồn tại để trả lời đúng một câu: "số trên báo cáo lấy từ đâu ra".
   Vì thế cột đáng chú ý nhất không phải tên nguồn mà là CHÊNH LỆCH DÒNG — nguồn
-  nào có dòng vào kho ít hơn dòng nguồn thì mọi con số dẫn xuất từ nó đều thiếu.
+  nào có chênh lệch cần đối chiếu nhật ký xử lý trước khi kết luận thiếu số liệu.
 */
 export function DuLieuGoc({ nguon, ngayBaoCao }: { nguon: NguonDuLieu[]; ngayBaoCao: string }) {
   const notify = useAction();
@@ -25,27 +25,27 @@ export function DuLieuGoc({ nguon, ngayBaoCao }: { nguon: NguonDuLieu[]; ngayBao
       mốc ngày cho cùng một kỳ mà không chỗ nào giải thích.
     */}
     {lechNgay.length > 0 && <div className="notice warning">
-      <strong>Các nguồn không cùng một ngày chốt</strong>
+      <strong>Nguồn dữ liệu khác ngày chốt báo cáo</strong>
       <span>
-        Báo cáo ghi kỳ chốt {ngayBaoCao}, nhưng nguồn dùng cho bảng tổng hợp chốt ngày {lechNgay.join(" và ")}.
-        Số trên báo cáo vì thế không phải ảnh chụp của một thời điểm duy nhất. Cần phòng nghiệp vụ xác nhận mốc nào là mốc đúng.
+        Ngày chốt báo cáo: {ngayBaoCao}. Một số nguồn dữ liệu hiện tại chốt ngày {lechNgay.join(" và ")}.
+        Cần xác nhận ngày chốt trước khi sử dụng số liệu.
       </span>
     </div>}
 
     {coLechDong.length > 0 && <div className="notice critical">
-      <strong>{coLechDong.length} nguồn có số dòng vào kho ít hơn số dòng nguồn</strong>
+      <strong>{coLechDong.length} nguồn có chênh lệch số dòng</strong>
       <span>
-        Thiếu {integer(coLechDong.reduce((t, n) => t + lechDong(n), 0))} dòng. Mọi chỉ tiêu tính từ các nguồn này đều thiếu tương ứng,
-        nên phải xử lý trước khi chốt số kỳ.
+        Tổng chênh lệch: {integer(coLechDong.reduce((t, n) => t + Math.abs(lechDong(n)), 0))} dòng.
+        Đối chiếu nhật ký xử lý để xác định dòng đã loại, dòng trùng hoặc dữ liệu còn thiếu trước khi chốt báo cáo.
       </span>
     </div>}
 
-    <Panel title="Danh sách nguồn của kỳ" subtitle="Đường dẫn thư mục không hiển thị trên màn hình theo quy định bảo mật dữ liệu.">
+    <Panel title="Nguồn dữ liệu của kỳ">
       <TableWrap label="danh sách nguồn dữ liệu của kỳ"><table className="nguon-table">
         <colgroup><col style={{ width: 300 }}/><col style={{ width: 200 }}/><col style={{ width: 112 }}/><col style={{ width: 116 }}/><col style={{ width: 128 }}/><col style={{ width: 118 }}/><col style={{ width: 118 }}/><col style={{ width: 112 }}/><col style={{ width: 120 }}/></colgroup>
         <thead><tr>
-          <th scope="col">Nguồn</th><th scope="col">Hệ thống / chức năng</th><th scope="col">Cách lấy</th>
-          <th scope="col">Ngày chốt</th><th scope="col">Thời điểm kéo</th>
+          <th scope="col">Nguồn</th><th scope="col">Hệ thống / chức năng</th><th scope="col">Cách thu thập</th>
+          <th scope="col">Ngày chốt</th><th scope="col">Thời điểm thu thập</th>
           <th scope="col" className="num">Dòng nguồn</th><th scope="col" className="num">Dòng vào kho</th>
           <th scope="col" className="num">Chênh lệch</th><th scope="col">Dùng cho</th>
         </tr></thead>
@@ -54,19 +54,19 @@ export function DuLieuGoc({ nguon, ngayBaoCao }: { nguon: NguonDuLieu[]; ngayBao
           return <tr key={n.id}>
             <th scope="row"><span>{n.ten}</span></th>
             <td>{n.heThong}</td>
-            <td>{n.cach === "TU_DONG" ? <Badge tone="positive">Tự động</Badge> : <Badge tone="warning">Tải tay</Badge>}</td>
+            <td>{n.cach === "TU_DONG" ? <Badge tone="positive">Tự động</Badge> : <Badge tone="warning">Thủ công</Badge>}</td>
             <td>{n.ngayChot}</td>
             <td>{n.thoiDiemKeo}</td>
             <td className="num">{integer(n.dongNguon)}</td>
             <td className="num">{integer(n.dongVaoKho)}</td>
-            <td className="num">{lech === 0 ? <span className="cell-empty">—</span> : <span className="delta is-up">▲ {integer(lech)}</span>}</td>
+            <td className="num">{lech === 0 ? <span className="cell-empty">—</span> : <span className="quality-note">{integer(lech)}</span>}</td>
             <td><small>{n.dungCho}</small></td>
           </tr>;
         })}</tbody>
       </table></TableWrap>
       <footer className="table-footer">
-        <p className="bang-ghi-chu">Bảng thô của từng nguồn chỉ đọc, không sửa được trong hệ.</p>
-        <Button kind="secondary" onClick={() => notify("Bản demo chưa dựng bảng thô. Bản thật mở bảng chỉ đọc, phân trang, tìm theo mã số thuế.")}>Xem bảng thô</Button>
+        <p className="bang-ghi-chu">Dữ liệu gốc chỉ để xem và đối chiếu. Hệ thống không sửa được dữ liệu trên hệ thống nguồn.</p>
+        <Button kind="secondary" onClick={() => notify("Chức năng xem từng dòng dữ liệu gốc chưa có trong bản mô phỏng.")}>Xem dữ liệu gốc</Button>
       </footer>
     </Panel>
   </>;

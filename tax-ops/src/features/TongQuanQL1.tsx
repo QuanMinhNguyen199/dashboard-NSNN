@@ -114,7 +114,7 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
   const maxTang = xepHang[0]?.muc ?? 0;
 
   return <>
-    <Panel title="Nợ đến ngày báo cáo" subtitle={`Chốt ${ky.ngayChot} · số lấy từ mục Tình hình nợ`}>
+    <Panel title="Nợ đến ngày báo cáo" subtitle={`Chốt số ngày ${ky.ngayChot} · lấy từ mục So sánh nợ`}>
       <div className="the-luoi">
         <TheNo nhan="Tổng cộng (B)" khoa="B" o={no}/>
         <TheNo nhan="Nợ khả năng thu (C)" khoa="C" o={no}/>
@@ -124,7 +124,7 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
     </Panel>
 
     <div className="tq-doi">
-      <Panel title="Cưỡng chế nợ thuế" subtitle="Số lấy từ mục Cưỡng chế nợ thuế">
+      <Panel title="Cưỡng chế nợ thuế">
         <div className="the-luoi is-hep">
           <div className="the-so"><span className="the-nhan">Phải cưỡng chế</span><strong className="the-gia">{integer(cc.phaiN)}</strong><span className="the-dvt">người nộp thuế</span></div>
           <div className="the-so"><span className="the-nhan">Đã cưỡng chế</span><strong className="the-gia">{integer(cc.daN)}</strong><span className="the-dvt">người nộp thuế</span></div>
@@ -132,7 +132,7 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
         </div>
       </Panel>
 
-      <Panel title="Tạm hoãn xuất cảnh" subtitle="Số lấy từ mục Tạm hoãn XC và mục trạng thái 06">
+      <Panel title="Tạm hoãn xuất cảnh">
         <div className="the-luoi is-hep">
           <div className="the-so"><span className="the-nhan">Tỷ lệ đã tạm hoãn</span><strong className="the-gia">{pt(th.phaiT ? th.daT / th.phaiT : 0)}</strong><span className="the-dvt">theo số tiền</span></div>
           <div className="the-so"><span className="the-nhan">Chưa tạm hoãn</span><strong className="the-gia">{integer(th.chuaN)}</strong><span className="the-dvt">người nộp thuế</span></div>
@@ -142,13 +142,13 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
     </div>
 
     <div className="tq-doi">
-      <Panel title="Đơn vị tăng nợ khả năng thu nhiều nhất" subtitle="So với đầu năm · tối đa 10 đơn vị">
+      <Panel title="Đơn vị tăng nợ khả năng thu nhiều nhất" subtitle="So với đầu năm · xếp 10 đơn vị đầu">
         {xepHang.length === 0
-          ? <div className="empty-state"><strong>Không đơn vị nào trong phạm vi có nợ khả năng thu tăng so với đầu năm</strong></div>
+          ? <div className="empty-state"><strong>Trong phạm vi đang lọc, không đơn vị nào có nợ khả năng thu tăng so với đầu năm</strong></div>
           : <ol className="xep-hang">{xepHang.map((x) => <Thanh key={x.dv.id} ten={rutGon(x.dv.ten)} x={x.muc} max={maxTang} phu={`${money(x.muc)} tr.đ`}/>)}</ol>}
       </Panel>
 
-      <Panel title="Đơn vị có tỷ lệ cưỡng chế thấp nhất" subtitle="Tỷ lệ đã cưỡng chế theo số tiền · tối đa 10 đơn vị">
+      <Panel title="Đơn vị có tỷ lệ cưỡng chế thấp nhất" subtitle="Tỷ lệ đã cưỡng chế theo số tiền · xếp 10 đơn vị cuối">
         <ol className="xep-hang">{tyLe.map((x) => <Thanh key={x.dv.id} ten={rutGon(x.dv.ten)} x={x.cc} max={1} phu={`${pt(x.cc)}${x.th === null ? "" : ` · THXC ${pt(x.th)}`}`}/>)}</ol>
       </Panel>
     </div>

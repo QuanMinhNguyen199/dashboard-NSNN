@@ -21,21 +21,21 @@ tại bằng `sessionStorage`; đây không phải cơ chế xác thực product
 
 | Tài khoản | Phòng | Vai trò | Màn mở được |
 |---|---|---|---|
-| `cv.ql1` | QL1 | Chuyên viên | Công việc · Báo cáo nợ · Báo cáo · 4 màn dữ liệu |
-| `tp.ql1` | QL1 | Trưởng phòng | Như trên, trừ bản nháp của chuyên viên |
-| `cv.ql3` | QL3 | Chuyên viên | Công việc · Kiểm tra tại bàn · Báo cáo · 4 màn dữ liệu |
-| `tp.ql3` | QL3 | Trưởng phòng | Như trên, trừ bản nháp của chuyên viên |
+| `cv.ql1` | QL1 | Chuyên viên | Công việc theo kỳ · Báo cáo công tác nợ · Tình trạng dữ liệu |
+| `tp.ql1` | QL1 | Trưởng phòng | Như trên; duyệt, trả lại hoặc chốt số của kỳ |
+| `cv.ql3` | QL3 | Chuyên viên | Công việc theo kỳ · Kiểm tra tại bàn · Tình trạng dữ liệu |
+| `tp.ql3` | QL3 | Trưởng phòng | Như trên; duyệt, trả lại hoặc chốt số của kỳ |
 | `vanhanh.dulieu` | — | Vận hành dữ liệu | Chỉ Giám sát dữ liệu |
 | `lanhdao.nhanuoc` | — | Lãnh đạo nhà nước | Không vào Web quản lý; chuyển sang Dashboard NSNN |
 
 Phân hệ của phòng khác bị **ẩn hẳn** khỏi điều hướng và không mở được bằng
 deep link — mục bảo mật S1 ghi "ẩn hẳn menu, không chỉ làm mờ".
 
-Trong tab Báo cáo, luồng đi ba bước của mục G10: **Nháp → Chờ duyệt → Đã chốt**.
+Luồng duyệt chạy ngay trên phân hệ của phòng, ba bước theo mục G10: **Nháp → Chờ duyệt → Đã chốt**.
 Chuyên viên gửi duyệt; trưởng phòng chốt số hoặc trả lại bản nháp. Trạng thái
-thứ tư "Đang vướng" nằm ngoài chuỗi: nó nói dữ liệu chưa đạt nên chưa gửi được.
+thứ tư "Chưa đủ dữ liệu" nằm ngoài chuỗi: nó nói dữ liệu chưa đạt nên chưa gửi được.
 Một trạng thái có một nhãn và một màu với mọi vai; chỉ **phạm vi** khác nhau,
-vì trưởng phòng không thấy bản nháp. Hai tài khoản cùng phòng dùng chung báo
+theo ma trận quyền của từng phòng. Hai tài khoản cùng phòng dùng chung báo
 cáo mô phỏng trong cùng tab trình duyệt để trình diễn luồng bàn giao. Những
 thao tác này chưa chạy dữ liệu nguồn và chưa phải quy trình phê duyệt thật.
 
@@ -58,25 +58,18 @@ npm run build:tax-ops
 npm run acceptance:tax-ops -- http://127.0.0.1:5174
 ```
 
-## Workspace
+## Các màn hình hiện hành
 
-- `Trang công việc`: việc đến hạn, báo cáo chờ duyệt và tình trạng nguồn.
-- `Nợ và cưỡng chế`: tuổi nợ và danh sách cần xử lý.
-- `Kiểm tra và rủi ro`: kiểm tra tại bàn, tờ khai–hóa đơn và xác minh hóa đơn.
-- `Hoàn thuế và hỗ trợ`: đối chiếu hồ sơ hoàn và báo cáo tổng đài.
-- `Báo cáo`: tạo, duyệt, phát hành và quản lý phiên bản.
-- `Dữ liệu và danh mục`: lô dữ liệu, ngoại lệ ánh xạ và quy tắc nghiệp vụ.
+- `Công việc theo kỳ`: công việc và tình trạng nguồn dữ liệu.
+- `Báo cáo công tác nợ` (QL1): tổng quan, so sánh nợ, cưỡng chế, tạm hoãn xuất cảnh, quy tắc và nguồn, dữ liệu gốc. Gửi duyệt và chốt số ngay tại báo cáo.
+- `Kiểm tra tại bàn` (QL3): tổng quan, kết quả tổng hợp, dữ liệu gốc, đối chiếu báo cáo thủ công.
+- `Tình trạng dữ liệu`: lịch sử thu thập, lô dữ liệu, xác định đơn vị quản lý NNT.
+- `Giám sát dữ liệu`: dành cho vận hành dữ liệu.
 
-Deep link dùng tham số `view`, ví dụ:
+Các đường dẫn: `/?view=workbench`, `/?view=debt`, `/?view=risk`, `/?view=tinhtrang`, `/?view=giamsat`.
+Đường dẫn cũ `/?view=reports` mở báo cáo trong phân hệ tương ứng; không có màn tạo báo cáo riêng.
 
-```text
-/?view=workbench
-/?view=debt
-/?view=risk
-/?view=refund
-/?view=reports
-/?view=data
-```
+Căn cứ từng tab và danh mục tài liệu đã kiểm tra: [Đối chiếu giao diện với general_data](DOI-CHIEU-GENERAL-DATA.md).
 
 ## Trạng thái dữ liệu
 
@@ -87,6 +80,12 @@ duyệt báo cáo.
 
 ## Kiểm tra
 
+`npm run dev` trong thư mục này chạy portal gồm cả tác nghiệp và Dashboard NSNN trên cùng cổng 5174. Chọn tài khoản Lãnh đạo nhà nước để mở dashboard. `npm run dev:standalone` chỉ dành cho phát triển riêng tác nghiệp và cần dashboard chạy riêng.
+
+`npm run test:portal` kiểm tra đăng nhập, chuyển phân hệ, tải lại và đăng xuất cho cả sáu tài khoản.
+
 `npm run build` chạy TypeScript strict và build production. `npm run acceptance`
 kiểm tra cả sáu workspace ở desktop 1440px và mobile 390px, bao gồm tràn trang,
 vùng chạm và lỗi JavaScript.
+
+`npm run test:reports` kiểm tra tải báo cáo Excel/Word thực tế và quyền chuyên viên/trưởng phòng trên dev server. QL1 xuất cả bộ Excel 9 sheet, từng bảng/danh sách đang lọc và Word tổng hợp; QL3 xuất Excel 17 cột. Các tệp dùng dữ liệu mô phỏng, chưa phải văn bản chính thức đã phê duyệt.

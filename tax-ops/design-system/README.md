@@ -25,8 +25,8 @@ Plugin dừng nếu phát hiện trang/collection Tax Ops đã tồn tại, trá
 
 | Nhóm | Nội dung |
 | --- | --- |
-| Foundations | 38 màu semantic lấy trực tiếp từ CSS; alias tới màu primitive; spacing; radius; kích thước control; 11 text styles; 3 effect styles |
-| Icons | 20 SVG gốc từ `Icon` trong `src/components/ui.tsx` |
+| Foundations | 58 màu và semantic tokens lấy trực tiếp từ CSS; alias tới màu primitive; spacing; radius; kích thước control; 11 text styles; 3 effect styles |
+| Icons | 21 SVG gốc từ `Icon` trong `src/components/ui.tsx` |
 | Button | Primary / Secondary / Quiet × Default / Hover / Focus / Disabled; hai bộ Desktop 32px và Touch 44px; Label, Show icon, Icon swap |
 | Field | Text / Search / Select; Default / Focus / Disabled; Text có Error; label và value chỉnh sửa được |
 | Navigation | Default / Hover / Selected, trên nền chrome |
@@ -39,7 +39,7 @@ Các main component nằm bên phải khung mẫu trong từng khu vực. Khung 
 ## Nguồn chuẩn và khác biệt đã phát hiện
 
 - Nguồn chuẩn là **CSS hiện tại** và các component React trong `tax-ops/src`, theo yêu cầu dựa trên prototype tax-ops.
-- Figma cũ có Button dùng Inter 16px, màu nâu, cao 36–38px; prototype hiện tại dùng Public Sans 13px, đỏ `#9a1c2a`, cao 32px. Bộ mới tách riêng để không thay đổi những màn người dùng đã dựng.
+- Figma cũ có Button dùng Inter 16px, màu nâu, cao 36–38px; prototype hiện tại dùng Public Sans 13px, xanh NSNN `#1657a8`, cao 32px. Bộ mới tách riêng để không thay đổi những màn người dùng đã dựng.
 - `DESIGN.md` có front matter còn ghi system font và badge có nền chung, trong khi code hiện tại dùng Public Sans và chỉ badge critical có nền. Bộ này theo code.
 - Sidecar `.impeccable/design.json` đã cũ so với `DESIGN.md`; không được dùng để sinh token và không được sửa trong tác vụ này.
 - Không thêm dark theme, component nghiệp vụ mới, hay luồng phê duyệt không tồn tại trong prototype.

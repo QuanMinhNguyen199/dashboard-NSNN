@@ -6,11 +6,14 @@
   có dữ liệu trong `general_data` nhưng CHƯA có thiết kế, nên không gắn vào
   điều hướng lần này. Mã của chúng giữ nguyên, không xoá.
 */
+/*
+  Năm màn, theo §1.2 bản thiết kế. Xem ghi chú đầu `components/nav.ts` về bốn
+  màn đã gỡ và nội dung của chúng chuyển đi đâu.
+*/
 export type ViewId =
   | "workbench"
   | "debt" | "risk"
-  | "reports"
-  | "runs" | "batches" | "mapping" | "rules"
+  | "tinhtrang"
   | "giamsat";
 /*
   Phòng nghiệp vụ và VAI TRÒ tách làm hai trục, theo ma trận ở mục 3 bản thiết kế.
