@@ -8,6 +8,7 @@ await mkdir(review, { recursive: true });
 
 const base = new URL(`${(process.argv[2] ?? "http://localhost:5174").replace(/\/+$/, "")}/`);
 const dashboard = new URL("nsnn/", base);
+const management = new URL("quan-ly/", base);
 const browser = await puppeteer.launch({ channel: "chrome", headless: true });
 const page = await browser.newPage();
 const errors = [];
@@ -17,19 +18,28 @@ try {
   await page.goto(dashboard.href);
   await page.waitForSelector(".login-page");
   for (const role of ["cv.ql1", "tp.ql1", "cv.ql3", "tp.ql3", "vanhanh.dulieu", "lanhdao.nhanuoc"]) {
+    const state = role === "lanhdao.nhanuoc";
+    await page.goto(state ? dashboard.href : management.href);
+    await page.waitForSelector(".login-page");
+    assert.equal(await page.$$eval(".demo-accounts-list button", buttons => buttons.length), state ? 1 : 5);
+    if (state) {
+      await page.screenshot({ path: fileURLToPath(new URL("portal-login-nsnn-desktop.png", review)) });
+      await page.setViewport({ width: 390, height: 844 });
+      await page.screenshot({ path: fileURLToPath(new URL("portal-login-nsnn-mobile.png", review)) });
+      await page.setViewport({ width: 1440, height: 900 });
+    }
     await page.evaluate(label => [...document.querySelectorAll(".demo-accounts-list button")]
       .find(button => button.querySelector("code")?.textContent === label).click(), role);
-    const state = role === "lanhdao.nhanuoc";
     const selector = state ? ".dheader" : ".workspace";
     await page.waitForSelector(selector);
     assert.equal(new URL(page.url()).origin, base.origin);
-    assert.equal(new URL(page.url()).pathname, state ? dashboard.pathname : base.pathname);
+    assert.equal(new URL(page.url()).pathname, state ? dashboard.pathname : management.pathname);
     await page.reload();
     await page.waitForSelector(selector);
     if (!state) {
       await page.goto(dashboard.href);
       await page.waitForSelector(".workspace");
-      assert.equal(new URL(page.url()).pathname, base.pathname);
+      assert.equal(new URL(page.url()).pathname, management.pathname);
     } else {
       await page.goto(base.href);
       await page.waitForSelector(".dheader");
@@ -45,6 +55,7 @@ try {
     }
     else await page.click(".sidebar .logout-button");
     await page.waitForSelector(".login-page");
+    assert.equal(new URL(page.url()).pathname, state ? `${dashboard.pathname}dang-nhap/` : management.pathname);
     await page.goto(dashboard.href);
     await page.waitForSelector(".login-page");
     console.log(`PASS ${role}: same origin, redirect, reload, direct URL, logout`);

@@ -80,7 +80,7 @@ duyệt báo cáo.
 
 ## Kiểm tra
 
-`npm run dev` trong thư mục này chạy portal gồm cả tác nghiệp và Dashboard NSNN trên cùng cổng 5174. Chọn tài khoản Lãnh đạo nhà nước để mở dashboard. `npm run dev:standalone` chỉ dành cho phát triển riêng tác nghiệp và cần dashboard chạy riêng.
+`npm run dev` trong thư mục này chạy hai URL trên cùng cổng 5174: web quản lý tại `/quan-ly/`, Dashboard NSNN tại `/nsnn/`. Mỗi hệ có màn đăng nhập riêng và chỉ hiện tài khoản phù hợp. Dashboard chưa đăng nhập sẽ mở `/nsnn/dang-nhap/`; đăng xuất trở về màn đăng nhập của hệ đang dùng. URL gốc chuyển về web quản lý. `npm run dev:standalone` chỉ dành cho phát triển riêng tác nghiệp và cần dashboard chạy riêng.
 
 `npm run test:portal` kiểm tra đăng nhập, chuyển phân hệ, tải lại và đăng xuất cho cả sáu tài khoản.
 
