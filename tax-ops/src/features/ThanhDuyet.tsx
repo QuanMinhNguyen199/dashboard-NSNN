@@ -35,6 +35,25 @@ const SAC: Record<ReportStatus, Tone> = {
   DRAFT: "neutral", REVIEWED: "warning", APPROVED: "positive", AMEND: "info", BLOCKED: "critical",
 };
 
+/*
+  Việc đang nằm ở ai — hiện khi người đang xem KHÔNG có nút nào.
+
+  Trưởng phòng mở màn lúc kỳ còn ở Nháp thì thấy một thanh trạng thái và không
+  một nút nào, không lời giải thích. Nhìn thế rất giống chức năng duyệt bị
+  thiếu, trong khi thật ra việc chưa tới lượt họ. Một màn không có gì để làm
+  phải nói ra vì sao, nếu không người dùng sẽ đi tìm lỗi ở chỗ không có lỗi.
+
+  Câu này không phụ thuộc vai người xem: nó nói việc đang ở đâu, nên đúng với
+  bất kỳ ai đang nhìn.
+*/
+const CHO_AI: Record<ReportStatus, string> = {
+  DRAFT: "Việc đang ở chuyên viên lập báo cáo. Chưa có gì để duyệt.",
+  REVIEWED: "Việc đang ở người duyệt của phòng.",
+  APPROVED: "Vòng duyệt của kỳ này đã xong.",
+  AMEND: "Việc đang ở chuyên viên lập báo cáo, cho bản thay thế.",
+  BLOCKED: "Việc đang ở khâu dữ liệu, chưa tới vòng duyệt.",
+};
+
 const DIEN_GIAI: Record<ReportStatus, string> = {
   DRAFT: "Chuyên viên đang hoàn thiện số liệu. Chưa gửi rà soát.",
   REVIEWED: "Chuyên viên đã xác nhận số liệu, đang chờ duyệt.",
@@ -52,6 +71,7 @@ export function ThanhDuyet({ khoa, nhanKy }: { khoa: string; nhanKy: string }) {
   const [loi, setLoi] = useState("");
 
   const b = layBanGhi(khoa);
+  const coViec = duoc(khoa, "send") || duoc(khoa, "approve") || duoc(khoa, "return") || duoc(khoa, "amend");
   const moHop = (v: "return" | "amend") => { setViec(v); setLyDo(""); setLoi(""); hopLyDo.current?.showModal(); };
 
   const CHU = viec === "return"
@@ -87,6 +107,7 @@ export function ThanhDuyet({ khoa, nhanKy }: { khoa: string; nhanKy: string }) {
     </div>
 
     <div className="duyet-nut">
+      {!coViec && <span className="duyet-cho">{CHO_AI[b.trangThai]}</span>}
       {duoc(khoa, "return") && <Button onClick={() => moHop("return")}>Trả lại</Button>}
       {duoc(khoa, "amend") && <Button onClick={() => moHop("amend")}>Mở bản điều chỉnh</Button>}
       {duoc(khoa, "send") && <Button kind="primary" onClick={() => { if (!guiRaSoat(khoa)) { notify("Không gửi rà soát được ở trạng thái này."); return; } notify(`Đã gửi ${nhanKy} đi rà soát. Số liệu khóa lại cho tới khi có kết quả.`); }}>Gửi rà soát</Button>}

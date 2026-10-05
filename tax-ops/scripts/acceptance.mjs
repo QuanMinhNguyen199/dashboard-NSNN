@@ -394,6 +394,31 @@ const nutCV = await nutDuyet();
 if (!nutCV.includes("Gửi rà soát") || nutCV.includes("Duyệt") || nutCV.includes("Trả lại")) {
   throw new Error(`Quyền chuyên viên trên thanh duyệt sai: ${JSON.stringify(nutCV)}`);
 }
+
+/*
+  Vai KHÔNG có việc ở trạng thái hiện tại phải được nói vì sao.
+
+  Trưởng phòng mở màn lúc kỳ còn ở Nháp thì không có nút nào; một thanh trống
+  trơn đọc ra rất giống chức năng duyệt bị thiếu, và người dùng sẽ đi tìm lỗi
+  ở chỗ không có lỗi. Đây là lỗi đã xảy ra thật, nên nó có chốt kiểm riêng.
+*/
+const khongCoViec = async (ma, mongDoi) => {
+  await dangXuat(page);
+  await dangNhap(page, ma);
+  await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+  await page.waitForSelector(".thanh-duyet");
+  const d = await page.evaluate(() => ({
+    nut: [...document.querySelectorAll(".duyet-nut button")].length,
+    cho: document.querySelector(".duyet-cho")?.textContent?.trim() ?? null,
+  }));
+  if (d.nut !== 0) throw new Error(`${ma} đáng lẽ chưa có thao tác nào ở bước này, nhưng thấy ${d.nut} nút.`);
+  if (!d.cho || !d.cho.includes(mongDoi)) throw new Error(`${ma} không được nói việc đang ở ai: ${JSON.stringify(d.cho)}`);
+};
+await khongCoViec("tp.ql1", "chuyên viên lập báo cáo");
+await dangXuat(page);
+await dangNhap(page, "cv.ql1");
+await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.waitForSelector(".thanh-duyet");
 await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi rà soát").click());
 if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Gửi duyệt nhưng trạng thái kỳ chưa đổi.");
 await page.screenshot({ path: ".impeccable/review/duyet-cv-da-gui.png" });

@@ -1186,3 +1186,8 @@ tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
 /* Cột "Dùng cho" của bảng nguồn liệt kê nhiều mục nên nó XUỐNG DÒNG; các cột
    còn lại là ngày, số và mã nên giữ một dòng. */
 .nguon-table td:last-child { white-space: normal; }
+
+/* Câu "việc đang ở ai" đứng đúng chỗ của các nút, vì nó thay cho chúng. Mực
+   phụ và không viền: nó là lời giải thích, không phải một thứ bấm được. */
+.duyet-cho { color: var(--ink-2); font-size: 12.5px; line-height: 1.45; text-align: right; }
+@media (max-width: 900px) { .duyet-cho { text-align: left; } }
