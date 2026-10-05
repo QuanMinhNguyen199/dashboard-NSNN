@@ -68,7 +68,6 @@ export function DuLieuGoc({ nguon, ngayBaoCao }: { nguon: NguonDuLieu[]; ngayBao
         })}</tbody>
       </table></TableWrap>
       <footer className="table-footer">
-        <p className="bang-ghi-chu">Dữ liệu gốc chỉ để xem và đối chiếu. Hệ thống không sửa được dữ liệu trên hệ thống nguồn.</p>
         <Button kind="secondary" onClick={() => notify("Chức năng xem từng dòng dữ liệu gốc chưa có trong bản mô phỏng.")}>Xem dữ liệu gốc</Button>
       </footer>
     </Panel>

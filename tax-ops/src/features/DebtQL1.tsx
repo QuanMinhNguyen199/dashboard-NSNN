@@ -13,6 +13,7 @@ import {
 } from "@/data/ql1";
 import { NGUONG, ruleItems, trieu, hienTyLe } from "@/data/thamSo";
 import { ThanhDuyet } from "@/features/ThanhDuyet";
+import { XemTruocBaoCao } from "@/features/XemTruocBaoCao";
 import { NGUON_QL1 } from "@/data/nguonDuLieu";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { TongQuanQL1 } from "@/features/TongQuanQL1";
@@ -425,7 +426,7 @@ export function DebtQL1({ actor }: { actor: string }) {
       <ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất báo cáo Word</ExportButton>
     </>}/>
 
-    <ThanhDuyet khoa={`QL1|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}/>
+    <ThanhDuyet khoa={`QL1|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} xemTruoc={<XemTruocBaoCao sheets={ql1Workbook(ky, chon.donVi)} meta={reportMeta} ten="Báo cáo đánh giá công tác nợ · Phòng QL1"/>}/>
 
     {/* Thanh lọc đứng TRÊN cụm tab vì nó áp cho cả bốn mục. */}
     <BoLocChung

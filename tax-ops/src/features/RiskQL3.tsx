@@ -13,6 +13,7 @@ import {
 } from "@/data/ql3";
 import { NGUON_QL3 } from "@/data/nguonDuLieu";
 import { ThanhDuyet } from "@/features/ThanhDuyet";
+import { XemTruocBaoCao } from "@/features/XemTruocBaoCao";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 
 /* Bốn tab của §5.2 bản thiết kế. */
@@ -142,7 +143,7 @@ export function RiskQL3({ actor }: { actor: string }) {
   return <div className="page-stack ql1-page">
     <PageIntro title="Kiểm tra tại bàn · Phòng QL3" actions={<ExportButton onExport={exportReport}>Xuất báo cáo Excel</ExportButton>}/>
 
-    <ThanhDuyet khoa={`QL3|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}/>
+    <ThanhDuyet khoa={`QL3|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} xemTruoc={<XemTruocBaoCao sheets={ql3Workbook(ky, trongPhamVi)} meta={reportMeta} ten="Kết quả kiểm tra tại bàn · Phòng QL3"/>}/>
 
     {/*
       Kỳ của QL3 là LŨY KẾ từ 01/01, không phải tuần hay tháng rời như QL1,

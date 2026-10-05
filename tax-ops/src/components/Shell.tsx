@@ -4,6 +4,7 @@ import { QL1NavigationProvider, QL1SidebarItems } from "@/components/QL1Navigati
 import { TaxLogo } from "@/components/TaxLogo";
 import type { ViewId } from "@/domain/types";
 import { NAV, NHAN_VAI, NHOM, navCho } from "@/components/nav";
+import { rutGonTenDonVi } from "@/data/danhMuc";
 import type { DemoUser } from "@/auth/demoAuth";
 
 
@@ -79,7 +80,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
       })}
     </nav>
     <div className="sidebar-user">
-      <strong>{user.name}</strong><small>{NHAN_VAI[user.vaiTro]}{user.phong ? ` ${user.phong}` : ""} – {user.unit}</small>
+      <strong>{user.name}</strong><small title={`${NHAN_VAI[user.vaiTro]}${user.phong ? ` ${user.phong}` : ""} – ${user.unit}`}>{NHAN_VAI[user.vaiTro]}{user.phong ? ` ${user.phong}` : ""} · {rutGonTenDonVi(user.unit)}</small>
       <button className="logout-button" type="button" onClick={onLogout}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
     </div>
   </>;

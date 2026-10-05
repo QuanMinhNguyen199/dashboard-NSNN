@@ -106,3 +106,16 @@ export const PHONG_VP: PhongVP[] = [
 ];
 
 export const phongVPCua = (phanHe: "QL1" | "QL3") => PHONG_VP.filter((p) => p.coO.includes(phanHe));
+
+/**
+ * Tên đơn vị rút gọn để HIỂN THỊ ở chỗ hẹp (thanh bên, ô bảng).
+ *
+ * "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1" dài 39 ký tự, ở thanh bên rộng
+ * 228px nó xuống ba dòng và đẩy khối người dùng cao thêm 32px. Đây là rút gọn
+ * cách hiển thị, không phải đổi dữ liệu — nơi gọi vẫn giữ tên đầy đủ trong
+ * `title` để tra được bằng chuột và bằng trình đọc màn hình.
+ */
+export const rutGonTenDonVi = (ten: string) => ten
+  .replace(/^Phòng Quản lý,\s*Hỗ trợ doanh nghiệp số\s*/i, "Phòng QLHT DN ")
+  .replace(/^Phòng Quản lý các khoản thu từ đất$/i, "Phòng QL thu từ đất")
+  .replace(/^Phòng Thuế cá nhân, hộ kinh doanh và thu khác$/i, "Phòng Thuế cá nhân – HKD");
