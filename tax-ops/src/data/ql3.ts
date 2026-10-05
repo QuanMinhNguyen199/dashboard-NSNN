@@ -7,6 +7,8 @@
   liệu giả.
 */
 
+import { DAY_TCS, nhanTCS, phongVPCua } from "@/data/danhMuc";
+
 export interface DonViQL3 {
   id: string;
   ten: string;
@@ -24,15 +26,17 @@ export interface DonViQL3 {
   trong khi file QL1 chỉ ghi "Thuế cơ sở 1". Dùng chung một danh mục cho cả
   hai phân hệ sẽ sai ở một trong hai.
 */
-const MA_DIA_BAN = [
-  "HKI", "BDI", "HBT", "DDA", "CGI", "TXU", "THO", "NTL", "BTL", "DAN",
-  "LBI", "GLA", "HMA", "TTR", "HDO", "STA", "BVI", "PTH", "MDU", "CMY",
-  "TOA", "QOA", "SOT", "UHO", "MLI",
-];
+/*
+  Danh mục đọc từ `data/danhMuc.ts`, không khai lại ở đây.
 
+  Bản khai tay trước đó sai mã viết tắt của Thuế cơ sở 18 đến 25 so với Phụ
+  lục A của FRS, và gán mỗi Thuế cơ sở đúng một mã địa bàn — trong khi năm đơn
+  vị (TCS 18, 19, 20, 21, 22) gồm hai địa bàn. Số liệu kéo theo mã địa bàn gom
+  vào một mã duy nhất sẽ hụt mất một nửa mà không có dấu hiệu nào.
+*/
 export const DON_VI_QL3: DonViQL3[] = [
-  ...Array.from({ length: 5 }, (_, i) => ({ id: `P${i + 1}`, ten: `Phòng QLHTDN ${i + 1}`, nhom: "VP" as const })),
-  ...MA_DIA_BAN.map((ma, i) => ({ id: `T${i + 1}`, ten: `Thuế cơ sở ${String(i + 1).padStart(2, "0")} (${ma})`, nhom: "TCS" as const })),
+  ...phongVPCua("QL3").map((p) => ({ id: p.id, ten: `Phòng QLHTDN ${p.thuTu}`, nhom: "VP" as const })),
+  ...DAY_TCS.map((so) => ({ id: `T${so}`, ten: nhanTCS(so), nhom: "TCS" as const })),
 ];
 
 export interface KyQL3 {

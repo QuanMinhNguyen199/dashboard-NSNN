@@ -1,5 +1,4 @@
 import { RiskQL3 } from "@/features/RiskQL3";
-import type { VaiTro } from "@/domain/types";
 
 /*
   Màn của phòng QL3.
@@ -15,6 +14,6 @@ import type { VaiTro } from "@/domain/types";
   loại sai mà việc tách tài khoản theo phòng đang cố tránh. Phòng QLDN2 chưa
   có phân hệ trong bản này, nên ba nội dung ấy chờ ở đó.
 */
-export function Risk({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
-  return <RiskQL3 actor={actor} vaiTro={vaiTro}/>;
+export function Risk({ actor }: { actor: string }) {
+  return <RiskQL3 actor={actor}/>;
 }

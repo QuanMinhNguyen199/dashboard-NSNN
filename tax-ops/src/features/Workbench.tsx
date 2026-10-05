@@ -24,7 +24,7 @@ export function Workbench({ onNavigate, vaiTro, phong }: { onNavigate: (view: Vi
   });
   const reportView = phong === "QL1" ? "debt" : "risk";
   const periods = phong === "QL1" ? KY_QL1 : KY_QL3;
-  const pending = periods.filter(k => layBanGhi(`${phong}|${k.id}`).trangThai === "PENDING").length;
+  const pending = periods.filter(k => layBanGhi(`${phong}|${k.id}`).trangThai === "REVIEWED").length;
   const chuaDu = sourceBatches.filter((batch) => batch.status === "MISSING");
 
   return <div className="page-stack workbench-page">

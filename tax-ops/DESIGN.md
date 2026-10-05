@@ -556,6 +556,25 @@ Trả lại **bắt buộc có lý do** — sơ đồ luồng ghi thẳng "Trả
 
 **The Total Row Does Not Need A Colour Rule.** Dòng tổng và dòng khối nổi bằng cân nặng chữ và vạch trên, không bằng mảng màu. Tô đặc `--brand` rồi đặt chữ trắng lên làm mất vai trò hành động của màu xanh; mũi tên tăng giảm trong chính hai dòng ấy vẫn mang màu nghĩa. Giữ dòng tổng trung tính để so sánh số liệu và hướng biến động không bị nhiễu.
 
+### Theo FRS
+**The Catalogue Has One Home Rule.** FRS mở đầu mục 4 bằng câu quyết định: "Mọi phân hệ khác đọc danh mục từ đây, không tự giữ bản riêng." `data/danhMuc.ts` giữ 31 mã cơ quan thuế của Phụ lục A, và hai phân hệ dựng danh sách đơn vị từ đó. Trước đó mỗi phân hệ tự khai, và hai bản đã lệch nhau thật: mã viết tắt của Thuế cơ sở 18 đến 25 ở QL3 sai so với Phụ lục A.
+
+Lỗi nặng hơn mà bản khai tay giấu đi: **năm Thuế cơ sở gồm HAI mã địa bàn** — TCS18 là Sóc Sơn (0117) cộng Mê Linh (0127), tương tự TCS19, 20, 21, 22. Danh mục một đơn vị một mã thì báo cáo kéo theo mã địa bàn gom hụt đúng một nửa, và không có dấu hiệu nào trên màn để ai đó nhận ra.
+
+**The Lifecycle Has Four States, Not Three.** BC-06 và bảng 13.2 của FRS: **Nháp → Đã rà soát → Đã duyệt**, cộng **Điều chỉnh** mở từ bản đã duyệt kèm lý do. Bản demo trước dừng ở ba trạng thái và coi "đã chốt" là điểm cuối. Báo cáo thuế bị sửa sau khi đã trình là chuyện có thật; không có đường ấy thì người dùng sẽ sửa ngoài hệ rồi gửi file tay, và hệ mất luôn dấu vết mà nó sinh ra để giữ.
+
+Bản điều chỉnh giữ `soBanDaDuyet` nên nó tự biết mình là bản thay thế, và thanh duyệt nói ra điều đó. Bản đã duyệt cũ vẫn tra cứu được cho tới khi bản mới được duyệt.
+
+Tên trạng thái lấy theo FRS chứ không theo bản thiết kế (G10 gọi "Chờ duyệt", "Đã chốt"). Hai tài liệu gọi hai tên cho cùng một bước là thứ phải dừng ở lúc triển khai, không mang vào giao diện.
+
+**The Author Does Not Approve Their Own Work Rule.** QR-03 của FRS: "người lập báo cáo không tự duyệt báo cáo của mình." Đây là luật phân nhiệm, không phải luật vai trò — một người kiêm hai vai vẫn không được duyệt bản chính mình gửi. Nên `canChangeApproval` so **tên người gửi**, không chỉ so vai; kiểm theo vai thôi thì ngày có người kiêm nhiệm là luật tự lặng lẽ mất hiệu lực.
+
+**The Ratio Rules Live In One Place.** BC-10: "tỷ lệ khi mẫu số = 0 → để trống", "tỷ lệ hiển thị 2 chữ số thập phân". Bốn màn trước đó mỗi màn một hàm `pt` riêng với một chữ số thập phân. Để trống chứ không phải 0%: mẫu số bằng 0 nghĩa là **không có gì** để tính tỷ lệ, còn 0% nghĩa là có việc phải làm mà chưa làm được gì — đơn vị đọc nhầm sẽ đi giải trình một con số không tồn tại.
+
+**MH-03 Answers What The Approval Bar Cannot.** Thanh duyệt ở đầu phân hệ chỉ nói về kỳ đang mở. QT-08 hỏi một câu khác: trong cả loạt kỳ, kỳ nào chưa ai chạy, kỳ nào đang nằm chờ ai, hạn là bao giờ. Vì thế bảng báo cáo × kỳ phân biệt **"Chưa chạy"** với **"Nháp"** — gộp hai thứ làm một thì mọi kỳ cũ đọc ra như đang có người làm dở.
+
+**The Selected Row Keeps Its Fill.** Mực phụ `--ink-3` đạt 5,05:1 trên nền trắng nhưng chỉ 4,07:1 trên nền hàng đang chọn. Cách sửa phía nền đòi làm nhạt nền tới mức chỉ còn 1,11:1 so với trắng — lúc đó hàng đang chọn không còn ra dáng đang chọn. Nên mực đổi, nền giữ: trong hàng đang chọn, `small` lùi lên `--ink-2` (6,04:1).
+
 ### Blocked State
 Dùng khi một màn **không có dữ liệu để trình bày** và chính lý do đó mới là nội dung. Thứ tự: kết luận một dòng, từng việc còn thiếu kèm con số đứng trước câu chữ, lối ra bằng một nút, rồi những điều kiện ĐÃ đạt lùi xuống cuối ở cỡ 12px màu `--ink-3`.
 

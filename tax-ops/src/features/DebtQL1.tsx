@@ -11,8 +11,7 @@ import {
   DON_VI_QL1, KY_QL1, KY_THEO_ID, NHAN_MOC, danhSachQL1, donViCuaTab, tongHopCuaTab,
   type BoNo, type DonViQL1, type HangQL1, type MocSoSanh, type OTongHop06, type OTongHopNo, type OTongHopXuLy, type TabQL1,
 } from "@/data/ql1";
-import type { VaiTro } from "@/domain/types";
-import { NGUONG, ruleItems, trieu } from "@/data/thamSo";
+import { NGUONG, ruleItems, trieu, hienTyLe } from "@/data/thamSo";
 import { ThanhDuyet } from "@/features/ThanhDuyet";
 import { NGUON_QL1 } from "@/data/nguonDuLieu";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
@@ -67,7 +66,9 @@ const RONG_STT = 46;
 const RONG_DV = 204;
 const RONG_O_TOI_THIEU = 118;
 
-const pt = (x: number) => Number.isFinite(x) ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(x * 100)}%` : "—";
+/* Tỷ lệ theo BC-10 của FRS: hai chữ số thập phân, mẫu số bằng 0 thì để trống.
+   Dùng chung `hienTyLe` để bốn màn không mỗi màn một cách làm tròn. */
+const pt = (x: number) => hienTyLe(Number.isFinite(x) ? x : null);
 
 /* ---------- mô tả cột ---------- */
 
@@ -89,7 +90,7 @@ interface CotDs { khoa: keyof HangQL1; nhan: string; kieu?: "tien" | "ma" | "ghi
   bề rộng đi theo đúng cột, dù mục nào bật.
 */
 const RONG: Partial<Record<keyof HangQL1, number>> = {
-  mst: 120, ten: 232, donVi: 188, maCQT: 96, chuong: 84, loaiNNT: 196, nhomXuLy: 190,
+  mst: 120, ten: 232, donVi: 212, maCQT: 96, chuong: 84, loaiNNT: 196, nhomXuLy: 190,
   noNgay: 150, noDauNam: 140, noThang: 150, noDanhGia: 160, tongDanhGia: 148, nguong: 104,
   tinhTrang: 164, bienPhap: 212, soQuyetDinh: 140, ngayThucHien: 124, ketLuan: 204, ghiChu: 196,
 };
@@ -270,7 +271,7 @@ function cong<O extends object>(bo: O[]): O {
 
 /* ---------- màn ---------- */
 
-export function DebtQL1({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
+export function DebtQL1({ actor }: { actor: string }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
@@ -386,7 +387,7 @@ export function DebtQL1({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
       <ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất báo cáo Word</ExportButton>
     </>}/>
 
-    <ThanhDuyet khoa={`QL1|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} actor={actor} vaiTro={vaiTro}/>
+    <ThanhDuyet khoa={`QL1|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}/>
 
     {/* Thanh lọc đứng TRÊN cụm tab vì nó áp cho cả bốn mục. */}
     <BoLocChung

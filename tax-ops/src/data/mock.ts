@@ -65,12 +65,12 @@ export const refundRows: RefundRow[] = [
 ];
 
 export const reportRuns: ReportRun[] = [
-  { id: "b1", name: "Kiểm tra tại bàn tuần 39", owner: "Phòng QL3", cycle: "WEEK", period: "22–27/09/2026", source: "TTR – Danh bạ TMS", status: "FINAL", updatedAt: "27/09 – 17:48" },
+  { id: "b1", name: "Kiểm tra tại bàn tuần 39", owner: "Phòng QL3", cycle: "WEEK", period: "22–27/09/2026", source: "TTR – Danh bạ TMS", status: "APPROVED", updatedAt: "27/09 – 17:48" },
   { id: "b2", name: "Tình hình nợ và cưỡng chế tuần 39", owner: "Phòng QL1", cycle: "WEEK", period: "22–27/09/2026", source: "TMS 9.4.16.1 – 2.2.7", status: "DRAFT", updatedAt: "27/09 – 16:35", qualityNote: "18 MST chưa ánh xạ" },
   { id: "b3", name: "Chênh lệch tờ khai – HĐĐT tháng 8", owner: "Phòng QL2", cycle: "MONTH", period: "Tháng 8/2026", source: "HĐĐT", status: "BLOCKED", updatedAt: "26/09 – 15:10", qualityNote: "Thiếu 26 file mua vào" },
   { id: "b4", name: "Hoàn thuế TNCN tháng 9", owner: "Phòng QL4", cycle: "MONTH", period: "Tháng 9/2026", source: "TMS 1.5.1 – 6.29.1", status: "DRAFT", updatedAt: "27/09 – 14:20", qualityNote: "7 hồ sơ vênh nguồn" },
-  { id: "b5", name: "Tổng đài hỗ trợ ngày 27/09", owner: "Phòng QL4", cycle: "WEEK", period: "27/09/2026", source: "Viettel", status: "PENDING", updatedAt: "27/09 – 18:06" },
-  { id: "b6", name: "Kết quả kiểm tra tại bàn tháng 8", owner: "Phòng QL3", cycle: "MONTH", period: "Tháng 8/2026", source: "TTR – Danh bạ TMS", status: "PENDING", updatedAt: "05/09 – 09:12" },
+  { id: "b5", name: "Tổng đài hỗ trợ ngày 27/09", owner: "Phòng QL4", cycle: "WEEK", period: "27/09/2026", source: "Viettel", status: "REVIEWED", updatedAt: "27/09 – 18:06" },
+  { id: "b6", name: "Kết quả kiểm tra tại bàn tháng 8", owner: "Phòng QL3", cycle: "MONTH", period: "Tháng 8/2026", source: "TTR – Danh bạ TMS", status: "REVIEWED", updatedAt: "05/09 – 09:12" },
 ];
 
 /*

@@ -12,6 +12,7 @@
 */
 
 import { NGUONG, trieu } from "@/data/thamSo";
+import { DAY_TCS, maCuaTCS, nhanTCS, phongVPCua } from "@/data/danhMuc";
 
 export interface DonViQL1 {
   id: string;
@@ -34,10 +35,16 @@ export interface DonViQL1 {
   việc hiển thị, không làm khóa.
 */
 export const DON_VI_QL1: DonViQL1[] = [
-  ...Array.from({ length: 5 }, (_, i) => ({ id: `P${i + 1}`, ten: `Phòng Quản lý, Hỗ trợ doanh nghiệp số ${i + 1}`, nhom: "VP" as const, ma: `VP0${i + 1}`, stt: i + 1 })),
-  { id: "HKD", ten: "Phòng Thuế cá nhân, hộ kinh doanh và thu khác", nhom: "VP", ma: "VP06", stt: 6 },
-  { id: "DAT", ten: "Phòng Quản lý các khoản thu từ đất", nhom: "VP", ma: "VP07", stt: 7 },
-  ...Array.from({ length: 25 }, (_, i) => ({ id: `T${i + 1}`, ten: `Thuế cơ sở ${i + 1}`, nhom: "TCS" as const, ma: `TCS${String(i + 1).padStart(2, "0")}`, stt: i + 8 })),
+  ...phongVPCua("QL1").map((p) => ({ id: p.id, ten: p.ten, nhom: "VP" as const, ma: p.ma, stt: p.thuTu })),
+  /* Mã đơn vị của Thuế cơ sở là các mã CQT nó gồm, nối bằng dấu cộng khi có
+     hai địa bàn — cột "Mã CQT" trên báo cáo phải khớp được với file kéo về. */
+  ...DAY_TCS.map((so) => ({
+    id: `T${so}`,
+    ten: nhanTCS(so),
+    nhom: "TCS" as const,
+    ma: maCuaTCS(so).map((c) => c.ma).join("+"),
+    stt: so + phongVPCua("QL1").length,
+  })),
 ];
 
 export const DON_VI_THEO_ID = Object.fromEntries(DON_VI_QL1.map((d) => [d.id, d]));

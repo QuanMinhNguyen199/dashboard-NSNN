@@ -14,20 +14,46 @@ import type { BusinessRule } from "@/domain/types";
   ("thay ngưỡng thì báo cáo thay đổi đúng mà không cần lập trình").
 */
 export const NGUONG = {
-  /** Cưỡng chế khi nợ quá hạn này VÀ vượt mức tiền dưới đây. */
+  /** P_CC_NGAY · P_CC_TIEN — cưỡng chế khi nợ quá hạn này VÀ vượt mức tiền. */
   cuongCheNgay: 90,
   cuongCheTien: 3_000_000,
-  /** Tạm hoãn xuất cảnh. */
+  /** P_XC_NGAY · P_XC_TIEN — tạm hoãn xuất cảnh, ngưỡng tiền áp cho doanh nghiệp. */
   thxcNgay: 120,
   thxcTien: 500_000_000,
-  /** Vào danh sách doanh nghiệp tăng nợ khả năng thu. */
+  /** P_TANGNO — vào danh sách doanh nghiệp tăng nợ khả năng thu. */
   tangNoKNT: 500_000_000,
-  /** Nộp thừa gửi đơn vị rà soát. */
+  /** P_THUA — nộp thừa gửi đơn vị rà soát. */
   nopThua: 1_000_000_000,
-  /** Hệ số K theo ngành. */
+  /** P_K_MACDINH · P_K_DICHVU — hệ số K theo ngành. */
   heSoK: 2,
   heSoKDichVu: 4,
+  /** P_DONGMST_TU — mốc bắt đầu tính đóng mã số thuế. */
+  dongMSTTu: "01/04/2026",
+  /** P_KTTB_NAM — kỳ kê khai dùng đếm doanh nghiệp trong kiểm tra tại bàn. */
+  kttbNamTruoc: 1,
+  /** P_TMS_MAXROW — số bản ghi tối đa mỗi lần kéo chức năng 1.5.1 của TMS. */
+  tmsMaxRow: 99_999,
+  /** P_LOGIN_SAI — số lần đăng nhập sai tối đa trước khi robot dừng, để không khóa tài khoản. */
+  loginSai: 2,
 } as const;
+
+/*
+  Quy tắc số BC-10 của FRS, gom về một chỗ vì ba màn đang mỗi màn một kiểu.
+
+  Hai câu quyết định: "tỷ lệ khi mẫu số = 0 → để trống" và "tỷ lệ hiển thị 2
+  chữ số thập phân". Để trống chứ không phải 0%: mẫu số bằng 0 nghĩa là KHÔNG
+  CÓ GÌ để tính tỷ lệ, còn 0% nghĩa là có việc phải làm mà chưa làm được gì —
+  hai câu khác hẳn nhau, và đơn vị đọc nhầm sẽ đi giải trình một con số không
+  tồn tại.
+*/
+export function tyLe(tu: number, mau: number): number | null {
+  return mau ? tu / mau : null;
+}
+
+export function hienTyLe(x: number | null): string {
+  if (x === null || !Number.isFinite(x)) return "—";
+  return `${new Intl.NumberFormat("vi-VN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(x * 100)}%`;
+}
 
 /** Đồng sang triệu đồng. Bảng tổng hợp nợ ghi bằng triệu, ngưỡng khai bằng đồng. */
 export const trieu = (dong: number) => dong / 1e6;
@@ -60,6 +86,13 @@ export const ruleItems: BusinessRule[] = [
     01/7/2026 không còn ngày kết thúc (BRD mục 8.1), nên quy tắc cũ dựa vào
     ngày kết thúc để xác định "còn hiệu lực" không áp được cho quyết định mới.
   */
+  { id: "r8b", name: "Mốc tính đóng mã số thuế", value: `Từ ${NGUONG.dongMSTTu}`, effectiveFrom: "01/04/2026", document: "FRS mục 4.1 — P_DONGMST_TU", scope: "Kê khai và nộp thừa", status: "ACTIVE" },
+  { id: "r8c", name: "Kỳ kê khai dùng đếm doanh nghiệp kiểm tra tại bàn", value: `Năm báo cáo − ${NGUONG.kttbNamTruoc}`, effectiveFrom: "01/01/2026", document: "FRS mục 4.1 — P_KTTB_NAM", scope: "Kiểm tra tại bàn", status: "ACTIVE" },
+  /* Hai tham số kỹ thuật của robot thu thập. Chúng ở chung bảng vì FRS xếp
+     chung, và vì khi robot dừng giữa chừng thì người nghiệp vụ cần biết ngưỡng
+     nào vừa chặn nó lại — không phải đi hỏi bộ phận tin học. */
+  { id: "r8d", name: "Số bản ghi tối đa mỗi lần kéo TMS 1.5.1", value: `${new Intl.NumberFormat("vi-VN").format(NGUONG.tmsMaxRow)} bản ghi`, effectiveFrom: "01/01/2026", document: "FRS mục 4.1 — P_TMS_MAXROW", scope: "Thu thập dữ liệu", status: "ACTIVE" },
+  { id: "r8e", name: "Số lần đăng nhập sai tối đa", value: `${NGUONG.loginSai} lần rồi dừng`, effectiveFrom: "01/01/2026", document: "FRS mục 4.1 — P_LOGIN_SAI", scope: "Thu thập dữ liệu", status: "ACTIVE" },
   { id: "r10", name: "Hiệu lực quyết định cưỡng chế", value: "Từ 01/07/2026 quyết định không còn ngày kết thúc", effectiveFrom: null, document: null, scope: "Nợ và cưỡng chế", status: "CONFLICT" },
   /* Q-03 vẫn chưa có câu trả lời — xem The Workflow rule trong DESIGN.md. */
   { id: "r11", name: "Lãnh đạo nhận báo cáo", value: "Chưa xác định cấp nhận và ký duyệt", effectiveFrom: null, document: null, scope: "Báo cáo", status: "PENDING" },

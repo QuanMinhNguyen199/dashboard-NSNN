@@ -6,13 +6,13 @@ import { useDuyet } from "@/state/DuyetContext";
 import { ql3Workbook, type ReportMeta } from "@/domain/reportExport";
 import { exportExcel } from "@/domain/reportFiles";
 import { useAction } from "@/state/ActionContext";
+import { hienTyLe } from "@/data/thamSo";
 import {
   DON_VI_QL3, KY_QL3, KY_QL3_THEO_ID, congQL3, danhGiaQL3,
   type DonViQL3, type ODanhGiaQL3,
 } from "@/data/ql3";
 import { NGUON_QL3 } from "@/data/nguonDuLieu";
 import { ThanhDuyet } from "@/features/ThanhDuyet";
-import type { VaiTro } from "@/domain/types";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 
 /* Bốn tab của §5.2 bản thiết kế. */
@@ -29,7 +29,9 @@ type TabQL3 = "tongquan" | "ketqua" | "nguon" | "doichieu";
   dòng tổng toàn ngành rồi hai khối.
 */
 
-const pt = (x: number) => Number.isFinite(x) && x >= 0 ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(x * 100)}%` : "—";
+/* Tỷ lệ theo BC-10 của FRS: hai chữ số thập phân, mẫu số bằng 0 thì để trống.
+   Dùng chung `hienTyLe` để bốn màn không mỗi màn một cách làm tròn. */
+const pt = (x: number) => hienTyLe(Number.isFinite(x) && x >= 0 ? x : null);
 
 function TyLe({ x, nguong = 1 }: { x: number; nguong?: number }) {
   const w = Math.max(0, Math.min(1, Number.isFinite(x) ? x / nguong : 0)) * 100;
@@ -86,7 +88,7 @@ const NHOM_COT = (thangKPI: string, nam: string): NhomCot[] => [
 
 const RONG_DV = 196;
 
-export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
+export function RiskQL3({ actor }: { actor: string }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
@@ -140,7 +142,7 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   return <div className="page-stack ql1-page">
     <PageIntro title="Kiểm tra tại bàn · Phòng QL3" actions={<ExportButton onExport={exportReport}>Xuất báo cáo Excel</ExportButton>}/>
 
-    <ThanhDuyet khoa={`QL3|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} actor={actor} vaiTro={vaiTro}/>
+    <ThanhDuyet khoa={`QL3|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}/>
 
     {/*
       Kỳ của QL3 là LŨY KẾ từ 01/01, không phải tuần hay tháng rời như QL1,
@@ -230,7 +232,7 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   </div>;
 }
 
-const pt2 = (x: number) => Number.isFinite(x) ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(x * 100)}%` : "—";
+const pt2 = pt;
 
 /*
   Tab Tổng quan của QL3 — §5.3.

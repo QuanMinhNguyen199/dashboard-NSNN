@@ -11,8 +11,8 @@ const base = (process.argv[2] ?? "http://127.0.0.1:5174").replace(/\/+$/, "");
   nhận danh sách theo TÀI KHOẢN, và kiểm cả hai chiều — màn phải mở được, và
   màn của phòng khác phải không mở được.
 */
-const MAN_QL1 = ["workbench", "debt", "tinhtrang"];
-const MAN_QL3 = ["workbench", "risk", "tinhtrang"];
+const MAN_QL1 = ["workbench", "debt", "theoky", "tinhtrang"];
+const MAN_QL3 = ["workbench", "risk", "theoky", "tinhtrang"];
 
 const browser = await puppeteer.launch({ channel: "chrome", headless: "new", args: ["--no-sandbox"] });
 const page = await browser.newPage();
@@ -315,6 +315,20 @@ const giuQuaTab = await page.$eval(".bo-loc-nut span", (el) => el.textContent.tr
 if (giuQuaTab !== tenDonVi) throw new Error(`Đổi mục làm mất lựa chọn đơn vị: "${giuQuaTab}" ≠ "${tenDonVi}".`);
 await page.evaluate(() => [...document.querySelectorAll(".bo-loc-chung button")].find((b) => b.textContent?.trim() === "Đặt lại")?.click());
 
+/* MH-03 — QT-08: bảng báo cáo × kỳ, có trạng thái và hạn cho MỌI kỳ. */
+await page.goto(`${base}/?view=theoky`, { waitUntil: "networkidle0" });
+await page.waitForSelector(".ky-table");
+const theoKy = await page.evaluate(() => ({
+  soDong: document.querySelectorAll(".ky-table tbody tr").length,
+  coHan: [...document.querySelectorAll(".ky-table thead th")].some((th) => th.textContent?.trim() === "Hạn"),
+  nhan: [...document.querySelectorAll(".ky-table tbody .badge")].map((b) => b.textContent?.trim()),
+}));
+if (theoKy.soDong !== 7) throw new Error(`Bảng báo cáo theo kỳ của QL1 có ${theoKy.soDong} kỳ, đáng lẽ 7.`);
+if (!theoKy.coHan) throw new Error("Bảng báo cáo theo kỳ thiếu cột Hạn.");
+/* Kỳ chưa ai đụng vào phải là "Chưa chạy", không phải "Nháp" — gộp hai thứ
+   làm một thì cả loạt kỳ cũ đọc ra như đang có người làm dở. */
+if (!theoKy.nhan.includes("Chưa chạy")) throw new Error(`Bảng theo kỳ không phân biệt kỳ chưa chạy: ${JSON.stringify(theoKy.nhan)}`);
+
 await chanCheoPhong("risk", "Kiểm tra tại bàn");
 await chanCheoPhong("giamsat", "Giám sát dữ liệu");
 
@@ -377,20 +391,20 @@ await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 if (await trangThaiDuyet() !== "Nháp") throw new Error("Kỳ chưa gửi phải ở trạng thái Nháp.");
 const nutCV = await nutDuyet();
-if (!nutCV.includes("Gửi trưởng phòng duyệt") || nutCV.includes("Duyệt và chốt số") || nutCV.includes("Trả lại")) {
+if (!nutCV.includes("Gửi rà soát") || nutCV.includes("Duyệt") || nutCV.includes("Trả lại")) {
   throw new Error(`Quyền chuyên viên trên thanh duyệt sai: ${JSON.stringify(nutCV)}`);
 }
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi trưởng phòng duyệt").click());
-if (await trangThaiDuyet() !== "Chờ duyệt") throw new Error("Gửi duyệt nhưng trạng thái kỳ chưa đổi.");
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi rà soát").click());
+if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Gửi duyệt nhưng trạng thái kỳ chưa đổi.");
 await page.screenshot({ path: ".impeccable/review/duyet-cv-da-gui.png" });
 await dangXuat(page);
 
 await dangNhap(page, "tp.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
-if (await trangThaiDuyet() !== "Chờ duyệt") throw new Error("Trưởng phòng không thấy kỳ chuyên viên đã gửi.");
+if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Trưởng phòng không thấy kỳ chuyên viên đã gửi.");
 const nutTP = await nutDuyet();
-if (!nutTP.includes("Duyệt và chốt số") || !nutTP.includes("Trả lại") || nutTP.includes("Gửi trưởng phòng duyệt")) {
+if (!nutTP.includes("Duyệt") || !nutTP.includes("Trả lại") || nutTP.includes("Gửi rà soát")) {
   throw new Error(`Quyền trưởng phòng trên thanh duyệt sai: ${JSON.stringify(nutTP)}`);
 }
 
@@ -406,6 +420,16 @@ await page.waitForFunction(() => !document.querySelector("dialog[open]"));
 if (await trangThaiDuyet() !== "Nháp") throw new Error("Trả lại nhưng trạng thái kỳ chưa về Nháp.");
 await dangXuat(page);
 
+/*
+  QR-03 (Phải): "người lập báo cáo không tự duyệt báo cáo của mình". Trưởng
+  phòng vừa trả lại thì không phải người gửi, nên bước này kiểm phía còn lại —
+  không có vai nào thấy cả hai nút Gửi rà soát và Duyệt cùng lúc.
+*/
+const nutChongCheo = await nutDuyet();
+if (nutChongCheo.includes("Gửi rà soát") && nutChongCheo.includes("Duyệt")) {
+  throw new Error(`Một vai thấy cả nút gửi lẫn nút duyệt: ${JSON.stringify(nutChongCheo)}`);
+}
+
 /* Chuyên viên phải ĐỌC ĐƯỢC lý do bị trả lại, nếu không vòng duyệt thứ hai
    hỏng y như vòng thứ nhất. */
 await dangNhap(page, "cv.ql1");
@@ -413,16 +437,35 @@ await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 const thayLyDo = await page.evaluate((l) => (document.querySelector(".duyet-tralai")?.textContent ?? "").includes(l), lyDo);
 if (!thayLyDo) throw new Error("Chuyên viên không thấy lý do trưởng phòng trả lại.");
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi trưởng phòng duyệt").click());
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi rà soát").click());
 await dangXuat(page);
 
 await dangNhap(page, "tp.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Duyệt và chốt số").click());
-if (await trangThaiDuyet() !== "Đã chốt") throw new Error("Chốt số nhưng trạng thái kỳ chưa đổi.");
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Duyệt").click());
+if (await trangThaiDuyet() !== "Đã duyệt") throw new Error("Chốt số nhưng trạng thái kỳ chưa đổi.");
 /* Đã chốt là điểm cuối: không còn thao tác nào đẩy nó đi tiếp được nữa. */
-if ((await nutDuyet()).length) throw new Error("Kỳ đã chốt vẫn còn nút đẩy trạng thái.");
+/*
+  "Đã duyệt" KHÔNG phải điểm cuối — BC-06 và bảng 13.2 của FRS mở đường tạo bản
+  Điều chỉnh từ đó. Nút còn lại phải đúng MỘT nút ấy, và nó phải đòi lý do.
+*/
+const nutSauDuyet = await nutDuyet();
+if (JSON.stringify(nutSauDuyet) !== JSON.stringify(["Mở bản điều chỉnh"])) {
+  throw new Error(`Sau khi duyệt chỉ nên còn nút mở bản điều chỉnh: ${JSON.stringify(nutSauDuyet)}`);
+}
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Mở bản điều chỉnh").click());
+await page.waitForSelector("dialog[open] input[name='lyDoTraLai']");
+await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
+if (await page.$("dialog[open] .quality-note") === null) throw new Error("Mở điều chỉnh không có lý do mà hệ vẫn cho qua.");
+await page.type("dialog[open] input[name='lyDoTraLai']", "Nguồn 9.9.4.15 chốt lại ngày 03");
+await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
+await page.waitForFunction(() => !document.querySelector("dialog[open]"));
+if (await trangThaiDuyet() !== "Đang điều chỉnh") throw new Error("Mở điều chỉnh nhưng trạng thái kỳ chưa đổi.");
+/* Bản điều chỉnh tự nhận mình là bản thay thế, để người đọc biết bản đã trình
+   trước đó sắp bị thay. */
+const laBanThayThe = await page.evaluate(() => (document.querySelector(".duyet-chu strong")?.textContent ?? "").includes("bản thay thế"));
+if (!laBanThayThe) throw new Error("Bản điều chỉnh không được đánh dấu là bản thay thế.");
 await page.screenshot({ path: ".impeccable/review/duyet-tp-da-chot.png" });
 await dangXuat(page);
 
@@ -460,6 +503,18 @@ const ql3 = await page.evaluate(() => {
 if (ql3.soCot !== 16) throw new Error(`Bảng QL3 có ${ql3.soCot} cột số, đáng lẽ 16 (cộng cột đơn vị là 17).`);
 if (ql3.soNhom !== 4) throw new Error(`Bảng QL3 có ${ql3.soNhom} nhóm cột, đáng lẽ 4.`);
 if (!ql3.coMaDiaBan) throw new Error("Thuế cơ sở ở QL3 phải mang mã địa bàn, ví dụ Thuế cơ sở 01 (HKI).");
+/*
+  Phụ lục A của FRS: năm Thuế cơ sở gồm HAI mã địa bàn (18, 19, 20, 21, 22).
+  Danh mục khai mỗi đơn vị một mã sẽ gom hụt mất một nửa số liệu kéo theo mã
+  địa bàn, mà không có dấu hiệu nào trên màn.
+*/
+const haiDiaBan = await page.evaluate(() => [...document.querySelectorAll(".ql3-table tbody th")]
+  .map((el) => el.textContent?.trim() ?? "")
+  .filter((x) => /Thuế cơ sở (18|19|20|21|22)/.test(x)));
+if (haiDiaBan.length !== 5) throw new Error(`Không thấy đủ 5 Thuế cơ sở 18–22: ${JSON.stringify(haiDiaBan)}`);
+for (const x of haiDiaBan) {
+  if (!/\(\w{3}, \w{3}\)/.test(x)) throw new Error(`Thuế cơ sở hai địa bàn phải hiện cả hai mã: "${x}"`);
+}
 if (ql3.coPhongDat) throw new Error("Danh mục QL3 không có Phòng Quản lý các khoản thu từ đất.");
 if (ql3.soPhongVP !== 5) throw new Error(`Khối VP của QL3 có ${ql3.soPhongVP} phòng, đáng lẽ 5.`);
 
@@ -513,4 +568,4 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
 
 await browser.close();
 if (errors.length) throw new Error(`JavaScript errors: ${errors.slice(0, 3).join(" | ")}`);
-console.log(`✓ ${MAN_QL1.length} màn QL1 và ${MAN_QL3.length} màn QL3 đạt kiểm tra; QL1 7 mục, QL3 4 mục với bảng 17 cột, bốn màn đã gỡ không còn lối vào, và luồng duyệt chạy trên chính phân hệ.`);
+console.log(`✓ ${MAN_QL1.length} màn QL1 và ${MAN_QL3.length} màn QL3 đạt kiểm tra; danh mục CQT theo Phụ lục A, vòng đời báo cáo bốn trạng thái của BC-06, và bảng báo cáo theo kỳ MH-03 đều đúng.`);

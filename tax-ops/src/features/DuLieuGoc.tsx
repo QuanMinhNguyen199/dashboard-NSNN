@@ -42,7 +42,10 @@ export function DuLieuGoc({ nguon, ngayBaoCao }: { nguon: NguonDuLieu[]; ngayBao
 
     <Panel title="Nguồn dữ liệu của kỳ">
       <TableWrap label="danh sách nguồn dữ liệu của kỳ"><table className="nguon-table">
-        <colgroup><col style={{ width: 300 }}/><col style={{ width: 200 }}/><col style={{ width: 112 }}/><col style={{ width: 116 }}/><col style={{ width: 128 }}/><col style={{ width: 118 }}/><col style={{ width: 118 }}/><col style={{ width: 112 }}/><col style={{ width: 120 }}/></colgroup>
+        {/* Bề rộng đo theo chuỗi dài nhất THỰC SỰ có trong cột, không ước
+            lượng: "Đối chiếu người nộp thuế" ở cột cuối và "Thời điểm thu
+            thập" ở tiêu đề là hai chuỗi quyết định hai cột rộng nhất. */}
+        <colgroup><col style={{ width: 300 }}/><col style={{ width: 210 }}/><col style={{ width: 124 }}/><col style={{ width: 116 }}/><col style={{ width: 142 }}/><col style={{ width: 118 }}/><col style={{ width: 124 }}/><col style={{ width: 112 }}/><col style={{ width: 196 }}/></colgroup>
         <thead><tr>
           <th scope="col">Nguồn</th><th scope="col">Hệ thống / chức năng</th><th scope="col">Cách thu thập</th>
           <th scope="col">Ngày chốt</th><th scope="col">Thời điểm thu thập</th>
