@@ -329,6 +329,34 @@ if (!theoKy.coHan) throw new Error("Bảng báo cáo theo kỳ thiếu cột H�
    làm một thì cả loạt kỳ cũ đọc ra như đang có người làm dở. */
 if (!theoKy.nhan.includes("Chưa chạy")) throw new Error(`Bảng theo kỳ không phân biệt kỳ chưa chạy: ${JSON.stringify(theoKy.nhan)}`);
 
+/*
+  Bốn mục của QL1 phải mở đầu danh sách chi tiết bằng CÙNG một bộ cột, cùng
+  thứ tự. Ba sheet Excel gốc tự chúng xếp khác nhau — sheet cưỡng chế để
+  "Phòng/TCS" ở cột 5, sheet trạng thái 06 để nó ở cột 10 — nên bê nguyên lên
+  màn là người dùng đổi mục phải dò lại từ đầu xem cột đơn vị nằm đâu.
+*/
+await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+const DAU_CHUNG = ["MST", "Tên NNT", "Phòng / Thuế cơ sở", "Mã CQT", "Loại NNT"];
+const dauCotCua = async (chu) => {
+  await moMuc(chu);
+  await page.waitForSelector(".ql1-ds-table");
+  return page.$$eval(".ql1-ds-table thead th", (th) => th.map((x) => x.textContent.trim()));
+};
+for (const chu of ["So sánh nợ", "Kết quả cưỡng chế", "Tạm hoãn xuất cảnh", "trạng thái 06"]) {
+  const cot = await dauCotCua(chu);
+  const dau = cot.slice(0, DAU_CHUNG.length);
+  if (JSON.stringify(dau) !== JSON.stringify(DAU_CHUNG)) {
+    throw new Error(`Mục "${chu}" mở đầu bằng ${JSON.stringify(dau)}, đáng lẽ ${JSON.stringify(DAU_CHUNG)}`);
+  }
+  /* Hai cột chữ tự do, khi có, phải ở CUỐI cùng — chúng dài và không căn thẳng
+     được, để giữa bảng là chen vào giữa các cột số. */
+  const iKetLuan = cot.indexOf("Kết luận");
+  if (iKetLuan !== -1 && (cot[iKetLuan + 1] !== "Ghi chú" || iKetLuan + 2 !== cot.length)) {
+    throw new Error(`Mục "${chu}": Kết luận và Ghi chú phải là hai cột cuối, hiện ${JSON.stringify(cot.slice(iKetLuan))}`);
+  }
+}
+await moMuc("So sánh nợ");
+
 await chanCheoPhong("risk", "Kiểm tra tại bàn");
 await chanCheoPhong("giamsat", "Giám sát dữ liệu");
 

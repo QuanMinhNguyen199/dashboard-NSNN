@@ -575,6 +575,12 @@ Tên trạng thái lấy theo FRS chứ không theo bản thiết kế (G10 gọ
 
 **The Selected Row Keeps Its Fill.** Mực phụ `--ink-3` đạt 5,05:1 trên nền trắng nhưng chỉ 4,07:1 trên nền hàng đang chọn. Cách sửa phía nền đòi làm nhạt nền tới mức chỉ còn 1,11:1 so với trắng — lúc đó hàng đang chọn không còn ra dáng đang chọn. Nên mực đổi, nền giữ: trong hàng đang chọn, `small` lùi lên `--ink-2` (6,04:1).
 
+**The Four Tabs Open The Same Way Rule.** Bốn mục của QL1 mở đầu danh sách chi tiết bằng cùng năm cột, cùng thứ tự: MST · Tên NNT · Phòng / Thuế cơ sở · Mã CQT · Loại NNT. Sau đó là Chương (ba mục có), rồi khối tiền riêng của mục, rồi khối xử lý, và cuối cùng là Kết luận với Ghi chú.
+
+Ba sheet Excel gốc tự chúng xếp khác nhau — sheet cưỡng chế để "Phòng/TCS" ở cột 5, sheet trạng thái 06 để nó ở cột 10 dưới tên "Map Phòng/Thuế cơ sở". Bê nguyên từng sheet lên màn thì đổi mục là phải dò lại từ đầu xem cột đơn vị nằm đâu, mà đổi mục là thao tác người dùng làm liên tục.
+
+Việc này không trái G4 ("giữ đúng tên chỉ tiêu nguyên văn"): tên cột giữ nguyên, chỉ **thứ tự trên màn** là thống nhất, còn bản kết xuất Excel vẫn dựng đúng thứ tự của từng mẫu sheet. Một ngoại lệ về tên, có chủ ý: sheet cưỡng chế gọi cột mã cơ quan thuế là "CQT", sheet trạng thái 06 gọi "Cơ quan thuế" — hai tên cho cùng một thứ, nên màn hình chọn một tên là "Mã CQT".
+
 ### Blocked State
 Dùng khi một màn **không có dữ liệu để trình bày** và chính lý do đó mới là nội dung. Thứ tự: kết luận một dòng, từng việc còn thiếu kèm con số đứng trước câu chữ, lối ra bằng một nút, rồi những điều kiện ĐÃ đạt lùi xuống cuối ở cỡ 12px màu `--ink-3`.
 

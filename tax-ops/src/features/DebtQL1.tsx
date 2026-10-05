@@ -91,7 +91,7 @@ interface CotDs { khoa: keyof HangQL1; nhan: string; kieu?: "tien" | "ma" | "ghi
 */
 const RONG: Partial<Record<keyof HangQL1, number>> = {
   mst: 120, ten: 232, donVi: 212, maCQT: 96, chuong: 84, loaiNNT: 196, nhomXuLy: 190,
-  noNgay: 150, noDauNam: 140, noThang: 150, noDanhGia: 160, tongDanhGia: 148, nguong: 104,
+  noNgay: 150, noDauNam: 140, noThang: 150, noDanhGia: 160, tongDanhGia: 148, nguong: 142,
   tinhTrang: 164, bienPhap: 212, soQuyetDinh: 140, ngayThucHien: 124, ketLuan: 204, ghiChu: 196,
 };
 const rongCot = (c: CotDs) => RONG[c.khoa] ?? 140;
@@ -139,6 +139,50 @@ function TyLe({ x }: { x: number }) {
   return <span className="ty-le"><b>{pt(x)}</b><i><span style={{ width: `${w}%` }}/></i></span>;
 }
 
+/*
+  ── Thứ tự cột của danh sách chi tiết ───────────────────────────────────────
+
+  Bốn mục dùng CHUNG một thứ tự cho phần giống nhau, phần khác nhau đẩy sang
+  phải. Bố cục là bốn khối, luôn theo đúng thứ tự này:
+
+    1. Định danh   mst · ten · donVi · maCQT · loaiNNT · chuong
+    2. Tiền        các cột số của riêng mục
+    3. Xử lý       tình trạng và những gì đi kèm nó
+    4. Chữ tự do   kết luận · ghi chú
+
+  Vì sao phải đặt luật: ba sheet Excel gốc tự chúng đã xếp khác nhau. Sheet
+  cưỡng chế để "Phòng/TCS" ở cột 5, sheet trạng thái 06 để nó ở cột 10 dưới
+  tên "Map Phòng/Thuế cơ sở". Bê nguyên từng sheet lên màn thì người dùng đổi
+  mục là phải dò lại từ đầu xem cột đơn vị nằm đâu — mà đổi mục là thao tác họ
+  làm liên tục.
+
+  Điều này KHÔNG trái G4 ("giữ đúng tên chỉ tiêu nguyên văn"): tên cột giữ
+  nguyên, chỉ thứ tự trên màn là thống nhất. Bản kết xuất Excel vẫn dựng đúng
+  thứ tự của từng mẫu sheet — xem `domain/reportExport.ts`.
+
+  Một chỗ tên bị đổi có chủ ý: cột mã cơ quan thuế. Sheet cưỡng chế gọi "CQT",
+  sheet trạng thái 06 gọi "Cơ quan thuế" — hai tên cho cùng một thứ. Màn hình
+  chọn một tên, "Mã CQT", vì ô chứa một mã bốn chữ số.
+*/
+
+/** Khối định danh — giống hệt nhau ở mọi mục, nên nó đứng đầu và không đổi. */
+const COT_DINH_DANH: CotDs[] = [
+  { khoa: "mst", nhan: "MST", kieu: "ma" },
+  { khoa: "ten", nhan: "Tên NNT" },
+  { khoa: "donVi", nhan: "Phòng / Thuế cơ sở" },
+  { khoa: "maCQT", nhan: "Mã CQT", kieu: "ma" },
+  { khoa: "loaiNNT", nhan: "Loại NNT" },
+];
+
+/** Chương chỉ có ở ba mục; nó đứng cuối khối định danh để năm cột đầu luôn khớp. */
+const COT_CHUONG: CotDs = { khoa: "chuong", nhan: "Chương" };
+
+/** Khối chữ tự do luôn ở cuối cùng, vì nó dài và không ai căn thẳng nó. */
+const COT_CHU: CotDs[] = [
+  { khoa: "ketLuan", nhan: "Kết luận" },
+  { khoa: "ghiChu", nhan: "Ghi chú", kieu: "ghi" },
+];
+
 const CAU_HINH: CauHinhTab[] = [
   {
     id: "no", nhan: "So sánh nợ",
@@ -148,11 +192,9 @@ const CAU_HINH: CauHinhTab[] = [
     tieuDeDs: `Doanh nghiệp, tổ chức tăng nợ có khả năng thu từ ${money(trieu(NGUONG.tangNoKNT))} triệu đồng`,
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "loaiNNT", nhan: "Loại NNT" }],
     cotDs: [
-      { khoa: "mst", nhan: "MST", kieu: "ma" }, { khoa: "ten", nhan: "Tên NNT" },
+      ...COT_DINH_DANH,
       { khoa: "noNgay", nhan: "Nợ KNT ngày báo cáo", kieu: "tien" },
       { khoa: "noDauNam", nhan: "Nợ KNT đầu năm", kieu: "tien" },
-      { khoa: "donVi", nhan: "Phòng / Thuế cơ sở" }, { khoa: "maCQT", nhan: "Mã CQT", kieu: "ma" },
-      { khoa: "loaiNNT", nhan: "Loại NNT" },
     ],
   },
   {
@@ -160,16 +202,14 @@ const CAU_HINH: CauHinhTab[] = [
     tieuDeDs: "Danh sách NNT chưa cưỡng chế",
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "tinhTrang", nhan: "Tình trạng" }],
     cotDs: [
-      { khoa: "mst", nhan: "MST", kieu: "ma" }, { khoa: "ten", nhan: "Tên NNT" },
-      { khoa: "donVi", nhan: "Phòng / Thuế cơ sở" }, { khoa: "maCQT", nhan: "Mã CQT", kieu: "ma" },
-      { khoa: "chuong", nhan: "Chương" },
+      ...COT_DINH_DANH, COT_CHUONG,
       { khoa: "noThang", nhan: "Nợ >90 ngày – nợ tháng", kieu: "tien" },
       { khoa: "noNgay", nhan: "Nợ >90 ngày – nợ ngày", kieu: "tien" },
       { khoa: "tongDanhGia", nhan: "Tổng nợ đánh giá", kieu: "tien" },
       { khoa: "tinhTrang", nhan: "Tình trạng cưỡng chế" },
       { khoa: "bienPhap", nhan: "Biện pháp hiệu lực" },
       { khoa: "soQuyetDinh", nhan: "Số quyết định", kieu: "ma" },
-      { khoa: "ketLuan", nhan: "Kết luận" }, { khoa: "ghiChu", nhan: "Ghi chú", kieu: "ghi" },
+      ...COT_CHU,
     ],
   },
   {
@@ -177,16 +217,16 @@ const CAU_HINH: CauHinhTab[] = [
     tieuDeDs: "Danh sách NNT trên ngưỡng chưa tạm hoãn xuất cảnh",
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "tinhTrang", nhan: "Tình trạng" }],
     cotDs: [
-      { khoa: "mst", nhan: "MST", kieu: "ma" }, { khoa: "ten", nhan: "Tên NNT" },
-      { khoa: "donVi", nhan: "Phòng / Thuế cơ sở" }, { khoa: "maCQT", nhan: "Mã CQT", kieu: "ma" },
-      { khoa: "loaiNNT", nhan: "Loại NNT" }, { khoa: "chuong", nhan: "Chương" },
+      ...COT_DINH_DANH, COT_CHUONG,
       { khoa: "noThang", nhan: "Nợ >120 ngày – nợ tháng", kieu: "tien" },
       { khoa: "noNgay", nhan: "Nợ >120 ngày – nợ ngày", kieu: "tien" },
       { khoa: "tongDanhGia", nhan: "Tổng nợ đánh giá", kieu: "tien" },
-      { khoa: "nguong", nhan: "Ngưỡng", kieu: "tien" },
+      /* Ngưỡng là cột riêng của mục này, nên nó nằm SAU ba cột tiền dùng chung
+         với mục cưỡng chế — đúng luật "phần khác nhau đẩy sang phải". */
+      { khoa: "nguong", nhan: "Ngưỡng theo loại NNT", kieu: "tien" },
       { khoa: "tinhTrang", nhan: "Tình trạng tạm hoãn" },
       { khoa: "ngayThucHien", nhan: "Ngày tạm hoãn" },
-      { khoa: "ketLuan", nhan: "Kết luận" }, { khoa: "ghiChu", nhan: "Ghi chú", kieu: "ghi" },
+      ...COT_CHU,
     ],
   },
   {
@@ -194,13 +234,11 @@ const CAU_HINH: CauHinhTab[] = [
     tieuDeDs: "Danh sách NNT trạng thái 06 chưa tạm hoãn xuất cảnh",
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "nhomXuLy", nhan: "Nhóm xử lý" }, { khoa: "chuong", nhan: "Chương" }],
     cotDs: [
-      { khoa: "mst", nhan: "MST", kieu: "ma" }, { khoa: "ten", nhan: "Tên NNT" },
-      { khoa: "maCQT", nhan: "Cơ quan thuế", kieu: "ma" }, { khoa: "chuong", nhan: "Chương" },
+      ...COT_DINH_DANH, COT_CHUONG,
       { khoa: "noDanhGia", nhan: "Tổng nợ KCHĐ theo MST", kieu: "tien" },
       { khoa: "nhomXuLy", nhan: "Nhóm xử lý" },
       { khoa: "tinhTrang", nhan: "Tình trạng tạm hoãn" },
       { khoa: "ngayThucHien", nhan: "Ngày tạm hoãn" },
-      { khoa: "donVi", nhan: "Phòng / Thuế cơ sở" }, { khoa: "loaiNNT", nhan: "Loại NNT" },
     ],
   },
 ];
