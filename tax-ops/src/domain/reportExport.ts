@@ -7,7 +7,7 @@ import type { ReportStatus } from "@/domain/types";
 export type ReportValue = string | number | null;
 export interface ReportSheet { name: string; title: string; headers: string[]; rows: ReportValue[][]; percent?: number[]; bold?: number[]; unit?: string }
 export interface ReportMeta { period: string; scope: string; actor: string; status: ReportStatus }
-export const statusLabel: Record<ReportStatus, string> = { DRAFT: "Nháp", PENDING: "Chờ duyệt", FINAL: "Đã chốt", BLOCKED: "Chưa đủ dữ liệu" };
+export const statusLabel: Record<ReportStatus, string> = { DRAFT: "Nháp", REVIEWED: "Đã rà soát", APPROVED: "Đã duyệt", AMEND: "Đang điều chỉnh", BLOCKED: "Chưa đủ dữ liệu" };
 const ratio = (a: number, b: number) => b ? a / b : null;
 const round = (n: number) => Math.round(n * 10) / 10;
 

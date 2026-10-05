@@ -1160,3 +1160,29 @@ td code, td strong, td span { overflow-wrap: anywhere; }
   .duyet-nut { flex-wrap: wrap; }
   .duyet-nut .button { flex: 1 1 140px; }
 }
+
+/*
+  Bảng trạng thái báo cáo theo kỳ (MH-03). Cột dấu vết để trống bề rộng để nó
+  hứng phần dư — nó là cột chữ dài nhất và cũng là cột ít cần căn thẳng nhất.
+*/
+.ky-table { min-width: 940px; }
+.ky-table td { white-space: nowrap; }
+.ky-table td small { color: var(--ink-3); font-size: 12px; }
+
+/*
+  Mực phụ trong hàng ĐANG CHỌN lùi lên một bậc.
+
+  `--ink-3` trên nền trắng đạt 5,05:1, nhưng nền hàng đang chọn đậm hơn nên nó
+  rơi xuống 4,07:1 — dưới chuẩn AA ở cỡ 12px. Cách sửa kia là làm nhạt nền
+  chọn, nhưng muốn giữ mực ở 4,5:1 thì nền phải nhạt tới mức chỉ còn 1,11:1 so
+  với trắng, tức là hàng đang chọn không còn ra dáng đang chọn nữa. Đổi một
+  lỗi lấy một lỗi khác.
+
+  Nên mực đổi, nền giữ: `--ink-2` trên nền ấy đạt 6,04:1 và vẫn rõ là bậc phụ
+  so với mực chính.
+*/
+tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
+
+/* Cột "Dùng cho" của bảng nguồn liệt kê nhiều mục nên nó XUỐNG DÒNG; các cột
+   còn lại là ngày, số và mã nên giữ một dòng. */
+.nguon-table td:last-child { white-space: normal; }

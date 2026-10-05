@@ -13,6 +13,7 @@
 export type ViewId =
   | "workbench"
   | "debt" | "risk"
+  | "theoky"
   | "tinhtrang"
   | "giamsat";
 /*
@@ -50,7 +51,12 @@ export type Tone = "neutral" | "positive" | "warning" | "critical" | "info";
   `BLOCKED` không phải bước thứ tư. Nó nói dữ liệu chưa đạt nên chưa gửi được,
   và nằm ngoài chuỗi — vì thế nó không có mặt trong `CHUOI` ở màn Báo cáo.
 */
-export type ReportStatus = "DRAFT" | "PENDING" | "FINAL" | "BLOCKED";
+/*
+  Vòng đời báo cáo BC-06 của FRS: Nháp -> Da ra soat -> Da duyet, cong Dieu
+  chinh mo tu ban da duyet. `BLOCKED` nam ngoai chuoi: no noi du lieu chua du
+  nen chua gui ra soat duoc, khong phai mot buoc cua luong duyet.
+*/
+export type ReportStatus = "DRAFT" | "REVIEWED" | "APPROVED" | "AMEND" | "BLOCKED";
 
 export interface WorkItem {
   id: string;

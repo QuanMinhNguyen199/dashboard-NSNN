@@ -4,6 +4,7 @@ import {
   NHAN_MOC, donViCuaTab, tongHopCuaTab,
   type BoNo, type DonViQL1, type KyQL1, type MocSoSanh, type OTongHop06, type OTongHopNo, type OTongHopXuLy,
 } from "@/data/ql1";
+import { hienTyLe } from "@/data/thamSo";
 
 /*
   Tab Tổng quan của QL1 — §4.3 bản thiết kế.
@@ -17,7 +18,9 @@ import {
   màn là biết nợ đang tăng hay giảm, và đơn vị nào cần đôn đốc.
 */
 
-const pt = (x: number) => Number.isFinite(x) ? `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(x * 100)}%` : "—";
+/* Tỷ lệ theo BC-10 của FRS: hai chữ số thập phân, mẫu số bằng 0 thì để trống.
+   Dùng chung `hienTyLe` để bốn màn không mỗi màn một cách làm tròn. */
+const pt = (x: number) => hienTyLe(Number.isFinite(x) ? x : null);
 
 function cong<T extends object>(bo: T[]): T {
   const ra = {} as Record<string, unknown>;

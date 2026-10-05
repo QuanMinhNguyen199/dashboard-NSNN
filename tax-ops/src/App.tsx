@@ -7,6 +7,7 @@ import { Debt } from "@/features/Debt";
 import { Risk } from "@/features/Risk";
 import { Workbench } from "@/features/Workbench";
 import { TinhTrangDuLieu } from "@/features/TinhTrangDuLieu";
+import { BaoCaoTheoKy } from "@/features/BaoCaoTheoKy";
 import type { ViewId } from "@/domain/types";
 import { ActionProvider } from "@/state/ActionContext";
 import { DuLieuThatProvider } from "@/state/DuLieuThatContext";
@@ -65,7 +66,7 @@ export function App() {
       document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { workbench: "Công việc theo kỳ", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
+    const title: Record<ViewId, string> = { workbench: "Công việc theo kỳ", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", theoky: "Báo cáo theo kỳ", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
@@ -101,8 +102,9 @@ export function App() {
   return <DuLieuThatProvider><ActionProvider><BoLocProvider><DuyetProvider user={user}>
     <Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
     {moDuoc === "workbench" && <Workbench onNavigate={setView} vaiTro={user.vaiTro} phong={user.phong}/>}
-    {moDuoc === "debt" && <Debt actor={user.name} vaiTro={user.vaiTro}/>}
-    {moDuoc === "risk" && <Risk actor={user.name} vaiTro={user.vaiTro}/>}
+    {moDuoc === "debt" && <Debt actor={user.name}/>}
+    {moDuoc === "risk" && <Risk actor={user.name}/>}
+    {moDuoc === "theoky" && <BaoCaoTheoKy phong={user.phong} onNavigate={setView}/>}
     {moDuoc === "tinhtrang" && <TinhTrangDuLieu vaiTro={user.vaiTro}/>}
     {moDuoc === "giamsat" && <GiamSat/>}
     </Shell>

@@ -4,7 +4,6 @@ import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { DebtQL1 } from "@/features/DebtQL1";
 import { napDanhSach, type HangChiTiet, type HangThucHien, type TongHopThat } from "@/data/duLieuThat";
 import { useDuLieuThat } from "@/state/DuLieuThatContext";
-import type { VaiTro } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
 
 
@@ -169,9 +168,9 @@ const MOI_TRANG = 10;
   Gộp hai đường thành một sẽ phải chọn: hoặc bản demo gãy khi thiếu tệp, hoặc
   màn dữ liệu thật phải giả lập những cột nó không có.
 */
-export function Debt({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
+export function Debt({ actor }: { actor: string }) {
   const { that } = useDuLieuThat();
-  return that ? <DebtThat that={that}/> : <DebtQL1 actor={actor} vaiTro={vaiTro}/>;
+  return that ? <DebtThat that={that}/> : <DebtQL1 actor={actor}/>;
 }
 
 function DebtThat({ that }: { that: TongHopThat }) {

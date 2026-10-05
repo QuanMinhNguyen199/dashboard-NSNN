@@ -50,6 +50,10 @@ export const NAV: MucNav[] = [
   { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU },
   { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU },
 
+  /* MH-03 — QT-08: bảng báo cáo × kỳ. Nó thuộc nhóm phân hệ vì nó nói về
+     báo cáo của phòng, không phải về đường đi của dữ liệu. */
+  { id: "theoky", label: "Báo cáo theo kỳ", short: "Theo kỳ", icon: "clock", nhom: "phanhe", phong: null, vaiTro: NGHIEP_VU },
+
   { id: "tinhtrang", label: "Tình trạng dữ liệu", short: "Dữ liệu", icon: "database", nhom: "data", phong: null, vaiTro: NGHIEP_VU },
 
   /* Vai Vận hành dữ liệu không thuộc phòng nào và chỉ mở đúng màn này. */
