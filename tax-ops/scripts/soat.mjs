@@ -90,6 +90,23 @@ async function soatMan(nhan, kho) {
       không có chữ nào bị cắt. Hai, ngưỡng 4px: dưới mức đó là sai số làm tròn
       của bố cục bảng, không phải chữ mất đuôi.
     */
+    /*
+      Khối con tràn ra ngoài khối chứa nó.
+
+      Nhiều dải trong hệ cố ý mang `margin-inline: -14px` để chạm hẳn mép khối
+      — luật ấy chỉ đúng khi khối cha có đệm ngang đúng 14px. Đặt một dải như
+      thế vào khối cha đệm 0 thì nó thò ra ngoài thẻ, và lỗi này KHÔNG hiện ra
+      ở phép đo tràn trong ô: từng ô vẫn vừa khít, chỉ cả bảng là nằm sai chỗ.
+    */
+    for (const el of document.querySelectorAll(".table-shell, .the-luoi, .task-list, .source-list, .rank-list, .detail-grid, .blocker-list")) {
+      const cha = el.parentElement;
+      if (!cha) continue;
+      const a = el.getBoundingClientRect();
+      const c = cha.getBoundingClientRect();
+      const du = Math.round(Math.max(c.left - a.left, a.right - c.right));
+      if (du > 1) ra.oTran.push(`${el.className.split(" ")[0]} thò ra ngoài ${cha.className.split(" ")[0] || cha.tagName.toLowerCase()} ${du}px`);
+    }
+
     for (const o of document.querySelectorAll("main td, main th")) {
       const du = o.scrollWidth - o.clientWidth;
       if (du <= 4) continue;

@@ -412,14 +412,14 @@ for (const view of DRAWER) {
   phân hệ, đọc thanh duyệt, bấm nút ở đó.
 */
 const trangThaiDuyet = () => page.$eval(".thanh-duyet .badge", (el) => el.textContent.trim());
-const nutDuyet = () => page.$$eval(".duyet-nut button", (b) => b.map((x) => x.textContent.trim()));
+const nutDuyet = () => page.$$eval(".duyet-hanh-dong button", (b) => b.map((x) => x.textContent.trim()));
 
 await page.setViewport({ width: 1440, height: 1000 });
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 if (await trangThaiDuyet() !== "Nháp") throw new Error("Kỳ chưa gửi phải ở trạng thái Nháp.");
 const nutCV = await nutDuyet();
-if (!nutCV.includes("Gửi rà soát") || nutCV.includes("Duyệt") || nutCV.includes("Trả lại")) {
+if (!nutCV.includes("Gửi duyệt") || nutCV.includes("Duyệt") || nutCV.includes("Trả lại")) {
   throw new Error(`Quyền chuyên viên trên thanh duyệt sai: ${JSON.stringify(nutCV)}`);
 }
 
@@ -435,19 +435,29 @@ const khongCoViec = async (ma, mongDoi) => {
   await dangNhap(page, ma);
   await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
   await page.waitForSelector(".thanh-duyet");
+  /*
+    Lời giải thích có thể nằm ở khối trạng thái bên trái (`DIEN_GIAI`) hoặc ở
+    dòng phụ bên phải (`CHO_AI`) — chốt kiểm đọc cả thanh, vì thứ cần đảm bảo
+    là NGƯỜI DÙNG ĐƯỢC NÓI vì sao họ không có việc, không phải là nó được nói
+    ở ô nào.
+  */
   const d = await page.evaluate(() => ({
-    nut: [...document.querySelectorAll(".duyet-nut button")].length,
-    cho: document.querySelector(".duyet-cho")?.textContent?.trim() ?? null,
+    nut: [...document.querySelectorAll(".duyet-hanh-dong button")].length,
+    cho: document.querySelector(".thanh-duyet")?.textContent?.trim() ?? null,
+    coXemTruoc: [...document.querySelectorAll(".duyet-nut button")].some((b) => /Xem trước/.test(b.textContent || "")),
   }));
   if (d.nut !== 0) throw new Error(`${ma} đáng lẽ chưa có thao tác nào ở bước này, nhưng thấy ${d.nut} nút.`);
   if (!d.cho || !d.cho.includes(mongDoi)) throw new Error(`${ma} không được nói việc đang ở ai: ${JSON.stringify(d.cho)}`);
+  /* Chưa tới lượt thì KHÔNG mời xem trước: bản còn ở Nháp, số trong đó còn
+     đổi, mà người đọc không có cách nào biết điều đó. */
+  if (d.coXemTruoc) throw new Error(`${ma} thấy nút xem trước dù chưa tới lượt mình.`);
 };
-await khongCoViec("tp.ql1", "chuyên viên lập báo cáo");
+await khongCoViec("tp.ql1", "Chưa gửi duyệt");
 await dangXuat(page);
 await dangNhap(page, "cv.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi rà soát").click());
+await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Gửi duyệt").click());
 if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Gửi duyệt nhưng trạng thái kỳ chưa đổi.");
 await page.screenshot({ path: ".impeccable/review/duyet-cv-da-gui.png" });
 await dangXuat(page);
@@ -456,13 +466,54 @@ await dangNhap(page, "tp.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Trưởng phòng không thấy kỳ chuyên viên đã gửi.");
+/*
+  Người duyệt phải XEM ĐƯỢC thứ mình sắp ký, ngay tại chỗ ký.
+
+  Trước đây họ chỉ có Duyệt và Trả lại; muốn nhìn bộ báo cáo nguyên hình thì
+  phải tải file về rồi mở Excel — lúc đó bước duyệt rơi ra ngoài hệ, đúng cái
+  hệ sinh ra để thay.
+*/
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => /Xem trước/.test(b.textContent)).click());
+await page.waitForSelector(".xem-truoc[open]", { timeout: 5000 });
+const xemTruoc = await page.evaluate(() => ({
+  soSheet: document.querySelectorAll('.xem-truoc [aria-label="Sheet trong bộ báo cáo"] button, .xem-truoc [aria-label="Sheet trong bộ báo cáo"] option').length,
+  coBang: document.querySelectorAll(".xt-bang tbody tr").length,
+}));
+if (xemTruoc.soSheet < 5) throw new Error(`Xem trước chỉ có ${xemTruoc.soSheet} sheet, đáng lẽ cả bộ báo cáo.`);
+if (!xemTruoc.coBang) throw new Error("Xem trước không dựng được bảng của sheet.");
+
+/*
+  Soát MỌI sheet, không chỉ sheet đang mở.
+
+  Lần đầu tôi chỉ đo sheet đầu tiên và kết luận là xong; tám sheet còn lại vỡ
+  hết, vì mỗi sheet một hình dạng cột — sheet này mở đầu bằng số thứ tự, sheet
+  kia bằng tên đơn vị, sheet `QuyTac_Nguon` chỉ có hai cột chữ. Kiểm một sheet
+  rồi suy ra cả bộ chính là cái sai đã xảy ra, nên chốt kiểm đi qua từng cái.
+*/
+const soSheet = await page.$$eval('.xem-truoc [aria-label="Sheet trong bộ báo cáo"] button', (b) => b.length);
+for (let i = 0; i < soSheet; i++) {
+  await page.evaluate((k) => document.querySelectorAll('.xem-truoc [aria-label="Sheet trong bộ báo cáo"] button')[k].click(), i);
+  await new Promise((resolve) => setTimeout(resolve, 160));
+  const v = await page.evaluate(() => {
+    const t = document.querySelector(".xt-bang");
+    const xau = [];
+    for (const c of t.querySelectorAll("td, th")) {
+      if (c.scrollWidth - c.clientWidth > 2) xau.push((c.textContent || "").trim().slice(0, 24));
+    }
+    return { ten: document.querySelector('.xem-truoc [aria-pressed="true"]')?.textContent?.trim(), tran: [...new Set(xau)].slice(0, 3) };
+  });
+  if (v.tran.length) throw new Error(`Sheet "${v.ten}" trong xem trước có ô bị cắt chữ: ${JSON.stringify(v.tran)}`);
+}
+await page.keyboard.press("Escape");
+await page.waitForFunction(() => !document.querySelector(".xem-truoc")?.open, { timeout: 5000 });
+
 const nutTP = await nutDuyet();
-if (!nutTP.includes("Duyệt") || !nutTP.includes("Trả lại") || nutTP.includes("Gửi rà soát")) {
+if (!nutTP.includes("Duyệt") || !nutTP.includes("Trả lại") || nutTP.includes("Gửi duyệt")) {
   throw new Error(`Quyền trưởng phòng trên thanh duyệt sai: ${JSON.stringify(nutTP)}`);
 }
 
 /* Trả lại BẮT BUỘC có lý do — bản thiết kế ghi "Trả lại + lý do" trên sơ đồ. */
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Trả lại").click());
+await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Trả lại").click());
 await page.waitForSelector("dialog[open] input[name='lyDoTraLai']");
 await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
 if (await page.$("dialog[open] .quality-note") === null) throw new Error("Trả lại không có lý do mà hệ vẫn cho qua.");
@@ -476,10 +527,10 @@ await dangXuat(page);
 /*
   QR-03 (Phải): "người lập báo cáo không tự duyệt báo cáo của mình". Trưởng
   phòng vừa trả lại thì không phải người gửi, nên bước này kiểm phía còn lại —
-  không có vai nào thấy cả hai nút Gửi rà soát và Duyệt cùng lúc.
+  không có vai nào thấy cả hai nút Gửi duyệt và Duyệt cùng lúc.
 */
 const nutChongCheo = await nutDuyet();
-if (nutChongCheo.includes("Gửi rà soát") && nutChongCheo.includes("Duyệt")) {
+if (nutChongCheo.includes("Gửi duyệt") && nutChongCheo.includes("Duyệt")) {
   throw new Error(`Một vai thấy cả nút gửi lẫn nút duyệt: ${JSON.stringify(nutChongCheo)}`);
 }
 
@@ -490,13 +541,13 @@ await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 const thayLyDo = await page.evaluate((l) => (document.querySelector(".duyet-tralai")?.textContent ?? "").includes(l), lyDo);
 if (!thayLyDo) throw new Error("Chuyên viên không thấy lý do trưởng phòng trả lại.");
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Gửi rà soát").click());
+await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Gửi duyệt").click());
 await dangXuat(page);
 
 await dangNhap(page, "tp.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Duyệt").click());
+await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Duyệt").click());
 if (await trangThaiDuyet() !== "Đã duyệt") throw new Error("Chốt số nhưng trạng thái kỳ chưa đổi.");
 /* Đã chốt là điểm cuối: không còn thao tác nào đẩy nó đi tiếp được nữa. */
 /*
@@ -507,7 +558,7 @@ const nutSauDuyet = await nutDuyet();
 if (JSON.stringify(nutSauDuyet) !== JSON.stringify(["Mở bản điều chỉnh"])) {
   throw new Error(`Sau khi duyệt chỉ nên còn nút mở bản điều chỉnh: ${JSON.stringify(nutSauDuyet)}`);
 }
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => b.textContent.trim() === "Mở bản điều chỉnh").click());
+await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Mở bản điều chỉnh").click());
 await page.waitForSelector("dialog[open] input[name='lyDoTraLai']");
 await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
 if (await page.$("dialog[open] .quality-note") === null) throw new Error("Mở điều chỉnh không có lý do mà hệ vẫn cho qua.");

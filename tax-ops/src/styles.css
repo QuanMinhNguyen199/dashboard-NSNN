@@ -1090,7 +1090,6 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 .ql1-table.co-stt { --dv-trai: 46px; }
 .ql1-table th.dv-cot, .ql1-table tbody th { left: var(--dv-trai); }
 
-.bang-ghi-chu { margin: 10px 14px 2px; color: var(--ink-3); font-size: 12px; line-height: 1.55; max-width: 92ch; }
 
 /* ── Tab Tổng quan ──────────────────────────────────────────────────────── */
 /* Hai khối cạnh nhau ở khổ rộng, xếp dọc khi hết chỗ. Không khai số cột cứng
@@ -1191,3 +1190,99 @@ tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
    phụ và không viền: nó là lời giải thích, không phải một thứ bấm được. */
 .duyet-cho { color: var(--ink-2); font-size: 12.5px; line-height: 1.45; text-align: right; }
 @media (max-width: 900px) { .duyet-cho { text-align: left; } }
+
+/*
+  Hộp xem trước bộ báo cáo (MH-04). Rộng gần hết khung nhìn vì nội dung là
+  bảng nhiều cột — bóp lại thì người duyệt phải cuộn ngang để đọc thứ họ sắp
+  ký, đúng cái khó mà màn này sinh ra để gỡ.
+*/
+.xem-truoc { width: min(1180px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 48px); padding: 18px 20px 20px; border: 0; border-radius: var(--radius-panel); background: var(--canvas); overflow: auto; }
+.xem-truoc::backdrop { background: rgb(22 38 60 / 45%); }
+.xt-dau { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.xt-dau h2 { font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
+.xt-dau p { display: flex; align-items: center; gap: 8px; margin-top: 4px; color: var(--ink-2); font-size: 12.5px; }
+.xt-dau .case-detail-close { margin: 0; }
+.xt-sheet { margin-top: 14px; padding: 14px 0 2px; border-radius: var(--radius-panel); background: var(--surface); }
+.xt-ten { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 0 14px 10px; }
+.xt-ten strong { font-size: 13.5px; font-weight: 650; }
+.xt-ten small { color: var(--ink-3); font-size: 12px; }
+/* Tiêu đề sheet dài (`Tăng giảm so với tuần trước – Số tuyệt đối – Tổng cộng`)
+   nên nó xuống dòng; ô dữ liệu là số và mã nên giữ một dòng. */
+.xt-bang thead th { white-space: normal; vertical-align: bottom; }
+/* Ô CHỮ xuống dòng, ô SỐ giữ một dòng. Phân biệt theo loại dữ liệu chứ không
+   theo vị trí cột: mười sheet có mười hình dạng, cột thứ hai ở sheet này là
+   tên đơn vị còn ở sheet kia là mã số thuế. */
+.xt-bang td { white-space: normal; }
+.xt-bang td.num { white-space: nowrap; }
+.xt-bang tr.is-tong td { background: var(--surface-tint); font-weight: 700; }
+
+@media (max-width: 720px) {
+  .xem-truoc { width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; padding: 14px 12px; }
+}
+
+/*
+  ── Sidebar vừa khung, bỏ thanh cuộn ───────────────────────────────────────
+
+  Sidebar nay mang 11 đích điều hướng: 4 mục chính, 7 tab con của phân hệ đang
+  mở (cụm tab đã chuyển hẳn từ trên trang vào đây), cộng khối nhận diện và
+  khối người dùng. Tổng 843px, nên khung nhìn dưới 843px là sinh thanh cuộn.
+
+  Phần cắt đi là KHOẢNG TRỐNG, không phải nội dung. Chỗ ăn nhiều nhất là vạch
+  ngăn giữa các nhóm — 24px lề cộng 20px đệm cho mỗi vạch, hai vạch là 88px,
+  nhiều hơn cả khối nhận diện. Một vạch kẻ không cần 44px để nói rằng đây là
+  hai nhóm khác nhau.
+*/
+.sidebar { padding: 16px 12px 12px; }
+.brand { min-height: 54px; padding: 0 0 12px; }
+.side-nav { padding: 10px 0 12px; }
+.nav-section + .nav-section { margin-top: 12px; padding-top: 10px; }
+.nav-group { padding: 0 10px 6px; }
+.nav-item { min-height: 34px; }
+.ql1-nav-items { gap: 1px; margin: 2px 0 4px 16px; }
+.ql1-nav-item { min-height: 28px; padding: 2px 8px; }
+.sidebar-user { padding: 10px 8px 2px; }
+.sidebar-user small { margin-top: 5px; line-height: 1.45; }
+.logout-button { min-height: 32px; margin-top: 8px; }
+
+@media (max-width: 900px) {
+  /* Khổ hẹp giữ sàn chạm 44px của PRODUCT.md, nên chỉ cắt khoảng trống giữa
+     các nhóm. Ngăn kéo vẫn cuộn được, và điều đó đúng: 11 đích ở 44px mỗi
+     đích thì không màn điện thoại nào chứa hết mà không cuộn. */
+  .nav-item { min-height: 44px; }
+  .ql1-nav-item { min-height: 44px; }
+  .nav-section + .nav-section { margin-top: 14px; padding-top: 12px; }
+}
+
+/*
+  Hủy lề âm "tràn viền" bên trong hộp xem trước.
+
+  `.table-shell` mang `margin-inline: -14px` để bảng chạm hẳn mép khối — luật
+  ấy chỉ đúng khi khối cha có đệm ngang 14px, đúng như `.panel-body`. Thẻ
+  `.xt-sheet` đệm ngang bằng 0, nên bảng thò ra ngoài thẻ trắng 14px mỗi bên
+  và số ở cột cuối trông như rơi khỏi bảng.
+
+  Cách sửa là hủy lề âm, không phải thêm đệm cho thẻ: thêm đệm thì tiêu đề
+  sheet và dòng ghi chú — vốn đã có đệm 14px riêng — bị đẩy thành 28px.
+*/
+.xt-sheet .table-shell { margin-inline: 0; }
+
+@media (max-width: 720px) {
+  /*
+    Dải tràn viền phải khớp đệm khối của khổ này — đệm 12px thì lề âm 12px.
+
+    Khối này nằm CUỐI tệp, không nằm trong khối media gốc ở trên, vì
+    `.the-luoi` và `.blocker-list` khai `-14px` ở phía DƯỚI khối ấy. Media
+    query không cộng độ ưu tiên, nên luật đứng sau thắng dù nó nằm ngoài media
+    query — sửa ở chỗ cũ thì không ăn, và đó là cách hai dải này thò ra ngoài
+    thẻ đúng 2px ở khổ hẹp.
+  */
+  .the-luoi, .blocker-list { margin-inline: -12px; }
+}
+
+/*
+  Ghi chú dưới bảng. Lớp này vẫn còn một nơi dùng — chú thích cách đọc cột ở
+  màn kiểm tra tại bàn QL3 — nên luật được giữ lại sau khi dòng ghi chú trong
+  hộp xem trước bị gỡ. Không có luật thì đoạn ấy rơi về cỡ chữ thân bài và
+  trông như một câu nội dung chứ không phải chú thích.
+*/
+.bang-ghi-chu { margin: 0; max-width: 92ch; color: var(--ink-3); font-size: 12px; line-height: 1.55; }

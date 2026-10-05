@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Badge, Button } from "@/components/ui";
 import { useAction } from "@/state/ActionContext";
 import { useDuyet } from "@/state/DuyetContext";
@@ -47,22 +47,29 @@ const SAC: Record<ReportStatus, Tone> = {
   bất kỳ ai đang nhìn.
 */
 const CHO_AI: Record<ReportStatus, string> = {
-  DRAFT: "Việc đang ở chuyên viên lập báo cáo. Chưa có gì để duyệt.",
+  DRAFT: "",
   REVIEWED: "Việc đang ở người duyệt của phòng.",
   APPROVED: "Vòng duyệt của kỳ này đã xong.",
-  AMEND: "Việc đang ở chuyên viên lập báo cáo, cho bản thay thế.",
+  AMEND: "",
   BLOCKED: "Việc đang ở khâu dữ liệu, chưa tới vòng duyệt.",
 };
 
 const DIEN_GIAI: Record<ReportStatus, string> = {
-  DRAFT: "Chuyên viên đang hoàn thiện số liệu. Chưa gửi rà soát.",
+  DRAFT: "Chuyên viên đang hoàn thiện số liệu. Chưa gửi duyệt.",
   REVIEWED: "Chuyên viên đã xác nhận số liệu, đang chờ duyệt.",
   APPROVED: "Số liệu kỳ này đã khóa. Muốn sửa phải mở một bản điều chỉnh.",
   AMEND: "Đang sửa để thay cho bản đã duyệt. Bản cũ vẫn giữ cho tới khi bản này được duyệt.",
-  BLOCKED: "Chưa đủ dữ liệu để gửi rà soát. Xem mục Tình trạng dữ liệu.",
+  BLOCKED: "Chưa đủ dữ liệu để gửi duyệt. Xem mục Tình trạng dữ liệu.",
 };
 
-export function ThanhDuyet({ khoa, nhanKy }: { khoa: string; nhanKy: string }) {
+export function ThanhDuyet({ khoa, nhanKy, xemTruoc }: {
+  khoa: string;
+  nhanKy: string;
+  /* Nút xem trước bộ báo cáo, do phân hệ truyền vào vì chỉ nó biết bộ sheet
+     của mình. Nó đứng CẠNH nút Duyệt chứ không ở đâu khác: người duyệt cần
+     nhìn thứ mình sắp ký ngay trước lúc ký. */
+  xemTruoc?: ReactNode;
+}) {
   const { layBanGhi, duoc, guiRaSoat, duyet, traLai, moDieuChinh } = useDuyet();
   const notify = useAction();
   const hopLyDo = useRef<HTMLDialogElement>(null);
@@ -100,7 +107,7 @@ export function ThanhDuyet({ khoa, nhanKy }: { khoa: string; nhanKy: string }) {
     {/* Dấu vết: ai gửi, ai duyệt, lúc nào. Một dòng, không phải một bảng —
         đây là ngữ cảnh, không phải thứ cần đọc kỹ ở mỗi lần vào màn. */}
     <div className="duyet-vet">
-      {b.guiLuc && <span>Gửi rà soát bởi {b.guiBoi} · {b.guiLuc}</span>}
+      {b.guiLuc && <span>Gửi duyệt bởi {b.guiBoi} · {b.guiLuc}</span>}
       {b.duyetLuc && <span>Duyệt bởi {b.duyetBoi} · {b.duyetLuc}</span>}
       {b.lyDoTraLai && b.trangThai === "DRAFT" && <span className="duyet-tralai">Lý do trả lại: {b.lyDoTraLai}</span>}
       {b.lyDoDieuChinh && b.trangThai === "AMEND" && <span className="duyet-tralai">Lý do điều chỉnh: {b.lyDoDieuChinh}</span>}
@@ -108,10 +115,25 @@ export function ThanhDuyet({ khoa, nhanKy }: { khoa: string; nhanKy: string }) {
 
     <div className="duyet-nut">
       {!coViec && <span className="duyet-cho">{CHO_AI[b.trangThai]}</span>}
+      {/*
+        Nút xem trước đi cùng LƯỢT của người đang xem.
+
+        Trưởng phòng mở màn lúc kỳ còn ở Nháp mà thấy "Xem trước báo cáo" là
+        một lời mời đọc bản chuyên viên chưa tuyên bố xong — số trong đó còn
+        đổi, mà người đọc không có cách nào biết. Bảng 13.2 cũng xếp thế: ở
+        trạng thái Nháp chỉ chuyên viên làm việc trên bản ghi, người duyệt vào
+        cuộc từ Đã rà soát.
+
+        Ngoại lệ là bản ĐÃ DUYỆT: lúc đó không còn ai "đang giữ" nó nữa, và
+        FRS ghi "mọi vai trò có quyền xem".
+      */}
+      {(coViec || b.trangThai === "APPROVED") && xemTruoc}
+      <span className="duyet-hanh-dong">
       {duoc(khoa, "return") && <Button onClick={() => moHop("return")}>Trả lại</Button>}
       {duoc(khoa, "amend") && <Button onClick={() => moHop("amend")}>Mở bản điều chỉnh</Button>}
-      {duoc(khoa, "send") && <Button kind="primary" onClick={() => { if (!guiRaSoat(khoa)) { notify("Không gửi rà soát được ở trạng thái này."); return; } notify(`Đã gửi ${nhanKy} đi rà soát. Số liệu khóa lại cho tới khi có kết quả.`); }}>Gửi rà soát</Button>}
+      {duoc(khoa, "send") && <Button kind="primary" onClick={() => { if (!guiRaSoat(khoa)) { notify("Không gửi duyệt được ở trạng thái này."); return; } notify(`Đã gửi ${nhanKy} đi duyệt. Số liệu khóa lại cho tới khi có kết quả.`); }}>Gửi duyệt</Button>}
       {duoc(khoa, "approve") && <Button kind="primary" onClick={() => { if (!duyet(khoa)) { notify("Bạn không duyệt được bản báo cáo do chính mình gửi."); return; } notify(`Đã duyệt ${nhanKy}. Kỳ này khóa số; muốn sửa phải mở bản điều chỉnh.`); }}>Duyệt</Button>}
+      </span>
     </div>
 
     {/*
