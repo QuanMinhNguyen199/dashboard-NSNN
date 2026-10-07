@@ -13,6 +13,7 @@ import { BoLocProvider } from "@/components/BoLoc";
 import { HoaDonQL2 } from "@/features/HoaDonQL2";
 import { HoanQL4 } from "@/features/HoanQL4";
 import { PhieuProvider } from "@/state/PhieuContext";
+import { KpiProvider } from "@/state/KpiContext";
 import { xoaThamSoMan } from "@/state/diaChi";
 import { DuyetProvider } from "@/state/DuyetContext";
 import { LoginScreen } from "@/auth/LoginScreen";
@@ -146,18 +147,18 @@ export function App() {
 
   const moDuoc = duoc.some((item) => item.id === view) ? view : duoc[0].id;
 
-  return <ActionProvider><BoLocProvider><DuyetProvider user={user}><PhieuProvider nguoiDung={user.name}>
+  return <ActionProvider><BoLocProvider><DuyetProvider user={user}><PhieuProvider nguoiDung={user.name}><KpiProvider>
     <Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
     {moDuoc === "workbench" && <Workbench onNavigate={setView} vaiTro={user.vaiTro} phong={user.phong}/>}
     {moDuoc === "debt" && <DebtQL1 actor={user.name}/>}
-    {moDuoc === "risk" && <RiskQL3 actor={user.name}/>}
-    {moDuoc === "tonghopql3" && <RiskQL3 actor={user.name} ketQua/>}
+    {moDuoc === "risk" && <RiskQL3 actor={user.name} vaiTro={user.vaiTro}/>}
+    {moDuoc === "tonghopql3" && <RiskQL3 actor={user.name} vaiTro={user.vaiTro} ketQua/>}
     {moDuoc === "hoadon" && <HoaDonQL2 actor={user.name} vaiTro={user.vaiTro}/>}
     {moDuoc === "hoan" && <HoanQL4 actor={user.name} vaiTro={user.vaiTro}/>}
     {moDuoc === "tinhtrang" && <TinhTrangDuLieu vaiTro={user.vaiTro}/>}
     {moDuoc === "giamsat" && <GiamSat/>}
     </Shell>
-  </PhieuProvider></DuyetProvider></BoLocProvider></ActionProvider>;
+  </KpiProvider></PhieuProvider></DuyetProvider></BoLocProvider></ActionProvider>;
 }
 
 /*

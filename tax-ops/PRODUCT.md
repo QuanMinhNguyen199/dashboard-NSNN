@@ -61,13 +61,24 @@ Hai lằn ranh người dùng đặt ra: giao diện **không được trông nh
 dùng**, và **không được đổi vị trí** điều hướng, bộ lọc hay nút mà người dùng đã
 quen tay.
 
-**Chữ dùng stack hệ thống, không tự host.** Quyết định của người dùng ngày
-28/09/2026 sau khi vòng duyệt cuối đề nghị ngược lại. Ba căn cứ: bề mặt Operate
-được phục vụ tốt bằng font hệ thống; dấu tiếng Việt chồng tầng (ế, ự, ỡ) hiển
-thị ổn định trong Segoe UI trong khi nhiều webfont subset latin-ext dựng không
-đều; và hệ thống chạy trên mạng nội bộ nơi mọi kilobyte tải thêm là chi phí
-thật. Đây là lựa chọn đã cân nhắc, không phải mặc định do bỏ sót — đừng mở lại
-nếu không có yêu cầu mới từ người dùng.
+**Chữ dùng Public Sans, biến thể, TỰ HOST trong mã nguồn.** Chốt ngày
+07/10/2026, thay cho quyết định dùng stack hệ thống ngày 28/09/2026.
+
+Ba căn cứ của quyết định 28/09 vẫn đứng nguyên và không bị bỏ qua — chúng trở
+thành ĐIỀU KIỆN mà bộ chữ phải vượt qua: bề mặt Operate phải đọc tốt ở cỡ nhỏ;
+dấu tiếng Việt chồng tầng (ế, ự, ỡ) phải dựng đều, trong khi nhiều webfont
+subset latin-ext dựng không đều; và hệ chạy trên mạng nội bộ nên mỗi kilobyte
+tải thêm là chi phí thật.
+
+Public Sans vượt cả ba, và việc vượt đã được ĐO chứ không phỏng đoán: nó có
+subset `vietnamese` riêng với dấu vẽ thật thay vì ghép từ latin-ext; nó có
+`tnum` nên mười chữ số bằng bề rộng, điều kiện sống còn với một sản phẩm đầy
+cột tiền và cột ngày; và vì là tệp biến thể, toàn dải cân nặng 100–900 chỉ tốn
+33,7 kB. Nó nằm trong mã nguồn, đi qua Vite, không gọi ra mạng ngoài và không
+hỏng khi máy trạm không ra được internet.
+
+Phép đo bắt buộc trước khi đổi bộ chữ lần sau nằm ở **The Font Must Earn Its
+Bytes Rule** trong DESIGN.md. Đừng mở lại bằng cảm nhận "đẹp".
 
 ## Evidence on Hand
 

@@ -17,7 +17,14 @@ import puppeteer from "puppeteer-core";
 
 const base = (process.argv[2] ?? "http://127.0.0.1:5174").replace(/\/+$/, "");
 const TAI_KHOAN = ["cv.ql1", "tp.ql1", "cv.ql2", "tp.ql2", "cv.ql3", "tp.ql3", "cv.ql4", "tp.ql4", "vanhanh.dulieu"];
-const KHO = [{ w: 1512, h: 1000, m: false }, { w: 1280, h: 900, m: false }, { w: 390, h: 844, m: true }];
+/*
+  768×1024 là khổ máy tính bảng dọc, và nó nằm trong dải mà The 44px Floor
+  Rule phủ ("từ 900px trở xuống"). Bộ khổ cũ nhảy thẳng từ 1280 xuống 390,
+  nên cả dải 721–900px chưa từng được quét — và đúng ở đó nút thanh lọc còn
+  32px trong khi luật đòi 44px. Một phép kiểm không đo dải nào thì không bảo
+  vệ được dải ấy.
+*/
+const KHO = [{ w: 1512, h: 1000, m: false }, { w: 1280, h: 900, m: false }, { w: 768, h: 1024, m: true }, { w: 390, h: 844, m: true }];
 
 const phat = [];
 const bao = (loai, cho, chiTiet) => phat.push({ loai, cho, chiTiet });
@@ -141,7 +148,7 @@ async function soatMan(nhan, kho) {
             hướng đáy, măng sét) và một ô DÍNH KHÁC — dòng tiêu đề dính che
             hàng đang cuộn qua nó là đúng việc của nó, không phải lỗi.
           */
-          const laPhu = tren?.closest(".mobile-nav, .nav-scrim, .topbar");
+          const laPhu = tren?.closest(".mobile-nav, .nav-scrim");
           const oTren = tren?.closest("th, td");
           const laDinhKhac = oTren && getComputedStyle(oTren).position === "sticky";
           if (tren && !laPhu && !laDinhKhac && !el.contains(tren) && tren !== el) {

@@ -11,9 +11,23 @@ import {
   daTraXM, tonCuoiK, tonXM, tongXM, type KyQL2,
 } from "@/data/ql2";
 import type { ReportStatus } from "@/domain/types";
+import type { Cell, SheetData } from "write-excel-file/browser";
+import type { DongKTTB } from "@/data/ql3";
 
 export type ReportValue = string | number | null;
-export interface ReportSheet { name: string; title: string; headers: string[]; rows: ReportValue[][]; percent?: number[]; bold?: number[]; unit?: string }
+/*
+  `khuon` là ĐƯỜNG THOÁT cho những sheet phải giống hệt bản gốc của phòng.
+
+  Khuôn chung — tiêu đề, ba dòng siêu dữ liệu, một hàng đầu cột — đúng cho
+  báo cáo do hệ thống sinh ra. Nhưng sheet `Data` của QL3 là bản kết xuất TTR
+  mà phòng dùng hằng ngày: nó có măng sét cơ quan, dòng tổng nằm TRÊN tiêu
+  đề, khối mô tả bộ lọc, rồi tiêu đề hai tầng có ô gộp. Người đối chiếu mở hai
+  tệp cạnh nhau, nên khác một dòng là họ phải dò lại từ đầu.
+
+  Khi `khuon` có mặt, `exportExcel` ghi thẳng nó và bỏ qua `headers`/`rows` —
+  hai trường ấy vẫn giữ để bản Word và các chỗ đọc chung không phải phân nhánh.
+*/
+export interface ReportSheet { name: string; title: string; headers: string[]; rows: ReportValue[][]; percent?: number[]; bold?: number[]; unit?: string; khuon?: SheetData; rongCot?: number[]; dongDinh?: number }
 export interface ReportMeta { period: string; scope: string; actor: string; status: ReportStatus }
 export const statusLabel: Record<ReportStatus, string> = { DRAFT: "Nháp", REVIEWED: "Đã rà soát", APPROVED: "Đã duyệt", AMEND: "Đang điều chỉnh", BLOCKED: "Chưa đủ dữ liệu" };
 const ratio = (a: number, b: number) => b ? a / b : null;
@@ -337,11 +351,167 @@ export function ql4Workbook(baoCao: string, ky: KyQL4, donVi: string[]): ReportS
   ];
 }
 
-export function ql3Workbook(ky: KyQL3, units: DonViQL3[]): ReportSheet[] {
+/*
+  `kpi` là số ĐÃ ĐĂNG KÝ trên hệ thống, truyền từ màn vào.
+
+  Không có nó thì bản xuất lấy số sinh sẵn, còn màn hình lấy số người dùng vừa
+  nhập — hai con số cho cùng một ô (7), và ô (8) chia cho hai mẫu số khác
+  nhau. Người mở tệp cạnh màn sẽ thấy lệch mà không hiểu vì sao.
+*/
+export function ql3Workbook(ky: KyQL3, units: DonViQL3[], kpi?: (dvId: string) => number | null): ReportSheet[] {
+  const o1 = (d: DonViQL3): ODanhGiaQL3 => {
+    const o = danhGiaQL3(ky.hat, d);
+    const dk = kpi?.(d.id);
+    return dk === undefined || dk === null ? o : { ...o, kpiDangKy: dk };
+  };
   const value = (o: ODanhGiaQL3): ReportValue[] => [o.keHoach, o.daThucHien, ratio(o.daThucHien, o.keHoach), o.daHoanThanh, ratio(o.daHoanThanh, o.keHoach), o.kpiDangKy, ratio(o.daHoanThanh, o.kpiDangKy), o.chapNhan, o.choGiaiTrinh, o.dieuChinh, o.deNghiKiemTra, o.tangThu, o.giamKhauTru, o.giamLo, o.tienPhat, o.nopCham];
   const rows: ReportValue[][] = [], bold: number[] = [];
-  const append = (name: string, list: DonViQL3[], total: boolean) => { if (total) bold.push(rows.length); rows.push([name, ...value(congQL3(list.map(d => danhGiaQL3(ky.hat, d))))]); };
+  const append = (name: string, list: DonViQL3[], total: boolean) => { if (total) bold.push(rows.length); rows.push([name, ...value(congQL3(list.map(o1)))]); };
   if (units.length) append("Tổng cộng toàn ngành", units, true);
   for (const g of ["VP", "TCS"] as const) { const list = units.filter(d => d.nhom === g); if (list.length) append(g === "VP" ? "I. Khối Văn phòng" : "II. Khối Thuế cơ sở", list, true); list.forEach(d => append(d.ten, [d], false)); }
   return [{ name: "TH DN trong ke hoach nam", title: "TỔNG HỢP KẾT QUẢ KIỂM TRA TẠI TRỤ SỞ CQT", headers: ["Cơ quan Thuế thực hiện", `Số DN trong Kế hoạch năm ${ky.denNgay.slice(-4)} (theo NNT)`, "Số DN đã thực hiện (theo NNT)", "Tỷ lệ thực hiện (theo NNT)", "Số DN đã hoàn thành (ko tính hồ sơ chờ giải trình)", "Tỷ lệ hoàn thành/kế hoạch năm", `KPI tháng ${ky.thangKPI} theo các đơn vị tự đăng ký`, "Tỷ lệ hoàn thành/KPI đăng ký", "Số DN chấp nhận", "Số DN chờ giải trình", "Số DN điều chỉnh thuế", "Số DN đề nghị kiểm tra tại DN", "KQ điều chỉnh thuế: Tổng số thuế tăng thu", "KQ điều chỉnh thuế: Giảm khấu trừ", "KQ điều chỉnh thuế: Giảm lỗ", "KQ điều chỉnh thuế: Số tiền phạt", "KQ điều chỉnh thuế: Tiền nộp chậm"], rows, bold, percent: [3, 5, 7], unit: "Số tiền: đồng" }];
+}
+
+/* ── Sheet `Data` của QL3, dựng theo đúng bản kết xuất TTR của phòng ──────── */
+
+/*
+  Khuôn lấy từ chính tệp `1_QL3_4_TH (03092026).xls`, sheet `Data`:
+
+    dòng 1   Thuế Thành phố Hà Nội … (cột Q) Mẫu số 09/QTKT
+    dòng 2   tên cơ quan thuế của bản kết xuất
+    dòng 3   trống
+    dòng 4   DÒNG TỔNG — đếm với cột chữ, cộng với cột số
+    dòng 5   BÁO CÁO CHI TIẾT KẾT QUẢ KIỂM TRA HỒ SƠ KHAI THUẾ TẠI CƠ QUAN THUẾ
+    dòng 6   Loại hồ sơ khai thuế: [Tất cả]
+    dòng 7   Từ tháng … đến tháng …
+    dòng 8–9 tiêu đề hai tầng, ô gộp ở hai nhóm "điều chỉnh tăng/giảm" và
+             "miễn giảm tăng/giảm"
+    dòng 10+ dữ liệu
+
+  Dòng tổng nằm TRÊN tiêu đề — đọc thì ngược, nhưng tệp gốc để vậy và người
+  đối chiếu mở hai tệp cạnh nhau. Khác một dòng là họ phải dò lại từ đầu, nên
+  thứ tự giữ nguyên.
+
+  MỘT DÒNG THÊM so với bản gốc: dòng mô phỏng. PRODUCT.md buộc mọi số của bản
+  demo mang nhãn mô phỏng, và một tệp giống hệt bản kết xuất thật mà không nói
+  nó là dữ liệu giả thì đúng là thứ sẽ bị dùng nhầm làm báo cáo. Nó đứng ngay
+  dưới khối mô tả bộ lọc, nơi người đọc còn chưa bước vào bảng số.
+*/
+
+/** 30 cột của sheet, đúng thứ tự. `nhom` gộp hai cột dưới một ô tầng trên. */
+const COT_KTTB: { nhan: string; nhom?: string; rong: number; so?: boolean; dem?: boolean }[] = [
+  { nhan: "STT", rong: 6 },
+  { nhan: "Cơ quan quản lý thuế (Phòng/Thuế cơ sở thực hiện)", rong: 34, dem: true },
+  { nhan: "Tên NNT", rong: 32, dem: true },
+  { nhan: "MST", rong: 14, dem: true },
+  { nhan: "Cơ quan quản lý thuế (Phòng/Thuế cơ sở thực hiện)", rong: 34, dem: true },
+  { nhan: "Tổng số hồ sơ năm trước liền kề chuyển sang", rong: 16, dem: true },
+  { nhan: "Kế hoạch đầu năm/tháng", rong: 13, dem: true },
+  { nhan: "Loại thuế", rong: 26, dem: true },
+  { nhan: "Kỳ kê khai", rong: 13, dem: true },
+  { nhan: "Số QĐ phạt", rong: 14, dem: true },
+  { nhan: "Ngày quyết định", rong: 13, dem: true },
+  { nhan: "Hồ sơ chấp nhận", rong: 12, so: true },
+  { nhan: "Hồ sơ chờ giải trình", rong: 12, so: true },
+  { nhan: "Hồ sơ điều chỉnh", rong: 12, so: true },
+  { nhan: "Hồ sơ ấn định", rong: 11, so: true },
+  { nhan: "Hồ sơ đề nghị kiểm tra tại DN", rong: 14, so: true },
+  { nhan: "Tăng", nhom: "Tổng số tiền thuế phải nộp điều chỉnh tăng, giảm", rong: 18, so: true },
+  { nhan: "Giảm", nhom: "Tổng số tiền thuế phải nộp điều chỉnh tăng, giảm", rong: 18, so: true },
+  { nhan: "Ấn định", rong: 14, so: true },
+  { nhan: "Tổng số thuế tăng thu", rong: 18, so: true },
+  { nhan: "Giảm khấu trừ", rong: 16, so: true },
+  { nhan: "Tăng khấu trừ", rong: 16, so: true },
+  { nhan: "Giảm lỗ", rong: 16, so: true },
+  { nhan: "Tăng lỗ", rong: 16, so: true },
+  { nhan: "Tăng", nhom: "Số tiền thuế được miễn giảm", rong: 15, so: true },
+  { nhan: "Giảm", nhom: "Số tiền thuế được miễn giảm", rong: 15, so: true },
+  { nhan: "Số tiền phạt", rong: 15, so: true },
+  { nhan: "Tiền nộp chậm", rong: 15, so: true },
+  { nhan: "Có trong kế hoạch năm theo QĐ phê duyệt lần đầu (Tích 1)", rong: 18, so: true },
+  { nhan: "Ngoài kế hoạch năm", rong: 14, so: true },
+];
+
+const SO_COT = COT_KTTB.length;
+const TRONG = (tu: number) => Array.from({ length: SO_COT - tu }, () => null);
+
+/** Giá trị của một dòng dữ liệu, đúng thứ tự 30 cột. */
+function oKTTB(d: DongKTTB, stt: number): (string | number)[] {
+  return [
+    stt, d.donVi, d.tenNNT, d.mst, d.donVi,
+    d.hoSoChuyenSang, d.keHoachDauNam, d.loaiThue, d.kyKeKhai, d.soQDPhat, d.ngayQuyetDinh,
+    d.chapNhan, d.choGiaiTrinh, d.dieuChinh, d.anDinh, d.deNghiKiemTra,
+    d.dieuChinhTang, d.dieuChinhGiam, d.anDinhTien, d.tangThu,
+    d.giamKhauTru, d.tangKhauTru, d.giamLo, d.tangLo,
+    d.mienGiamTang, d.mienGiamGiam, d.tienPhat, d.nopCham,
+    d.trongKeHoach, d.ngoaiKeHoach,
+  ];
+}
+
+export function sheetKTTB(dong: DongKTTB[], meta: ReportMeta, ky: KyQL3): ReportSheet {
+  const vien = { borderColor: "#9A9A9A", borderStyle: "thin" } as const;
+  const dauCot = { fontWeight: "bold", backgroundColor: "#E4DEDC", align: "center", alignVertical: "center", wrap: true, ...vien } as const;
+
+  /*
+    Dòng tổng của tệp gốc ĐẾM với cột chữ và CỘNG với cột số — cột "Tên NNT"
+    hiện 6.144 vì đó là số dòng, không phải một phép cộng vô nghĩa. Giữ đúng
+    cách ấy, nếu không người đối chiếu thấy ô trống ở nơi tệp của họ có số.
+  */
+  const tong: (number | null)[] = COT_KTTB.map((c, i) => {
+    if (c.dem) return dong.length;
+    if (c.so) return dong.reduce((t, d) => t + Number(oKTTB(d, 0)[i] || 0), 0);
+    return null;
+  });
+
+  const nhomTren: (Cell | null)[] = [];
+  const tangGiam: (Cell | null)[] = [];
+  for (let i = 0; i < SO_COT; i++) {
+    const c = COT_KTTB[i];
+    if (!c.nhom) {
+      /* Cột không thuộc nhóm nào trải xuống cả hai tầng — ô gộp dọc, đúng như
+         tệp gốc, để tầng dưới không có một ô trống câm dưới mỗi tên cột. */
+      nhomTren.push({ value: c.nhan, rowSpan: 2, ...dauCot });
+      tangGiam.push(null);
+      continue;
+    }
+    const moNhom = i === 0 || COT_KTTB[i - 1].nhom !== c.nhom;
+    nhomTren.push(moNhom ? { value: c.nhom, columnSpan: 2, ...dauCot } : null);
+    tangGiam.push({ value: c.nhan, ...dauCot });
+  }
+
+  const khuon: SheetData = [
+    [{ value: "Thuế Thành phố Hà Nội", fontWeight: "bold" }, ...TRONG(1).slice(0, 15), { value: "Mẫu số 09/QTKT", align: "right" }, ...TRONG(17)],
+    [{ value: meta.scope.toUpperCase() }, ...TRONG(1)],
+    [],
+    tong.map((v, i): Cell | null => v === null
+      ? null
+      : { value: v, type: Number, format: "#,##0.########", fontWeight: "bold", backgroundColor: "#F2F2F2", ...(i === 0 ? {} : {}) }),
+    [{ value: "BÁO CÁO CHI TIẾT KẾT QUẢ KIỂM TRA HỒ SƠ KHAI THUẾ TẠI CƠ QUAN THUẾ", columnSpan: 26, align: "center", fontWeight: "bold", fontSize: 13, height: 24 }, ...TRONG(26)],
+    [{ value: "Loại hồ sơ khai thuế: [Tất cả]", columnSpan: 26 }, ...TRONG(26)],
+    [{ value: `Lũy kế từ 01/01 đến ${ky.denNgay}`, columnSpan: 26 }, ...TRONG(26)],
+    [{ value: `DỮ LIỆU MÔ PHỎNG – không dùng làm báo cáo chính thức · Phạm vi: ${meta.scope} · Trạng thái: ${statusLabel[meta.status]} · Người xuất: ${meta.actor}`, columnSpan: 26, textColor: "#7A5A12", backgroundColor: "#FDF5DD", wrap: true, height: 26 }, ...TRONG(26)],
+    nhomTren,
+    tangGiam,
+  ];
+
+  for (let i = 0; i < dong.length; i++) {
+    khuon.push(oKTTB(dong[i], i + 1).map((v, ci): Cell => typeof v === "number"
+      ? { value: v, type: Number, format: "#,##0.########", align: "right", ...vien }
+      /* MST giữ KIỂU CHỮ: để Excel tự nhận là số thì "0100000001" rụng mất số
+         0 đầu, và cột mã số thuế hỏng ngay ở ô đầu tiên. */
+      : { value: v, type: String, wrap: ci === 1 || ci === 2 || ci === 4, ...vien }));
+  }
+
+  return {
+    name: "Data",
+    title: "BÁO CÁO CHI TIẾT KẾT QUẢ KIỂM TRA HỒ SƠ KHAI THUẾ TẠI CƠ QUAN THUẾ",
+    unit: "Đồng",
+    headers: COT_KTTB.map((c) => (c.nhom ? `${c.nhom} – ${c.nhan}` : c.nhan)),
+    rows: dong.map((d, i) => oKTTB(d, i + 1)),
+    khuon,
+    rongCot: COT_KTTB.map((c) => c.rong),
+    /* Dính tới hết hai tầng tiêu đề: cuộn xuống dòng 3.000 vẫn phải biết cột
+       nào là "Giảm lỗ" và cột nào là "Tăng lỗ". */
+    dongDinh: 10,
+  };
 }

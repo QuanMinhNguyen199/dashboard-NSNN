@@ -9,13 +9,14 @@ export async function exportExcel(sheets: ReportSheet[], meta: ReportMeta, filen
   const { default: writeExcelFile } = await import("write-excel-file/browser");
   const workbook = sheets.map(s => {
     const merged = (value: string): Cell[] => [{ value, columnSpan: s.headers.length, wrap: true, height: 28 }, ...s.headers.slice(1).map(() => null)];
-    const data: SheetData = [merged(`${s.title}${s.unit ? ` (${s.unit})` : ""}`), ...metaLines(meta).map(merged), s.headers.map(value => ({ value, fontWeight: "bold", backgroundColor: "#E4DEDC", wrap: true, height: 60 }))];
+    /* Sheet mang khuôn riêng ghi thẳng khuôn ấy — xem ghi chú ở `ReportSheet`. */
+    const data: SheetData = s.khuon ?? [merged(`${s.title}${s.unit ? ` (${s.unit})` : ""}`), ...metaLines(meta).map(merged), s.headers.map(value => ({ value, fontWeight: "bold", backgroundColor: "#E4DEDC", wrap: true, height: 60 }))];
     const columnName = (index: number) => {
       let result = "", n = index + 1;
       while (n > 0) { n--; result = String.fromCharCode(65 + n % 26) + result; n = Math.floor(n / 26); }
       return result;
     };
-    for (let ri = 0; ri < s.rows.length; ri++) data.push(s.rows[ri].map((value, ci): Cell => {
+    if (!s.khuon) for (let ri = 0; ri < s.rows.length; ri++) data.push(s.rows[ri].map((value, ci): Cell => {
       const additive = typeof value === "number" && !s.percent?.includes(ci) && !(ci === 0 && s.headers[0] === "STT");
       if (additive && s.bold?.includes(ri)) {
         const end = ri === 0 ? s.rows.length : s.bold.find(i => i > ri) ?? s.rows.length;
@@ -24,7 +25,15 @@ export async function exportExcel(sheets: ReportSheet[], meta: ReportMeta, filen
       }
       return { value: value ?? "—", type: typeof value === "number" ? Number : String, format: typeof value === "number" ? (s.percent?.includes(ci) ? "0.0%" : "#,##0.########") : undefined, fontWeight: s.bold?.includes(ri) ? "bold" : undefined, wrap: true };
     }));
-    return { sheet: s.name, data, columns: s.headers.map((h, i) => ({ width: i === 0 && h !== "STT" ? 44 : h === "STT" ? 7 : /Tên|Phòng|Địa bàn|Giá trị/.test(h) ? 38 : 22 })), stickyRowsCount: 5, stickyColumnsCount: s.headers[0] === "STT" ? 2 : 1 };
+    return {
+      sheet: s.name,
+      data,
+      columns: s.rongCot
+        ? s.rongCot.map(width => ({ width }))
+        : s.headers.map((h, i) => ({ width: i === 0 && h !== "STT" ? 44 : h === "STT" ? 7 : /Tên|Phòng|Địa bàn|Giá trị/.test(h) ? 38 : 22 })),
+      stickyRowsCount: s.dongDinh ?? 5,
+      stickyColumnsCount: s.headers[0] === "STT" ? 2 : 1,
+    };
   });
   await writeExcelFile(workbook, { fontFamily: "Times New Roman", fontSize: 11 }).toFile(filename);
 }

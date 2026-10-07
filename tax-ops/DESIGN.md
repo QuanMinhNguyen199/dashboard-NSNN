@@ -44,61 +44,61 @@ colors:
   scroll-thumb-hover: "#9aa9bd"
 typography:
   display:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "clamp(22px, 2vw, 26px)"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.02em"
   headline:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "20px"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.02em"
   metric:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "18px"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.015em"
   title:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "14px"
     fontWeight: 650
     lineHeight: 1.4
     letterSpacing: "-0.005em"
   body:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
   body-strong:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "13px"
     fontWeight: 600
     lineHeight: 1.45
     letterSpacing: "normal"
   lead:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "13px"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
   label:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "12px"
     fontWeight: 600
     lineHeight: 1.4
     letterSpacing: "normal"
   column-head:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "11px"
     fontWeight: 650
     lineHeight: 1.4
     letterSpacing: "0.01em"
   nav-group:
-    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "10px"
     fontWeight: 700
     lineHeight: 1.4
@@ -255,7 +255,19 @@ Ngoài ba cái giá chung, mỗi lớp phủ còn che mất đúng thứ ngườ
 
 Thay vào đó: khối mở ra **trong luồng trang, ngay dưới thứ mở nó**, mang `tabIndex={-1}` và nhận focus khi hiện, đóng bằng nút Đóng và bằng Escape, trả focus về chỗ vừa bấm. Danh sách thả xuống vẫn được định vị tuyệt đối trong ô chứa của nó — đó không phải lớp phủ — nhưng đóng bằng người nghe `pointerdown` chứ không bằng một tấm màn `position: fixed`.
 
-Còn đúng hai thứ được phép nổi lên vì chúng không mang nội dung phải đọc kỹ: toast thông báo, và drawer điều hướng ở khổ điện thoại.
+Hai thứ được phép nổi lên vì chúng không mang nội dung phải đọc kỹ: toast thông báo, và drawer điều hướng ở khổ điện thoại.
+
+**Ngoại lệ thứ ba — chi tiết một bản ghi (chốt 07/10/2026).** Người dùng quyết định: bấm một dòng trong danh sách thì chi tiết của nó mở trong **ngăn trượt từ mép phải**, không phải một khối trong luồng trang. Áp cho danh sách lượt chạy ở Tình trạng dữ liệu và danh sách NNT của QL3.
+
+Quyết định này được ghi lại thay vì tranh luận lại, nhưng nó KHÔNG mở cửa cho lớp phủ nói chung. Ba cái giá ở trên vẫn còn nguyên, và ngoại lệ chỉ đứng vững khi trả lại được hai trong ba:
+
+- **Địa chỉ phải có.** Đây là cái giá nặng nhất và là cái duy nhất bắt buộc phải trả: dòng đang mở nằm trong `so=`, nạp lại trang thì ngăn mở lại đúng bản ghi ấy, và gửi liên kết đi thì người nhận thấy đúng cái đang bàn. Một ngăn trượt không có địa chỉ là vi phạm, không phải ngoại lệ.
+- **Một đường dựng duy nhất.** Mọi ngăn trượt đi qua `CaseLayout presentation="drawer"`. Dựng ngăn thứ hai cho một màn khác là nhân đôi số chỗ phải kiểm mỗi lần đổi luật bố cục.
+- **Chỉ cho CHI TIẾT, không cho HÀNH ĐỘNG.** Hộp lý do trả lại, ô xác nhận trước khi chốt, hộp tải tệp vẫn nằm trong luồng trang. Chi tiết là thứ để đọc; ba thứ kia là thứ để quyết, và người quyết cần còn nhìn thấy bảng số lúc quyết.
+
+Cái giá còn lại — không lọt vào ảnh chụp tĩnh — chấp nhận, vì nội dung trong ngăn luôn có đường khác để tới: bản xuất Excel mang đủ mọi cột mà ngăn bày.
+
+Lý do đổi, ghi lại để người sau không lật ngược: bản trước của danh sách NNT đặt chi tiết thành **cột cố định bên phải**. Cột ấy ăn 30% bề ngang suốt thời gian kể cả khi người dùng chỉ đang đọc bảng, và dưới 1361px nó rơi xuống dưới bảng — tức cùng một thao tác cho ra hai bố cục khác nhau tùy bề rộng màn. Ngăn trượt cho bảng giữ trọn bề ngang ở mọi khổ và chỉ xuất hiện khi được yêu cầu.
 
 **The URL Is The State Rule.** Những mẩu trạng thái người khác cần dẫn tới đều nằm trong query string, đọc lúc mở màn và ghi lại khi đổi (`state/diaChi.ts`): `ky`, `donvi`, `muc`, `moc`, `so`, `trang`, `xem`. Giá trị mặc định **không** được ghi ra, để địa chỉ ngắn và không khóa cứng mặc định hôm nay. Đổi màn thì dọn sạch tham số của màn cũ.
 
@@ -340,9 +352,9 @@ Lý do không phải thẩm mỹ. Chữ viết hoa mất hình lên xuống củ
 
 ## Layout
 
-Khung cố định, nội dung co giãn. Sidebar `position: fixed` rộng 252px; topbar `position: sticky` cao `--topbar-h 60px`, lùi trái 252px; mặt làm việc lùi trái 252px với đệm `18px 20px 32px`. Nội dung nằm trong `.page-stack`: `width: min(100%, 1540px)`, `grid-template-columns: minmax(0, 1fr)`, căn giữa, các khối cách nhau 18px. Trần 1540px giữ cho bảng không kéo dài vô tận trên màn rộng.
+Khung cố định, nội dung co giãn. Sidebar `position: fixed` rộng 252px; **không có măng sét** — mặt làm việc lùi trái 252px với đệm `18px 20px 32px` và bắt đầu ngay mép trên khung nhìn. Nội dung nằm trong `.page-stack`: `width: min(100%, 1540px)`, `grid-template-columns: minmax(0, 1fr)`, căn giữa, các khối cách nhau 18px. Trần 1540px giữ cho bảng không kéo dài vô tận trên màn rộng.
 
-Măng sét mang cả hai bậc thao tác từ 901px trở lên. Topbar có một ô cắm rỗng `.topbar-actions` (`display: contents`, nên nút cắm vào trở thành con trực tiếp của hàng flex) đặt sau dải bối cảnh, rồi một cụm `.topbar-actions` thứ hai ngay sau nó mang hai nút cấp hệ thống và khép lại hàng; `PageIntro` bắn cụm `.page-actions` của nó vào đó bằng portal khi `(min-width: 901px)` khớp, và dựng tại chỗ khi không. Từ 900px xuống nút quay về trong luồng nội dung và trải hết bề ngang. `PageIntro` trả về một fragment — `<h1 class="sr-only">` cộng `.page-lead` — chứ không còn bọc trong một khối `.page-intro`; lớp đó không còn tồn tại.
+Thao tác cấp trang nằm trong luồng nội dung ở MỌI khổ: `PageIntro` dựng `.page-actions` tại chỗ, không còn portal và không còn ô cắm. `PageIntro` trả về một fragment — `<h1 class="sr-only">` cộng `.page-lead` — chứ không còn bọc trong một khối `.page-intro`; lớp đó không còn tồn tại.
 
 Nhịp khoảng cách chạy theo bậc 4 / 8 / 10 / 12 / 14 / 16 / 18 / 20. Đệm trong khối là `0 14px 12px` (12px từ 720px xuống). Các dải toàn chiều rộng bên trong khối — bảng, danh sách việc, danh sách nguồn, bảng xếp hạng, lưới chi tiết — dùng `margin-inline: -14px` để chạm hẳn mép khối trong khi phần chữ vẫn thụt vào. Hàng bảng cao 38px, ô chi tiết và ô tổng hợp cao tối thiểu 56px, hàng việc 54px, đầu khối 54px.
 
@@ -350,9 +362,8 @@ Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-lay
 
 **Điểm ngắt.**
 - **Mọi khổ** — chọn một hàng mở `<dialog>` trượt từ mép phải, rộng `min(100vw, 520px)`, cao toàn màn, nền `--canvas`. Không còn điểm ngắt 1361px và không có luật chặn chiều cao nào áp cho dải, vì khi danh sách đứng một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
-- **901px** — ranh giới của thao tác: trên nó nút nằm trong măng sét, dưới nó nút nằm trong nội dung. Áp cho cả thao tác cấp trang lẫn cấp hệ thống.
 - **1180px** — lưới hai cột duỗi thành một; luồng trạng thái từ năm cột xuống ba.
-- **900px** — sidebar ẩn, topbar và mặt làm việc bỏ lùi trái, nút mở menu hiện, thanh điều hướng đáy hiện lên (nền `#fffffff2`, `backdrop-filter: blur(14px)`), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
+- **900px** — sidebar ẩn, mặt làm việc bỏ lùi trái, thanh điều hướng đáy hiện lên cùng nút mở ngăn điều hướng (nền `#fffffff2`, `backdrop-filter: blur(14px)`), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
 - **720px** — màn đăng nhập xếp dọc; dải tổng hợp về hai cột; nút phân đoạn đổi thành `<select>`; ô bảng cao 44px; dải thông báo xếp dọc hoàn toàn; luồng duyệt đổi trục ngang thành trục dọc.
 
 **Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`, và có một công tắc chung cắt mọi animation cùng transition xuống 0,01ms khi người dùng yêu cầu giảm chuyển động.
@@ -401,7 +412,7 @@ Không mục nào của §4.2 bị bỏ. Khi đối chiếu với phòng nghiệ
 
 Và **mục của phân hệ luôn nằm trong thanh bên**, không bao giờ là một dải trên trang. QL3 từng dùng `Segmented` ngang ở giữa trang trong khi QL1 dùng thanh bên: hai phòng cùng một hệ, cùng một loại việc, mà người dùng phải tìm mục ở hai chỗ khác nhau, và ai làm việc với hai phòng thì phải học lại chỗ bấm mỗi lần chuyển. Dải trên trang còn ăn một dòng ngang đúng ở nơi bảng cần bề rộng nhất.
 
-Nhãn nút cũng là một bộ duy nhất: **Xuất Excel** và **Xuất Word** ở măng sét cho cả bộ sheet của báo cáo, **Xuất bảng này** trong đầu khối cho một bảng, **Xuất danh sách đang lọc** cho danh sách đã lọc. Trước đó cùng một việc mang ba tên — "Xuất cả bộ báo cáo", "Xuất báo cáo Excel", "Xuất Excel" — và người dùng phải đoán ba cái ấy có khác nhau không.
+Nhãn nút cũng là một bộ duy nhất: **Xuất Excel** và **Xuất Word** trong khối Xem báo cáo cho cả bộ sheet, **Xuất bảng này** trong đầu khối cho một bảng, **Xuất danh sách đang lọc** cho danh sách đã lọc. Trước đó cùng một việc mang ba tên — "Xuất cả bộ báo cáo", "Xuất báo cáo Excel", "Xuất Excel" — và người dùng phải đoán ba cái ấy có khác nhau không.
 
 Tiêu đề màn luôn là **tên nghiệp vụ · tên phòng** ("Rủi ro hóa đơn · Phòng QL2"), vì một người có thể mở phân hệ của phòng khác trong cùng phiên làm việc và cần biết mình đang ở đâu.
 
@@ -415,7 +426,43 @@ Ba hệ quả bắt buộc:
 
 Lý do là việc đối chiếu giữa người với người: hai cán bộ cùng mở một kỳ phải chỉ được cho nhau "nút thứ hai từ phải" mà không cần hỏi đối phương đang thấy mấy nút. Vai trò khác nhau thì **nội dung** ô khác nhau, **vị trí** ô thì không.
 
-**The Fixed Furniture Rule.** Không đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay. Sidebar trái, topbar trên, thanh lọc chung dính ngay dưới topbar, bộ lọc riêng của bảng nằm trong đầu khối, thao tác chính nằm bên phải đầu khối — đây là lằn ranh người dùng đặt ra, và mọi màn mới thừa hưởng nó.
+**The Friction Follows Consequence Rule.** Độ khó của một thao tác phải đi theo **mức khó gỡ lại của nó**, không theo mức ồn ào của nó.
+
+Hệ này từng làm ngược. `Trả lại` — việc người lập nhận lại bản nháp và sửa tiếp — bắt gõ lý do bắt buộc tới 200 ký tự, có khối riêng trải hết thanh. Còn `Duyệt`, việc khóa số của cả một kỳ, chốt bằng **một cú bấm**, không xác nhận, không tóm tắt, không hoàn tác. Theo QR-03 thì duyệt xong muốn sửa phải mở bản điều chỉnh kèm lý do — nghĩa là cú bấm rẻ nhất trên màn lại là cú đắt nhất để gỡ.
+
+Luật: mọi thao tác không tự gỡ lại được đều đi qua **một ô xác nhận trong luồng trang**, mang đúng hai thứ — câu nói **hệ quả** ("duyệt xong là kỳ khóa số; muốn sửa phải mở bản điều chỉnh, không có nút hoàn tác") và bản **tóm tắt đang chốt cái gì** (kỳ, bộ sheet, phạm vi). Ô ấy dùng chung khuôn với ô lý do trả lại: cùng vị trí, cùng cặp nút Hủy / nút chốt, cùng cách mở bằng `aria-expanded` trên nút gọi nó.
+
+Ba điều không được nới:
+
+- **Xác nhận không phải là hỏi "chắc chưa".** Một ô chỉ hỏi lại mà không nói đang chốt cái gì thì chỉ thêm một cú bấm, và người dùng học cách bấm qua nó mà không đọc. Tóm tắt là phần bắt buộc; phân hệ phải truyền vào (`tomTat`), vì chỉ nó biết bộ báo cáo của mình gồm mấy sheet.
+- **Chặn ở cửa thì phải nói lý do tại cửa.** Báo cáo chưa có mẫu, dữ liệu chưa đủ điều kiện — tắt nút và in lý do ngay dưới thanh (`chan`), không giấu nút. Giấu thì người dùng đi tìm một chức năng đã biến mất.
+- **Nút chốt vẫn đứng nguyên ô quyết định.** Thêm một bước không được đổi chỗ nút — xem The Fixed Slots Rule. Cú bấm thứ nhất nay dẫn tới một câu hỏi thay vì tới một kỳ đã khóa, nhưng nó vẫn là cùng một nút ở cùng một chỗ.
+
+Chốt kiểm: trợ thủ `chot()` trong `scripts/acceptance.mjs` là đường đi duy nhất tới hai cú chốt; nút nào chốt thẳng trở lại thì cổng đỏ.
+
+**The Overflow Decides, Not The Breakpoint Rule.** Dấu hiệu "còn nội dung ngoài khung" bám **hiệu số giữa nội dung và khung**, không bám bề rộng màn hình.
+
+Dải gợi ý cuộn từng chỉ hiện từ 900px xuống. Nhưng tràn ngang không đi theo khổ máy: ở 1440px bảng nhập kết quả PRS-03 rộng 1752px trong khung 1146px — 606px, khoảng 35%, khuất hẳn, và cột khuất đúng là cột `Kết quả`. Ngược lại ở 390px một bảng bốn cột hẹp vẫn hiện dải dù không có gì để cuộn. Cùng một phép đo sai, sai cả hai hướng.
+
+`TableWrap` đo bằng `ResizeObserver` trên cả khung lẫn con của nó — khung đổi khi cửa sổ hay thanh bên đổi, con đổi khi sang trang hay đổi bộ lọc, và lần đổi thứ hai không kéo theo lần đổi thứ nhất. Phần khuất còn được nói cho trình đọc màn hình ngay trong `aria-label` của vùng, vì ở đó nó đến đúng lúc người dùng bước vào vùng.
+
+Cùng một lý do áp cho **The 44px Floor Rule**: luật ghi "từ 900px trở xuống" thì khối CSS phải là `max-width: 900px`, và nó phải đứng **sau** luật nền của cùng selector — media query không cộng thêm độ đặc hiệu. Hai luật vùng chạm của thanh lọc từng nằm trong khối 720px, nên dải 721–900px rơi lại 32px suốt một thời gian mà không ai thấy: bộ khổ của `soat` nhảy thẳng từ 1280 xuống 390. **Phép kiểm không đo dải nào thì không bảo vệ được dải ấy** — 768×1024 nay nằm trong bộ khổ.
+
+**The Export Lives On What It Exports Rule (chốt 07/10/2026).** Phạm vi của một nút xuất mã hóa bằng **VỊ TRÍ**, không chỉ bằng nhãn:
+
+| Xuất cái gì | Nút nằm ở đâu | Nhãn |
+|---|---|---|
+| Cả bộ sheet của báo cáo | trong **khối Xem báo cáo** | ,  |
+| Một bảng | đầu khối của chính bảng ấy |  |
+| Danh sách đang lọc | chân khối của chính danh sách ấy |  |
+
+Luật này sinh ra từ một lỗi có thật. Khi măng sét bỏ, nút xuất cả bộ được đưa vào đầu khối chính của mục — và ở màn KPI đăng ký nó đứng ngay cạnh : hai nút cùng một hàng mà khác phạm vi, một cái xuất cả bộ báo cáo, một cái lưu bảng đang mở. Nhãn phân biệt được, nhưng vị trí thì mời đọc nhầm — và bộ nhãn ba tên ở trên vốn đã sinh ra vì người dùng từng phải đoán.
+
+Khối Xem báo cáo đang hiện đúng bộ sheet mà nút sinh ra, nên nút nằm trên chính vật nó tác động. Đầu khối của nó vốn bỏ trống (không nút đóng, không chip trạng thái — cả hai đã có trên thanh duyệt).
+
+**Cái giá, đã biết và đã chọn:** khối Xem báo cáo chỉ dựng khi  đúng — có việc để làm, hoặc kỳ đã  / . Trưởng phòng mở một kỳ  không có việc gì để làm sẽ **không xuất được**. Đây là đổi quyền chứ không phải đổi bố cục; nếu sau này cần trả lại thì nới , đừng thêm một nút xuất thứ hai ở chỗ khác.
+
+**The Fixed Furniture Rule.** Không đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay. Sidebar trái, thanh lọc chung dính lên mép trên khung nhìn, bộ lọc riêng của bảng nằm trong đầu khối, thao tác chính nằm bên phải đầu khối — đây là lằn ranh người dùng đặt ra, và mọi màn mới thừa hưởng nó.
 
 ## Elevation & Depth
 
@@ -428,7 +475,7 @@ Hệ gần như phẳng. Độ sâu chủ yếu đến từ lớp navy làm khun
 - **Nâng khi trỏ tới** (`0 3px 8px rgb(41 37 38 / 10%)` kèm `translateY(-2px)`): chỉ hàng bảng, hàng việc và ô tổng hợp bấm được.
 - **Nút phân đoạn đang bật** (`0 1px 2px #2925261f` kèm viền `--state-edge`): một mảnh trắng nhô lên khỏi rãnh xám.
 - **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): chỉ còn drawer điều hướng ở khổ điện thoại và toast — xem The No-Overlay Rule. Scrim của drawer là `#29252680`.
-- **Mép dính** (`0 1px 3px rgb(41 37 38 / 3%)` cho topbar, `0 -6px 20px #29252612` cho thanh điều hướng đáy): gần như không thấy, chỉ để mép không trôi vào nội dung khi cuộn.
+- **Mép dính** (`0 1px 3px rgb(22 38 60 / 4%)` cho thanh lọc chung, `0 -6px 20px #16263c12` cho thanh điều hướng đáy): gần như không thấy, chỉ để mép không trôi vào nội dung khi cuộn.
 
 ### Named Rules
 
@@ -466,7 +513,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 
 ### Chips (Badge)
 - **Mặc định là chữ có chấm, không phải viên thuốc:** nền trong suốt, không viền, không đệm, chữ 12px/600, và một chấm tròn 6px `currentColor` đứng trước qua `::before`. Bốn tông dùng dạng này: neutral (`--ink-2`), positive, warning, info. Chấm cộng chữ nghĩa là trạng thái không bao giờ chỉ được truyền bằng màu.
-- **Hai ngoại lệ có nền:** tông `critical` và cờ "Mô phỏng" chuyển thành chip có nền nhạt, bo 4px, đệm `2px 7px` — đó là hai thứ phải nhìn thấy trước khi đọc. Chip mô phỏng bỏ chấm vì nó không phải một trạng thái trong chuỗi. Chip này chỉ còn dùng ở màn từ chối quyền, nơi không có khung bao quanh để nói đây là bản mô phỏng; măng sét không mang nó nữa.
+- **Hai ngoại lệ có nền:** tông `critical` và cờ "Mô phỏng" chuyển thành chip có nền nhạt, bo 4px, đệm `2px 7px` — đó là hai thứ phải nhìn thấy trước khi đọc. Chip mô phỏng bỏ chấm vì nó không phải một trạng thái trong chuỗi. Chip này chỉ còn dùng ở màn từ chối quyền, nơi không có khung bao quanh để nói đây là bản mô phỏng.
 
 ### Cards / Containers (Panel)
 - **Corner Style:** 10px, `overflow: hidden`.
@@ -480,7 +527,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 
 Kèm theo một điều kiện, vì đây là chỗ cách làm rẻ tiền sẽ làm mất dữ liệu: con số nào chỉ có trong dòng phụ mà không có trong bảng thì phải chuyển đi đâu đó, không được bỏ. Ở Lô dữ liệu, `{thieu.length} đơn vị chưa gửi` đã chuyển vào dải cảnh báo sẵn có trong thân khối, nay đọc là "{loi.length} file cần xem lại, trong đó {thieu.length} đơn vị chưa gửi". Bỏ dòng phụ là bỏ một chỗ đặt chữ, không phải bỏ một dữ kiện.
 
-**The Card Fits The Table Rule.** Khung cao theo bảng, không phải bảng nén vào khung. Dải hai cột từng bị chặn ở `100dvh - măng sét - 40px` rồi cho thân khối cuộn bên trong — đúng khi bảng có 2.455 dòng, sai khi một trang chỉ có 10. Ở 1440 và 1366, tên doanh nghiệp bị bóp xuống ba bốn dòng, hàng cao tới 204px, và 18/20 trang vẫn phải cuộn: chia trang xong vẫn còn thanh cuộn. Bỏ trần đi thì khối cao đúng bằng mười hàng của nó, không còn thanh cuộn dọc nào, và trang dài ra thì cuộn trang — thao tác người dùng vốn đã quen. Khối chi tiết quay về `position: sticky` nên nó đi theo tầm mắt. Đánh đổi đã biết và chấp nhận: hai cột không còn cao bằng nhau, và đầu cột chỉ dính trong khung bảng chứ không ghim dưới măng sét khi cuộn trang.
+**The Card Fits The Table Rule.** Khung cao theo bảng, không phải bảng nén vào khung. Dải hai cột từng bị chặn ở `100dvh - 100px` rồi cho thân khối cuộn bên trong — đúng khi bảng có 2.455 dòng, sai khi một trang chỉ có 10. Ở 1440 và 1366, tên doanh nghiệp bị bóp xuống ba bốn dòng, hàng cao tới 204px, và 18/20 trang vẫn phải cuộn: chia trang xong vẫn còn thanh cuộn. Bỏ trần đi thì khối cao đúng bằng mười hàng của nó, không còn thanh cuộn dọc nào, và trang dài ra thì cuộn trang — thao tác người dùng vốn đã quen. Khối chi tiết quay về `position: sticky` nên nó đi theo tầm mắt. Đánh đổi đã biết và chấp nhận: hai cột không còn cao bằng nhau, và đầu cột chỉ dính trong khung bảng chứ không ghim lên mép màn khi cuộn trang.
 
 **Ghi chú lịch sử.** Trước đó dải dùng `contain: size` trên thân khối chi tiết để chiều cao do **bảng** quyết định, không do khối chi tiết. Hai cột trước đây cùng nằm trong một hàng lưới cao bằng cái cao hơn, nên một bản ghi nhiều thông tin kéo cả hai cột lên theo: ở Lô dữ liệu, chọn lô TTR có 8 file làm dải cao 900px trong khi bảng chỉ cần 473px — nửa dưới cột bảng thành khoảng trống, và chiều cao trang nhảy mỗi lần đổi hàng.
 
@@ -567,7 +614,7 @@ Vai **Vận hành dữ liệu** không thuộc phòng nào và mở đúng một
 ### Bộ lọc chung
 **The Filter Belongs To The Subsystem, Not The Tab Rule.** Kỳ + Đơn vị đặt trong một thanh dính đầu trang, **trên** cụm tab, và lựa chọn sống ở context trên App chứ không ở state của màn — mục G1 đòi "đổi tab không mất lựa chọn", mà một state cục bộ trong màn Nợ sẽ bị dựng lại mỗi lần người dùng rời màn. Đặt thanh này *dưới* cụm tab thì nó đọc thành "lọc của mục này", đúng thứ G1 yêu cầu không được hiểu nhầm.
 
-Thanh dính ở `top: var(--topbar-h)` chứ không `top: 0`: măng sét cũng dính và cao đúng chừng ấy, nên `top: 0` sẽ cho thanh lọc chui xuống dưới nó. Từ 720px trở xuống măng sét chuyển sang `position: static`, lúc đó mép trên khung nhìn mới là mốc đúng.
+Thanh dính ở `top: 0`. Trước đây nó dính ở `top: var(--topbar-h)` vì măng sét cũng dính và cao đúng chừng ấy; măng sét bỏ rồi thì mép trên khung nhìn là mốc đúng ở mọi khổ.
 
 Đơn vị chọn nhiều bằng hộp tự dựng, không phải `<select multiple>`: select nhiều ở khổ hẹp cao bằng nửa màn và không cho biết đã chọn gì nếu không cuộn. Danh mục đơn vị lấy từ chính dữ liệu của phân hệ đang mở — QL1 và QL3 dùng hai danh mục khác nhau (mục 6 bản thiết kế), nên một danh sách khai cứng dùng chung sẽ sai ở một trong hai. Mảng rỗng nghĩa là **toàn ngành**, không phải "không khớp gì"; giữ nó rỗng thay vì liệt kê hết để nút bỏ lọc có nghĩa rõ ràng.
 
@@ -681,7 +728,18 @@ Lưới `<dl>` bốn cột trên desktop, hai cột trong ngăn chi tiết và t
 ### Page Intro & Page Actions
 `PageIntro` không dựng khung riêng: nó trả về `<h1 class="sr-only">` cộng dòng dẫn `.page-lead` (13px/400, `max-width: 72ch`, màu `--ink-2`), rồi gửi cụm thao tác đi nơi khác.
 
-**The Action Lives in the Masthead Rule.** Từ 901px trở lên, thao tác cấp trang nằm trong măng sét, không nằm trong nội dung. Khi tiêu đề màn đã ẩn, một nút đứng một mình ở đầu nội dung chiếm trọn một hàng để nói một việc — trong khi măng sét đang thừa bề ngang. Nút được bắn vào ô cắm `#page-actions-slot` bằng portal, nên nó vẫn thuộc về màn đang mở về mặt dữ liệu và vẫn nằm đúng thứ tự đọc của măng sét. Dưới 901px thì ngược lại: măng sét đã chật vì nút mở điều hướng, kỳ làm việc và phạm vi, nên nút quay về nội dung và trải hết bề ngang. Đừng dựng lại một hàng tiêu đề chỉ để có chỗ đặt nút.
+**The No Masthead Rule (chốt 07/10/2026).** Hệ KHÔNG có măng sét. Quyết định của người dùng: nó không đáng một dải ngang ở mọi màn khi việc xuất dữ liệu đã có nút ngay trong đầu khối của từng bảng.
+
+Măng sét từng mang bốn thứ, và ba thứ phải có chỗ mới trước khi gỡ nó:
+
+- **Nút mở ngăn điều hướng** chuyển xuống thanh điều hướng đáy, và nay LUÔN có mặt chứ không chỉ khi vai có hơn năm màn. Đây là phần bắt buộc: dưới 900px thanh bên ẩn, nên không có nút ấy thì **mục của phân hệ** không còn lối nào để mở — một vai bốn màn như chuyên viên QL3 sẽ mất hẳn Tổng quan, Danh sách NNT và KPI đăng ký.
+- **Thao tác cấp trang.**  và  cho **cả bộ sheet** vào **khối Xem báo cáo** — xem The Export Lives On What It Exports Rule bên dưới. Các thao tác cấp trang khác vào đầu khối mà chúng nói về: "Mở báo cáo của phòng" ở đầu khối công việc, "Tải tệp bổ sung" ở đầu khối nguồn dữ liệu.
+- **Dải bối cảnh** ("Tháng 9/2026 · Thuế TP Hà Nội") bỏ hẳn: kỳ đang xem đã nằm trong thanh lọc chung ngay dòng đầu nội dung, còn tên cơ quan lặp lại ở mọi màn mà không ai cần.
+- Ô cắm thứ hai cho thao tác cấp hệ thống vốn đã rỗng từ lâu (`hanhDongChung = null`), nên gỡ nó không mất gì.
+
+Hệ quả bố cục: thanh lọc chung dính ở `top: 0`, `--topbar-h` không còn tồn tại, và nội dung bắt đầu ngay mép trên khung nhìn.
+
+Điều này KHÔNG mở cửa cho việc dựng lại một hàng tiêu đề chỉ để có chỗ đặt nút. Tiêu đề màn vẫn ẩn (The Silent H1 Rule); nút cấp trang đứng một mình ở đầu nội dung là hình dạng đã chọn.
 
 **The One Name Per Job Rule.** Một việc có MỘT nút và MỘT nhãn, đứng cố định một chỗ. Ba màn nghiệp vụ từng tự dựng nút tạo báo cáo riêng — "Tạo báo cáo tuần" ở Nợ, "Tạo báo cáo tháng 9" ở Kiểm tra, "Tạo báo cáo kỳ này" ở Hoàn thuế — ba nhãn cho cùng một hành động, và kỳ báo cáo bị đóng cứng vào nhãn nút trong khi kỳ là thứ hộp thoại hỏi. Người dùng không học được "nút này ở đâu" vì câu trả lời đổi theo màn. Nay chỉ còn `Tạo báo cáo`, không kèm kỳ.
 
@@ -690,7 +748,7 @@ Lưới `<dl>` bốn cột trên desktop, hai cột trong ngăn chi tiết và t
 | Bậc | Thuộc về | Chỗ đứng | Ví dụ |
 |---|---|---|---|
 | Cấp trang | Màn đang mở | `#page-actions-slot`, bắn vào bằng portal | ô tìm kiếm, bộ lọc kỳ |
-| Cấp hệ thống | Cả hệ, có mặt trên mọi màn | `.topbar-actions` thứ hai, dựng thẳng trong `Shell` | `Nhập dữ liệu`, `Tạo báo cáo` |
+| Cấp hệ thống | ~~Cả hệ, có mặt trên mọi màn~~ | **Không còn.** Ô cắm đã rỗng từ lâu và măng sét đã gỡ | — |
 
 Thao tác cấp hệ thống không đi qua portal: nó không thuộc màn nào nên không có màn nào để bắn đi. Dưới 901px cả hai bậc đều rơi về nội dung; cụm cấp hệ thống thành `.system-actions`, hai nút chia đôi bề ngang bằng `flex: 1 1 0` để không nút nào trông như phụ của nút kia, và nằm TRÊN dòng dẫn vì nó thuộc về khung chứ không thuộc về trang.
 
@@ -755,8 +813,8 @@ Nền navy, chữ trắng, bo 10px, cố định góc phải dưới, rộng `mi
 - **Do** khai báo cơ sở 0 (`minmax(0, 1fr)` hoặc `min-width: 0`) cho mọi rãnh lưới có thể chứa bảng.
 - **Do** để dải hai cột quyết định chiều cao và cho phần dài hơn cuộn trong thân khối của nó.
 - **Do** dùng subgrid khi hai khối cạnh nhau phải bắt đầu ở cùng một độ cao.
-- **Do** đưa thao tác cấp trang lên măng sét từ 901px và trả nó về nội dung bên dưới ngưỡng đó.
-- **Do** đặt thao tác cấp hệ thống ở một chỗ cố định với một nhãn duy nhất, không gắn kỳ hay phạm vi vào nhãn nút.
+- **Do** đặt mỗi nút xuất vào đúng khối chứa thứ nó xuất; không để nút nào đứng một mình trên một hàng, và không dựng lại một dải ngang chỉ để có chỗ cho nó.
+- **Do** giữ nút mở ngăn điều hướng trên thanh đáy ở MỌI vai, kể cả vai ít màn — mục của phân hệ chỉ nằm trong ngăn đó.
 - **Do** ẩn `input[type=file]` gốc và dựng nút tiếng Việt thay nó.
 - **Do** đo bộ chữ trong trình duyệt trước khi chọn; "trông đẹp" không thay được phép đo.
 - **Do** chuyển con số chỉ tồn tại trong dòng phụ sang một chỗ khác trong thân khối trước khi bỏ dòng phụ.

@@ -431,20 +431,19 @@ export function DebtQL1({ actor }: { actor: string }) {
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL1|${ky.id}`).trangThai };
   const filename = `QL1_${ky.id}_${reportMeta.status}_mo-phong`;
   return <div className="page-stack ql1-page">
-    <PageIntro title="Báo cáo công tác nợ · Phòng QL1" actions={<>
-      <ExportButton onExport={() => exportExcel(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton>
-      <ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton>
-    </>}/>
+    <PageIntro title="Báo cáo công tác nợ · Phòng QL1"/>
 
     <ThanhDuyet
       khoa={`QL1|${ky.id}`}
       nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}
       xemTruoc={<NutXemTruoc mo={moMoXemTruoc} onToggle={() => datXem(moMoXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+      tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", reportMeta.scope]]}
     />
 
     {/* Khối xem trước nằm NGAY SAU thanh duyệt, trong luồng trang: người duyệt
         nhìn thứ mình sắp ký ngay tại chỗ ký, và cả khối lọt vào ảnh chụp. */}
     {moMoXemTruoc && <KhoiXemTruoc
+      xuat={<><ExportButton onExport={() => exportExcel(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></>}
       sheets={boSheet}
       meta={reportMeta}
       ten="Báo cáo đánh giá công tác nợ · Phòng QL1"

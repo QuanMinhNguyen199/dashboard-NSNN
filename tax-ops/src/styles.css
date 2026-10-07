@@ -129,7 +129,6 @@
   --scroll-thumb: #c3cedd;
   --scroll-thumb-hover: #9aa9bd;
 
-  --topbar-h: 60px;
   --radius-panel: 10px;
   --radius-control: 6px;
   --radius-chip: 4px;
@@ -236,14 +235,15 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .sidebar-user .logout-button span { color: inherit; font-size: 12px; font-weight: 600; }
 .logout-button:hover { color: white; }
 
- .topbar { position: sticky; top: 0; z-index: 20; min-height: var(--topbar-h); margin-left: 252px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface);  box-shadow: 0 1px 3px rgb(22 38 60 / 3%); }
 
 select, input, textarea { min-height: 32px; border: 1px solid var(--control-line); border-radius: var(--radius-control); background: var(--surface); transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
 select:hover:not(:disabled), input:hover:not(:disabled), textarea:hover:not(:disabled) { border-color: var(--control-line-hover); }
 select { min-width: 150px; padding: 0 28px 0 9px; }
 input { padding: 0 9px; }
 select:disabled { color: var(--ink-2); background: var(--surface-soft); border-color: var(--line); cursor: not-allowed; opacity: 1; }
-.menu-button { display: none; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--surface); }
+/* Nút mở ngăn điều hướng nay là MỘT Ô của thanh đáy, không còn là nút vuông
+   trong măng sét — nên nó không mang kiểu riêng, mà theo đúng kiểu ô như bốn
+   đích đến bên cạnh. Lớp `menu-button` giữ lại làm điểm bám cho phép kiểm. */
 
 .workspace { margin-left: 252px; padding: 18px 20px 32px; }
 /* Cột `auto` của lưới nở theo phần tử rộng nhất, và bảng nghiệp vụ có
@@ -252,6 +252,23 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
    bảng vẫn cuộn ngang trong vùng cuộn của chính nó. */
 .page-stack { width: min(100%, 1540px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .case-layout, .case-list { min-width: 0; }
+
+/*
+  Chi tiết hồ sơ của QL3, dựng trong ngăn trượt dùng chung (`.case-drawer`).
+
+  Lưới chi tiết mặc định bốn cột — hợp với khối trải hết bề ngang trang, không
+  hợp với ngăn trượt rộng 520px, nơi "Tiền thuế điều chỉnh tăng" ở một phần tư
+  bề ngang sẽ gãy thành ba dòng. Hai cột vừa đủ cho nhãn dài nhất mà vẫn giữ
+  được mật độ.
+
+  Hóa ra `.case-drawer` ĐÃ tự lo việc đó (lưới hai cột, viền trên, bỏ viền
+  trái ở cột lẻ). Nên ở đây không khai lại lưới — một luật thứ hai làm đúng
+  việc của luật thứ nhất là thứ sẽ lệch nhau ở lần sửa sau.
+*/
+.ql3-chitiet-ten { display: grid; gap: 2px; margin-bottom: 4px; }
+.ql3-chitiet-ten strong { font-size: 15px; font-weight: 650; }
+.ql3-chitiet-ten span { color: var(--ink-3); font-size: 12px; font-weight: 600; }
+.ql3-chitiet-de { margin: 16px 0 0; font-size: 12px; font-weight: 650; color: var(--ink-3); }
 .case-drawer { position: fixed; inset: 0 0 0 auto; margin: 0; width: min(600px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; padding: 0; border: 0; border-left: 1px solid var(--line); background: var(--canvas); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; }
 .case-drawer::backdrop { background: rgb(14 42 71 / 35%); }
 .case-drawer-heading { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
@@ -274,7 +291,6 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 */
 h1.sr-only { font-size: 14px; font-weight: 700; }
 .page-actions { flex: none; display: flex; align-items: center; gap: 8px; }
-.topbar-actions { flex: none; display: contents; }
 
 @media (prefers-reduced-motion: no-preference) {
   .workspace-view { animation: workspace-enter 200ms var(--ease-out) both; }
@@ -451,7 +467,9 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .table-shell { margin-inline: -14px; }
 
 .table-wrap { max-height: min(62vh, 560px); overflow: auto; }
-.scroll-hint { display: none; }
+/* Dải chỉ được DỰNG khi bảng thật sự tràn (xem `TableWrap`), nên ở đây không
+   còn `display: none` theo điểm ngắt nữa — có mặt là có việc. */
+.scroll-hint { min-height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 5px; padding: 0 12px; color: var(--brand); border-bottom: 1px solid var(--line-soft); background: var(--surface-tint); font-size: 11px; font-weight: 600; }
 
 .skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; min-height: 44px; display: flex; align-items: center; padding: 0 14px; border-radius: var(--radius-control); color: white; background: var(--chrome); font-size: 13px; font-weight: 650; text-decoration: none; transform: translateY(-180%); transition: transform 120ms var(--ease-out); }
 .skip-link:focus-visible { transform: none; outline: 2px solid var(--focus); outline-offset: 2px; }
@@ -548,11 +566,11 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   khác, nên toast phải né, và nó đã phải né thật (`bottom: 74px + safe-area`).
   Và trên một trang dài cuộn được, góc dưới là chỗ người dùng ít nhìn nhất.
 
-  Nó nằm ĐÈ LÊN topbar, không lùi xuống dưới. Lùi xuống thì nó rơi đúng vào
-  khối nội dung đầu tiên — mà khối ấy thường chính là thứ vừa đổi (thanh duyệt
-  sau khi bấm Gửi duyệt), nên thông báo sẽ che mất bằng chứng cho điều nó đang
-  báo. Topbar là khung, lặp lại ở mọi màn, và che nó vài giây thì không ai mất
-  thông tin gì.
+  Nó nằm ĐÈ LÊN thanh lọc chung, không lùi xuống dưới. Lùi xuống thì nó rơi
+  đúng vào khối nội dung đầu tiên — mà khối ấy thường chính là thứ vừa đổi
+  (thanh duyệt sau khi bấm Gửi duyệt), nên thông báo sẽ che mất bằng chứng cho
+  điều nó đang báo. Thanh lọc là khung, lặp lại ở mọi màn, và che nó vài giây
+  thì không ai mất thông tin gì.
 */
 .toast { position: fixed; right: 20px; top: 12px; z-index: 100; width: min(420px, calc(100vw - 28px)); min-height: 46px; display: grid; grid-template-columns: 20px minmax(0, 1fr) 30px; align-items: center; gap: 10px; padding: 9px 9px 9px 13px; color: white; border-radius: var(--radius-panel); background: var(--chrome); box-shadow: var(--shadow-overlay); }
 @media (prefers-reduced-motion: no-preference) { .toast { animation: toast-in 220ms var(--ease-out) both; } }
@@ -590,8 +608,7 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 
 @media (max-width: 900px) {
   .sidebar { display: none; }
-  .topbar, .workspace { margin-left: 0; }
-  .menu-button { display: grid; }
+  .workspace { margin-left: 0; }
   .workspace { padding-bottom: 86px; }
   .mobile-nav { position: fixed; inset: auto 0 0 0; z-index: 40; min-height: 64px; display: grid; grid-template-columns: repeat(6, 1fr); padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--line); background: #fffffff2; backdrop-filter: blur(14px); box-shadow: 0 -6px 20px #16263c12; }
   .mobile-nav button { min-width: 0; min-height: 62px; display: grid; place-items: center; align-content: center; gap: 3px; padding: 5px 2px; border: 0; border-top: 2px solid transparent; color: var(--ink-3); background: transparent; }
@@ -609,9 +626,7 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .search-field, .search-field input { min-height: 44px; }
   .compact-field select { min-height: 44px; }
   .segmented button { min-height: 44px; }
-  
-  .scroll-hint { min-height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 5px; padding: 0 12px; color: var(--brand); border-bottom: 1px solid var(--line-soft); background: var(--surface-tint); font-size: 11px; font-weight: 600; }
-}
+  }
 
 @media (max-width: 720px) {
   .login-page { display: block; background: var(--surface); }
@@ -626,7 +641,6 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   .login-data-note { margin-top: 16px; padding-top: 14px; }
   .login-panel { display: block; padding: 26px 20px 34px; }
   .login-heading h1 { font-size: 20px; }
-  .topbar { position: static; min-height: 56px; padding: 8px 12px; gap: 10px; }
   .workspace { padding: 14px 10px 82px; }
   .page-stack { gap: 12px; }
   .page-actions { width: 100%; }
@@ -685,7 +699,6 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   *, *::before, *::after { animation-duration: .01ms!important; transition-duration: .01ms!important; }
 }
 
-.topbar-context { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 16px; color: var(--ink-2); font-size: 12px; margin-right: auto; }
 /*
   Nhãn nguồn LUÔN nằm trên dòng riêng, không bao giờ nằm cạnh tiêu đề.
 
@@ -1036,12 +1049,13 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 /*
   Thanh lọc chung Kỳ + Đơn vị (G1).
 
-  Dính dưới măng sét chứ không dính lên mép màn: măng sét cao `--topbar-h` và
+  Dính thẳng lên mép trên khung nhìn, vì không còn măng sét để dính xuống dưới.
+  Trước đây
   cũng dính, nên `top: 0` sẽ cho thanh này chui xuống dưới nó. Từ 720px trở
   xuống măng sét chuyển sang `position: static`, lúc đó mép trên của khung
   nhìn mới là mốc đúng.
 */
-.bo-loc-chung { position: sticky; top: var(--topbar-h); z-index: 15; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 3px rgb(22 38 60 / 4%); }
+.bo-loc-chung { position: sticky; top: 0; z-index: 15; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 3px rgb(22 38 60 / 4%); }
 .bo-loc-muc { display: flex; align-items: center; gap: 8px; min-width: 0; }
 /*
   ── Viết hoa toàn bộ: ĐÚNG MỘT bậc trong hệ ───────────────────────────────
@@ -1069,10 +1083,24 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 .bo-loc-menu label:hover { background: var(--surface-soft); }
 .bo-loc-menu input { flex: none; width: 16px; height: 16px; accent-color: var(--brand); }
 
-@media (max-width: 720px) {
-  .bo-loc-chung { top: 0; gap: 8px 14px; padding: 10px 12px; }
+/*
+  Sàn vùng chạm của thanh lọc nâng từ 900px, KHÔNG phải 720px.
+
+  The 44px Floor Rule ghi "từ 900px trở xuống", nhưng hai luật này từng nằm
+  trong khối 720px, nên dải 721–900px — đúng khổ máy tính bảng dọc — rơi lại
+  32px. `soat` không bắt được vì bộ khổ của nó là 1512 / 1280 / 390, không
+  có 768.
+
+  Khối này đứng SAU luật nền của `.bo-loc-nut`: media query không cộng thêm
+  độ đặc hiệu, nên đặt nó lên trên thì luật nền 32px ghi đè ngược trở lại.
+*/
+@media (max-width: 900px) {
   .bo-loc-nut { min-height: 44px; }
   .bo-loc-menu label { min-height: 44px; }
+}
+
+@media (max-width: 720px) {
+  .bo-loc-chung { top: 0; gap: 8px 14px; padding: 10px 12px; }
 }
 
 /*
@@ -1330,6 +1358,19 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 .duyet-lydo textarea { width: 100%; min-height: 36px; max-height: 140px; padding: 8px 9px; resize: none; overflow-y: auto; font: inherit; font-size: 13px; line-height: 1.45; field-sizing: content; }
 /* `align-items: center` để nút giữ đúng cao của nó: mặc định của flex là kéo
    giãn theo trục ngang, và nút co giãn theo ô chứa là thứ đã thống nhất bỏ. */
+/*
+  Tóm tắt của ô xác nhận: cặp nhãn-giá trị xếp dọc, KHÔNG phải một bảng.
+
+  Hai ba dòng "kỳ / bộ sheet / phạm vi" dựng thành bảng thì mang theo đầu
+  cột, đường kẻ và nền đầu bảng — cả một bộ đồ đạc cho ba cặp chữ, ngay trong
+  một ô mà việc cần làm là đọc nhanh rồi bấm. Nhãn nhạt và nhỏ hơn giá trị,
+  nên mắt rơi vào giá trị trước.
+*/
+.duyet-tomtat { display: grid; gap: 6px; max-width: 560px; }
+.duyet-tomtat > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.duyet-tomtat dt { color: var(--ink-3); font-size: 12px; font-weight: 600; }
+.duyet-tomtat dd { margin: 0; color: var(--ink); font-size: 13px; font-weight: 600; }
+@media (max-width: 720px) { .duyet-tomtat > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
 .duyet-lydo-nut { display: flex; align-items: center; gap: 10px; }
 
 /*

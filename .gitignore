@@ -44,6 +44,14 @@ Thumbs.db
 /tax-ops/public/nsnn/
 /tax-ops/general_data
 
-# Bo du lieu that sinh tu general_data de app nap luc chay. Khoang 21 nghin dong
-# nguoi nop thue kem ma so thue va ten doanh nghiep that — khong dua len remote.
+# Bo du lieu that: khoang 21 nghin dong nguoi nop thue kem ma so thue va ten
+# doanh nghiep that — khong dua len remote.
+#
+# No da duoc CHUYEN sang /tax-ops/general_data/du-lieu-that/ (da nam trong luat
+# ben tren). Ly do: moi thu trong public/ duoc Vite chep nguyen vao dist/, va
+# dist/ chinh la thu muc GitHub Pages phat hanh. 6,6 MB du lieu that chiem 69%
+# dung luong dist trong khi khong con dong ma nao doc no.
+#
+# Luat duoi day giu lai lam luoi chan: neu ai do sinh lai bo du lieu vao dung
+# cho cu, no van khong len duoc remote.
 /tax-ops/public/du-lieu-that/

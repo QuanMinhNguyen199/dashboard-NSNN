@@ -103,7 +103,45 @@ export function useChoXemTruoc(khoa: string) {
   return choXemTruoc(b.trangThai, coViec);
 }
 
-export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
+/*
+  BỐN nhánh dùng CHUNG một ô, vì với người dùng chúng là cùng một việc: dừng
+  lại, đọc hệ quả, rồi mới chốt.
+
+  `return` và `amend` bắt buộc có lý do. `send` và `approve` không hỏi lý do —
+  chúng hỏi một thứ khác: "anh đang chốt cái gì".
+
+  Trước đây hai nhánh sau chốt THẲNG từ `onClick`: không xác nhận, không tóm
+  tắt, không hoàn tác — trong khi `return`, nhánh gỡ lại được, bắt gõ tới 200
+  ký tự. Độ khó đang ngược với hệ quả. Duyệt là việc DUY NHẤT trong sản phẩm
+  mà người dùng không tự gỡ được: QR-03 bắt mở bản điều chỉnh kèm lý do mới
+  sửa lại được, và bản đã phát hành thì đã có người nhận.
+*/
+type Viec = "return" | "amend" | "send" | "approve";
+
+const CHU_VIEC: Record<Viec, { dan: string; nhan?: string; goiY?: string; nut: string }> = {
+  return: {
+    dan: "Chuyên viên lập báo cáo sẽ thấy lý do này khi nhận lại bản nháp.",
+    nhan: "Lý do trả lại",
+    goiY: "Ví dụ: đề nghị làm rõ Thuế cơ sở 5 tăng nợ",
+    nut: "Trả lại cho chuyên viên",
+  },
+  amend: {
+    dan: "Bản đã duyệt vẫn được giữ, và chỉ bị đánh dấu đã thay thế khi bản điều chỉnh được duyệt.",
+    nhan: "Lý do điều chỉnh",
+    goiY: "Ví dụ: nguồn 9.9.4.15 chốt lại ngày 03, số nợ khó thu thay đổi",
+    nut: "Mở bản điều chỉnh",
+  },
+  send: {
+    dan: "Số liệu của kỳ khóa lại từ lúc gửi cho tới khi có kết quả duyệt. Muốn sửa trước đó thì trưởng phòng phải trả lại.",
+    nut: "Gửi duyệt",
+  },
+  approve: {
+    dan: "Duyệt xong là kỳ khóa số. Muốn sửa phải mở bản điều chỉnh kèm lý do — không có nút hoàn tác.",
+    nut: "Duyệt",
+  },
+};
+
+export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null, tomTat }: {
   khoa: string;
   nhanKy: string;
   /*
@@ -122,14 +160,24 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
      của mình. Nó đứng CẠNH nút Duyệt chứ không ở đâu khác: người duyệt cần
      nhìn thứ mình sắp ký ngay trước lúc ký. */
   xemTruoc?: ReactNode;
+  /*
+    Những dòng hiện trong ô xác nhận trước khi chốt, do phân hệ truyền vào.
+
+    Thanh duyệt biết tên kỳ và trạng thái, nhưng KHÔNG biết bộ báo cáo này
+    gồm mấy sheet hay phủ phạm vi nào — chỉ phân hệ biết. Mà "tôi đang ký cái
+    gì" lại đúng là câu mà ô xác nhận sinh ra để trả lời, nên nếu phân hệ
+    không nói thì ô ấy chỉ còn là một lần bấm thừa.
+  */
+  tomTat?: readonly (readonly [string, string])[];
 }) {
   const { layBanGhi, duoc, guiRaSoat, duyet, traLai, moDieuChinh } = useDuyet();
   const notify = useAction();
   const oLyDo = useRef<HTMLTextAreaElement>(null);
+  const oForm = useRef<HTMLFormElement>(null);
   /* `null` = không có ô lý do nào đang mở. Mẩu này KHÔNG vào địa chỉ: một ô
      nhập dở không phải trạng thái ai cần gửi liên kết tới, và địa chỉ của màn
      này chỉ mô tả thứ đang xem chứ không mở sẵn một hành động. */
-  const [viec, setViec] = useState<"return" | "amend" | null>(null);
+  const [viec, setViec] = useState<Viec | null>(null);
   const [lyDo, setLyDo] = useState("");
   const [loi, setLoi] = useState("");
 
@@ -137,15 +185,26 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
   const coViec = duoc(khoa, "send") || duoc(khoa, "approve") || duoc(khoa, "return") || duoc(khoa, "amend");
   /* Bấm lại chính nút đang mở thì đóng — nút mang `aria-expanded`, nên nó
      phải gạt được cả hai chiều. */
-  const moHop = (v: "return" | "amend") => {
+  const moHop = (v: Viec) => {
     if (viec === v) { dongHop(); return; }
     setViec(v); setLyDo(""); setLoi("");
   };
   const dongHop = () => { setViec(null); setLyDo(""); setLoi(""); };
 
-  /* Ô lý do vừa mở thì con trỏ phải nằm trong ô. `autoFocus` chỉ chạy lúc
-     dựng lần đầu, mà khối này ở lại trong cây giữa hai lần mở. */
-  useEffect(() => { if (viec) oLyDo.current?.focus(); }, [viec]);
+  /* Ô vừa mở thì con trỏ phải nằm trong ô. `autoFocus` chỉ chạy lúc dựng lần
+     đầu, mà khối này ở lại trong cây giữa hai lần mở.
+
+     Nhánh chốt không có ô nhập, nên focus rơi vào nút chốt: người dùng bàn
+     phím vừa bấm "Duyệt" ở thanh trên, ô xác nhận hiện ra ở dưới, và phím
+     Enter kế tiếp phải rơi đúng vào nút chốt chứ không vào khoảng không. */
+  useEffect(() => {
+    if (!viec) return;
+    if (oLyDo.current) { oLyDo.current.focus(); return; }
+    /* `Button` là component dùng chung và không nhận `ref`; thêm forwardRef
+       vào nó chỉ vì một chỗ này là sửa lan ra cả hệ. Hỏi ngay trong form thì
+       đủ chính xác, vì form chỉ có đúng một nút submit. */
+    oForm.current?.querySelector<HTMLButtonElement>("button[type=submit]")?.focus();
+  }, [viec]);
 
   /*
     Không có tiêu đề cho ô này, và dòng giải thích không nhắc lại tên kỳ.
@@ -159,11 +218,25 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
     Hai nhãn còn lại cố ý khác nhau vì chúng là hai việc khác nhau: một cái MỞ
     ô nhập, một cái CHỐT và nói rõ hệ quả rơi vào ai.
   */
-  const CHU = viec === "amend"
-    ? { dan: "Bản đã duyệt vẫn được giữ, và chỉ bị đánh dấu đã thay thế khi bản điều chỉnh được duyệt.", nhan: "Lý do điều chỉnh", goiY: "Ví dụ: nguồn 9.9.4.15 chốt lại ngày 03, số nợ khó thu thay đổi", nut: "Mở bản điều chỉnh" }
-    : { dan: "Chuyên viên lập báo cáo sẽ thấy lý do này khi nhận lại bản nháp.", nhan: "Lý do trả lại", goiY: "Ví dụ: đề nghị làm rõ Thuế cơ sở 5 tăng nợ", nut: "Trả lại cho chuyên viên" };
+  const CHU = CHU_VIEC[viec ?? "return"];
+  const canLyDo = viec === "return" || viec === "amend";
 
   const xong = () => {
+    if (viec === "send") {
+      if (!guiRaSoat(khoa)) { setLoi("Không gửi duyệt được ở trạng thái này."); return; }
+      notify(`Đã gửi ${nhanKy} đi duyệt. Số liệu khóa lại cho tới khi có kết quả.`);
+      dongHop();
+      return;
+    }
+    if (viec === "approve") {
+      /* QR-03: người lập không duyệt bản của chính mình. Báo NGAY TRONG ô
+         xác nhận chứ không bằng toast — người dùng đang đứng ở ô ấy, và đây
+         là câu trả lời cho cú bấm họ vừa thực hiện. */
+      if (!duyet(khoa)) { setLoi("Bạn không duyệt được bản báo cáo do chính mình gửi."); return; }
+      notify(`Đã duyệt ${nhanKy}. Kỳ này khóa số; muốn sửa phải mở bản điều chỉnh.`);
+      dongHop();
+      return;
+    }
     if (!lyDo.trim()) { setLoi(viec === "return" ? "Nhập lý do trả lại để chuyên viên biết cần sửa gì." : "Nhập lý do điều chỉnh để lưu vào nhật ký của kỳ."); return; }
     const ok = viec === "return" ? traLai(khoa, lyDo.trim()) : moDieuChinh(khoa, lyDo.trim());
     if (!ok) { setLoi("Bạn không có quyền thực hiện việc này ở trạng thái hiện tại."); return; }
@@ -219,13 +292,13 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
       {duoc(khoa, "return") && <Button
         aria-expanded={viec === "return"} aria-controls="duyet-lydo"
         className={viec === "return" ? "is-mo" : undefined}
-        disabled={viec === "amend"}
+        disabled={viec !== null && viec !== "return"}
         onClick={() => moHop("return")}
       >Trả lại</Button>}
       {duoc(khoa, "amend") && <Button
         aria-expanded={viec === "amend"} aria-controls="duyet-lydo"
         className={viec === "amend" ? "is-mo" : undefined}
-        disabled={viec === "return"}
+        disabled={viec !== null && viec !== "amend"}
         onClick={() => moHop("amend")}
       >Điều chỉnh</Button>}
       {/*
@@ -237,8 +310,26 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
         mở bản điều chỉnh kèm lý do mới sửa lại được. Mở ô lý do là đã chọn
         một nhánh, nên nhánh kia tắt cho tới lúc Hủy.
       */}
-      {duoc(khoa, "send") && <Button kind="primary" disabled={viec !== null || chan !== null} title={chan ?? undefined} onClick={() => { if (!guiRaSoat(khoa)) { notify("Không gửi duyệt được ở trạng thái này."); return; } notify(`Đã gửi ${nhanKy} đi duyệt. Số liệu khóa lại cho tới khi có kết quả.`); }}>Gửi duyệt</Button>}
-      {duoc(khoa, "approve") && <Button kind="primary" disabled={viec !== null} onClick={() => { if (!duyet(khoa)) { notify("Bạn không duyệt được bản báo cáo do chính mình gửi."); return; } notify(`Đã duyệt ${nhanKy}. Kỳ này khóa số; muốn sửa phải mở bản điều chỉnh.`); }}>Duyệt</Button>}
+      {/*
+        Hai nút chốt MỞ Ô XÁC NHẬN, không chốt thẳng. Chúng vẫn là nút chính,
+        vẫn đứng đúng ô quyết định, vẫn một cú bấm để tới — chỉ là cú bấm ấy
+        nay dẫn tới một câu hỏi chứ không tới một kỳ đã khóa.
+      */}
+      {duoc(khoa, "send") && <Button
+        kind="primary"
+        aria-expanded={viec === "send"} aria-controls="duyet-lydo"
+        className={viec === "send" ? "is-mo" : undefined}
+        disabled={(viec !== null && viec !== "send") || chan !== null}
+        title={chan ?? undefined}
+        onClick={() => moHop("send")}
+      >Gửi duyệt</Button>}
+      {duoc(khoa, "approve") && <Button
+        kind="primary"
+        aria-expanded={viec === "approve"} aria-controls="duyet-lydo"
+        className={viec === "approve" ? "is-mo" : undefined}
+        disabled={viec !== null && viec !== "approve"}
+        onClick={() => moHop("approve")}
+      >Duyệt</Button>}
       </span>}
     </div>
 
@@ -279,11 +370,20 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
       riêng — lý do trả lại là lời viết cho người đọc bảng số, nên người viết
       cần còn nhìn thấy bảng số lúc viết.
     */}
-    {viec && <form id="duyet-lydo" className="duyet-lydo" noValidate onSubmit={(e) => { e.preventDefault(); xong(); }}>
+    {viec && <form ref={oForm} id="duyet-lydo" className="duyet-lydo" noValidate onSubmit={(e) => { e.preventDefault(); xong(); }}>
       <p className="duyet-lydo-dan">{CHU.dan}</p>
       {/* `noValidate`: thông báo mặc định của trình duyệt là "Please fill out
           this field" — tiếng Anh, và không nói cần điền gì. */}
-      <label>{CHU.nhan}
+      {/*
+        Tóm tắt đứng TRƯỚC nút chốt và sau dòng hệ quả: thứ tự đọc là "việc
+        gì xảy ra → trên cái gì → chốt". Đảo lại thì người dùng đọc số trước
+        khi biết số ấy dùng để làm gì.
+      */}
+      {!canLyDo && <dl className="duyet-tomtat">
+        <div><dt>Kỳ</dt><dd>{nhanKy}</dd></div>
+        {tomTat?.map(([nhan, gia]) => <div key={nhan}><dt>{nhan}</dt><dd>{gia}</dd></div>)}
+      </dl>}
+      {canLyDo && <label>{CHU.nhan}
         {/*
           `<textarea rows={1}>` cao đúng một dòng lúc mở, rồi tự giãn theo nội
           dung. Ô một dòng cố định thì gõ quá nửa là chữ đầu trôi khỏi tầm
@@ -298,7 +398,7 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); xong(); } }}
           onChange={(e) => { setLyDo(e.target.value); setLoi(""); }}
         />
-      </label>
+      </label>}
       {loi && <p role="alert" className="quality-note">{loi}</p>}
       <div className="duyet-lydo-nut">
         <Button type="button" onClick={dongHop}>Hủy</Button>

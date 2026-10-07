@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { Tone } from "@/domain/types";
 
@@ -88,7 +87,49 @@ export function Panel({ title, subtitle, actions, children, className = "" }: { 
   Tab thì phải có tên, nếu không người dùng màn hình đọc gặp tám điểm dừng câm.
 */
 export function TableWrap({ children, label }: { children: ReactNode; label?: string }) {
-  return <div className="table-shell"><div className="scroll-hint"><span>Vuốt ngang để xem thêm</span><Icon name="arrow" size={15}/></div><div className="table-wrap" tabIndex={0} role="region" aria-label={label ? `Bảng ${label}` : "Bảng dữ liệu, cuộn ngang được"}>{children}</div></div>;
+  const vung = useRef<HTMLDivElement>(null);
+  const [tran, datTran] = useState(false);
+
+  /*
+    Gợi ý cuộn bám THỰC TẾ TRÀN, không bám điểm ngắt.
+
+    Trước đây nó chỉ hiện từ 900px xuống. Nhưng tràn ngang không đi theo bề
+    rộng màn hình — nó đi theo hiệu số giữa bảng và khung chứa. Ở 1440px bảng
+    nhập kết quả PRS-03 rộng 1752px trong khung 1146px: 606px, khoảng 35%,
+    khuất hẳn — và cột khuất đúng là cột `Kết quả`, tức cột mà cả màn sinh ra
+    để đọc. Người dùng không có một dấu hiệu nào.
+
+    Ngược lại, ở 390px một bảng bốn cột hẹp thì gợi ý cũ vẫn hiện dù không có
+    gì để cuộn. Cùng một phép đo sai, hai hướng.
+
+    `ResizeObserver` theo dõi cả khung lẫn con của nó: khung đổi khi cửa sổ
+    hoặc thanh bên đổi, con đổi khi sang trang hay đổi bộ lọc — và lần đổi thứ
+    hai không kéo theo lần đổi thứ nhất.
+  */
+  useEffect(() => {
+    const el = vung.current;
+    if (!el) return;
+    const do_ = () => datTran(el.scrollWidth - el.clientWidth > 1);
+    do_();
+    const theoDoi = new ResizeObserver(do_);
+    theoDoi.observe(el);
+    for (const con of Array.from(el.children)) theoDoi.observe(con);
+    return () => theoDoi.disconnect();
+  }, [children]);
+
+  const ten = label ? `Bảng ${label}` : "Bảng dữ liệu";
+  return <div className="table-shell">
+    {/* Dải gợi ý là THỊ GIÁC; phần khuất được nói cho trình đọc màn hình ngay
+        trong tên vùng, vì ở đó nó đến đúng lúc người dùng bước vào vùng. */}
+    {tran && <div className="scroll-hint" aria-hidden="true"><span>Bảng rộng hơn khung · cuộn ngang để xem hết cột</span><Icon name="arrow" size={15}/></div>}
+    <div
+      ref={vung}
+      className="table-wrap"
+      tabIndex={0}
+      role="region"
+      aria-label={tran ? `${ten}, cuộn ngang để xem hết cột` : ten}
+    >{children}</div>
+  </div>;
 }
 
 /*
@@ -109,17 +150,14 @@ export function DetailGrid({ items }: { items: { label: string; value: ReactNode
   đọc màn hình. Hệ quả: nếu trang không có dòng dẫn, khối này rỗng — và một nút
   hành động đứng một mình giữa hàng trống là thứ người dùng gọi là "bơ vơ".
 
-  Nút vì thế được đưa lên măng sét, nơi vốn còn nhiều chỗ trống và cũng là chỗ
-  đúng của một hành động cấp TRANG. Khi chỗ đó chưa tồn tại (ví dụ trong hộp
-  thoại), nút quay về nằm trong luồng nội dung.
+  Nút cấp trang từng được bắn lên măng sét bằng portal khi màn đủ rộng. Măng
+  sét bỏ rồi, nên nút nằm trong luồng nội dung ở MỌI khổ — đúng chỗ nó vẫn
+  đứng ở khổ hẹp từ trước, nên người dùng không phải học lại.
 */
 export function PageIntro({ title, actions }: { title: string; actions?: ReactNode }) {
-  const rong = useRongToiThieu("(min-width: 901px)");
-  const oMangSet = useSlot("page-actions-slot");
-  const nut = actions && <div className="page-actions">{actions}</div>;
   return <>
     <h1 className="sr-only">{title}</h1>
-    {nut && (rong && oMangSet ? createPortal(nut, oMangSet) : nut)}
+    {actions && <div className="page-actions">{actions}</div>}
   </>;
 }
 
@@ -140,12 +178,6 @@ export function useRongToiThieu(truyVan: string) {
   return khop;
 }
 
-/** Tìm ô cắm trong măng sét sau khi cây DOM đã dựng xong. */
-function useSlot(id: string) {
-  const [o, setO] = useState<HTMLElement | null>(null);
-  useEffect(() => { setO(document.getElementById(id)); }, []);
-  return o;
-}
 
 export function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: string }[]; onChange: (value: T) => void }) {
   return <><div className="segmented" role="group" aria-label={label}>{options.map((item) => <button key={item.value} type="button" className={value === item.value ? "is-active" : undefined} aria-pressed={value === item.value} onClick={() => onChange(item.value)}>{item.label}</button>)}</div><label className="segmented-mobile"><span>{label}</span><select value={value} onChange={(event) => onChange(event.target.value as T)}>{options.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></>;
