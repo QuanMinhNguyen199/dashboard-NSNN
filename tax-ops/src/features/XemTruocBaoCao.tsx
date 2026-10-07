@@ -1,4 +1,5 @@
 import { Button, Panel, Segmented, TableWrap, money } from "@/components/ui";
+import type { ReactNode } from "react";
 import type { ReportMeta, ReportSheet, ReportValue } from "@/domain/reportExport";
 
 /*
@@ -88,13 +89,30 @@ export function NutXemTruoc({ mo, onToggle }: { mo: boolean; onToggle: () => voi
   </Button>;
 }
 
-export function KhoiXemTruoc({ sheets, meta, ten, sheet, onChonSheet }: {
+export function KhoiXemTruoc({ sheets, meta, ten, sheet, onChonSheet, xuat }: {
   sheets: ReportSheet[];
   meta: ReportMeta;
   ten: string;
   /** Tên sheet đang xem; không khớp cái nào thì rơi về sheet đầu. */
   sheet: string;
   onChonSheet: (ten: string) => void;
+  /*
+    Nút xuất CẢ BỘ báo cáo, đặt ở đây chứ không ở đầu khối nào khác.
+
+    Khối này đang hiện đúng bộ sheet mà nút ấy sinh ra, nên nút nằm trên chính
+    vật nó tác động. Trước đó nó ở đầu khối chính của mục — và trên màn KPI
+    đăng ký nó đứng ngay cạnh "Lưu KPI đã nhập", tức hai nút cùng một hàng mà
+    khác phạm vi: một cái xuất cả bộ, một cái lưu bảng này. Nhãn phân biệt
+    được, nhưng vị trí thì mời đọc nhầm.
+
+    Giờ phạm vi mã hóa bằng VỊ TRÍ: cả bộ ở đây · một bảng ở đầu khối của bảng
+    ấy · danh sách đang lọc ở chân khối của danh sách ấy.
+
+    Cái giá đã biết và người dùng đã chọn: khối này chỉ dựng khi `choXemTruoc`
+    đúng, nên trưởng phòng mở một kỳ Bản nháp — không có việc gì để làm — sẽ
+    không xuất được nữa.
+  */
+  xuat?: ReactNode;
 }) {
   const i = Math.max(0, sheets.findIndex((x) => x.name === sheet));
   const s = sheets[i];
@@ -115,6 +133,7 @@ export function KhoiXemTruoc({ sheets, meta, ten, sheet, onChonSheet }: {
          thanh duyệt cách đó một trăm pixel: nút gạt "Đóng xem trước", và chip
          trạng thái của chính kỳ này. Nhắc lại chúng buộc người đọc dừng lại
          hỏi hai chỗ có nói cùng một thứ không. */
+      actions={xuat}
     >
       {sheets.length > 1 && <Segmented
         label="Sheet trong bộ báo cáo"

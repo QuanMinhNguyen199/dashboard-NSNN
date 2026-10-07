@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
-import { Icon, useRongToiThieu } from "@/components/ui";
+import { Icon } from "@/components/ui";
 import { CUM_MUC, MucPhanHeProvider, MucSidebar } from "@/components/MucPhanHe";
 import { TaxLogo } from "@/components/TaxLogo";
 import type { ViewId } from "@/domain/types";
@@ -27,12 +27,6 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
   const duoc = navCho(user);
-  /*
-    Dưới 901px măng sét đã chật vì có nút mở điều hướng, kỳ làm việc và nhãn mô
-    phỏng. Ở khổ đó hai nút cấp hệ thống rơi xuống một hàng riêng ngay trên nội
-    dung, đúng như cách `PageIntro` xử lý nút cấp trang.
-  */
-  const rong = useRongToiThieu("(min-width: 901px)");
   useEffect(() => setMenuOpen(false), [view]);
   useEffect(() => {
     if (!menuOpen) return;
@@ -103,33 +97,46 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
     — mục 3 bản thiết kế vẽ đúng thế ("Hệ thống kéo + xử lý tự động → Sinh báo
     cáo mẫu bản nháp").
 
-    "Nhập dữ liệu" chuyển vào màn Tình trạng dữ liệu. G12 ghi "Tải tay chỉ là
-    dự phòng… nút chỉ hiện khi nguồn thiếu", mà măng sét thì hiện ở mọi màn và
-    mọi lúc — đặt nó ở đó là nói ngược lại điều tài liệu dặn.
-  */
-  const hanhDongChung = null;
-
   /* `key={view}`: xem ghi chú ở `MucPhanHeProvider` về vì sao nó phải dựng lại. */
   return <MucPhanHeProvider key={view} view={view}><div className="ops-app">
     {/* Điều hướng cộng nút đăng xuất đứng trước nội dung, nên không có lối tắt
         thì mỗi lần đổi màn là mấy lần Tab trước khi chạm nội dung. */}
     <a className="skip-link" href="#workspace">Bỏ qua điều hướng, tới nội dung</a>
     <aside className="sidebar" {...chan}>{nav}</aside>
-    <header className="topbar" {...chan}>
-      <button className="menu-button" type="button" onClick={(event) => openMenu(event.currentTarget)} aria-label="Mở điều hướng" aria-expanded={menuOpen} aria-haspopup="dialog"><Icon name="menu"/></button>
-      <div className="topbar-context"><span>Tháng 9/2026</span><span>Thuế TP Hà Nội</span></div>
-      {/* Ô cắm cho hành động cấp trang. PageIntro bắn nút vào đây thay vì để nó
-          đứng một mình trên một hàng riêng trong nội dung. */}
-      <div className="topbar-actions" id="page-actions-slot"/>
-      {rong && hanhDongChung && <div className="topbar-actions">{hanhDongChung}</div>}
-    </header>
-    <main className="workspace" id="workspace" {...chan}><div key={view} className="workspace-view">{!rong && hanhDongChung && <div className="page-actions system-actions">{hanhDongChung}</div>}{children}</div></main>
+    {/*
+      KHÔNG CÒN MĂNG SÉT.
+
+      Nó từng mang bốn thứ: nút mở điều hướng ở khổ hẹp, dải bối cảnh "Tháng
+      9/2026 · Thuế TP Hà Nội", ô cắm cho nút cấp trang, và một ô cắm thứ hai
+      cho nút cấp hệ thống vốn đã rỗng từ lâu (`hanhDongChung = null`).
+
+      Ba thứ đầu đi đâu:
+      • Nút mở điều hướng xuống thanh điều hướng đáy — xem ghi chú ở đó. Đây
+        là thứ BẮT BUỘC phải chuyển: dưới 900px thanh bên ẩn, nên nếu không có
+        nút ấy thì MỤC CỦA PHÂN HỆ không còn lối nào để mở.
+      • Dải bối cảnh bỏ hẳn: kỳ đang xem đã nằm trong thanh lọc chung ngay dòng
+        đầu nội dung, còn tên cơ quan thì lặp lại ở mọi màn mà không ai cần.
+      • Nút cấp trang quay về nằm trong luồng nội dung — đúng chỗ nó vẫn đứng ở
+        khổ hẹp từ trước tới nay, nên không phải học lại gì.
+
+      Hệ quả về bố cục: thanh lọc chung nay dính thẳng lên mép trên khung nhìn
+      thay vì dính dưới măng sét, và `--topbar-h` không còn.
+    */}
+    <main className="workspace" id="workspace" {...chan}><div key={view} className="workspace-view">{children}</div></main>
     {/* Thanh đáy lấy năm mục ĐẦU TIÊN CỦA VAI, không cắt cứng năm mục đầu bảng:
         vai Quản trị dữ liệu không mở ba màn nghiệp vụ, cắt cứng sẽ cho họ năm nút
         dẫn tới bốn màn họ không vào được. Phần dư nằm trong "Thêm". */}
-    <nav className="mobile-nav" aria-label="Điều hướng nhanh" {...chan} style={{ gridTemplateColumns: `repeat(${Math.min(duoc.length, 5) + (duoc.length > 5 ? 1 : 0)}, 1fr)` }}>
-      {duoc.slice(0, 5).map((item) => <button key={item.id} type="button" className={view === item.id ? "is-active" : undefined} aria-label={item.label} aria-current={view === item.id ? "page" : undefined} onClick={() => onView(item.id)}><Icon name={item.icon}/><span>{item.short}</span></button>)}
-      {duoc.length > 5 && <button type="button" className={duoc.slice(5).some((i) => i.id === view) ? "is-active" : undefined} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>}
+    <nav className="mobile-nav" aria-label="Điều hướng nhanh" {...chan} style={{ gridTemplateColumns: `repeat(${Math.min(duoc.length, 4) + 1}, 1fr)` }}>
+      {duoc.slice(0, 4).map((item) => <button key={item.id} type="button" className={view === item.id ? "is-active" : undefined} aria-label={item.label} aria-current={view === item.id ? "page" : undefined} onClick={() => onView(item.id)}><Icon name={item.icon}/><span>{item.short}</span></button>)}
+      {/*
+        Nút mở ngăn điều hướng LUÔN có mặt, không chỉ khi thừa đích đến.
+
+        Trước đây nó chỉ hiện khi vai có hơn năm màn, vì măng sét đã có một nút
+        mở riêng. Măng sét bỏ rồi, nên nếu giữ điều kiện cũ thì một vai có bốn
+        màn — như chuyên viên QL3 — sẽ không còn cách nào mở ngăn, mà MỤC CỦA
+        PHÂN HỆ (Tổng quan, Danh sách NNT, KPI đăng ký) chỉ nằm trong ngăn ấy.
+      */}
+      <button type="button" aria-label="Mở điều hướng" className={`menu-button${duoc.slice(4).some((i) => i.id === view) ? " is-active" : ""}`} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>
     </nav>
     {menuOpen && <div className="nav-scrim" onClick={() => setMenuOpen(false)}><aside ref={drawerRef} className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Điều hướng nghiệp vụ" onKeyDown={onDrawerKeyDown} onClick={(event) => event.stopPropagation()}><button ref={closeRef} type="button" className="drawer-close" onClick={() => setMenuOpen(false)} aria-label="Đóng điều hướng"><Icon name="close"/></button>{nav}</aside></div>}
   </div></MucPhanHeProvider>;

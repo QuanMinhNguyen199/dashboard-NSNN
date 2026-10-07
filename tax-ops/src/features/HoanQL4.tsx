@@ -75,19 +75,18 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   };
 
   return <div className="page-stack">
-    <PageIntro
-      title="Hoàn thuế TNCN và tổng đài · Phòng QL4"
-      actions={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}
-    />
+    <PageIntro title="Hoàn thuế TNCN và tổng đài · Phòng QL4"/>
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
       nhanKy={`${baoCao} · ${ky.nhan.toLowerCase()}`}
       chan={chuaGan > 0 ? `Còn ${chuaGan} tài khoản tổng đài chưa gán đơn vị. Gán xong mới gửi duyệt được.` : null}
       xemTruoc={<NutXemTruoc mo={moXemTruoc} onToggle={() => datXem(moXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+      tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", meta.scope]]}
     />}
 
     {moXemTruoc && <KhoiXemTruoc
+      xuat={<ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton>}
       sheets={boSheet}
       meta={meta}
       ten={`${baoCao} · ${nhanBaoCaoQL4(baoCao!)}`}

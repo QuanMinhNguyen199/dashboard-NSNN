@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { BoLocChung, useBoLoc, theoDonVi, type MucDonVi } from "@/components/BoLoc";
 import { Khung } from "@/components/Khung";
-import { baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
+import { baoCaoCuaMuc, nhomCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { ExportButton } from "@/components/ExportButton";
 import { PageIntro, Panel, money } from "@/components/ui";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
@@ -51,6 +51,17 @@ export function HoaDonQL2({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   const [xem, datXem] = useThamSo<string>("xem", "");
 
   const baoCao = baoCaoCuaMuc("hoadon", muc);
+  /*
+    Bốn báo cáo QL2-03/04/05/06 mới có KHUNG, chưa có mẫu từ phòng nghiệp vụ:
+    màn của chúng tự nói "bố cục cột sẽ đổi khi mẫu về, đừng trích số từ đây".
+
+    Trước đây nút Gửi duyệt vẫn bật trên chính những màn ấy, nên chuyên viên
+    đẩy được một báo cáo rỗng vào hàng chờ của trưởng phòng, và trưởng phòng
+    duyệt một cái vỏ. Nó cũng đi ngược nguyên tắc sản phẩm "báo cáo chính
+    thức luôn có người duyệt và phiên bản phát hành" — không có nội dung thì
+    không có cái gì để phát hành.
+  */
+  const nhom = nhomCuaMuc("hoadon", muc);
   const kyCo = baoCao ? KY_CUA_BAO_CAO[baoCao] : undefined;
   const ky: KyQL2 = (kyCo?.find((k) => k.id === chon.ky) ?? kyCo?.[0] ?? KY_QL2_01[0]);
 
@@ -69,18 +80,18 @@ export function HoaDonQL2({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   };
 
   return <div className="page-stack">
-    <PageIntro
-      title="Rủi ro hóa đơn · Phòng QL2"
-      actions={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}
-    />
+    <PageIntro title="Rủi ro hóa đơn · Phòng QL2"/>
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
       nhanKy={`${baoCao} · ${ky.nhan.toLowerCase()}`}
+      chan={nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
       xemTruoc={<NutXemTruoc mo={moXemTruoc} onToggle={() => datXem(moXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+      tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", meta.scope]]}
     />}
 
     {moXemTruoc && <KhoiXemTruoc
+      xuat={<ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton>}
       sheets={boSheet}
       meta={meta}
       ten={`${baoCao} · ${nhanBaoCao(baoCao!)}`}

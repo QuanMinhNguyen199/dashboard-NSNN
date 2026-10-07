@@ -44,10 +44,7 @@ export function TinhTrangDuLieu({ vaiTro }: { vaiTro: VaiTro }) {
   const soNguon = new Set(dataRuns.map((r) => r.source)).size;
 
   return <div className="page-stack">
-    <PageIntro
-      title="Tình trạng dữ liệu"
-      actions={vaiTro === "CV" && nguonThieu.length > 0 ? <Button kind="secondary" icon="upload" onClick={() => setNhapMo(true)}>Tải tệp bổ sung</Button> : undefined}
-    />
+    <PageIntro title="Tình trạng dữ liệu"/>
 
     {vaiTro === "CV" && nhapMo && <KhoiTaiTep onDong={() => setNhapMo(false)}/>}
 
@@ -65,9 +62,13 @@ export function TinhTrangDuLieu({ vaiTro }: { vaiTro: VaiTro }) {
       nói vấn đề nằm ở nguồn nào. Thiếu nó thì người dùng đọc được "2 lượt cần
       xử lý" rồi phải mở nhật ký ra dò từng dòng.
     */}
+    {/* Nút tải tệp đứng ngay trên bảng nói nguồn nào thiếu — G12: "tải tay chỉ
+        là dự phòng, nút chỉ hiện khi nguồn thiếu". Trước đây nó ở măng sét,
+        tức hiện ở mọi màn và mọi lúc, đúng điều tài liệu dặn đừng làm. */}
     <Panel
       title="Nguồn dữ liệu của kỳ"
       subtitle={canXem.length > 0 ? `${canXem.length}/${sourceBatches.length} nguồn cần xem lại` : "Mọi nguồn đã về đủ"}
+      actions={vaiTro === "CV" && nguonThieu.length > 0 ? <Button kind="secondary" icon="upload" onClick={() => setNhapMo(true)}>Tải tệp bổ sung</Button> : undefined}
     >
       <TableWrap label="nguồn dữ liệu của kỳ">
         <table className="ql1-ds-table" style={{ minWidth: 980 }}>

@@ -28,7 +28,7 @@ export function Workbench({ onNavigate, vaiTro, phong }: { onNavigate: (view: Vi
   const chuaDu = sourceBatches.filter((batch) => batch.status === "MISSING");
 
   return <div className="page-stack workbench-page">
-    <PageIntro title="Công việc theo kỳ" actions={<Button onClick={() => onNavigate(reportView)}>Mở báo cáo của phòng</Button>}/>
+    <PageIntro title="Công việc theo kỳ"/>
 
     <FigureLine items={[
       { label: "Việc cần xử lý", value: tasks.length, tone: "warning" },
@@ -37,7 +37,9 @@ export function Workbench({ onNavigate, vaiTro, phong }: { onNavigate: (view: Vi
     ]}/>
 
     <div className="workbench-grid">
-      <Panel title="Công việc ưu tiên">
+      {/* Nút dẫn sang báo cáo của phòng nằm TRONG đầu khối công việc, không
+          đứng một mình trên một hàng riêng — The No Masthead Rule. */}
+      <Panel title="Công việc ưu tiên" actions={<Button onClick={() => onNavigate(reportView)}>Mở báo cáo của phòng</Button>}>
         {tasks.length === 0 && <div className="empty-state"><strong>Không có công việc ưu tiên cho tài khoản này.</strong></div>}
         <div className="task-list">{tasks.map((item) => <button className="task-row" type="button" key={item.id} onClick={() => onNavigate(moduleView(item.module))}>
           <span className="task-copy"><strong>{item.title}</strong><small>{item.module} – {item.assignee}</small></span>

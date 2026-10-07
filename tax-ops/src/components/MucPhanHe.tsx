@@ -69,11 +69,30 @@ const QL1: readonly NhomMuc[] = [{
   phòng là phải học lại chỗ bấm. Dải trên trang còn ăn một dòng ngang quý
   đúng ở nơi bảng cần bề rộng nhất.
 */
+/*
+  QL3 bỏ mục "Dữ liệu gốc", thay bằng "Danh sách NNT".
+
+  Dữ liệu gốc liệt kê các nguồn kéo về — TTR, danh bạ, kế hoạch năm — tức thứ
+  người VẬN HÀNH cần khi một lượt kéo hỏng. Vai ấy đã có màn riêng (Giám sát
+  dữ liệu), còn cán bộ QL3 vào đây để làm nghiệp vụ.
+
+  Thứ họ làm việc trên đó cả tháng là bảng KTTB_THEO_DN: `SPec/QLDN3` §4.1
+  bước 2 đặt nó làm lớp giữa, và MỌI ô của mẫu báo cáo đều là một phép đếm
+  hoặc phép cộng trên bảng ấy. Mục G3 "bấm số → xem chi tiết" cũng không có
+  đích nào để tới nếu danh sách không có mặt trên màn.
+
+  Danh sách đứng NGAY SAU Tổng quan, trước Đối chiếu: thứ tự đọc là tổng →
+  chi tiết → đối chiếu với bản thủ công, đúng trình tự một kỳ làm việc.
+*/
 const QL3: readonly NhomMuc[] = [{
   baoCao: null, nhan: null, muc: [
     { id: "tongquan", nhan: "Tổng quan" },
-    { id: "doichieu", nhan: "Đối chiếu báo cáo" },
-    { id: "nguon", nhan: "Dữ liệu gốc" },
+    { id: "dsnnt", nhan: "Danh sách NNT" },
+    /* Đối chiếu bằng tay là việc của giai đoạn chuyển đổi và không nằm
+       trong bộ chỉ tiêu nào của mẫu. KPI đăng ký thì là CỘT (7) của mẫu, và
+       §6 xếp "nhập KPI" vào nhóm vẫn thủ công sau khi có hệ thống — tức nó
+       phải có màn riêng chứ không chờ nguồn nào kéo về. */
+    { id: "kpi", nhan: "KPI đăng ký" },
   ],
 }];
 

@@ -11,14 +11,15 @@ import {
   DON_VI_QL3, KY_QL3, KY_QL3_THEO_ID, congQL3, danhGiaQL3,
   type DonViQL3, type ODanhGiaQL3,
 } from "@/data/ql3";
-import { NGUON_QL3 } from "@/data/nguonDuLieu";
 import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
 import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
 import { useThamSo } from "@/state/diaChi";
+import { useKpi } from "@/state/KpiContext";
+import type { VaiTro } from "@/domain/types";
 import { useMucPhanHe } from "@/components/MucPhanHe";
-import { DuLieuGoc } from "@/features/DuLieuGoc";
+import { DanhSachDNQL3 } from "@/features/DanhSachDNQL3";
 
-import { DoiChieuQL3 } from "@/features/DoiChieuQL3";
+import { KpiQL3 } from "@/features/KpiQL3";
 
 /*
   Kết quả kiểm tra tại bàn theo kế hoạch năm — BR-QL3-01.
@@ -90,7 +91,7 @@ const NHOM_COT = (thangKPI: string, nam: string): NhomCot[] => [
 
 const RONG_DV = 196;
 
-export function RiskQL3({ actor, ketQua = false }: { actor: string; ketQua?: boolean }) {
+export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiTro: VaiTro; ketQua?: boolean }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
@@ -98,13 +99,25 @@ export function RiskQL3({ actor, ketQua = false }: { actor: string; ketQua?: boo
      `components/MucPhanHe.tsx` về vì sao dải mục trên trang đã bỏ. Bản xem
      trước vẫn nằm trong địa chỉ như cũ. */
   const { muc } = useMucPhanHe();
+  const { layKpi } = useKpi();
   const tab = ketQua ? "ketqua" : muc;
   const [xem, datXem] = useThamSo<string>("xem", "");
   const ky = KY_QL3_THEO_ID[chon.ky] ?? KY_QL3[0];
 
+  /*
+    Bảng tổng hợp đọc KPI ĐÃ ĐĂNG KÝ, không đọc số sinh sẵn.
+
+    Cột (7) của mẫu là số đơn vị tự đăng ký, và cột (8) chia cho nó. Nếu màn
+    KPI cho sửa mà bảng này vẫn giữ số cũ thì sửa xong không thấy gì đổi — và
+    người dùng kết luận nút Lưu không chạy.
+  */
   const oCua = useMemo(
-    () => new Map(DON_VI_QL3.map((dv) => [dv.id, danhGiaQL3(ky.hat, dv)])),
-    [ky],
+    () => new Map(DON_VI_QL3.map((dv) => {
+      const o = danhGiaQL3(ky.hat, dv);
+      const dk = layKpi(ky.id, dv.id);
+      return [dv.id, dk === null ? o : { ...o, kpiDangKy: dk }] as const;
+    })),
+    [ky, layKpi],
   );
 
   const dangChon = chon.donVi.length ? new Set(chon.donVi) : null;
@@ -132,25 +145,27 @@ export function RiskQL3({ actor, ketQua = false }: { actor: string; ketQua?: boo
     {cotPhang.map((c, i) => <td key={i}>{c.o(o)}</td>)}
   </tr>;
 
-  const boSheet = useMemo(() => ql3Workbook(ky, trongPhamVi), [ky, trongPhamVi]);
+  const boSheet = useMemo(() => ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), [ky, trongPhamVi, layKpi]);
   /* Hết lượt thì khối xem trước đóng lại VÀ địa chỉ sạch theo. Để lại `?xem=`
      là để lại một liên kết mở ra đúng thứ người nhận không được xem. */
   const choXem = useChoXemTruoc(`QL3|${ky.id}`);
   useEffect(() => { if (!choXem && xem !== "") datXem(""); }, [choXem, xem, datXem]);
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL3|${ky.id}`).trangThai };
-  const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
+  const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
   return <div className="page-stack ql1-page">
-    <PageIntro title={ketQua ? "Kết quả tổng hợp · Phòng QL3" : "Kiểm tra tại bàn · Phòng QL3"} actions={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}/>
+    <PageIntro title={ketQua ? "Kết quả tổng hợp · Phòng QL3" : "Kiểm tra tại bàn · Phòng QL3"}/>
 
     <ThanhDuyet
       khoa={`QL3|${ky.id}`}
       nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}
       xemTruoc={<NutXemTruoc mo={moMoXemTruoc} onToggle={() => datXem(moMoXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+      tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", reportMeta.scope]]}
     />
 
     {/* Khối xem trước nằm NGAY SAU thanh duyệt, trong luồng trang. */}
     {moMoXemTruoc && <KhoiXemTruoc
+      xuat={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}
       sheets={boSheet}
       meta={reportMeta}
       ten="Kết quả kiểm tra tại bàn · Phòng QL3"
@@ -170,16 +185,15 @@ export function RiskQL3({ actor, ketQua = false }: { actor: string; ketQua?: boo
 
     {tab === "tongquan" && <TongQuanQL3 toan={toan} trongPhamVi={trongPhamVi} oCua={oCua} ky={ky}/>}
 
-    {tab === "nguon" && <DuLieuGoc nguon={NGUON_QL3} ngayBaoCao={ky.denNgay}/>}
+    {tab === "dsnnt" && <DanhSachDNQL3
+      trongPhamVi={trongPhamVi}
+      hatKy={ky.hat}
+      ky={ky}
+      meta={reportMeta}
+      tenTep={`QL3_${ky.id}`}
+    />}
 
-    {tab === "doichieu" && <>
-      <DoiChieuQL3
-        key={`${ky.id}|${[...chon.donVi].sort().join(";")}`}
-        ngay={ky.denNgay}
-        phamVi={reportMeta.scope}
-        onExport={exportReport}
-      />
-    </>}
+    {tab === "kpi" && <KpiQL3 trongPhamVi={trongPhamVi} ky={ky} vaiTro={vaiTro}/>}
     {tab === "ketqua" && <Panel title="Tổng hợp kết quả theo đơn vị" subtitle={`Lũy kế đến ${ky.denNgay}`}>
       {trongPhamVi.length === 0
         ? <div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div>
