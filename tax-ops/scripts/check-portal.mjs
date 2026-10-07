@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import puppeteer from "puppeteer-core";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 const review = new URL("../.impeccable/review/", import.meta.url);
@@ -9,6 +9,19 @@ await mkdir(review, { recursive: true });
 const base = new URL(`${(process.argv[2] ?? "http://localhost:5174").replace(/\/+$/, "")}/`);
 const dashboard = new URL("nsnn/", base);
 const management = new URL("quan-ly/", base);
+/*
+  Số nút trên trang đăng nhập phải ĐẾM TỪ NGUỒN, không gõ cứng.
+
+  Con số 5 gõ cứng ở đây đúng vào ngày viết — khi mới có QL1, QL3 và Vận hành.
+  QL2 và QL4 thêm bốn tài khoản thì cổng phát hành đỏ, trong khi bản web không
+  hỏng gì: phép kiểm canh một con số, còn thứ đáng canh là "trang nghiệp vụ
+  liệt kê ĐỦ tài khoản nghiệp vụ, trang NSNN chỉ liệt kê một". Đọc thẳng danh
+  sách thật thì mỗi lần thêm hay gỡ tài khoản, phép kiểm vẫn hỏi đúng câu ấy.
+*/
+const nguon = await readFile(new URL("../src/auth/demoAuth.ts", import.meta.url), "utf8");
+const soNghiepVu = [...nguon.matchAll(/permissions: \["TAX_OPS_VIEW"\]/g)].length;
+assert.ok(soNghiepVu > 0, "Không đọc được danh sách tài khoản nghiệp vụ trong demoAuth.ts");
+
 const browser = await puppeteer.launch({ channel: "chrome", headless: true });
 const page = await browser.newPage();
 const errors = [];
@@ -21,7 +34,7 @@ try {
     const state = role === "lanhdao.nhanuoc";
     await page.goto(state ? dashboard.href : management.href);
     await page.waitForSelector(".login-page");
-    assert.equal(await page.$$eval(".demo-accounts-list button", buttons => buttons.length), state ? 1 : 5);
+    assert.equal(await page.$$eval(".demo-accounts-list button", buttons => buttons.length), state ? 1 : soNghiepVu);
     if (state) {
       await page.screenshot({ path: fileURLToPath(new URL("portal-login-nsnn-desktop.png", review)) });
       await page.setViewport({ width: 390, height: 844 });
