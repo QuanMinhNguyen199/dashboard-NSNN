@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon, useRongToiThieu } from "@/components/ui";
-import { QL1NavigationProvider, QL1SidebarItems } from "@/components/QL1Navigation";
+import { CUM_MUC, MucPhanHeProvider, MucSidebar } from "@/components/MucPhanHe";
 import { TaxLogo } from "@/components/TaxLogo";
 import type { ViewId } from "@/domain/types";
 import { NAV, NHAN_VAI, NHOM, navCho } from "@/components/nav";
@@ -74,7 +74,10 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
           <span className="nav-group" aria-hidden="true">{nhan}</span>
           {muc.map((item) => <Fragment key={item.id}>
             <NavItem item={item} active={view === item.id} onView={onView}/>
-            {item.id === "debt" && <QL1SidebarItems visible={view === "debt" && user.phong === "QL1"} onNavigate={() => setMenuOpen(false)}/>}
+            {/* Cụm mục chỉ hiện dưới phân hệ ĐANG MỞ. Dựng nó dưới mọi phân
+                hệ thì thanh bên thành một mục lục ba chục dòng, và người dùng
+                phải đọc mục của phòng khác để tìm mục của mình. */}
+            {CUM_MUC[item.id] && <MucSidebar view={item.id} visible={view === item.id} onNavigate={() => setMenuOpen(false)}/>}
           </Fragment>)}
         </div>;
       })}
@@ -106,7 +109,8 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   */
   const hanhDongChung = null;
 
-  return <QL1NavigationProvider><div className="ops-app">
+  /* `key={view}`: xem ghi chú ở `MucPhanHeProvider` về vì sao nó phải dựng lại. */
+  return <MucPhanHeProvider key={view} view={view}><div className="ops-app">
     {/* Điều hướng cộng nút đăng xuất đứng trước nội dung, nên không có lối tắt
         thì mỗi lần đổi màn là mấy lần Tab trước khi chạm nội dung. */}
     <a className="skip-link" href="#workspace">Bỏ qua điều hướng, tới nội dung</a>
@@ -128,7 +132,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
       {duoc.length > 5 && <button type="button" className={duoc.slice(5).some((i) => i.id === view) ? "is-active" : undefined} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>}
     </nav>
     {menuOpen && <div className="nav-scrim" onClick={() => setMenuOpen(false)}><aside ref={drawerRef} className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Điều hướng nghiệp vụ" onKeyDown={onDrawerKeyDown} onClick={(event) => event.stopPropagation()}><button ref={closeRef} type="button" className="drawer-close" onClick={() => setMenuOpen(false)} aria-label="Đóng điều hướng"><Icon name="close"/></button>{nav}</aside></div>}
-  </div></QL1NavigationProvider>;
+  </div></MucPhanHeProvider>;
 }
 
 function NavItem({ item, active, onView }: { item: (typeof NAV)[number]; active: boolean; onView: (view: ViewId) => void }) {

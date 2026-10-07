@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CaseLayout, useCaseSelection } from "@/components/CaseLayout";
-import { Badge, Button, DetailGrid, FigureLine, PageIntro, Panel, SearchField, TableWrap, integer } from "@/components/ui";
+import { Badge, Button, DetailGrid, Panel, SearchField, TableWrap, integer } from "@/components/ui";
 import { dataRuns } from "@/data/mock";
 import type { DataRun, Tone } from "@/domain/types";
 import { useAction } from "@/state/ActionContext";
@@ -22,10 +22,6 @@ export function Runs({ readOnly = false }: { readOnly?: boolean }) {
     [search],
   );
   const luot = rows.find((r) => r.id === cases.selectedId) ?? rows[0];
-
-  const tuDong = new Set(dataRuns.filter((r) => r.mode === "AUTO").map((r) => r.source)).size;
-  const loiDangMo = dataRuns.filter((r) => r.status === "FAILED" || r.status === "MISMATCH").length;
-  const dongLech = dataRuns.reduce((t, r) => t + Math.abs(lech(r) ?? 0), 0);
 
   /*
     Chi tiết một lượt trả lời đúng ba câu mà FT-05.4 đặt ra: kéo bằng tham số
@@ -57,19 +53,7 @@ export function Runs({ readOnly = false }: { readOnly?: boolean }) {
   </Panel>;
 
   return <div className="page-stack">
-    <PageIntro
-      title="Lượt chạy dữ liệu"
-      actions={!readOnly && <Button kind="primary" icon="upload" onClick={() => notify("Chưa kết nối hệ thống nguồn. Không thể thu thập lại dữ liệu trong bản mô phỏng.")}>Chạy lại theo tham số cũ</Button>}
-    />
-
-    <FigureLine items={[
-      { label: "Lượt chạy trong ngày", value: dataRuns.length },
-      { label: "Nguồn thu thập tự động", value: `${tuDong}/5`, note: "TTR cần nhập tệp thủ công" },
-      { label: "Lượt thu thập cần xử lý", value: loiDangMo, tone: loiDangMo ? "critical" : "positive" },
-      { label: "Dòng lệch khi đối soát", value: integer(dongLech), tone: dongLech ? "warning" : "positive", note: "Nguồn so với kho" },
-    ]}/>
-
-    <CaseLayout detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close} label="Chi tiết lượt chạy">
+    <CaseLayout presentation="drawer" detail={detail} mobileOpen={cases.mobileOpen} onClose={cases.close} label="Chi tiết lượt chạy">
       <Panel
         title="Nhật ký lượt chạy"
         actions={<SearchField value={search} onChange={setSearch} placeholder="Tìm mã lượt, nguồn hoặc kỳ"/>}

@@ -16,14 +16,21 @@ import type { DemoUser } from "@/auth/demoAuth";
     diễn ra TRÊN phân hệ của kỳ đang xem (CV gửi duyệt → TP duyệt, trả lại,
     chốt số), nên nó chuyển vào thanh duyệt ngay đầu phân hệ. Một màn riêng
     bắt người dùng rời khỏi số liệu họ vừa đọc để đi tìm chính nó.
-  • "Lượt chạy dữ liệu" + "Lô dữ liệu" — §1.2 gọi tên một màn duy nhất,
-    "Tình trạng dữ liệu". Hai màn là hai nửa của cùng một câu hỏi: kỳ này dữ
-    liệu đã về đủ chưa.
-  • "Ánh xạ quản lý" — không có trong tài liệu như một màn. Nội dung của nó
-    (YC-CĐ-03, YC-CĐ-04 của BRD) là một phần chất lượng dữ liệu của kỳ, nên
-    nó thành một mục trong Tình trạng dữ liệu.
+  • "Lượt chạy dữ liệu", "Lô dữ liệu", "Ánh xạ quản lý" — §1.2 gọi tên một
+    màn duy nhất, "Tình trạng dữ liệu". Ba màn này từng gộp vào đó thành ba
+    MỤC; ngày 06/10/2026 gỡ nốt cả ba tên mục, vì không tên nào có trong tài
+    liệu và hai mục sau chỉ dựa vào BRD YC-CĐ-03/04 và FRS MH-05 — tài liệu
+    tham chiếu, không phải tài liệu đặt phạm vi. Mục ánh xạ còn đi ngược G14
+    ("Người dùng KHÔNG tách tay"). Màn giữ đúng thứ dòng 48 bản thiết kế đòi:
+    lần kéo gần nhất, nguồn nào thiếu hay lệch ngày, số dòng nguồn so với kho.
   • "Quy tắc nghiệp vụ" — §4.2 đặt nó làm tab 9 BÊN TRONG phân hệ QL1
     ("Quy tắc & nguồn"). Ngưỡng chỉ có nghĩa cùng với bảng số nó đang áp vào.
+  • "Báo cáo theo kỳ" (MH-03) — gỡ 06/10/2026. Nó có trong FRS mục 13 (MH-03,
+    QT-08, mức "Phải") nhưng KHÔNG có trong hai bản thiết kế `design_ql1ql3`
+    và `design_ql2ql4`, vốn là tài liệu đặt phạm vi cho bản mẫu này. Trạng
+    thái của kỳ đang xem đã nằm ngay trên thanh duyệt của từng phân hệ, nên
+    một bảng kỳ × trạng thái riêng chỉ nói lại thứ đã có, ở một chỗ khác.
+    Khi FRS được đưa vào phạm vi thì dựng lại từ mã trong lịch sử git.
 
   Quyền xem là tích của HAI trục, theo ma trận mục 3. `phong` liệt kê phòng
   nào mở được; `null` là khung chung. Mục bảo mật S1 ghi "ẩn hẳn menu, không
@@ -48,11 +55,10 @@ export const NAV: MucNav[] = [
   { id: "workbench", label: "Công việc theo kỳ", short: "Việc", icon: "home", nhom: "work", phong: null, vaiTro: NGHIEP_VU },
 
   { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU },
+  { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU },
   { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU },
-
-  /* MH-03 — QT-08: bảng báo cáo × kỳ. Nó thuộc nhóm phân hệ vì nó nói về
-     báo cáo của phòng, không phải về đường đi của dữ liệu. */
-  { id: "theoky", label: "Báo cáo theo kỳ", short: "Theo kỳ", icon: "clock", nhom: "phanhe", phong: null, vaiTro: NGHIEP_VU },
+  { id: "tonghopql3", label: "Kết quả tổng hợp", short: "Tổng hợp", icon: "report", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU },
+  { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU },
 
   { id: "tinhtrang", label: "Tình trạng dữ liệu", short: "Dữ liệu", icon: "database", nhom: "data", phong: null, vaiTro: NGHIEP_VU },
 
@@ -60,9 +66,18 @@ export const NAV: MucNav[] = [
   { id: "giamsat", label: "Giám sát dữ liệu", short: "Giám sát", icon: "clock", nhom: "vanhanh", phong: null, vaiTro: ["VAN_HANH"] },
 ];
 
+/*
+  Nhãn nhóm hiện ở MỌI nhóm, kể cả nhóm chỉ có một mục.
+
+  Có lúc đã thử bỏ nhãn của nhóm một mục cho gọn. Nhưng nhãn ở đây không phải
+  để phân loại trong nội bộ nhóm — nó nói mục bên dưới THUỘC LOẠI VIỆC NÀO, và
+  câu đó vẫn đúng với một mục. Bỏ đi thì ba đích của một phòng đọc ra như một
+  danh sách phẳng không thứ bậc, và lúc thêm mục thứ hai vào một nhóm thì nhãn
+  lại xuất hiện — thanh bên đổi hình theo dữ liệu.
+*/
 export const NHOM: { id: MucNav["nhom"]; nhan: string }[] = [
   { id: "work", nhan: "Điều hành" },
-  { id: "phanhe", nhan: "Phân hệ của phòng" },
+  { id: "phanhe", nhan: "Phân hệ" },
   { id: "data", nhan: "Dữ liệu" },
   { id: "vanhanh", nhan: "Vận hành" },
 ];

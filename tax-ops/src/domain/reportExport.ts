@@ -2,6 +2,14 @@ import { danhSachQL1, donViCuaTab, tongHopCuaTab, type BoNo, type DonViQL1, type
 import { congQL3, danhGiaQL3, type DonViQL3, type KyQL3, type ODanhGiaQL3 } from "@/data/ql3";
 import { NGUONG, ruleItems, trieu } from "@/data/thamSo";
 import { NGUON_QL1 } from "@/data/nguonDuLieu";
+import {
+  TRANG_THAI_KDT, bangQL4_01, canCapSo, chuaCapSo, dangXuLy, danhSachCuocGoi, danhSachPhieu,
+  thoiGianTB, tongDen, tongDi, tongTiepNhan, tyLeNho, tyLeQuaHan, tyLeTuDong, type KyQL4,
+} from "@/data/ql4";
+import {
+  I_DA_TRA, KHAC_QL2_01, TRANG_THAI_XM, bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua,
+  daTraXM, tonCuoiK, tonXM, tongXM, type KyQL2,
+} from "@/data/ql2";
 import type { ReportStatus } from "@/domain/types";
 
 export type ReportValue = string | number | null;
@@ -91,6 +99,244 @@ export function ql1Workbook(ky: KyQL1, units: string[]): ReportSheet[] {
   ] };
   return [summaries[0], details[0], summaries[1], summaries[2], details[1], details[2], rules, summaries[3], details[3]];
 }
+/* ── QL2 ─────────────────────────────────────────────────────────────────
+
+  Mỗi BÁO CÁO một bộ sheet, không phải mỗi phân hệ một bộ. Xuất "cả bộ của
+  QL2" là xuất sáu báo cáo khác kỳ vào một tệp — người nhận không có cách nào
+  biết cột nào thuộc kỳ nào.
+
+  Sheet giữ ĐÚNG thứ tự cột và tên cột của mẫu (G4, G7); thứ tự dòng theo khung
+  đơn vị chuẩn chứ không theo chữ cái (G16).
+*/
+const dongQL2 = <T extends { dv: { ten: string; ma: string; nhom: string; stt: number } }>(
+  rows: T[], gia: (r: T) => ReportValue[], congGia: (rows: T[]) => ReportValue[],
+) => {
+  const out: ReportValue[][] = [];
+  const bold: number[] = [];
+  const them = (nhan: string, ma: ReportValue, v: ReportValue[], dam: boolean) => {
+    if (dam) bold.push(out.length);
+    out.push([out.length + 1, ma, nhan, ...v]);
+  };
+  if (!rows.length) return { rows: out, bold };
+  them("A. Tổng cộng", "—", congGia(rows), true);
+  for (const [g, nhan] of [["VP", "I. Khối Văn phòng Thuế TP Hà Nội"], ["TCS", "II. Khối Thuế cơ sở"]]) {
+    const phan = rows.filter((r) => r.dv.nhom === g);
+    if (!phan.length) continue;
+    them(nhan, "—", congGia(phan), true);
+    for (const r of phan) them(r.dv.ten, r.dv.ma, gia(r), false);
+  }
+  return { rows: out, bold };
+};
+
+export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[]): ReportSheet[] {
+  const loc = <T extends { dv: { ten: string } }>(rows: T[]) => rows.filter((r) => !donVi.length || donVi.includes(r.dv.ten));
+
+  if (baoCao === "QL2-01") {
+    return (["01", "0304"] as const).map((loaiTK) => {
+      const rows = loc(bangQL2_01(ky.hat, loaiTK));
+      const raThue = loaiTK === "01" ? "Số thuế khai thiếu" : "Chênh lệch doanh thu";
+      const vaoThue = loaiTK === "01" ? "Số thuế khai thừa" : "Số thuế thiếu";
+      const gia = (r: typeof rows[number]): ReportValue[] => [
+        loaiTK === "01" ? "01/GTGT" : "03, 04/GTGT",
+        r.ra.dauNam_NNT, r.ra.dauNam_Thue, r.vao.dauNam_NNT, r.vao.dauNam_Thue,
+        r.ra.ungDung_NNT, r.ra.ungDung_Thue, r.vao.ungDung_NNT, r.vao.ungDung_Thue, r.khongNopTK,
+        canRaSoat(r.ra).nnt, canRaSoat(r.ra).thue, canRaSoat(r.vao).nnt, canRaSoat(r.vao).thue, r.khongNopTK,
+        r.ra.dieuChinh_NNT, r.ra.dieuChinh_Thue, r.vao.dieuChinh_NNT, r.vao.dieuChinh_Thue,
+        ...KHAC_QL2_01.map((_, i) => r.ra.khac[i] + r.vao.khac[i]),
+        chuaCoKetQua(r.ra).nnt, chuaCoKetQua(r.ra).thue, chuaCoKetQua(r.vao).nnt, chuaCoKetQua(r.vao).thue,
+        "",
+      ];
+      const congGia = (ds: typeof rows): ReportValue[] => {
+        const so = ds.map(gia).map((v) => v.slice(1, -1) as number[]);
+        const cong = so.reduce((t, v) => t.map((x, i) => Math.round((x + v[i]) * 10) / 10), so[0]?.map(() => 0) ?? []);
+        return [loaiTK === "01" ? "01/GTGT" : "03, 04/GTGT", ...cong, ""];
+      };
+      const { rows: r2, bold } = dongQL2(rows, gia, congGia);
+      return {
+        name: loaiTK === "01" ? "Tong hop 01GTGT" : "Tong hop 03,04GTGT",
+        title: "BÁO CÁO KẾT QUẢ THỰC HIỆN ĐỐI CHIẾU DỮ LIỆU TỜ KHAI THUẾ GTGT VÀ HÓA ĐƠN ĐIỆN TỬ",
+        unit: "Đơn vị tiền: triệu đồng",
+        headers: [
+          /* Thứ tự theo MẪU: STT · Mã · Tên · Loại. Màn hình đưa Tên lên đầu
+             để nó làm cột dính khi cuộn ngang, nhưng tệp xuất ra phải mở được
+             cạnh file của phòng mà không phải đổi chỗ cột nào. */
+          "STT", "Mã cơ quan thuế", "Tên cơ quan thuế", "Loại tờ khai",
+          "Số đầu năm – Số NNT khai thiếu", `Số đầu năm – ${raThue}`, "Số đầu năm – Số NNT khai thừa", `Số đầu năm – ${vaoThue}`,
+          "Ứng dụng – Số NNT khai thiếu", `Ứng dụng – ${raThue}`, "Ứng dụng – Số NNT khai thừa", `Ứng dụng – ${vaoThue}`, "Ứng dụng – Không nộp tờ khai",
+          "Cần rà soát – Số NNT khai thiếu", `Cần rà soát – ${raThue}`, "Cần rà soát – Số NNT khai thừa", `Cần rà soát – ${vaoThue}`, "Cần rà soát – Không nộp tờ khai",
+          "Kết quả xử lý – Điều chỉnh tăng số NNT", "Kết quả xử lý – Điều chỉnh tăng số thuế",
+          "Kết quả xử lý – Điều chỉnh giảm số NNT", "Kết quả xử lý – Điều chỉnh giảm số thuế",
+          ...KHAC_QL2_01.map((k) => `Kết quả xử lý – ${k.nhan}`),
+          "Chưa có kết quả – Số NNT khai thiếu", `Chưa có kết quả – ${raThue}`,
+          "Chưa có kết quả – Số NNT khai thừa", `Chưa có kết quả – ${vaoThue}`,
+          "Ghi chú",
+        ],
+        rows: r2,
+        bold,
+      };
+    });
+  }
+
+  if (baoCao === "QL2-02") {
+    const rows = loc(bangHeSoK(ky.hat));
+    const gia = (r: typeof rows[number]): ReportValue[] => {
+      const mau = r.tonDau + r.phatSinh;
+      return [r.tonDau, r.phatSinh, r.daXuLy, tonCuoiK(r), ratio(r.daXuLy, mau), mau ? 1 - r.daXuLy / mau : null];
+    };
+    const congGia = (ds: typeof rows): ReportValue[] => {
+      const tonDau = ds.reduce((t, r) => t + r.tonDau, 0);
+      const phatSinh = ds.reduce((t, r) => t + r.phatSinh, 0);
+      const daXuLy = ds.reduce((t, r) => t + r.daXuLy, 0);
+      const mau = tonDau + phatSinh;
+      return [tonDau, phatSinh, daXuLy, tonDau + phatSinh - daXuLy, ratio(daXuLy, mau), mau ? 1 - daXuLy / mau : null];
+    };
+    const { rows: r2, bold } = dongQL2(rows, gia, congGia);
+    return [{
+      name: "He so K",
+      title: `BÁO CÁO CẢNH BÁO HỆ SỐ K – ${ky.nhan.toUpperCase()}`,
+      headers: [
+        "STT", "Mã cơ quan thuế", "Tên cơ quan thuế",
+        `Số lượt cảnh báo tồn đầu kỳ`, "Số lượt cảnh báo phát sinh trong kỳ",
+        "Số lượt cảnh báo đã xử lý trong kỳ", `Số lượt cảnh báo tồn cuối kỳ (Số liệu ngày ${ky.ngayChot})`,
+        "Tỉ lệ đã xử lý trong kỳ", "Tỷ lệ chưa xử lý trong kỳ",
+      ],
+      rows: r2,
+      bold,
+      percent: [7, 8],
+    }];
+  }
+
+  const rows = loc(bangXM(ky.hat));
+  const gia = (r: typeof rows[number]): ReportValue[] => [
+    tongXM(r), daTraXM(r), tonXM(r), Math.max(0, tonXM(r) - r.quaHan), r.quaHan,
+    ...TRANG_THAI_XM.map((_, i) => r.theoTrangThai[i]),
+    ratio(daTraXM(r), tongXM(r)),
+  ];
+  const congGia = (ds: typeof rows): ReportValue[] => {
+    const theo = TRANG_THAI_XM.map((_, i) => ds.reduce((t, r) => t + r.theoTrangThai[i], 0));
+    const tong = theo.reduce((t, x) => t + x, 0);
+    const daTra = theo[I_DA_TRA];
+    const quaHan = ds.reduce((t, r) => t + r.quaHan, 0);
+    return [tong, daTra, tong - daTra, Math.max(0, tong - daTra - quaHan), quaHan, ...theo, ratio(daTra, tong)];
+  };
+  const { rows: r2, bold } = dongQL2(rows, gia, congGia);
+  return [{
+    name: "Xac minh hoa don",
+    title: `TỔNG HỢP XÁC MINH HÓA ĐƠN – ${ky.nhan.toUpperCase()}`,
+    headers: [
+      "STT", "Mã cơ quan thuế", "Tên cơ quan thuế",
+      "Tổng", "Đã trả kết quả", "Tồn", "Tồn trong hạn", "Tồn quá hạn",
+      ...TRANG_THAI_XM.map((t) => `Trạng thái ${t.ma} – ${t.nhan}`),
+      "Tỷ lệ hoàn thành",
+    ],
+    rows: r2,
+    bold,
+    percent: [8 + TRANG_THAI_XM.length + 1],
+  }];
+}
+
+/* ── QL4 ───────────────────────────────────────────────────────────────
+
+  QL4-01 xuất MỘT sheet giữ nguyên 30 cột và cách đánh số của mẫu, kể cả chỗ
+  mẫu đánh trùng 8, 9, 10 (Q-88): tệp này để mở cạnh file của phòng, nên nó
+  phải khớp từng cột chứ không phải đúng theo cách màn hình sắp lại.
+
+  QL4-02 xuất ba sheet đúng ba sheet của file hiện tại (Q-93 chưa trả lời về
+  bản gửi lãnh đạo, nên tạm giữ đúng cấu trúc đang dùng).
+*/
+export function ql4Workbook(baoCao: string, ky: KyQL4, donVi: string[]): ReportSheet[] {
+  if (baoCao === "QL4-01") {
+    const rows = bangQL4_01(ky.hat).filter((r) => !donVi.length || donVi.includes(r.dv.ten));
+    const gia = (h: typeof rows[number]): ReportValue[] => [
+      tongTiepNhan(h), h.tuDongCoRaSoat, h.tuDong, h.thuCong,
+      dangXuLy(h), h.dangXuLyTrongHan, h.dangXuLyQuaHan,
+      ...h.kdtThuCong, ...h.kdtTuDong,
+      canCapSo(h), h.daCapSo, chuaCapSo(h),
+      tyLeQuaHan(h), tyLeTuDong(h), h.hoSoVenh,
+    ];
+    const out: ReportValue[][] = [];
+    const bold: number[] = [];
+    const cong = (ds: typeof rows): ReportValue[] => {
+      const so = ds.map(gia);
+      return so[0]?.map((_, i) => {
+        /* Hai cột tỷ lệ KHÔNG cộng được — cộng phần trăm của 31 đơn vị ra một
+           số vô nghĩa. Chúng tính lại từ tử số và mẫu số của cả nhóm. */
+        if (i === 22) { const m = ds.reduce((t, h) => t + dangXuLy(h), 0); return m ? ds.reduce((t, h) => t + h.dangXuLyQuaHan, 0) / m : null; }
+        if (i === 23) { const m = ds.reduce((t, h) => t + tongTiepNhan(h), 0); return m ? ds.reduce((t, h) => t + h.tuDongCoRaSoat + h.tuDong, 0) / m : null; }
+        return ds.reduce((t, h) => t + Number(gia(h)[i] ?? 0), 0);
+      }) ?? [];
+    };
+    const them = (nhan: string, ma: ReportValue, v: ReportValue[], dam: boolean) => {
+      if (dam) bold.push(out.length);
+      out.push([nhan, ma, ...v]);
+    };
+    them("Tổng địa bàn Hà Nội", "—", cong(rows), true);
+    for (const [g, nhan] of [["VP", "Khối Văn phòng Thuế TP Hà Nội"], ["TCS", "Khối Thuế cơ sở"]]) {
+      const phan = rows.filter((r) => r.dv.nhom === g);
+      if (!phan.length) continue;
+      them(nhan, "—", cong(phan), true);
+      for (const r of phan) them(r.dv.ten, r.dv.ma, gia(r), false);
+    }
+    return [{
+      name: "BAOCAOTUANCHUAN",
+      title: `TIẾN ĐỘ GIẢI QUYẾT HỒ SƠ HOÀN THUẾ THU NHẬP CÁ NHÂN NĂM ${ky.ngayChot.slice(6)}`,
+      unit: ky.nhan,
+      headers: [
+        "Tên cơ quan thuế", "Mã cơ quan thuế",
+        "Tổng số hồ sơ tiếp nhận – Cộng", "Tổng số hồ sơ tiếp nhận – Tự động có rà soát", "Tổng số hồ sơ tiếp nhận – Tự động",
+        "Tổng số hồ sơ giải quyết – Thủ công",
+        "Đang xử lý – Cộng", "Đang xử lý – Trong hạn", "Đang xử lý – Quá hạn",
+        ...TRANG_THAI_KDT.map((t) => `Thủ công – ${t}`),
+        ...TRANG_THAI_KDT.map((t) => `Tự động – ${t}`),
+        "Tổng hồ sơ cần cấp số", "Đã cấp số", "Chưa cấp số",
+        "Tỷ lệ hồ sơ quá hạn", "Tỷ lệ hồ sơ tiếp nhận và xử lý tự động",
+        "Hồ sơ vênh 1.5.1 – 6.29.1",
+      ],
+      rows: out,
+      bold,
+      percent: [22 + 2, 23 + 2],
+    }];
+  }
+
+  const goi = danhSachCuocGoi(ky.hat);
+  const phieu = danhSachPhieu(ky.hat);
+  const donViPhieu = [...new Set(phieu.map((p) => p.donVi))];
+  return [
+    {
+      name: "BAO CAO CUOC GOI",
+      title: `BÁO CÁO SẢN LƯỢNG THEO NHÂN VIÊN – ${ky.nhan.toUpperCase()}`,
+      headers: ["STT", "Nhân viên", "Tên đơn vị", "Gọi đi – Trả lời", "Gọi đi – Không trả lời", "Gọi đi – Tổng", "Gọi đi – Thời gian (giây)", "Gọi đến – Trả lời", "Gọi đến – Không trả lời", "Gọi đến – Tổng", "Gọi đến – Thời gian (giây)", "Tỉ lệ nhỡ (%)", "Thời gian gọi trung bình (giây)", "Gọi nội bộ"],
+      rows: goi.map((h, i) => [
+        i + 1, h.nhanVien, h.donVi,
+        h.diTraLoi, h.diKhongTraLoi, tongDi(h), h.diThoiGian,
+        h.denTraLoi, h.denKhongTraLoi, tongDen(h), h.denThoiGian,
+        tyLeNho(h), thoiGianTB(h), h.noiBo,
+      ]),
+      percent: [11],
+    },
+    {
+      name: "Sheet3",
+      title: "PHIẾU GHI THEO ĐƠN VỊ",
+      headers: ["Đơn vị", "Đang xử lý – Trong hạn", "Đang xử lý – Hết hạn", "Hoàn thành", "Grand Total"],
+      rows: donViPhieu.map((d) => [
+        d,
+        phieu.filter((p) => p.donVi === d && p.trangThai === "Đang xử lý" && !p.hetHan).length,
+        phieu.filter((p) => p.donVi === d && p.trangThai === "Đang xử lý" && p.hetHan).length,
+        phieu.filter((p) => p.donVi === d && p.trangThai === "Hoàn thành").length,
+        phieu.filter((p) => p.donVi === d).length,
+      ]),
+    },
+    {
+      name: "Sai han",
+      title: "PHIẾU CÓ HẠN XỬ LÝ KHÔNG ĐÚNG QUY TRÌNH",
+      headers: ["Đơn vị", "Count of Hạn xử lý không đúng quy trình"],
+      rows: donViPhieu
+        .map((d) => [d, phieu.filter((p) => p.donVi === d && p.saiHan).length] as ReportValue[])
+        .filter((r) => Number(r[1]) > 0),
+    },
+  ];
+}
+
 export function ql3Workbook(ky: KyQL3, units: DonViQL3[]): ReportSheet[] {
   const value = (o: ODanhGiaQL3): ReportValue[] => [o.keHoach, o.daThucHien, ratio(o.daThucHien, o.keHoach), o.daHoanThanh, ratio(o.daHoanThanh, o.keHoach), o.kpiDangKy, ratio(o.daHoanThanh, o.kpiDangKy), o.chapNhan, o.choGiaiTrinh, o.dieuChinh, o.deNghiKiemTra, o.tangThu, o.giamKhauTru, o.giamLo, o.tienPhat, o.nopCham];
   const rows: ReportValue[][] = [], bold: number[] = [];

@@ -1,5 +1,5 @@
-import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Button, PageIntro, Panel, Segmented, TableWrap, integer, money } from "@/components/ui";
+import { useEffect, useMemo, type ReactNode } from "react";
+import { PageIntro, Panel, TableWrap, integer, money } from "@/components/ui";
 import { BoLocChung, useBoLoc } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
 import { useDuyet } from "@/state/DuyetContext";
@@ -12,12 +12,13 @@ import {
   type DonViQL3, type ODanhGiaQL3,
 } from "@/data/ql3";
 import { NGUON_QL3 } from "@/data/nguonDuLieu";
-import { ThanhDuyet } from "@/features/ThanhDuyet";
-import { XemTruocBaoCao } from "@/features/XemTruocBaoCao";
+import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
+import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
+import { useThamSo } from "@/state/diaChi";
+import { useMucPhanHe } from "@/components/MucPhanHe";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 
-/* Bốn tab của §5.2 bản thiết kế. */
-type TabQL3 = "tongquan" | "ketqua" | "nguon" | "doichieu";
+import { DoiChieuQL3 } from "@/features/DoiChieuQL3";
 
 /*
   Kết quả kiểm tra tại bàn theo kế hoạch năm — BR-QL3-01.
@@ -89,11 +90,16 @@ const NHOM_COT = (thangKPI: string, nam: string): NhomCot[] => [
 
 const RONG_DV = 196;
 
-export function RiskQL3({ actor }: { actor: string }) {
+export function RiskQL3({ actor, ketQua = false }: { actor: string; ketQua?: boolean }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
-  const [tab, setTab] = useState<TabQL3>("tongquan");
+  /* Mục lấy từ cụm trong THANH BÊN, giống QL1 và QL2 — xem ghi chú ở
+     `components/MucPhanHe.tsx` về vì sao dải mục trên trang đã bỏ. Bản xem
+     trước vẫn nằm trong địa chỉ như cũ. */
+  const { muc } = useMucPhanHe();
+  const tab = ketQua ? "ketqua" : muc;
+  const [xem, datXem] = useThamSo<string>("xem", "");
   const ky = KY_QL3_THEO_ID[chon.ky] ?? KY_QL3[0];
 
   const oCua = useMemo(
@@ -109,20 +115,8 @@ export function RiskQL3({ actor }: { actor: string }) {
   const nhomCot = NHOM_COT(ky.thangKPI, ky.denNgay.slice(-4));
   const cotPhang = nhomCot.flatMap((n) => n.cot);
 
-  /* Dòng tiêu đề thứ hai dính ở đáy dòng thứ nhất — cùng lý do đã ghi ở
-     DebtQL1: khai cứng chiều cao thì nhãn nhóm xuống dòng là hở một dải. */
-  const dauRef = useRef<HTMLTableSectionElement>(null);
-  const [caoDau, setCaoDau] = useState(34);
-  useLayoutEffect(() => {
-    const dong = dauRef.current?.rows[0];
-    if (!dong) return;
-    const do_ = () => setCaoDau(dong.getBoundingClientRect().height);
-    do_();
-    const ro = new ResizeObserver(do_);
-    ro.observe(dong);
-    return () => ro.disconnect();
-  }, [trongPhamVi.length]);
-
+  /* Không còn đo chiều cao hàng tiêu đề: cả `thead` dính thành một khối, xem
+     ghi chú cuối `styles.css`. */
   const chonDonVi = (dv: DonViQL3) => {
     datDonVi([dv.ten]);
     notify(`Đã lọc về ${dv.ten}. Bấm Đặt lại ở thanh đầu trang để xem lại toàn ngành.`);
@@ -138,12 +132,31 @@ export function RiskQL3({ actor }: { actor: string }) {
     {cotPhang.map((c, i) => <td key={i}>{c.o(o)}</td>)}
   </tr>;
 
+  const boSheet = useMemo(() => ql3Workbook(ky, trongPhamVi), [ky, trongPhamVi]);
+  /* Hết lượt thì khối xem trước đóng lại VÀ địa chỉ sạch theo. Để lại `?xem=`
+     là để lại một liên kết mở ra đúng thứ người nhận không được xem. */
+  const choXem = useChoXemTruoc(`QL3|${ky.id}`);
+  useEffect(() => { if (!choXem && xem !== "") datXem(""); }, [choXem, xem, datXem]);
+  const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL3|${ky.id}`).trangThai };
   const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
   return <div className="page-stack ql1-page">
-    <PageIntro title="Kiểm tra tại bàn · Phòng QL3" actions={<ExportButton onExport={exportReport}>Xuất báo cáo Excel</ExportButton>}/>
+    <PageIntro title={ketQua ? "Kết quả tổng hợp · Phòng QL3" : "Kiểm tra tại bàn · Phòng QL3"} actions={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}/>
 
-    <ThanhDuyet khoa={`QL3|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} xemTruoc={<XemTruocBaoCao sheets={ql3Workbook(ky, trongPhamVi)} meta={reportMeta} ten="Kết quả kiểm tra tại bàn · Phòng QL3"/>}/>
+    <ThanhDuyet
+      khoa={`QL3|${ky.id}`}
+      nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}
+      xemTruoc={<NutXemTruoc mo={moMoXemTruoc} onToggle={() => datXem(moMoXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+    />
+
+    {/* Khối xem trước nằm NGAY SAU thanh duyệt, trong luồng trang. */}
+    {moMoXemTruoc && <KhoiXemTruoc
+      sheets={boSheet}
+      meta={reportMeta}
+      ten="Kết quả kiểm tra tại bàn · Phòng QL3"
+      sheet={xem}
+      onChonSheet={datXem}
+    />}
 
     {/*
       Kỳ của QL3 là LŨY KẾ từ 01/01, không phải tuần hay tháng rời như QL1,
@@ -151,59 +164,31 @@ export function RiskQL3({ actor }: { actor: string }) {
     */}
     <BoLocChung
       kyCo={KY_QL3.map((k) => ({ id: k.id, nhan: k.nhan, loai: "THANG" as const }))}
-      donViCo={DON_VI_QL3.map((d) => d.ten)}
+      donViCo={DON_VI_QL3.map((d) => ({ id: d.id, ten: d.ten }))}
       phuChu={`${trongPhamVi.length}/${DON_VI_QL3.length} đơn vị trong phạm vi`}
-    />
-
-    <Segmented
-      label="Mục của báo cáo kiểm tra tại bàn"
-      value={tab}
-      onChange={setTab}
-      options={[
-        { value: "tongquan" as TabQL3, label: "Tổng quan" },
-        { value: "ketqua" as TabQL3, label: "Kết quả tổng hợp" },
-        { value: "nguon" as TabQL3, label: "Dữ liệu gốc" },
-        { value: "doichieu" as TabQL3, label: "Đối chiếu báo cáo thủ công" },
-      ]}
     />
 
     {tab === "tongquan" && <TongQuanQL3 toan={toan} trongPhamVi={trongPhamVi} oCua={oCua} ky={ky}/>}
 
     {tab === "nguon" && <DuLieuGoc nguon={NGUON_QL3} ngayBaoCao={ky.denNgay}/>}
 
-    {/*
-      Tab đối chiếu bản làm tay được bản thiết kế đánh dấu [R] — thí điểm, chưa
-      chốt. Nên nó nói thẳng mình chưa có dữ liệu thay vì dựng một bảng rỗng
-      trông như đã chạy; xem Blocked State trong DESIGN.md.
-    */}
-    {tab === "doichieu" && <Panel title="Đối chiếu báo cáo do phòng lập">
-      <div className="blocked-head">
-        <strong>Chưa có báo cáo thủ công để đối chiếu</strong>
-        <p>
-          Chưa có tệp báo cáo do phòng lập cho kỳ lũy kế đến {ky.denNgay}.
-        </p>
-      </div>
-      <ol className="blocker-list">
-        <li>
-          <span className="blocker-so">0/1</span>
-          <span className="blocker-noi">
-            <strong>Chưa nhận báo cáo thủ công của kỳ</strong>
-            <small>Sử dụng báo cáo cùng kỳ và cùng phạm vi đơn vị để đối chiếu.</small>
-          </span>
-          <Button kind="secondary" onClick={() => notify("Chức năng tải báo cáo đối chiếu chưa có trong bản mô phỏng.")}>Tải báo cáo đối chiếu</Button>
-        </li>
-      </ol>
-    </Panel>}
-
+    {tab === "doichieu" && <>
+      <DoiChieuQL3
+        key={`${ky.id}|${[...chon.donVi].sort().join(";")}`}
+        ngay={ky.denNgay}
+        phamVi={reportMeta.scope}
+        onExport={exportReport}
+      />
+    </>}
     {tab === "ketqua" && <Panel title="Tổng hợp kết quả theo đơn vị" subtitle={`Lũy kế đến ${ky.denNgay}`}>
       {trongPhamVi.length === 0
         ? <div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div>
         : <TableWrap label="tổng hợp kết quả kiểm tra tại bàn theo đơn vị"><table
             className="ql1-table ql3-table"
-            style={{ minWidth: RONG_DV + cotPhang.reduce((t, c) => t + c.rong, 0), ["--cao-dau" as string]: `${caoDau}px` }}
+            style={{ minWidth: RONG_DV + cotPhang.reduce((t, c) => t + c.rong, 0) }}
           >
             <colgroup><col style={{ width: RONG_DV }}/>{cotPhang.map((c, i) => <col key={i} style={{ width: c.rong }}/>)}</colgroup>
-            <thead ref={dauRef}>
+            <thead>
               <tr>
                 <th scope="col" rowSpan={2} className="dv-cot">Cơ quan Thuế thực hiện</th>
                 {nhomCot.map((n) => <th key={n.nhan} scope="colgroup" colSpan={n.cot.length} className="nhom">{n.nhan}</th>)}
@@ -267,10 +252,10 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
     <Panel title="Tiến độ kế hoạch năm" subtitle={`Lũy kế đến ${ky.denNgay}`}>
       <div className="the-luoi">
         <div className="the-so"><span className="the-nhan">Trong kế hoạch</span><strong className="the-gia">{integer(toan.keHoach)}</strong><span className="the-dvt">doanh nghiệp</span></div>
-        <div className="the-so"><span className="the-nhan">Đã thực hiện</span><strong className="the-gia">{integer(toan.daThucHien)}</strong><span className="the-dvt">{pt2(toan.daThucHien / toan.keHoach)} kế hoạch</span></div>
-        <div className="the-so"><span className="the-nhan">Đã hoàn thành</span><strong className="the-gia">{integer(toan.daHoanThanh)}</strong><span className="the-dvt">không tính chờ giải trình</span></div>
+        <div className="the-so"><span className="the-nhan">Đã thực hiện</span><strong className="the-gia">{integer(toan.daThucHien)}</strong><span className="the-dvt">doanh nghiệp</span></div>
+        <div className="the-so"><span className="the-nhan">Đã hoàn thành</span><strong className="the-gia">{integer(toan.daHoanThanh)}</strong><span className="the-dvt">doanh nghiệp</span></div>
         <div className="the-so"><span className="the-nhan">Tỷ lệ hoàn thành/kế hoạch</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.keHoach)}</strong><span className="the-dvt">theo số doanh nghiệp</span></div>
-        <div className="the-so"><span className="the-nhan">Tỷ lệ hoàn thành/KPI {ky.thangKPI}</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.kpiDangKy)}</strong><span className="the-dvt">KPI đơn vị tự đăng ký</span></div>
+        <div className="the-so"><span className="the-nhan">Tỷ lệ hoàn thành/KPI {ky.thangKPI}</span><strong className="the-gia">{pt2(toan.daHoanThanh / toan.kpiDangKy)}</strong><span className="the-dvt">theo số doanh nghiệp</span></div>
       </div>
     </Panel>
 
@@ -292,7 +277,7 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
       </Panel>
     </div>
 
-    <Panel title="Đơn vị có tỷ lệ hoàn thành thấp nhất" subtitle="So với kế hoạch năm · tối đa 10 đơn vị; đơn vị chưa đạt KPI đăng ký được đánh dấu">
+    <Panel title="Đơn vị có tỷ lệ hoàn thành thấp nhất" subtitle="So với kế hoạch năm">
       <ol className="xep-hang">{xep.map((x) => <li key={x.dv.id}>
         <span className="xh-ten">{x.dv.ten}{x.duoiKPI && <em className="xh-co"> dưới KPI</em>}</span>
         <span className="xh-so">{pt2(x.x)}</span>

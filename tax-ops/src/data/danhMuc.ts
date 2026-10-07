@@ -81,6 +81,18 @@ export const DAY_TCS = Array.from({ length: SO_TCS }, (_, i) => i + 1);
   mặt trong hai file kết xuất thật; `thuTu` là thứ tự hiển thị mà DM-02 yêu cầu
   giữ cố định, không phải thứ tự chữ cái.
 */
+/*
+  Bốn phân hệ KHÔNG dùng chung một danh mục khối Văn phòng, và đó là dữ liệu
+  chứ không phải lựa chọn giao diện:
+
+  • QL1 — bảy phòng, gồm cả Thuế cá nhân – HKD và Quản lý thu từ đất.
+  • QL3 và QL2 — năm phòng QLDN. `design_ql2ql4` §4.1 ghi thẳng "Danh sách đơn
+    vị giống QL3 (chỉ 5 phòng QLHTDN ở khối VP)" [F].
+  • QL4 — SÁU dòng: năm phòng QLDN cộng Phòng Thuế cá nhân, hộ kinh doanh và
+    thu khác (§5.1) [F]; đây là chỗ QL4 khác QL1 và QL3.
+*/
+export type PhanHeCoDonVi = "QL1" | "QL2" | "QL3" | "QL4";
+
 export interface PhongVP {
   id: string;
   ten: string;
@@ -88,7 +100,7 @@ export interface PhongVP {
   ma: string;
   thuTu: number;
   /** Phân hệ nào có phòng này trong danh mục của mình. */
-  coO: ("QL1" | "QL3")[];
+  coO: PhanHeCoDonVi[];
 }
 
 export const PHONG_VP: PhongVP[] = [
@@ -97,15 +109,15 @@ export const PHONG_VP: PhongVP[] = [
     ten: `Phòng Quản lý, Hỗ trợ doanh nghiệp số ${i + 1}`,
     ma: `10100P${i + 1}`,
     thuTu: i + 1,
-    coO: ["QL1", "QL3"] as ("QL1" | "QL3")[],
+    coO: ["QL1", "QL2", "QL3", "QL4"] as PhanHeCoDonVi[],
   })),
   /* Hai phòng này KHÔNG làm kiểm tra tại bàn khối doanh nghiệp, nên danh mục
      của QL3 không có chúng — bản thiết kế §5.1 ghi rõ điều đó. */
-  { id: "HKD", ten: "Phòng Thuế cá nhân, hộ kinh doanh và thu khác", ma: "10100P6", thuTu: 6, coO: ["QL1"] },
+  { id: "HKD", ten: "Phòng Thuế cá nhân, hộ kinh doanh và thu khác", ma: "10100P6", thuTu: 6, coO: ["QL1", "QL4"] },
   { id: "DAT", ten: "Phòng Quản lý các khoản thu từ đất", ma: "10100P7", thuTu: 7, coO: ["QL1"] },
 ];
 
-export const phongVPCua = (phanHe: "QL1" | "QL3") => PHONG_VP.filter((p) => p.coO.includes(phanHe));
+export const phongVPCua = (phanHe: PhanHeCoDonVi) => PHONG_VP.filter((p) => p.coO.includes(phanHe));
 
 /**
  * Tên đơn vị rút gọn để HIỂN THỊ ở chỗ hẹp (thanh bên, ô bảng).

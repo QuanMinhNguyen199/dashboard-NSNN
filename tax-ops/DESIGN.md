@@ -237,6 +237,31 @@ Mật độ cao và tĩnh. Thước đo là Stripe Dashboard: bảng dài đọc
 - Bậc chữ ngắn (10 → 22px, thêm một bậc `clamp` tới 26px ở màn đăng nhập); phân cấp do đường kẻ và cân nặng gánh.
 - Bàn phím và cảm ứng là điều kiện: focus 2px trên mọi thứ bấm được, 44px tối thiểu từ 900px trở xuống.
 - Không có tràn ngang ở bất kỳ khổ nào: mọi rãnh lưới chứa bảng đều khai báo cơ sở 0.
+- Không còn lớp phủ nào: mọi thứ từng mở trong hộp thoại nay là khối trong luồng trang, và trạng thái màn nằm trong địa chỉ.
+
+## Địa chỉ và lớp phủ
+
+Hai quyết định dưới đây đi liền nhau và ràng buộc mọi màn về sau.
+
+### Named Rules
+
+**The No-Overlay Rule.** Không màn nào được mở nội dung trong `<dialog>`, lớp phủ, popup hay ngăn trượt phủ lên trang. Bản mẫu này sẽ được dựng lại trên nền khác, nơi trợ lý đọc và trình bày giao diện, nên lớp phủ mang ba cái giá:
+
+1. Nội dung trong lớp phủ **không lọt vào ảnh chụp toàn trang**, bản xuất PDF hay bản bàn giao thiết kế — nó đơn giản là vô hình trong mọi bản chụp tĩnh.
+2. `<dialog>`, `::backdrop`, bẫy focus và `z-index` là **giả định về nền web**. Một khối trong luồng trang thì nền nào dựng được `div` là chạy được.
+3. Lớp phủ **không có địa chỉ**, nên không ai gửi được liên kết mở thẳng tới nó.
+
+Ngoài ba cái giá chung, mỗi lớp phủ còn che mất đúng thứ người dùng cần nhìn lúc ấy: hộp lý do trả lại che bảng số mà lý do đang nói về; ngăn chi tiết hồ sơ che bảng vừa chọn dòng trong đó; hộp tải tệp che danh sách lô đang thiếu dữ liệu.
+
+Thay vào đó: khối mở ra **trong luồng trang, ngay dưới thứ mở nó**, mang `tabIndex={-1}` và nhận focus khi hiện, đóng bằng nút Đóng và bằng Escape, trả focus về chỗ vừa bấm. Danh sách thả xuống vẫn được định vị tuyệt đối trong ô chứa của nó — đó không phải lớp phủ — nhưng đóng bằng người nghe `pointerdown` chứ không bằng một tấm màn `position: fixed`.
+
+Còn đúng hai thứ được phép nổi lên vì chúng không mang nội dung phải đọc kỹ: toast thông báo, và drawer điều hướng ở khổ điện thoại.
+
+**The URL Is The State Rule.** Những mẩu trạng thái người khác cần dẫn tới đều nằm trong query string, đọc lúc mở màn và ghi lại khi đổi (`state/diaChi.ts`): `ky`, `donvi`, `muc`, `moc`, `so`, `trang`, `xem`. Giá trị mặc định **không** được ghi ra, để địa chỉ ngắn và không khóa cứng mặc định hôm nay. Đổi màn thì dọn sạch tham số của màn cũ.
+
+Lý do là trợ lý: người dùng hỏi trên nền AI, trợ lý phải trả lời bằng một liên kết mở đúng kỳ, đúng mục, đúng sheet đang bàn. Một trạng thái chỉ sống trong bộ nhớ của tab là một trạng thái không nói ra được.
+
+Ràng buộc đi kèm, không được nới: **địa chỉ chỉ ĐỌC trạng thái, không thực hiện hành động.** Không tham số nào duyệt, chốt số hay gửi đi. Mở một liên kết là xem; chuyển tiếp liên kết cho người khác không được phép biến thành người đó duyệt hộ — QR-03 còn cấm cả người lập tự duyệt bản của mình. Vì cùng lý do, một ô nhập đang mở dở (lý do trả lại, tải tệp) **không** vào địa chỉ: nó là hành động, không phải thứ đang xem.
 
 ## Colors
 
@@ -294,13 +319,20 @@ Tính cách của chữ vẫn đến từ cân nặng và khoảng cách nhiều
 - **Lead** (400, 13px/1.5, `max-width: 72ch`, màu `--ink-2`): dòng mô tả mở đầu mỗi màn (`.page-lead`). Đây là dòng chữ đầu tiên người dùng thấy trong nội dung, vì tiêu đề màn bị ẩn.
 - **Label** (600, 12px): nhãn ô chi tiết, nhãn dải tổng hợp, chú thích phụ, dòng phụ của hàng. Dòng phụ quan trọng đã được nâng từ 11px lên 12px và nâng đó vẫn đứng trong bản dựng.
 - **Column-head** (700, 11px, +0.02em): đầu cột bảng, sticky, nền giấy mềm, chữ `--ink-3`. Ở 11px giữa các ô 14px, cân nặng 650 đọc ra nhạt hơn ô dữ liệu bên dưới; 700 cộng một chút giãn chữ trả nó về đúng vai đầu cột.
-- **Nav-group** (700, 10px, +0.1em, VIẾT HOA): nhãn nhóm điều hướng trong sidebar — bậc duy nhất viết hoa toàn bộ trong hệ, và nó được phép vì đó là tiêu đề cấu trúc, không phải đích bấm.
+- **Nav-group** (700, 10.5px, +0.01em): nhãn nhóm điều hướng trong sidebar. Mực `--on-chrome-3` trên nền navy, không bấm được — nó là tiêu đề cấu trúc, và nó phân biệt bằng cỡ, cân nặng và màu chứ không bằng chữ hoa.
+- **Group-label** (700, 10.5px, +0.01em, chữ thường): nhãn nhóm BÁO CÁO trong cụm mục của phân hệ. Nó nằm một bậc dưới Nav-group, trong cùng vùng navy, nên nó phân biệt bằng cỡ và vị trí chứ không bằng việc viết hoa thêm một lần nữa.
 
 ### Named Rules
 
 **The Silent H1 Rule.** Tiêu đề trang không hiện. `PageIntro` vẫn dựng `<h1>` nhưng gắn `className="sr-only"`: tên màn đã nằm ở mục điều hướng đang mở trong sidebar, in lại nó ở đầu nội dung là nói hai lần và ăn mất dòng đắt nhất của trang. Thẻ vẫn nằm trong DOM vì một trang không có tiêu đề là một trang mà người dùng bàn phím không biết mình đang ở đâu. Không gỡ `<h1>`, và cũng không bỏ `sr-only` để "cho cân". Cùng nguyên tắc này áp xuống cấp khối — xem **The Row Already Said It Rule** ở mục Components.
 
 **The One Leading Per Step Rule.** Mỗi cỡ chữ có ĐÚNG một giãn dòng, và cả hệ chỉ có ba giá trị: **1.25** cho chữ lớn một dòng (display, số trong dải tổng hợp), **1.35** cho nhãn nhỏ và chip, **1.5** cho mọi thứ có thể xuống dòng thành đoạn. Bản trước có tám giá trị — 1.22, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6 — và riêng cỡ 12px dùng tới bốn trong số đó. Mắt không đọc ra từng giá trị, nhưng đọc ra việc nhịp dọc không đều, và đó là thứ làm trang có cảm giác chưa được chỉnh.
+
+**The No Uppercase Tier Rule.** Toàn hệ KHÔNG có bậc nào viết hoa toàn bộ. Mọi nhãn nhỏ — nhãn nhóm điều hướng, nhãn bộ lọc, nhãn thẻ số, đầu cột so sánh, nhãn ô nhập — viết thường và phân biệt bằng cỡ, cân nặng, màu mực.
+
+Ban đầu luật này chừa một ngoại lệ cho nhãn nhóm điều hướng, với lý do nó ở 10px trên nền navy và là vạch chia cấu trúc. Ngoại lệ ấy đã bỏ: lý do loại bốn bậc kia vẫn đúng với nó, và giữ đúng một ngoại lệ chỉ để có ngoại lệ thì không đáng. Trước đó mã có bốn bậc viết hoa ở bốn cỡ khác nhau trên cùng một màn — chúng cạnh tranh nhau để giành vai tiêu đề và người đọc hết manh mối biết cái nào quản cái nào.
+
+Lý do không phải thẩm mỹ. Chữ viết hoa mất hình lên xuống của từ nên mắt phải đọc từng chữ cái thay vì nhận dạng cả từ; với tiếng Việt còn nặng hơn vì dấu dồn lên trên một dải chữ vốn đã cao bằng nhau, và "TỶ LỆ ĐÃ CƯỠNG CHẾ" đọc chậm hơn hẳn "Tỷ lệ đã cưỡng chế" ở cùng cỡ.
 
 **The Short Ramp Rule.** Cả hệ chạy trong khoảng 10–30px với chín bậc, và không thêm bậc nào nữa. Phân cấp do đường kẻ, khoảng trắng và cân nặng gánh; nâng cỡ chữ để tạo phân cấp là cách làm của sản phẩm tiêu dùng và nó phá mật độ mà bảng dài cần.
 
@@ -335,6 +367,54 @@ Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-lay
 
 **The List Has No Ceiling Rule.** Danh sách không nhận trần chiều cao nào. Mười dòng một trang đã là trần thật của nó, và một trần thứ hai bằng `vh` chỉ sinh ra thanh cuộn dọc bên trong một khối vốn đã vừa — xem **The Long List Gets Pages Rule**. Luật cũ "dải quyết định chiều cao" đã gỡ cùng với dải hai cột: không còn cột nào bên cạnh để kéo bằng.
 
+**The Sections Live In The Sidebar Rule.** Mục của một phân hệ nằm trong THANH BÊN, không phải một hàng tab ngang trên trang. Đây là một **lệch có chủ đích** so với chữ của tài liệu, nên nó được ghi lại kèm căn cứ thay vì để người sau phát hiện rồi đoán.
+
+Hai bản thiết kế gọi các mục nội dung là "tab" và liệt kê chúng thành danh sách phẳng: `design_ql1ql3` §4.2 cho QL1 11 tab, §5.2 cho QL3 4 tab; `design_ql2ql4` §4.2 cho QL2 12 tab, §5.2 cho QL4 11 tab. Riêng tầng chọn báo cáo thì `design_ql2ql4:50` tự đưa ra hai hình dạng: *"1 tầng chọn báo cáo (**menu con** hoặc thanh tab cấp 1)"*. Menu con là hình dạng đang dùng, và nó là một trong hai thứ tài liệu nêu tên.
+
+Ba lý do chọn thanh bên cho cả mục nội dung:
+
+- **Số lượng.** QL2 có 12 mục, QL4 có 11. Một hàng tab ngang 12 mục ở khổ 1440px gãy thành hai ba dòng hoặc phải cuộn ngang; danh sách dọc không có trần ấy.
+- **Chiều cao.** Tầng chọn báo cáo cộng tầng mục, làm bằng tab ngang là hai thanh xếp chồng ăn khoảng 100px đầu mọi trang — đúng chỗ bảng 30–32 cột đang thiếu bề rộng nhất.
+- **Một nơi duy nhất để tìm.** Người dùng đã tìm màn ở thanh bên; đặt mục ở chỗ thứ hai là bắt họ học hai thói quen cho cùng một việc.
+
+Hệ quả bắt buộc: cụm mục KHÔNG được xuất hiện trên trang — xem chốt kiểm `soatTrucDoc` trong `scripts/acceptance.mjs`.
+
+**The Summary And Its List Are One Section Rule.** Bảng tổng hợp theo đơn vị và danh sách chi tiết của chính nó nằm trong CÙNG một mục, không tách thành hai tab. Vì thế bảy mục của QL1 phủ mười một tab mà §4.2 liệt kê:
+
+| Mục trên màn | Tab của §4.2 |
+|---|---|
+| Tổng quan | 0 |
+| So sánh nợ | 1 So sánh nợ + 2 DN tăng nợ KNT trên ngưỡng |
+| Kết quả cưỡng chế | 3 Đánh giá kết quả cưỡng chế + 5 DS NNT chưa cưỡng chế |
+| Tạm hoãn xuất cảnh | 4 Đánh giá tạm hoãn XC + 6 DS trên ngưỡng chưa THXC |
+| Tạm hoãn XC · trạng thái 06 | 7 THXC NNT trạng thái 06 + 8 DS chưa tạm hoãn (TT06) |
+| Quy tắc và nguồn | 9 |
+| Dữ liệu gốc | 10 |
+
+Lý do gộp là G3: *"Bấm số → xem chi tiết"*. Tách hai thứ thành hai tab thì mỗi lần bấm một ô tổng hợp là một cú nhảy tab, và người dùng mất ngữ cảnh của con số họ vừa bấm. Để chúng trên cùng một màn thì danh sách mở ra ngay dưới bảng sinh ra nó.
+
+Không mục nào của §4.2 bị bỏ. Khi đối chiếu với phòng nghiệp vụ, dùng bảng trên để chỉ ra mỗi tab của họ nằm ở đâu.
+
+**The Same Spine Rule.** Mọi phân hệ dựng theo ĐÚNG MỘT trật tự dọc, không có ngoại lệ:
+
+> Tiêu đề màn và nút xuất (`PageIntro`) → thanh duyệt của kỳ (`ThanhDuyet`) → khối xem báo cáo nếu đang mở → thanh lọc chung (`BoLocChung`) → nội dung của mục đang mở.
+
+Và **mục của phân hệ luôn nằm trong thanh bên**, không bao giờ là một dải trên trang. QL3 từng dùng `Segmented` ngang ở giữa trang trong khi QL1 dùng thanh bên: hai phòng cùng một hệ, cùng một loại việc, mà người dùng phải tìm mục ở hai chỗ khác nhau, và ai làm việc với hai phòng thì phải học lại chỗ bấm mỗi lần chuyển. Dải trên trang còn ăn một dòng ngang đúng ở nơi bảng cần bề rộng nhất.
+
+Nhãn nút cũng là một bộ duy nhất: **Xuất Excel** và **Xuất Word** ở măng sét cho cả bộ sheet của báo cáo, **Xuất bảng này** trong đầu khối cho một bảng, **Xuất danh sách đang lọc** cho danh sách đã lọc. Trước đó cùng một việc mang ba tên — "Xuất cả bộ báo cáo", "Xuất báo cáo Excel", "Xuất Excel" — và người dùng phải đoán ba cái ấy có khác nhau không.
+
+Tiêu đề màn luôn là **tên nghiệp vụ · tên phòng** ("Rủi ro hóa đơn · Phòng QL2"), vì một người có thể mở phân hệ của phòng khác trong cùng phiên làm việc và cần biết mình đang ở đâu.
+
+**The Fixed Slots Rule.** Một vùng điều khiển gồm các **ô cố định theo vai trò của điều khiển**, không phải một hàng nút xếp theo thứ tự thứ gì có mặt. Thanh duyệt có hai ô: *đọc* ("Xem báo cáo") rồi *quyết định* ("Trả lại", "Duyệt", hoặc nút đã tắt thay chỗ nút vừa bấm). Quyền hay trạng thái đổi thì điều khiển trong ô được thay hoặc bỏ đi, nhưng **ô không đổi chỗ**.
+
+Ba hệ quả bắt buộc:
+
+- **Không nút nào co giãn để lấp chỗ trống**, ở bất kỳ khổ nào. Một nút rộng ra vì bên cạnh thiếu nút là bố cục đổi theo dữ liệu, và nó phá luôn cả The Whole Row Rule ở chỗ khác.
+- **Khoảng cách giữa hai ô phải lớn hơn khoảng cách trong một ô** (20px so với 8px). Bằng nhau thì ba nút khác loại đọc thành một bộ ba cùng loại.
+- **Một điều khiển đã tắt đứng đúng chỗ điều khiển nó thay**, không tách ra đứng riêng. "Đã gửi" nằm trong ô quyết định vì nó đứng chỗ nút "Gửi duyệt" vừa biến mất — đó là toàn bộ lý do nó tồn tại.
+
+Lý do là việc đối chiếu giữa người với người: hai cán bộ cùng mở một kỳ phải chỉ được cho nhau "nút thứ hai từ phải" mà không cần hỏi đối phương đang thấy mấy nút. Vai trò khác nhau thì **nội dung** ô khác nhau, **vị trí** ô thì không.
+
 **The Fixed Furniture Rule.** Không đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay. Sidebar trái, topbar trên, thanh lọc chung dính ngay dưới topbar, bộ lọc riêng của bảng nằm trong đầu khối, thao tác chính nằm bên phải đầu khối — đây là lằn ranh người dùng đặt ra, và mọi màn mới thừa hưởng nó.
 
 ## Elevation & Depth
@@ -347,7 +427,7 @@ Hệ gần như phẳng. Độ sâu chủ yếu đến từ lớp navy làm khun
 - **Mục điều hướng đang mở** (`0 2px 5px rgb(0 0 0 / 10%)`): thanh trắng nổi lên khỏi nền navy.
 - **Nâng khi trỏ tới** (`0 3px 8px rgb(41 37 38 / 10%)` kèm `translateY(-2px)`): chỉ hàng bảng, hàng việc và ô tổng hợp bấm được.
 - **Nút phân đoạn đang bật** (`0 1px 2px #2925261f` kèm viền `--state-edge`): một mảnh trắng nhô lên khỏi rãnh xám.
-- **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): ngăn chi tiết, drawer mobile, toast, hộp thoại báo cáo. Nền mờ phía sau là `rgb(36 29 31 / 45%)`, scrim của drawer là `#29252680`.
+- **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): chỉ còn drawer điều hướng ở khổ điện thoại và toast — xem The No-Overlay Rule. Scrim của drawer là `#29252680`.
 - **Mép dính** (`0 1px 3px rgb(41 37 38 / 3%)` cho topbar, `0 -6px 20px #29252612` cho thanh điều hướng đáy): gần như không thấy, chỉ để mép không trôi vào nội dung khi cuộn.
 
 ### Named Rules
@@ -358,7 +438,7 @@ Hệ gần như phẳng. Độ sâu chủ yếu đến từ lớp navy làm khun
 
 ## Shapes
 
-Bốn bậc bo góc, mỗi bậc gắn với một loại vật: khối nội dung, hộp thoại chi tiết và toast dùng 10px (`--radius-panel`); nút, ô nhập, `<select>`, ô tìm kiếm, nút đóng dùng 6px (`--radius-control`); chip trạng thái và vùng chọn hàng dùng 4px (`--radius-chip`); mục điều hướng dùng 4px. Hộp thoại tạo báo cáo là ngoại lệ duy nhất với 12px. Hệ còn khai báo `--radius-hairline: 2px` nhưng không nơi nào dùng — coi đó là token cũ, đừng dựng bậc thứ năm quanh nó.
+Ba bậc bo góc, mỗi bậc gắn với một loại vật: khối nội dung và toast dùng 10px (`--radius-panel`); nút, ô nhập, `<select>`, ô tìm kiếm, nút đóng dùng 6px (`--radius-control`); chip trạng thái, vùng chọn hàng và mục điều hướng dùng 4px (`--radius-chip`). Bậc 12px cũ đi cùng hộp thoại tạo báo cáo đã bỏ, nên không còn ngoại lệ nào. Hệ còn khai báo `--radius-hairline: 2px` nhưng không nơi nào dùng — coi đó là token cũ, đừng dựng bậc thứ tư quanh nó.
 
 Thanh cuộn tùy biến cũng lấy bậc khối (`--radius-panel`) thay vì một con số rời, để không có bán kính nào sống ngoài thang.
 
@@ -643,7 +723,11 @@ Cạm bẫy thứ hai ở cùng chỗ: một dòng phụ **tự xuống dòng** 
 
 Cột chứa văn xuôi dài ngắn khác nhau (mô tả, ghi chú tự do) không theo được luật này mà không cắt chữ. Với chúng, hoặc chấp nhận hàng lệch, hoặc để văn xuôi ở khối chi tiết và giữ trong bảng một nhãn ngắn — nhưng không bao giờ cắt bằng `line-clamp`.
 
-**The Real Data Never Enters The Build Rule.** Bộ dữ liệu thật nằm ở `public/du-lieu-that/`, do `scripts/nap-du-lieu-that.py` sinh ra từ `general_data/`, và **cả hai thư mục đều nằm trong `.gitignore`**. App nạp bằng `fetch` lúc chạy; không có tệp thì mọi hàm nạp trả `null` và màn hình rơi về bộ mô phỏng. Không nhúng dữ liệu thật vào `src/data/`: ở đó nó đi theo mọi bản build và lên remote ngay lần push đầu tiên — bộ này có khoảng 21 nghìn dòng người nộp thuế kèm mã số thuế và tên doanh nghiệp thật.
+**The Mockup Uses Only Fake Data Rule.** Bản mẫu KHÔNG có đường nào dẫn dữ liệu thật lên màn. Chế độ `?du-lieu-that=1` cùng `DuLieuThatContext`, `data/duLieuThat.ts` và nhánh `DebtThat` đã gỡ ngày 06/10/2026.
+
+Lý do là tài liệu, không phải khẩu vị: `design_ql1ql3.md` §1.2 mục 4 ghi "Mọi mockup dùng **dữ liệu giả** (MST 0100000001, 'Công ty A')… **Không dùng file thật của phòng**", mục bảo mật S5 nhắc lại "Mockup chỉ dùng dữ liệu giả", và `design_ql2ql4.md` §1.2 nói rõ vì sao: "file QL4 có họ tên, CCCD, số điện thoại NNT".
+
+Chế độ cũ mặc định tắt và tệp nguồn đã `.gitignore`, nhưng nó vẫn là một công tắc trên chính bản mẫu để mở dữ liệu thật — thứ mà S5 cấm. Một quy tắc có công tắc tắt nó thì không còn là quy tắc. Mọi số trên màn nay sinh từ `data/ngauNhien.ts` với mã số thuế bắt đầu bằng `01000000` và tên "Công ty A".
 
 Hệ quả cho giao diện: mỗi màn đọc được cả hai bộ phải rẽ nhánh ở chỗ **đọc dữ liệu**, không rẽ ở chỗ **dựng giao diện**. Màn Nợ quy cả hai bộ về một khuôn `HangNo` rồi dựng một lần; rẽ ở chỗ dựng thì một màn thành hai màn phải nuôi song song.
 
@@ -723,6 +807,5 @@ Nền navy, chữ trắng, bo 10px, cố định góc phải dưới, rộng `mi
 - **Don't** để một khối chi tiết tự hiện bản ghi đầu tiên khi người dùng chưa chọn gì.
 - **Don't** dựng dòng phụ của ô bảng có điều kiện; hàng có và hàng không sẽ cao khác nhau.
 - **Don't** nắn chiều cao hàng bằng một con số cứng hay bằng `line-clamp`; chặn số dòng của ô mới là cách làm.
-- **Don't** nhúng dữ liệu thật vào `src/`; nó đi theo mọi bản build và lên remote.
-- **Don't** rẽ nhánh mô phỏng / dữ liệu thật ở chỗ dựng giao diện; quy hai bộ về một khuôn hàng rồi dựng một lần.
+- **Don't** đưa dữ liệu thật lên màn bằng bất kỳ đường nào, kể cả sau một công tắc mặc định tắt — xem **The Mockup Uses Only Fake Data Rule**.
 - **Don't** để hệ trôi về dáng sản phẩm tiêu dùng: không gradient, không minh họa, không góc bo lớn, không màu bão hòa ngoài bảng đã đăng ký.

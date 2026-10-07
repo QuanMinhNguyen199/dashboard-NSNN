@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Badge, Button } from "@/components/ui";
 import { useAction } from "@/state/ActionContext";
 import { useDuyet } from "@/state/DuyetContext";
@@ -36,22 +36,24 @@ const SAC: Record<ReportStatus, Tone> = {
 };
 
 /*
-  Việc đang nằm ở ai — hiện khi người đang xem KHÔNG có nút nào.
+  Việc vừa làm xong — một nút ĐÃ TẮT, đứng đúng chỗ nút vừa biến mất.
 
-  Trưởng phòng mở màn lúc kỳ còn ở Nháp thì thấy một thanh trạng thái và không
-  một nút nào, không lời giải thích. Nhìn thế rất giống chức năng duyệt bị
-  thiếu, trong khi thật ra việc chưa tới lượt họ. Một màn không có gì để làm
-  phải nói ra vì sao, nếu không người dùng sẽ đi tìm lỗi ở chỗ không có lỗi.
+  Trước đây chỗ này là một dòng chữ phụ ("Việc đang ở người duyệt của phòng").
+  Nó có hai cái dở. Thứ nhất, nó lặp lại điều mà `DIEN_GIAI` ở khối trạng thái
+  bên trái đã nói, chỉ bằng chữ khác. Thứ hai, và nặng hơn: bấm Gửi duyệt xong
+  thì nút biến mất và chỗ ấy thành một câu văn — người dùng không thấy xác
+  nhận việc mình vừa làm, chỉ thấy nút mình vừa bấm không còn ở đó nữa.
 
-  Câu này không phụ thuộc vai người xem: nó nói việc đang ở đâu, nên đúng với
-  bất kỳ ai đang nhìn.
+  Một nút đã tắt mang nhãn ở thể hoàn thành ("Đã gửi") giữ nguyên hình dáng và
+  vị trí của nút vừa bấm, nên nó đọc ra là "xong rồi" chứ không phải "mất rồi".
+
+  Trạng thái nào không có việc vừa làm xong thì KHÔNG có nút: Nháp với người
+  duyệt là việc chưa tới lượt họ, không phải việc họ vừa làm.
 */
-const CHO_AI: Record<ReportStatus, string> = {
-  DRAFT: "",
-  REVIEWED: "Việc đang ở người duyệt của phòng.",
-  APPROVED: "Vòng duyệt của kỳ này đã xong.",
-  AMEND: "",
-  BLOCKED: "Việc đang ở khâu dữ liệu, chưa tới vòng duyệt.",
+const NUT_XONG: Partial<Record<ReportStatus, string>> = {
+  REVIEWED: "Đã gửi",
+  APPROVED: "Đã duyệt",
+  BLOCKED: "Chưa đủ dữ liệu",
 };
 
 const DIEN_GIAI: Record<ReportStatus, string> = {
@@ -62,9 +64,60 @@ const DIEN_GIAI: Record<ReportStatus, string> = {
   BLOCKED: "Chưa đủ dữ liệu để gửi duyệt. Xem mục Tình trạng dữ liệu.",
 };
 
-export function ThanhDuyet({ khoa, nhanKy, xemTruoc }: {
+/*
+  Ai được mở bản báo cáo — MỘT phép tính, hai nơi dùng.
+
+  Điều kiện này từng chỉ gác cái NÚT, còn phân hệ thì luôn dựng khối theo tham
+  số `?xem=`. Hệ quả: chuyên viên mở báo cáo rồi bấm Gửi duyệt — nút biến mất
+  mà khối vẫn nằm đó, không còn gì đóng được nó. Một điều kiện viết ở một chỗ
+  rồi quên ở chỗ thứ hai, nên nay nó chỉ còn sống ở một chỗ.
+
+  ── Luật nói theo BẢN BÁO CÁO, không theo người xem ─────────────────────────
+
+  Bản đã được tuyên bố xong (Đã rà soát, Đã duyệt): ai mở được màn đều xem
+  được. Bản còn đang sửa (Nháp, Điều chỉnh): chỉ người đang giữ nó.
+
+  Luật cũ nói theo người xem — "có việc để làm thì được xem" — và đó là một
+  luật về HÀNH ĐỘNG đem đi gác một việc ĐỌC. Hai thứ trùng nhau ở Nháp nên nó
+  chạy đúng, rồi tách ra đúng ở Đã rà soát: chuyên viên vừa gửi xong không còn
+  việc, nên mất luôn đường nhìn lại thứ chính mình vừa gửi.
+
+  Cái rào ở Nháp vẫn đứng, nhưng vì lý do khác hẳn quyền hạn: số trong bản
+  Nháp còn đổi và người đọc không có cách nào biết. Gửi duyệt xong thì người
+  lập đã tuyên bố số xong, nên rủi ro ấy hết — và cái rào hết lý do tồn tại.
+
+  Căn cứ trong tài liệu (ghi rõ là DIỄN GIẢI, không phải điều khoản): FRS 13.2
+  liệt kê việc của từng vai ở mỗi trạng thái chứ không liệt kê điều cấm; ma
+  trận 3.2 cho VT-03 quyền S trên BC-06, mà sửa thì bao hàm xem; và KD-05 chỉ
+  khóa kỳ ở Đã duyệt. Không dòng nào cấm người lập đọc lại bản mình vừa gửi.
+*/
+export function choXemTruoc(trangThai: ReportStatus, coViec: boolean) {
+  return coViec || trangThai === "REVIEWED" || trangThai === "APPROVED";
+}
+
+/** Phiên bản dùng trong phân hệ, nơi chỉ có khóa kỳ chứ chưa có bản ghi. */
+export function useChoXemTruoc(khoa: string) {
+  const { layBanGhi, duoc } = useDuyet();
+  const b = layBanGhi(khoa);
+  const coViec = duoc(khoa, "send") || duoc(khoa, "approve") || duoc(khoa, "return") || duoc(khoa, "amend");
+  return choXemTruoc(b.trangThai, coViec);
+}
+
+export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null }: {
   khoa: string;
   nhanKy: string;
+  /*
+    Lý do KHÔNG cho gửi duyệt, do phân hệ quyết định. `null` = không chặn.
+
+    Có những thứ phải chặn ở cửa chứ không phải nhắc rồi vẫn cho qua: báo cáo
+    tổng đài còn tài khoản chưa gán đơn vị thì số của chúng chưa vào đơn vị
+    nào, nên bản gửi đi sẽ thiếu mà người duyệt không có cách nào biết. §5.4
+    đặt cùng một luật cho phép cân đối của QL4-01 [R].
+
+    Chặn bằng cách TẮT nút và nói lý do ngay tại nút, không phải bằng cách
+    giấu nút — giấu thì người dùng đi tìm chức năng bị mất.
+  */
+  chan?: string | null;
   /* Nút xem trước bộ báo cáo, do phân hệ truyền vào vì chỉ nó biết bộ sheet
      của mình. Nó đứng CẠNH nút Duyệt chứ không ở đâu khác: người duyệt cần
      nhìn thứ mình sắp ký ngay trước lúc ký. */
@@ -72,18 +125,43 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc }: {
 }) {
   const { layBanGhi, duoc, guiRaSoat, duyet, traLai, moDieuChinh } = useDuyet();
   const notify = useAction();
-  const hopLyDo = useRef<HTMLDialogElement>(null);
-  const [viec, setViec] = useState<"return" | "amend">("return");
+  const oLyDo = useRef<HTMLTextAreaElement>(null);
+  /* `null` = không có ô lý do nào đang mở. Mẩu này KHÔNG vào địa chỉ: một ô
+     nhập dở không phải trạng thái ai cần gửi liên kết tới, và địa chỉ của màn
+     này chỉ mô tả thứ đang xem chứ không mở sẵn một hành động. */
+  const [viec, setViec] = useState<"return" | "amend" | null>(null);
   const [lyDo, setLyDo] = useState("");
   const [loi, setLoi] = useState("");
 
   const b = layBanGhi(khoa);
   const coViec = duoc(khoa, "send") || duoc(khoa, "approve") || duoc(khoa, "return") || duoc(khoa, "amend");
-  const moHop = (v: "return" | "amend") => { setViec(v); setLyDo(""); setLoi(""); hopLyDo.current?.showModal(); };
+  /* Bấm lại chính nút đang mở thì đóng — nút mang `aria-expanded`, nên nó
+     phải gạt được cả hai chiều. */
+  const moHop = (v: "return" | "amend") => {
+    if (viec === v) { dongHop(); return; }
+    setViec(v); setLyDo(""); setLoi("");
+  };
+  const dongHop = () => { setViec(null); setLyDo(""); setLoi(""); };
 
-  const CHU = viec === "return"
-    ? { tieuDe: "Trả lại báo cáo", dan: `Chuyên viên lập báo cáo sẽ thấy lý do này khi mở lại ${nhanKy}.`, nhan: "Lý do trả lại", goiY: "Ví dụ: đề nghị làm rõ Thuế cơ sở 5 tăng nợ", nut: "Trả lại cho chuyên viên" }
-    : { tieuDe: "Mở bản điều chỉnh", dan: `Bản đã duyệt của ${nhanKy} vẫn được giữ, và chỉ bị đánh dấu đã thay thế khi bản điều chỉnh được duyệt.`, nhan: "Lý do điều chỉnh", goiY: "Ví dụ: nguồn 9.9.4.15 chốt lại ngày 03, số nợ khó thu thay đổi", nut: "Mở bản điều chỉnh" };
+  /* Ô lý do vừa mở thì con trỏ phải nằm trong ô. `autoFocus` chỉ chạy lúc
+     dựng lần đầu, mà khối này ở lại trong cây giữa hai lần mở. */
+  useEffect(() => { if (viec) oLyDo.current?.focus(); }, [viec]);
+
+  /*
+    Không có tiêu đề cho ô này, và dòng giải thích không nhắc lại tên kỳ.
+
+    Tên kỳ đã in đậm cách đó hai dòng, ngay trong cùng một thanh. Còn tiêu đề
+    thì từng là cách gọi THỨ BA cho cùng một việc — nút mở "Trả lại", tiêu đề
+    "Trả lại báo cáo", nút chốt "Trả lại cho chuyên viên" — và người đọc phải
+    dừng lại kiểm xem ba cái có khác nhau không. Nút mở nay sáng lên khi đang
+    mở, nên nó đã tự nói ô này thuộc về nó.
+
+    Hai nhãn còn lại cố ý khác nhau vì chúng là hai việc khác nhau: một cái MỞ
+    ô nhập, một cái CHỐT và nói rõ hệ quả rơi vào ai.
+  */
+  const CHU = viec === "amend"
+    ? { dan: "Bản đã duyệt vẫn được giữ, và chỉ bị đánh dấu đã thay thế khi bản điều chỉnh được duyệt.", nhan: "Lý do điều chỉnh", goiY: "Ví dụ: nguồn 9.9.4.15 chốt lại ngày 03, số nợ khó thu thay đổi", nut: "Mở bản điều chỉnh" }
+    : { dan: "Chuyên viên lập báo cáo sẽ thấy lý do này khi nhận lại bản nháp.", nhan: "Lý do trả lại", goiY: "Ví dụ: đề nghị làm rõ Thuế cơ sở 5 tăng nợ", nut: "Trả lại cho chuyên viên" };
 
   const xong = () => {
     if (!lyDo.trim()) { setLoi(viec === "return" ? "Nhập lý do trả lại để chuyên viên biết cần sửa gì." : "Nhập lý do điều chỉnh để lưu vào nhật ký của kỳ."); return; }
@@ -92,7 +170,7 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc }: {
     notify(viec === "return"
       ? `Đã trả ${nhanKy} về bản nháp kèm lý do. Chuyên viên lập báo cáo nhận lại để sửa.`
       : `Đã mở bản điều chỉnh cho ${nhanKy}. Bản đã duyệt trước đó vẫn tra cứu được.`);
-    hopLyDo.current?.close();
+    dongHop();
   };
 
   return <section className="thanh-duyet" aria-label="Trạng thái duyệt của kỳ">
@@ -109,54 +187,123 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc }: {
     <div className="duyet-vet">
       {b.guiLuc && <span>Gửi duyệt bởi {b.guiBoi} · {b.guiLuc}</span>}
       {b.duyetLuc && <span>Duyệt bởi {b.duyetBoi} · {b.duyetLuc}</span>}
-      {b.lyDoTraLai && b.trangThai === "DRAFT" && <span className="duyet-tralai">Lý do trả lại: {b.lyDoTraLai}</span>}
-      {b.lyDoDieuChinh && b.trangThai === "AMEND" && <span className="duyet-tralai">Lý do điều chỉnh: {b.lyDoDieuChinh}</span>}
-    </div>
-
-    <div className="duyet-nut">
-      {!coViec && <span className="duyet-cho">{CHO_AI[b.trangThai]}</span>}
-      {/*
-        Nút xem trước đi cùng LƯỢT của người đang xem.
-
-        Trưởng phòng mở màn lúc kỳ còn ở Nháp mà thấy "Xem trước báo cáo" là
-        một lời mời đọc bản chuyên viên chưa tuyên bố xong — số trong đó còn
-        đổi, mà người đọc không có cách nào biết. Bảng 13.2 cũng xếp thế: ở
-        trạng thái Nháp chỉ chuyên viên làm việc trên bản ghi, người duyệt vào
-        cuộc từ Đã rà soát.
-
-        Ngoại lệ là bản ĐÃ DUYỆT: lúc đó không còn ai "đang giữ" nó nữa, và
-        FRS ghi "mọi vai trò có quyền xem".
-      */}
-      {(coViec || b.trangThai === "APPROVED") && xemTruoc}
-      <span className="duyet-hanh-dong">
-      {duoc(khoa, "return") && <Button onClick={() => moHop("return")}>Trả lại</Button>}
-      {duoc(khoa, "amend") && <Button onClick={() => moHop("amend")}>Mở bản điều chỉnh</Button>}
-      {duoc(khoa, "send") && <Button kind="primary" onClick={() => { if (!guiRaSoat(khoa)) { notify("Không gửi duyệt được ở trạng thái này."); return; } notify(`Đã gửi ${nhanKy} đi duyệt. Số liệu khóa lại cho tới khi có kết quả.`); }}>Gửi duyệt</Button>}
-      {duoc(khoa, "approve") && <Button kind="primary" onClick={() => { if (!duyet(khoa)) { notify("Bạn không duyệt được bản báo cáo do chính mình gửi."); return; } notify(`Đã duyệt ${nhanKy}. Kỳ này khóa số; muốn sửa phải mở bản điều chỉnh.`); }}>Duyệt</Button>}
-      </span>
     </div>
 
     {/*
-      Trả lại và mở điều chỉnh đều BẮT BUỘC có lý do, nên dùng chung một hộp.
-      Trả lại không nói vì sao thì chuyên viên nhận về một bản nháp và không
-      biết phải sửa gì; điều chỉnh không nói vì sao thì bản đã trình bị thay mà
-      không ai giải thích được cho người đã nhận bản cũ.
+      HAI Ô CỐ ĐỊNH, không phải một hàng nút xếp theo thứ tự xuất hiện.
+
+      Ô đọc đứng trước, ô quyết định đứng sau, và chúng không bao giờ đổi chỗ
+      cho nhau. Trước đây nút "Xem báo cáo" đứng thứ nhất với người duyệt
+      nhưng thứ hai với chuyên viên, vì nó chỉ việc xếp sau cái gì có mặt —
+      hai người cùng nhìn một kỳ không chỉ cho nhau được "nút bên trái".
+
+      Nút "Đã gửi" đã tắt nằm trong ô QUYẾT ĐỊNH chứ không đứng riêng: nó đứng
+      đúng chỗ nút Gửi duyệt vừa biến mất, và đó là toàn bộ lý do nó tồn tại.
     */}
-    <dialog ref={hopLyDo} className="report-dialog" aria-labelledby="lydo-title">
+    <div className="duyet-nut">
+      {/* Điều kiện ở `choXemTruoc` phía trên — đọc ghi chú ở đó. */}
+      {choXemTruoc(b.trangThai, coViec) && <span className="duyet-doc">{xemTruoc}</span>}
+      {(coViec || NUT_XONG[b.trangThai]) && <span className="duyet-hanh-dong">
+      {/* `title` nhắc lại lời giải thích đầy đủ khi trỏ tới; bản đầy đủ luôn
+          đứng sẵn ở khối trạng thái bên trái nên không ai phải trỏ mới hiểu. */}
+      {!coViec && NUT_XONG[b.trangThai] && <Button
+        className={`duyet-xong${b.trangThai === "BLOCKED" ? " duyet-xong-chan" : ""}`}
+        icon={b.trangThai === "BLOCKED" ? "alert" : "check"}
+        disabled
+        title={DIEN_GIAI[b.trangThai]}
+      >{NUT_XONG[b.trangThai]}</Button>}
+      {/*
+        Nút mở mang `aria-expanded` và sáng lên khi ô của nó đang mở, nên có
+        một sợi dây nhìn thấy được giữa nút vừa bấm và ô vừa hiện ra.
+      */}
+      {duoc(khoa, "return") && <Button
+        aria-expanded={viec === "return"} aria-controls="duyet-lydo"
+        className={viec === "return" ? "is-mo" : undefined}
+        disabled={viec === "amend"}
+        onClick={() => moHop("return")}
+      >Trả lại</Button>}
+      {duoc(khoa, "amend") && <Button
+        aria-expanded={viec === "amend"} aria-controls="duyet-lydo"
+        className={viec === "amend" ? "is-mo" : undefined}
+        disabled={viec === "return"}
+        onClick={() => moHop("amend")}
+      >Điều chỉnh</Button>}
+      {/*
+        Hai quyết định ngược nhau KHÔNG được cùng sống một lúc.
+
+        Trước đây mở ô lý do trả lại xong thì nút Duyệt — nút chính, nằm ngay
+        cạnh — vẫn bấm được. Gõ lý do dở mà chạm nhầm là kỳ bị duyệt luôn,
+        không có bước xác nhận nào ở giữa; mà theo QR-03 thì duyệt xong phải
+        mở bản điều chỉnh kèm lý do mới sửa lại được. Mở ô lý do là đã chọn
+        một nhánh, nên nhánh kia tắt cho tới lúc Hủy.
+      */}
+      {duoc(khoa, "send") && <Button kind="primary" disabled={viec !== null || chan !== null} title={chan ?? undefined} onClick={() => { if (!guiRaSoat(khoa)) { notify("Không gửi duyệt được ở trạng thái này."); return; } notify(`Đã gửi ${nhanKy} đi duyệt. Số liệu khóa lại cho tới khi có kết quả.`); }}>Gửi duyệt</Button>}
+      {duoc(khoa, "approve") && <Button kind="primary" disabled={viec !== null} onClick={() => { if (!duyet(khoa)) { notify("Bạn không duyệt được bản báo cáo do chính mình gửi."); return; } notify(`Đã duyệt ${nhanKy}. Kỳ này khóa số; muốn sửa phải mở bản điều chỉnh.`); }}>Duyệt</Button>}
+      </span>}
+    </div>
+
+    {/*
+      Lý do trả lại là MỘT KHỐI RIÊNG trải hết thanh, không phải một dòng
+      trong cột dấu vết.
+
+      Nó từng nằm chung với "Gửi duyệt bởi…" ở cột giữa — cột co giãn, rộng
+      vài trăm pixel. Cột ấy dành cho ngữ cảnh một dòng, còn lý do trả lại dài
+      tới 200 ký tự: nhét vào đó thì nó hoặc tràn, hoặc gấp thành bốn năm dòng
+      và kéo cả thanh cao lên.
+
+      Nó cũng không phải siêu dữ liệu. Đây là lời người duyệt viết riêng cho
+      người lập, và là thứ DUY NHẤT nói cho họ biết phải sửa gì — nên nó được
+      đọc như một câu, ở đúng chỗ ô lý do đã hiện ra khi người kia viết nó.
+    */}
+    {b.lyDoTraLai && b.trangThai === "DRAFT" && <p className="duyet-tralai">
+      <strong>Lý do trả lại</strong>{b.lyDoTraLai}
+    </p>}
+    {b.lyDoDieuChinh && b.trangThai === "AMEND" && <p className="duyet-tralai">
+      <strong>Lý do điều chỉnh</strong>{b.lyDoDieuChinh}
+    </p>}
+
+    {/* Lý do chặn đứng cùng chỗ với lý do trả lại: cả hai đều là câu trả lời
+        cho "vì sao tôi không đi tiếp được". */}
+    {chan && duoc(khoa, "send") && <p className="duyet-tralai">
+      <strong>Chưa gửi duyệt được</strong>{chan}
+    </p>}
+
+    {/*
+      Trả lại và mở điều chỉnh đều BẮT BUỘC có lý do, nên dùng chung một ô.
+      Trả lại không nói vì sao thì chuyên viên nhận về một bản nháp và không
+      biết phải sửa gì; điều chỉnh không nói vì sao thì bản đã trình bị thay
+      mà không ai giải thích được cho người đã nhận bản cũ.
+
+      Ô này nằm TRONG thanh duyệt, không phải hộp thoại phủ lên trang: cùng ba
+      lý do đã bỏ hộp xem trước (xem đầu `XemTruocBaoCao.tsx`), cộng một lý do
+      riêng — lý do trả lại là lời viết cho người đọc bảng số, nên người viết
+      cần còn nhìn thấy bảng số lúc viết.
+    */}
+    {viec && <form id="duyet-lydo" className="duyet-lydo" noValidate onSubmit={(e) => { e.preventDefault(); xong(); }}>
+      <p className="duyet-lydo-dan">{CHU.dan}</p>
       {/* `noValidate`: thông báo mặc định của trình duyệt là "Please fill out
           this field" — tiếng Anh, và không nói cần điền gì. */}
-      <form className="report-form" noValidate onSubmit={(e) => { e.preventDefault(); xong(); }}>
-        <h2 id="lydo-title">{CHU.tieuDe}</h2>
-        <p>{CHU.dan}</p>
-        <label>{CHU.nhan}
-          <input autoFocus maxLength={200} name="lyDoTraLai" value={lyDo} placeholder={CHU.goiY} onChange={(e) => { setLyDo(e.target.value); setLoi(""); }}/>
-        </label>
-        {loi && <p role="alert" className="quality-note">{loi}</p>}
-        <div className="report-form-actions">
-          <Button type="button" onClick={() => hopLyDo.current?.close()}>Hủy</Button>
-          <Button type="submit" kind="primary">{CHU.nut}</Button>
-        </div>
-      </form>
-    </dialog>
+      <label>{CHU.nhan}
+        {/*
+          `<textarea rows={1}>` cao đúng một dòng lúc mở, rồi tự giãn theo nội
+          dung. Ô một dòng cố định thì gõ quá nửa là chữ đầu trôi khỏi tầm
+          nhìn, mà lý do trả lại là thứ người viết cần đọc lại trước khi gửi.
+
+          Enter GỬI, không xuống dòng: ô này trông như một dòng và người dùng
+          đối xử với nó như một dòng. Muốn xuống dòng thì Shift+Enter.
+        */}
+        <textarea
+          ref={oLyDo} rows={1} maxLength={200} name="lyDoTraLai" value={lyDo} placeholder={CHU.goiY}
+          onInput={(e) => { const o = e.currentTarget; o.style.height = "auto"; o.style.height = `${o.scrollHeight}px`; }}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); xong(); } }}
+          onChange={(e) => { setLyDo(e.target.value); setLoi(""); }}
+        />
+      </label>
+      {loi && <p role="alert" className="quality-note">{loi}</p>}
+      <div className="duyet-lydo-nut">
+        <Button type="button" onClick={dongHop}>Hủy</Button>
+        <Button type="submit" kind="primary">{CHU.nut}</Button>
+      </div>
+    </form>}
   </section>;
 }

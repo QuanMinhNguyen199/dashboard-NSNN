@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Badge, Button, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
-import { useQL1Navigation } from "@/components/QL1Navigation";
+import { useMucPhanHe } from "@/components/MucPhanHe";
 import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
 import { useDuyet } from "@/state/DuyetContext";
@@ -12,8 +12,9 @@ import {
   type BoNo, type DonViQL1, type HangQL1, type MocSoSanh, type OTongHop06, type OTongHopNo, type OTongHopXuLy, type TabQL1,
 } from "@/data/ql1";
 import { NGUONG, ruleItems, trieu, hienTyLe } from "@/data/thamSo";
-import { ThanhDuyet } from "@/features/ThanhDuyet";
-import { XemTruocBaoCao } from "@/features/XemTruocBaoCao";
+import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
+import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
+import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { NGUON_QL1 } from "@/data/nguonDuLieu";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { TongQuanQL1 } from "@/features/TongQuanQL1";
@@ -314,12 +315,15 @@ export function DebtQL1({ actor }: { actor: string }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
-  const { activeSection: tab, setActiveSection: setTab } = useQL1Navigation();
-  const [moc, setMoc] = useState<MocSoSanh>("tuanTruoc");
-  const [dang, setDang] = useState<DangSo>("abs");
+  const { muc: tab, datMuc: setTab } = useMucPhanHe();
+  /* Bốn mẩu trạng thái dưới đây nằm trong địa chỉ chứ không trong bộ nhớ: mỗi
+     cái là một câu trợ lý cần nói được khi dẫn người dùng tới đúng chỗ. */
+  const [moc, setMoc] = useThamSo<MocSoSanh>("moc", "tuanTruoc", ["dauNam", "thangTruoc", "tuanTruoc"]);
+  const [dang, setDang] = useThamSo<DangSo>("so", "abs", ["abs", "rel"]);
+  const [xem, datXem] = useThamSo<string>("xem", "");
   const [search, setSearch] = useState("");
   const [loc, setLoc] = useState<Partial<Record<keyof HangQL1, string>>>({});
-  const [trang, setTrang] = useState(1);
+  const [trang, setTrang] = useThamSoSo("trang", 1);
 
   const cau = CAU_HINH.find((c) => c.id === tab) ?? CAU_HINH[0];
   /* Ba tab phụ không có bảng tổng hợp theo đơn vị nên chúng đi đường riêng;
@@ -418,20 +422,40 @@ export function DebtQL1({ actor }: { actor: string }) {
     {cotPhang.map((c, i) => <td key={i} className="num">{c.o(o)}</td>)}
   </tr>;
 
+  const boSheet = useMemo(() => ql1Workbook(ky, chon.donVi), [ky, chon.donVi]);
+  /* Hết lượt thì khối xem trước đóng lại VÀ địa chỉ sạch theo. Để lại `?xem=`
+     là để lại một liên kết mở ra đúng thứ người nhận không được xem. */
+  const choXem = useChoXemTruoc(`QL1|${ky.id}`);
+  useEffect(() => { if (!choXem && xem !== "") datXem(""); }, [choXem, xem, datXem]);
+  const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL1|${ky.id}`).trangThai };
   const filename = `QL1_${ky.id}_${reportMeta.status}_mo-phong`;
   return <div className="page-stack ql1-page">
     <PageIntro title="Báo cáo công tác nợ · Phòng QL1" actions={<>
-      <ExportButton onExport={() => exportExcel(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.xlsx`)}>Xuất cả bộ báo cáo</ExportButton>
-      <ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất báo cáo Word</ExportButton>
+      <ExportButton onExport={() => exportExcel(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton>
+      <ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton>
     </>}/>
 
-    <ThanhDuyet khoa={`QL1|${ky.id}`} nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`} xemTruoc={<XemTruocBaoCao sheets={ql1Workbook(ky, chon.donVi)} meta={reportMeta} ten="Báo cáo đánh giá công tác nợ · Phòng QL1"/>}/>
+    <ThanhDuyet
+      khoa={`QL1|${ky.id}`}
+      nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}
+      xemTruoc={<NutXemTruoc mo={moMoXemTruoc} onToggle={() => datXem(moMoXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+    />
+
+    {/* Khối xem trước nằm NGAY SAU thanh duyệt, trong luồng trang: người duyệt
+        nhìn thứ mình sắp ký ngay tại chỗ ký, và cả khối lọt vào ảnh chụp. */}
+    {moMoXemTruoc && <KhoiXemTruoc
+      sheets={boSheet}
+      meta={reportMeta}
+      ten="Báo cáo đánh giá công tác nợ · Phòng QL1"
+      sheet={xem}
+      onChonSheet={datXem}
+    />}
 
     {/* Thanh lọc đứng TRÊN cụm tab vì nó áp cho cả bốn mục. */}
     <BoLocChung
       kyCo={KY_QL1.map((k) => ({ id: k.id, nhan: k.nhan, loai: k.loai }))}
-      donViCo={dsDonVi.map((d) => d.ten)}
+      donViCo={dsDonVi.map((d) => ({ id: d.id, ten: d.ten }))}
       rutGon={rutGon}
     />
 
@@ -456,7 +480,7 @@ export function DebtQL1({ actor }: { actor: string }) {
     {laNghiepVu && <Panel
       title="Tổng hợp theo đơn vị"
       actions={<div className="inline-controls">
-        <ExportButton onExport={() => exportExcel([ql1Summary(ky, chon.donVi, tabNV)], reportMeta, `${filename}_${tabNV}.xlsx`)}>Xuất Excel</ExportButton>
+        <ExportButton onExport={() => exportExcel([ql1Summary(ky, chon.donVi, tabNV)], reportMeta, `${filename}_${tabNV}.xlsx`)}>Xuất bảng này</ExportButton>
         {tab === "no" && <>
         <label className="compact-field"><span>So với kỳ</span>
           <select value={moc} onChange={(e) => setMoc(e.target.value as MocSoSanh)}>

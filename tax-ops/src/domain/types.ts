@@ -1,19 +1,18 @@
 /*
   Màn hình chia theo PHÂN HỆ của phòng và phần KHUNG CHUNG.
 
-  Bản thiết kế đặc tả hai phân hệ: QL1 (đánh giá công tác nợ) và QL3 (kiểm tra
-  tại bàn). Màn hoàn thuế thuộc QL4 và các tab rủi ro thuộc QL2 — hai phòng đó
-  có dữ liệu trong `general_data` nhưng CHƯA có thiết kế, nên không gắn vào
-  điều hướng lần này. Mã của chúng giữ nguyên, không xoá.
-*/
-/*
-  Năm màn, theo §1.2 bản thiết kế. Xem ghi chú đầu `components/nav.ts` về bốn
-  màn đã gỡ và nội dung của chúng chuyển đi đâu.
+  Bốn phân hệ: QL1 (công tác nợ), QL3 (kiểm tra tại bàn) theo `design_ql1ql3`,
+  cộng QL2 (rủi ro hóa đơn) và QL4 (hoàn thuế TNCN, tổng đài) theo
+  `design_ql2ql4`. QL5 có dữ liệu nhưng chưa có thiết kế nên chưa có màn.
+
+  QL2 và QL4 khác hai phân hệ đầu ở một điểm có hệ quả lên cả khung: MỖI PHÒNG
+  CÓ NHIỀU BÁO CÁO ĐỘC LẬP, mỗi báo cáo một nhịp kỳ riêng (§1.1). Vì thế cụm
+  mục trong thanh bên có thêm một tầng — nhóm theo báo cáo — và loại kỳ của
+  thanh lọc đổi theo báo cáo đang mở (G13).
 */
 export type ViewId =
   | "workbench"
-  | "debt" | "risk"
-  | "theoky"
+  | "debt" | "tonghopql3" | "risk" | "hoadon" | "hoan"
   | "tinhtrang"
   | "giamsat";
 /*
@@ -24,15 +23,26 @@ export type ViewId =
   định bấm được nút nào trong phân hệ đó. Gộp làm một trục thì mỗi lần thêm
   phòng là nhân đôi số vai.
 
-  Bản thiết kế đặc tả QL1 và QL3; QL2, QL4, QL5 có dữ liệu nhưng chưa có thiết
-  kế nên chưa có phòng tương ứng ở đây.
+  QL5 có dữ liệu nhưng chưa có thiết kế nên chưa có phòng tương ứng ở đây.
 */
-export type Phong = "QL1" | "QL3" | null;
+export type Phong = "QL1" | "QL2" | "QL3" | "QL4" | null;
 
 /*
   `CV` chuyên viên làm số và gửi duyệt · `TP` trưởng phòng duyệt và chốt số ·
   `VAN_HANH` theo dõi job kéo, không thuộc phòng nào (Q-77) · `LANH_DAO_NN`
   là tài khoản của Dashboard Thu NSNN, không vào hệ tác nghiệp.
+
+  ĐÃ GỠ: vai `CB_DON_VI` — cán bộ của phòng hoặc Thuế cơ sở tự đăng nhập để
+  điền phiếu rà soát. §3 `design_ql2ql4` gắn nhãn [R] cho chính vai ấy và ghi
+  "chờ Q-31, Q-78, Q-79, Q-95, Q-96"; Q-95 hỏi đúng cái gốc — "Phòng, TCS có
+  đăng nhập xem hồ sơ và nhập kết quả rà soát vênh không". Chưa có câu trả
+  lời thì bản mẫu không dựng vai mới. Việc điền phiếu chuyển theo nhánh thứ
+  hai mà Q-96 nêu sẵn — "QL2 tự tổng hợp" — tức chuyên viên của phòng giao
+  phiếu nhập lại phản hồi nhận qua thư; xem `features/NhapKetQuaPhieu`.
+
+  KHÔNG chuyển việc này cho trưởng phòng: §3 ghi "Điền phiếu rà soát | ✗ | ✗
+  | ✗ | ✗ | ●" — cả bốn cột chuyên viên và trưởng phòng đều ✗, và trưởng
+  phòng QL2 cũng không phải người biết đơn vị đã xử lý NNT nào.
 */
 export type VaiTro = "CV" | "TP" | "VAN_HANH" | "LANH_DAO_NN";
 export type Tone = "neutral" | "positive" | "warning" | "critical" | "info";
