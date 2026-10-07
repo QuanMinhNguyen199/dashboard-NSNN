@@ -11,8 +11,8 @@ const base = (process.argv[2] ?? "http://127.0.0.1:5174").replace(/\/+$/, "");
   nhận danh sách theo TÀI KHOẢN, và kiểm cả hai chiều — màn phải mở được, và
   màn của phòng khác phải không mở được.
 */
-const MAN_QL1 = ["workbench", "debt", "theoky", "tinhtrang"];
-const MAN_QL3 = ["workbench", "risk", "theoky", "tinhtrang"];
+const MAN_QL1 = ["workbench", "debt", "tinhtrang"];
+const MAN_QL3 = ["workbench", "risk", "tinhtrang"];
 
 const browser = await puppeteer.launch({ channel: "chrome", headless: "new", args: ["--no-sandbox"] });
 const page = await browser.newPage();
@@ -74,16 +74,39 @@ await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true
 await page.reload({ waitUntil: "networkidle0" });
 await page.screenshot({ path: ".impeccable/review/login-mobile.png", fullPage: true });
 /*
-  Màn đăng nhập còn đúng hai lối: Keycloak tượng trưng và sáu thẻ vai. Ô nhập
+  Màn đăng nhập còn đúng hai lối: Keycloak tượng trưng và các thẻ vai. Ô nhập
   đã gỡ, nên nếu nó quay lại thì đây là chỗ báo.
+
+  Số thẻ ĐẾM TỪ DANH SÁCH TÀI KHOẢN, không viết cứng. Viết cứng thì mỗi lần
+  thêm một phòng là chốt kiểm đỏ ở một chỗ không liên quan gì tới cái vừa
+  thêm, và người sửa sẽ sửa con số cho hết đỏ thay vì đọc xem nó canh gì.
+  Thứ cần canh là: bản `/quan-ly/` KHÔNG có tài khoản Dashboard NSNN.
+*/
+/*
+  The Same Spine Rule và The One Uppercase Tier Rule (DESIGN.md) đều là luật
+  dễ trôi ngược: thêm một dải mục trên trang hay một nhãn viết hoa bao giờ
+  cũng là đường ngắn nhất. Nên cả hai có chốt kiểm, không chỉ có đoạn văn.
 */
 const manDangNhap = await page.evaluate(() => ({
   soThe: document.querySelectorAll(".demo-accounts-list button").length,
   conOnhap: Boolean(document.querySelector('input[name="username"], input[name="password"]')),
   coKeycloak: Boolean(document.querySelector(".login-sso")),
 }));
-const expectedAccounts = new URL(page.url()).pathname.endsWith("/quan-ly/") ? 5 : 6;
-if (manDangNhap.soThe !== expectedAccounts) throw new Error(`Màn đăng nhập có ${manDangNhap.soThe} thẻ vai, đáng lẽ ${expectedAccounts}.`);
+/*
+  Kiểm theo DANH SÁCH MÃ tài khoản, không theo số lượng.
+
+  Một con số viết cứng chỉ nói "có đúng n thẻ", nên thêm một phòng là nó đỏ ở
+  chỗ không liên quan và người sửa chỉ việc tăng số cho hết đỏ. Thứ thật sự
+  cần canh là hai điều: mọi vai nghiệp vụ đều vào được, và bản `/quan-ly/`
+  KHÔNG có tài khoản Dashboard NSNN (mục S1 — ẩn hẳn, không làm mờ).
+*/
+const VAI_NGHIEP_VU = ["cv.ql1", "tp.ql1", "cv.ql2", "tp.ql2", "cv.ql3", "tp.ql3", "cv.ql4", "tp.ql4", "vanhanh.dulieu"];
+const maThe = await page.$$eval(".demo-accounts-list code", (ds) => ds.map((d) => d.textContent.trim()));
+const thieu = VAI_NGHIEP_VU.filter((m) => !maThe.includes(m));
+if (thieu.length) throw new Error(`Màn đăng nhập thiếu vai: ${JSON.stringify(thieu)} — đang có ${JSON.stringify(maThe)}`);
+const chiQuanLy = new URL(page.url()).pathname.endsWith("/quan-ly/");
+if (chiQuanLy && maThe.includes("lanhdao.nhanuoc")) throw new Error("Bản /quan-ly/ không được có tài khoản Dashboard NSNN.");
+if (!chiQuanLy && !maThe.includes("lanhdao.nhanuoc")) throw new Error("Bản đầy đủ thiếu tài khoản Dashboard NSNN.");
 if (manDangNhap.conOnhap) throw new Error("Màn đăng nhập vẫn còn ô tài khoản hoặc mật khẩu.");
 if (!manDangNhap.coKeycloak) throw new Error("Màn đăng nhập thiếu lối Keycloak.");
 
@@ -118,6 +141,43 @@ await page.waitForSelector(".workspace");
 await page.reload({ waitUntil: "networkidle0" });
 if (await page.$(".workspace") === null) throw new Error("Phiên đăng nhập demo không được khôi phục sau reload.");
 
+async function soatChuHoa(nhan) {
+  /* Đếm phần tử có chữ ĐANG HIỆN và `text-transform: uppercase`. Không bậc
+     nào được phép nữa — The No Uppercase Tier Rule. */
+  const pham = await page.evaluate(() => [...document.querySelectorAll("body *")]
+    .filter((el) => {
+      if (!(el.textContent ?? "").trim()) return false;
+      const k = getComputedStyle(el);
+      return k.textTransform === "uppercase" && k.display !== "none" && k.visibility !== "hidden";
+    })
+    .map((el) => `${el.tagName.toLowerCase()}.${el.className}`)
+    .filter((x, i, a) => a.indexOf(x) === i)
+    .slice(0, 5));
+  if (pham.length) throw new Error(`${nhan}: còn bậc viết hoa — ${JSON.stringify(pham)}`);
+}
+
+async function soatTrucDoc(nhan) {
+  /* Thứ tự dọc của phân hệ, và mục phải nằm trong THANH BÊN. */
+  const d = await page.evaluate(() => {
+    const than = document.querySelector(".page-stack");
+    const thu = (sel) => {
+      const el = document.querySelector(sel);
+      return el ? [...(than?.children ?? [])].findIndex((c) => c === el || c.contains(el)) : -1;
+    };
+    return {
+      duyet: thu(".thanh-duyet"),
+      loc: thu(".bo-loc-chung"),
+      mucTrenTrang: Boolean(document.querySelector('.page-stack [aria-label^="Mục "]')),
+      mucTrongBen: Boolean(document.querySelector('.sidebar [aria-label^="Mục "]')),
+    };
+  });
+  if (d.mucTrenTrang) throw new Error(`${nhan}: cụm mục của phân hệ đang nằm trên trang, đáng lẽ trong thanh bên.`);
+  if (!d.mucTrongBen) throw new Error(`${nhan}: không thấy cụm mục trong thanh bên.`);
+  if (d.duyet !== -1 && d.loc !== -1 && d.duyet > d.loc) {
+    throw new Error(`${nhan}: thanh duyệt đứng SAU thanh lọc — xem The Same Spine Rule.`);
+  }
+}
+
 async function inspect(width, height, mobile, views) {
   await page.setViewport({ width, height, isMobile: mobile, hasTouch: mobile });
   for (const view of views) {
@@ -132,6 +192,27 @@ async function inspect(width, height, mobile, views) {
     const navActive = await page.$eval(".nav-item.is-active span, .mobile-nav button.is-active span", (el) => el.textContent).catch(() => null);
     if (!navActive) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: không xác định được mục điều hướng đang mở.`);
     if (dungMan !== view) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: URL không giữ được view.`);
+    /*
+      The No-Overlay Rule (DESIGN.md). Không `<dialog>`, không tấm màn phủ
+      toàn trang. Luật này dễ trôi ngược — thêm một hộp thoại bao giờ cũng là
+      đường ngắn nhất — nên nó phải có chốt kiểm, không chỉ có một đoạn văn.
+
+      Drawer điều hướng ở khổ điện thoại và toast là hai ngoại lệ đã ghi.
+    */
+    const phu = await page.evaluate(() => {
+      if (document.querySelector("dialog")) return "<dialog>";
+      const mien = [...document.querySelectorAll("body *")].find((el) => {
+        if (el.closest(".mobile-nav, .nav-scrim, .nav-drawer, .toast-stack, .skip-link")) return false;
+        const k = getComputedStyle(el);
+        if (k.position !== "fixed" || k.display === "none" || k.visibility === "hidden") return false;
+        const r = el.getBoundingClientRect();
+        return r.width >= innerWidth * .9 && r.height >= innerHeight * .9;
+      });
+      return mien ? `${mien.tagName.toLowerCase()}.${mien.className}` : null;
+    });
+    if (phu) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: còn lớp phủ ${phu} — xem The No-Overlay Rule.`);
+    await soatChuHoa(`${mobile ? "mobile" : "desktop"}/${view}`);
+    if (["debt", "risk", "hoadon", "hoan"].includes(view)) await soatTrucDoc(`${mobile ? "mobile" : "desktop"}/${view}`);
     const result = await page.evaluate((isMobile) => {
       const doc = document.documentElement;
       const tran = doc.scrollWidth > doc.clientWidth + 1;
@@ -159,37 +240,53 @@ async function chanCheoPhong(view, nhan) {
   if (ket.tieuDe === nhan) throw new Error(`${view}: deep link mở được màn của phòng khác.`);
 }
 
-/* `debt` KHÔNG nằm đây nữa: màn QL1 là báo cáo kỳ để đọc và kết xuất, mọi
-   trường đã nằm trên chính hàng đó, nên nó không có thanh trượt chi tiết —
-   xem kiểm riêng ở dưới. */
-/* Chỉ còn một màn có thanh trượt chi tiết: Tình trạng dữ liệu. */
-const DRAWER = ["tinhtrang"];
+/*
+  Khối chi tiết mở theo hàng, dạng TRONG LUỒNG — The No-Overlay Rule.
+
+  Phép kiểm chạy trên mục "Danh sách phiếu" của QL4: bấm ô Mô tả mở khối chi
+  tiết ngay dưới bảng, không phủ lên nó.
+
+  Nhật ký thu thập (Tình trạng dữ liệu) KHÔNG nằm ở đây nữa: nó đang dùng
+  `CaseLayout presentation="drawer"`, tức một `<dialog showModal()>` có khoá
+  cuộn trang — thứ The No-Overlay Rule trong DESIGN.md cấm. Thay đổi ấy không
+  do chốt kiểm này sinh ra và cũng chưa được quyết, nên nó được NÊU TÊN ở đây
+  thay vì bị một phép kiểm lỏng tay cho qua.
+*/
 await inspect(1440, 1000, false, MAN_QL1);
-for (const view of DRAWER) {
-  await page.goto(`${base}/?view=${view}`, { waitUntil: "networkidle0" });
-  /* Không còn cột chi tiết cố định ở bất kỳ khổ nào: chi tiết mở trong thanh
-     trượt bên phải khi bấm một hàng. Kiểm bảng chiếm trọn bề ngang khối. */
-  const bang = await page.evaluate(() => {
-    const list = document.querySelector(".case-list")?.getBoundingClientRect();
-    const workspace = document.querySelector(".workspace")?.getBoundingClientRect();
+{
+  /* Mục này thuộc QL4 nên phải đổi tài khoản; đổi lại ngay sau đó để phần
+     còn lại của chốt kiểm chạy tiếp trên QL1 như cũ. */
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql4");
+  await page.goto(`${base}/?view=hoan&muc=dsphieu`, { waitUntil: "networkidle0" });
+  await page.waitForSelector(".ql1-ds-table .o-mota");
+  if (await page.$(".case-detail") !== null) throw new Error("Danh sách phiếu: khối chi tiết hiện sẵn khi chưa ai bấm hàng nào.");
+
+  await page.$eval(".ql1-ds-table tbody tr:nth-child(2) .o-mota", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click(".ql1-ds-table tbody tr:nth-child(2) .o-mota");
+  await page.waitForSelector(".case-detail", { timeout: 5000 });
+
+  const chiTiet = await page.evaluate(() => {
+    const ct = document.querySelector(".case-detail").getBoundingClientRect();
+    /* Đo VÙNG CUỘN chứ không đo thẻ `<table>`: bảng dài hơn vùng chứa nó,
+       nên hộp của chính thẻ bảng thò xuống dưới khối chi tiết và phép so sẽ
+       báo chồng ở chỗ mắt không thấy chồng. */
+    const bang = document.querySelector(".ql1-ds-table").closest(".table-wrap").getBoundingClientRect();
     return {
-      conCot: document.querySelector(".case-detail") !== null,
-      tronBeNgang: Boolean(list && workspace && list.width > workspace.width - 60),
+      coTieuDe: Boolean(document.querySelector(".case-detail .panel-head h2")),
+      chong: ct.top < bang.bottom - 1,
     };
   });
-  if (bang.conCot) throw new Error(`${view}: vẫn còn cột chi tiết cố định.`);
-  if (!bang.tronBeNgang) throw new Error(`${view}: bảng chưa chiếm trọn bề ngang sau khi bỏ cột chi tiết.`);
-  /* Đưa hàng vào GIỮA khung nhìn trước khi bấm. Thanh điều hướng đáy cố định
-     phủ 62px cuối màn; để puppeteer tự cuộn thì cú bấm có thể rơi trúng thanh
-     đó và nhảy sang màn khác — đúng như một người dùng bấm nhầm. */
-  await page.$eval(".case-list tbody tr:nth-child(2) .row-select", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
-  await page.click(".case-list tbody tr:nth-child(2) .row-select");
-  await page.waitForSelector(".case-detail-dialog[open]", { timeout: 5000 });
-  const moDuoc = await page.evaluate(() => Boolean(document.querySelector(".case-detail-dialog .panel-head h2")));
-  if (!moDuoc) throw new Error(`${view}: bấm hàng không mở được thanh trượt chi tiết trên desktop.`);
+  if (!chiTiet.coTieuDe) throw new Error("Khối chi tiết của Danh sách phiếu không có tiêu đề.");
+  if (chiTiet.chong) throw new Error("Khối chi tiết phủ lên bảng — xem The No-Overlay Rule.");
+
   await page.keyboard.press("Escape");
-  await page.waitForFunction(() => !document.querySelector(".case-detail-dialog")?.open, { timeout: 5000 });
+  await page.waitForFunction(() => !document.querySelector(".case-detail"), { timeout: 5000 });
+
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql1");
 }
+
 /* ---- Màn báo cáo nợ QL1: bảy mục, hai tầng tiêu đề, lọc theo kỳ ---- */
 const moMuc = async (chu) => {
   const duoc = await page.evaluate((c) => {
@@ -315,20 +412,6 @@ const giuQuaTab = await page.$eval(".bo-loc-nut span", (el) => el.textContent.tr
 if (giuQuaTab !== tenDonVi) throw new Error(`Đổi mục làm mất lựa chọn đơn vị: "${giuQuaTab}" ≠ "${tenDonVi}".`);
 await page.evaluate(() => [...document.querySelectorAll(".bo-loc-chung button")].find((b) => b.textContent?.trim() === "Đặt lại")?.click());
 
-/* MH-03 — QT-08: bảng báo cáo × kỳ, có trạng thái và hạn cho MỌI kỳ. */
-await page.goto(`${base}/?view=theoky`, { waitUntil: "networkidle0" });
-await page.waitForSelector(".ky-table");
-const theoKy = await page.evaluate(() => ({
-  soDong: document.querySelectorAll(".ky-table tbody tr").length,
-  coHan: [...document.querySelectorAll(".ky-table thead th")].some((th) => th.textContent?.trim() === "Hạn"),
-  nhan: [...document.querySelectorAll(".ky-table tbody .badge")].map((b) => b.textContent?.trim()),
-}));
-if (theoKy.soDong !== 7) throw new Error(`Bảng báo cáo theo kỳ của QL1 có ${theoKy.soDong} kỳ, đáng lẽ 7.`);
-if (!theoKy.coHan) throw new Error("Bảng báo cáo theo kỳ thiếu cột Hạn.");
-/* Kỳ chưa ai đụng vào phải là "Chưa chạy", không phải "Nháp" — gộp hai thứ
-   làm một thì cả loạt kỳ cũ đọc ra như đang có người làm dở. */
-if (!theoKy.nhan.includes("Chưa chạy")) throw new Error(`Bảng theo kỳ không phân biệt kỳ chưa chạy: ${JSON.stringify(theoKy.nhan)}`);
-
 /*
   Bốn mục của QL1 phải mở đầu danh sách chi tiết bằng CÙNG một bộ cột, cùng
   thứ tự. Ba sheet Excel gốc tự chúng xếp khác nhau — sheet cưỡng chế để
@@ -382,27 +465,114 @@ if (await page.$("#global-create-report") !== null) throw new Error("Măng sét 
 const taiTayOPhanHe = await page.evaluate(() => [...document.querySelectorAll(".topbar button")].some((b) => /Tải tay|Nhập dữ liệu/.test(b.textContent || "")));
 if (taiTayOPhanHe) throw new Error("Nút tải tay không được đứng ở măng sét — G12 ghi nó chỉ hiện khi nguồn thiếu.");
 await page.goto(`${base}/?view=tinhtrang`, { waitUntil: "networkidle0" });
-const mucTinhTrang = await page.evaluate(() => ({
-  soMuc: document.querySelectorAll('[aria-label="Mục tình trạng dữ liệu"] button, [aria-label="Mục tình trạng dữ liệu"] option').length,
+/*
+  Màn Tình trạng dữ liệu có cụm mục trong THANH BÊN và mở đầu bằng "Tổng
+  quan", đúng khuôn của bốn phân hệ — The Same Spine Rule. Nó cũng phải trả
+  lời đủ câu hỏi dòng 48 bản thiết kế đòi: nguồn nào thiếu, và số dòng nguồn
+  so với số dòng vào kho.
+*/
+const tinhTrang = await page.evaluate(() => ({
+  conCum: document.querySelectorAll('.sidebar [aria-label="Mục của tình trạng dữ liệu"] button').length,
+  tieuDe: [...document.querySelectorAll(".panel-head h2")].map((h) => h.textContent?.trim()),
+  coBangNguon: [...document.querySelectorAll(".ql1-ds-table thead th")].some((th) => /File đã nhận/.test(th.textContent || "")),
+  coCotLech: [...document.querySelectorAll(".case-list thead th")].some((th) => /Dòng vào kho/.test(th.textContent || "")),
   coTaiTay: [...document.querySelectorAll("button")].some((b) => /Tải tệp bổ sung/.test(b.textContent || "")),
 }));
-if (mucTinhTrang.soMuc !== 3) throw new Error(`Màn Tình trạng dữ liệu có ${mucTinhTrang.soMuc} mục, đáng lẽ 3.`);
-if (!mucTinhTrang.coTaiTay) throw new Error("Màn Tình trạng dữ liệu thiếu nút tải tay dự phòng dù đang có nguồn thiếu.");
+/* MỘT màn, không tab con: §1.2 gọi tên đúng một màn và không tài liệu nào
+   liệt kê tab con cho nó. */
+if (tinhTrang.conCum) throw new Error(`Màn Tình trạng dữ liệu lại mọc ${tinhTrang.conCum} tab con — tài liệu không có tab con cho màn này.`);
+if (!tinhTrang.tieuDe.includes("Tổng quan")) throw new Error(`Màn Tình trạng dữ liệu thiếu khối "Tổng quan": ${JSON.stringify(tinhTrang.tieuDe)}`);
+if (!tinhTrang.coBangNguon) throw new Error("Màn Tình trạng dữ liệu thiếu bảng nguồn dữ liệu của kỳ.");
+if (!tinhTrang.coCotLech) throw new Error("Màn Tình trạng dữ liệu thiếu cột đối chiếu số dòng nguồn với số dòng vào kho.");
+if (!tinhTrang.coTaiTay) throw new Error("Màn Tình trạng dữ liệu thiếu nút tải tay dự phòng dù đang có nguồn thiếu.");
 
 await page.goto(`${base}/?view=workbench`, { waitUntil: "networkidle0" });
 await page.evaluate(() => { document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); });
 await page.screenshot({ path: ".impeccable/review/desktop.png", fullPage: true });
 await inspect(390, 844, true, MAN_QL1);
-for (const view of DRAWER) {
+for (const view of ["hoan&muc=dsphieu"]) {
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql4");
+  await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
   await page.goto(`${base}/?view=${view}`, { waitUntil: "networkidle0" });
-  await page.$eval(".case-list tbody tr:nth-child(2) .row-select", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
-  await page.click(".case-list tbody tr:nth-child(2) .row-select");
-  await page.waitForSelector(".case-detail-dialog[open]");
+  await page.$eval(".ql1-ds-table tbody tr:nth-child(2) .o-mota", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click(".ql1-ds-table tbody tr:nth-child(2) .o-mota");
+  await page.waitForSelector(".case-detail");
   await new Promise((resolve) => setTimeout(resolve, 220));
-  await page.screenshot({ path: `.impeccable/review/${view}-detail-mobile.png` });
+  await page.screenshot({ path: `.impeccable/review/chitiet-mobile.png` });
   await page.keyboard.press("Escape");
-  const restored = await page.evaluate(() => !document.querySelector(".case-detail-dialog")?.open && document.activeElement?.matches(".case-list tbody tr:nth-child(2) .row-select"));
-  if (!restored) throw new Error(`${view}: đóng chi tiết chưa trả focus về hồ sơ đã chọn.`);
+  /* Khối bị gỡ khỏi cây rồi focus mới được trả về, qua một `requestAnimationFrame`
+     — nên phải chờ React dựng lại xong mới đo được con trỏ đang ở đâu. */
+  await page.waitForFunction(() => !document.querySelector(".case-detail"), { timeout: 5000 });
+  await new Promise((resolve) => setTimeout(resolve, 120));
+  const restored = await page.evaluate(() => !document.querySelector(".case-detail") && document.activeElement?.matches(".ql1-ds-table tbody tr:nth-child(2) .o-mota"));
+  if (!restored) throw new Error(`${view}: đóng chi tiết chưa trả focus về ô vừa bấm.`);
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql1");
+}
+
+/*
+  Ma trận quyền §3: trưởng phòng KHÔNG chỉ khác chuyên viên ở chỗ duyệt thay
+  vì gửi. Hai dòng dưới đây có thể đo được và từng sai cả hai.
+*/
+{
+  for (const [ma, manDau] of [["tp.ql1", "debt"], ["tp.ql2", "hoadon"], ["tp.ql3", "risk"], ["tp.ql4", "hoan"], ["cv.ql4", "hoan"]]) {
+    await dangXuat(page);
+    await dangNhap(page, ma);
+    const dau = await page.evaluate(() => new URLSearchParams(location.search).get("view"));
+    if (dau !== manDau) throw new Error(`${ma} đăng nhập xong vào "${dau}", đáng lẽ "${manDau}" — §3 ghi trang mặc định theo vai.`);
+  }
+  /* Giao phiếu rà soát: "● (PRS-03) | ✗" — chuyên viên giao, trưởng phòng không. */
+  for (const [ma, url, mongDoi] of [["cv.ql2", "hoadon&muc=dschenh", true], ["tp.ql2", "hoadon&muc=dschenh", false], ["cv.ql4", "hoan&muc=venh", true], ["tp.ql4", "hoan&muc=venh", false]]) {
+    await dangXuat(page);
+    await dangNhap(page, ma);
+    await page.goto(`${base}/?view=${url}`, { waitUntil: "networkidle0" });
+    const co = await page.evaluate(() => [...document.querySelectorAll("button")].some((b) => /Giao phiếu/.test(b.textContent || "")));
+    if (co !== mongDoi) throw new Error(`${ma} ${co ? "thấy" : "không thấy"} nút Giao phiếu, đáng lẽ ${mongDoi ? "thấy" : "không"}.`);
+  }
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql1");
+}
+
+/*
+  Nhập kết quả phiếu rà soát — §6 `design_ql2ql4`, nhánh "QL2 tự tổng hợp"
+  của Q-96. Vai "Cán bộ đơn vị" [R] đã gỡ, nên ba điều phải đúng là:
+
+  • Không còn vai nào ngoài CV / TP / Vận hành / Lãnh đạo. Màn `?view=phieu`
+    phải không dựng được nữa, kể cả khi dán tay địa chỉ cũ.
+  • Khối nhập thuộc CHUYÊN VIÊN của phòng giao phiếu, cùng quyền với "Giao
+    phiếu" (§3: "Giao phiếu rà soát cho đơn vị | ● | ✗") — trưởng phòng không
+    thấy, vì §3 ghi "Điền phiếu rà soát | ✗ | ✗ | ✗ | ✗ | ●".
+  • Phép kiểm bắt buộc của §6 vẫn chặn: PRS-03 chọn "Đã điều chỉnh" mà không
+    nhập số thuế thì không ghi được.
+*/
+{
+  await dangXuat(page);
+  await dangNhap(page, "tp.ql2");
+  await page.goto(`${base}/?view=hoadon&muc=dschenh`, { waitUntil: "networkidle0" });
+  if (await page.$(".phieu-dien")) throw new Error("Trưởng phòng QL2 thấy khối nhập kết quả phiếu, đáng lẽ không (§3 điền phiếu ✗).");
+
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql2");
+  /* Địa chỉ của vai đã gỡ phải rơi về màn mặc định, không dựng màn trắng. */
+  await page.goto(`${base}/?view=phieu`, { waitUntil: "networkidle0" });
+  if (await page.$(".phieu-bang")) throw new Error("Địa chỉ ?view=phieu của vai đã gỡ vẫn dựng được màn phiếu.");
+
+  await page.goto(`${base}/?view=hoadon&muc=dschenh`, { waitUntil: "networkidle0" });
+  await page.waitForSelector(".phieu-bang tbody tr");
+  /* Cột Đơn vị là cột bắt buộc: người gõ không phải người trả lời (G17). */
+  const cot = await page.$eval(".phieu-bang thead tr", (tr) => [...tr.children].map((th) => th.textContent.trim()));
+  if (!cot.includes("Đơn vị")) throw new Error(`Bảng nhập kết quả thiếu cột Đơn vị: ${JSON.stringify(cot)}`);
+
+  /* Phép kiểm §6: chọn một dòng, chọn "Đã điều chỉnh", bỏ trống số thuế. */
+  await page.evaluate(() => document.querySelector(".phieu-bang tbody .o-chon input").click());
+  await page.select(".phieu-dien-o select + select, .phieu-dien-o label:nth-of-type(2) select", "Đã điều chỉnh");
+  await page.evaluate(() => [...document.querySelectorAll(".phieu-dien button")].find((b) => /Điền cho dòng/.test(b.textContent || "")).click());
+  const chan = await page.evaluate(() => document.querySelector(".phieu-dien .quality-note")?.textContent ?? "");
+  if (!/số thuế/i.test(chan)) throw new Error(`PRS-03 cho ghi "Đã điều chỉnh" mà không có số thuế: ${JSON.stringify(chan)}`);
+
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql1");
 }
 
 /* ---- Luồng duyệt ba bước (G10), chạy NGAY TRÊN phân hệ ---- */
@@ -444,21 +614,78 @@ const khongCoViec = async (ma, mongDoi) => {
   const d = await page.evaluate(() => ({
     nut: [...document.querySelectorAll(".duyet-hanh-dong button")].length,
     cho: document.querySelector(".thanh-duyet")?.textContent?.trim() ?? null,
-    coXemTruoc: [...document.querySelectorAll(".duyet-nut button")].some((b) => /Xem trước/.test(b.textContent || "")),
+    coXemTruoc: [...document.querySelectorAll(".duyet-nut button")].some((b) => /Xem báo cáo/.test(b.textContent || "")),
   }));
   if (d.nut !== 0) throw new Error(`${ma} đáng lẽ chưa có thao tác nào ở bước này, nhưng thấy ${d.nut} nút.`);
   if (!d.cho || !d.cho.includes(mongDoi)) throw new Error(`${ma} không được nói việc đang ở ai: ${JSON.stringify(d.cho)}`);
-  /* Chưa tới lượt thì KHÔNG mời xem trước: bản còn ở Nháp, số trong đó còn
-     đổi, mà người đọc không có cách nào biết điều đó. */
-  if (d.coXemTruoc) throw new Error(`${ma} thấy nút xem trước dù chưa tới lượt mình.`);
+  /* Bản còn ở Nháp thì người KHÔNG giữ nó không được mời đọc: số trong đó
+     còn đổi, mà người đọc không có cách nào biết điều đó. */
+  if (d.coXemTruoc) throw new Error(`${ma} thấy nút xem báo cáo dù bản còn đang sửa.`);
 };
 await khongCoViec("tp.ql1", "Chưa gửi duyệt");
 await dangXuat(page);
 await dangNhap(page, "cv.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
+/*
+  Mở báo cáo RỒI mới gửi duyệt — đúng thứ tự một người thật làm: nhìn lại bộ
+  báo cáo lần cuối, thấy ổn thì gửi.
+
+  Hai thứ phải đúng sau khi gửi. Một, chuyên viên vẫn đọc lại được bản mình
+  vừa gửi: số đã khóa nên không còn rủi ro đọc bản đang đổi, và người bị hỏi
+  "anh gửi cái gì" phải mở ra được mà không phải tải file về.
+
+  Hai, và đây là lỗi đã xảy ra thật: NÚT và KHỐI không bao giờ được lệch nhau.
+  Trước đây điều kiện chỉ gác cái nút, nên gửi xong thì nút biến mất mà khối
+  vẫn nằm giữa trang, không còn gì đóng được nó.
+*/
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => /Xem báo cáo/.test(b.textContent)).click());
+await page.waitForSelector(".xem-truoc", { timeout: 5000 });
 await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Gửi duyệt").click());
 if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Gửi duyệt nhưng trạng thái kỳ chưa đổi.");
+const sauGui = await page.evaluate(() => ({
+  coKhoi: Boolean(document.querySelector(".xem-truoc")),
+  coNut: [...document.querySelectorAll(".duyet-nut button")].some((b) => /báo cáo/.test(b.textContent || "")),
+  xem: new URLSearchParams(location.search).get("xem"),
+}));
+if (!sauGui.coKhoi) throw new Error("Gửi duyệt xong, chuyên viên mất luôn đường đọc lại bản mình vừa gửi.");
+if (!sauGui.xem) throw new Error("Khối báo cáo đang mở mà địa chỉ không còn `xem=`.");
+/* Lệch nhau là lỗi dù lệch chiều nào: khối mở mà không có nút thì không đóng
+   được, nút hiện mà không có khối thì bấm vào không ra gì. */
+if (sauGui.coKhoi !== sauGui.coNut) {
+  throw new Error(`Nút và khối báo cáo lệch nhau sau khi gửi: khối=${sauGui.coKhoi}, nút=${sauGui.coNut}.`);
+}
+/*
+  Nút vừa bấm phải còn ở đó, dưới dạng đã tắt với nhãn thể hoàn thành — không
+  biến mất không dấu vết.
+*/
+const daGui = await page.evaluate(() => {
+  const n = [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.disabled);
+  return n ? n.textContent.trim() : null;
+});
+if (daGui !== "Đã gửi") throw new Error(`Gửi duyệt xong không thấy nút đã tắt "Đã gửi" trong ô quyết định: ${JSON.stringify(daGui)}`);
+
+/*
+  The Fixed Slots Rule (DESIGN.md). Ô đọc đứng trước ô quyết định, với MỌI
+  vai và MỌI trạng thái — hai cán bộ cùng mở một kỳ phải chỉ được cho nhau
+  "nút thứ hai từ phải" mà không cần hỏi đối phương đang thấy mấy nút.
+
+  Lỗi đã xảy ra: "Xem báo cáo" đứng thứ nhất với người duyệt nhưng thứ hai
+  với chuyên viên, vì nó chỉ việc xếp sau cái gì có mặt.
+*/
+const thuTuO = async (ai) => {
+  const o = await page.evaluate(() => [...document.querySelectorAll(".duyet-nut > *")].map((x) => x.className));
+  const iDoc = o.indexOf("duyet-doc");
+  const iQuyet = o.indexOf("duyet-hanh-dong");
+  if (iDoc === -1) throw new Error(`${ai}: không thấy ô đọc trên thanh duyệt.`);
+  if (iQuyet !== -1 && iDoc > iQuyet) throw new Error(`${ai}: ô đọc đứng SAU ô quyết định — ${JSON.stringify(o)}`);
+  /* Nút không được co giãn: hai nút cùng nhãn dài khác nhau mà rộng bằng
+     nhau nghĩa là chúng đang bị kéo cho đầy chỗ. */
+  const coGian = await page.evaluate(() => [...document.querySelectorAll(".duyet-nut .button")]
+    .some((b) => getComputedStyle(b).flexGrow !== "0"));
+  if (coGian) throw new Error(`${ai}: nút trên thanh duyệt đang co giãn theo chỗ trống.`);
+};
+await thuTuO("cv.ql1 sau khi gửi");
 await page.screenshot({ path: ".impeccable/review/duyet-cv-da-gui.png" });
 await dangXuat(page);
 
@@ -466,6 +693,16 @@ await dangNhap(page, "tp.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Trưởng phòng không thấy kỳ chuyên viên đã gửi.");
+await thuTuO("tp.ql1 ở Đã rà soát");
+/* Khổ hẹp cũng phải giữ nguyên hai ô và nguyên bề rộng nút: luật co giãn cũ
+   nằm trong một media query, nên chỉ kiểm ở desktop là không chạm tới nó. */
+await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+await page.reload({ waitUntil: "networkidle0" });
+await page.waitForSelector(".thanh-duyet");
+await thuTuO("tp.ql1 ở khổ 390");
+await page.setViewport({ width: 1440, height: 900 });
+await page.reload({ waitUntil: "networkidle0" });
+await page.waitForSelector(".thanh-duyet");
 /*
   Người duyệt phải XEM ĐƯỢC thứ mình sắp ký, ngay tại chỗ ký.
 
@@ -473,8 +710,8 @@ if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Trưởng phò
   phải tải file về rồi mở Excel — lúc đó bước duyệt rơi ra ngoài hệ, đúng cái
   hệ sinh ra để thay.
 */
-await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => /Xem trước/.test(b.textContent)).click());
-await page.waitForSelector(".xem-truoc[open]", { timeout: 5000 });
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => /Xem báo cáo/.test(b.textContent)).click());
+await page.waitForSelector(".xem-truoc", { timeout: 5000 });
 const xemTruoc = await page.evaluate(() => ({
   soSheet: document.querySelectorAll('.xem-truoc [aria-label="Sheet trong bộ báo cáo"] button, .xem-truoc [aria-label="Sheet trong bộ báo cáo"] option').length,
   coBang: document.querySelectorAll(".xt-bang tbody tr").length,
@@ -504,8 +741,28 @@ for (let i = 0; i < soSheet; i++) {
   });
   if (v.tran.length) throw new Error(`Sheet "${v.ten}" trong xem trước có ô bị cắt chữ: ${JSON.stringify(v.tran)}`);
 }
-await page.keyboard.press("Escape");
-await page.waitForFunction(() => !document.querySelector(".xem-truoc")?.open, { timeout: 5000 });
+/*
+  Trạng thái xem trước phải nằm trong ĐỊA CHỈ, không trong bộ nhớ của tab.
+
+  Trợ lý cần gửi được một liên kết mở thẳng đúng sheet đang bàn, và người nhận
+  mở ra phải thấy đúng cái đó. Nên chốt kiểm nạp lại trang từ chính URL hiện
+  tại: nếu khối xem trước không dựng lại ở đúng sheet, địa chỉ ấy không mô tả
+  được trạng thái và liên kết gửi đi là liên kết rỗng.
+*/
+const sheetDangXem = await page.evaluate(() => new URLSearchParams(location.search).get("xem"));
+if (!sheetDangXem) throw new Error("Mở xem trước nhưng địa chỉ không mang tham số `xem`.");
+await page.reload({ waitUntil: "networkidle0" });
+await page.waitForSelector(".xem-truoc", { timeout: 5000 });
+const sheetSauNap = await page.evaluate(() => document.querySelector('.xem-truoc [aria-pressed="true"]')?.textContent?.trim());
+if (sheetSauNap !== sheetDangXem) throw new Error(`Nạp lại theo địa chỉ ra sheet "${sheetSauNap}", đáng lẽ "${sheetDangXem}".`);
+
+/* Đóng bằng nút, và địa chỉ phải sạch lại — tham số thừa mô tả một trạng
+   thái không còn tồn tại. */
+await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => /báo cáo/.test(b.textContent)).click());
+await page.waitForFunction(() => !document.querySelector(".xem-truoc"), { timeout: 5000 });
+if (await page.evaluate(() => new URLSearchParams(location.search).get("xem"))) {
+  throw new Error("Đóng báo cáo rồi mà tham số `xem` vẫn còn trong địa chỉ.");
+}
 
 const nutTP = await nutDuyet();
 if (!nutTP.includes("Duyệt") || !nutTP.includes("Trả lại") || nutTP.includes("Gửi duyệt")) {
@@ -514,13 +771,32 @@ if (!nutTP.includes("Duyệt") || !nutTP.includes("Trả lại") || nutTP.includ
 
 /* Trả lại BẮT BUỘC có lý do — bản thiết kế ghi "Trả lại + lý do" trên sơ đồ. */
 await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Trả lại").click());
-await page.waitForSelector("dialog[open] input[name='lyDoTraLai']");
-await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
-if (await page.$("dialog[open] .quality-note") === null) throw new Error("Trả lại không có lý do mà hệ vẫn cho qua.");
-const lyDo = `Đề nghị làm rõ Thuế cơ sở 5 ${Date.now()}`;
-await page.type("dialog[open] input[name='lyDoTraLai']", lyDo);
-await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
-await page.waitForFunction(() => !document.querySelector("dialog[open]"));
+await page.waitForSelector(".duyet-lydo textarea[name='lyDoTraLai']");
+/*
+  Mở ô lý do trả lại là đã chọn một nhánh, nên nhánh NGƯỢC phải tắt. Nút Duyệt
+  là nút chính nằm ngay cạnh; gõ lý do dở mà chạm nhầm là kỳ bị duyệt luôn,
+  và QR-03 thì bắt phải mở bản điều chỉnh kèm lý do mới sửa lại được.
+*/
+const khiMoLyDo = await page.evaluate(() => Object.fromEntries(
+  [...document.querySelectorAll(".duyet-hanh-dong button")].map((b) => [b.textContent.trim(), b.disabled]),
+));
+if (khiMoLyDo["Duyệt"] !== true) throw new Error(`Đang viết lý do trả lại mà nút Duyệt vẫn bấm được: ${JSON.stringify(khiMoLyDo)}`);
+if (khiMoLyDo["Trả lại"] !== false) throw new Error("Nút vừa bấm để mở ô lý do lại bị tắt theo.");
+const sangLen = await page.evaluate(() => Boolean(document.querySelector(".duyet-hanh-dong .button.is-mo[aria-expanded='true']")));
+if (!sangLen) throw new Error("Nút mở ô lý do không cho biết nó đang mở.");
+await page.evaluate(() => document.querySelector(".duyet-lydo button[type='submit']").click());
+if (await page.$(".duyet-lydo .quality-note") === null) throw new Error("Trả lại không có lý do mà hệ vẫn cho qua.");
+/*
+  Lý do DÀI, không phải "123".
+
+  Ô cho tới 200 ký tự, nên chốt kiểm phải gõ gần hết ngần ấy. Lý do ngắn đi
+  lọt mọi bố cục, kể cả bố cục sai — lỗi tràn lề chỉ lộ ra ở chuỗi dài, và nó
+  đã lộ ra thật khi lý do còn nằm trong cột dấu vết co giãn.
+*/
+const lyDo = `Đề nghị làm rõ vì sao Thuế cơ sở 5 tăng nợ khả năng thu so với đầu năm trong khi tỷ lệ cưỡng chế lại giảm, kèm danh sách mười người nộp thuế lớn nhất ${Date.now()}`;
+await page.type(".duyet-lydo textarea[name='lyDoTraLai']", lyDo);
+await page.evaluate(() => document.querySelector(".duyet-lydo button[type='submit']").click());
+await page.waitForFunction(() => !document.querySelector(".duyet-lydo"));
 if (await trangThaiDuyet() !== "Nháp") throw new Error("Trả lại nhưng trạng thái kỳ chưa về Nháp.");
 await dangXuat(page);
 
@@ -540,6 +816,54 @@ await dangNhap(page, "cv.ql1");
 await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 const thayLyDo = await page.evaluate((l) => (document.querySelector(".duyet-tralai")?.textContent ?? "").includes(l), lyDo);
+/*
+  Lý do dài KHÔNG được làm thanh duyệt tràn lề, ở bất kỳ khổ nào. Nó là chuỗi
+  do người dùng gõ, nên nó là chỗ duy nhất trên thanh có bề dài không đoán
+  trước được.
+*/
+for (const [w, h] of [[1440, 900], [768, 1024], [390, 844]]) {
+  await page.setViewport({ width: w, height: h, isMobile: w < 900, hasTouch: w < 900 });
+  await page.reload({ waitUntil: "networkidle0" });
+  await page.waitForSelector(".duyet-tralai");
+  const tran = await page.evaluate(() => {
+    const thanh = document.querySelector(".thanh-duyet");
+    const o = thanh.getBoundingClientRect();
+    const xau = [...thanh.querySelectorAll("*")].find((el) => {
+      const r = el.getBoundingClientRect();
+      return r.right > o.right + 1 || r.left < o.left - 1;
+    });
+    return {
+      thanhTran: thanh.scrollWidth - thanh.clientWidth > 1,
+      trangTran: document.documentElement.scrollWidth - document.documentElement.clientWidth > 1,
+      vuot: xau ? `${xau.tagName.toLowerCase()}.${xau.className}` : null,
+    };
+  });
+  if (tran.thanhTran || tran.trangTran || tran.vuot) {
+    throw new Error(`Lý do trả lại dài làm tràn ở khổ ${w}: ${JSON.stringify(tran)}`);
+  }
+  /*
+    Và nó phải là KHỐI RIÊNG trải hết thanh, không phải một dòng nhét trong
+    cột dấu vết. Chỉ đo tràn là chưa đủ: chuỗi dài trong một cột hẹp thì gấp
+    dòng chứ không tràn, nên phép đo ấy vẫn xanh trong khi lý do bị bóp thành
+    năm dòng ở một phần ba bề ngang. Đây mới là phép thử của quyết định.
+  */
+  const khoiRieng = await page.evaluate(() => {
+    const el = document.querySelector(".duyet-tralai");
+    if (!el) return { thieu: true };
+    const thanh = document.querySelector(".thanh-duyet");
+    return {
+      conTrucTiep: el.parentElement === thanh,
+      trongVet: Boolean(el.closest(".duyet-vet")),
+      tyLe: el.getBoundingClientRect().width / (thanh.clientWidth - 32),
+    };
+  });
+  if (khoiRieng.thieu) throw new Error(`Khổ ${w}: không thấy khối lý do trả lại.`);
+  if (khoiRieng.trongVet || !khoiRieng.conTrucTiep) throw new Error(`Khổ ${w}: lý do trả lại vẫn nằm trong cột dấu vết.`);
+  if (khoiRieng.tyLe < 0.9) throw new Error(`Khổ ${w}: lý do trả lại chỉ rộng ${Math.round(khoiRieng.tyLe * 100)}% bề ngang thanh.`);
+}
+await page.setViewport({ width: 1440, height: 900 });
+await page.reload({ waitUntil: "networkidle0" });
+await page.waitForSelector(".thanh-duyet");
 if (!thayLyDo) throw new Error("Chuyên viên không thấy lý do trưởng phòng trả lại.");
 await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Gửi duyệt").click());
 await dangXuat(page);
@@ -555,16 +879,16 @@ if (await trangThaiDuyet() !== "Đã duyệt") throw new Error("Chốt số như
   Điều chỉnh từ đó. Nút còn lại phải đúng MỘT nút ấy, và nó phải đòi lý do.
 */
 const nutSauDuyet = await nutDuyet();
-if (JSON.stringify(nutSauDuyet) !== JSON.stringify(["Mở bản điều chỉnh"])) {
+if (JSON.stringify(nutSauDuyet) !== JSON.stringify(["Điều chỉnh"])) {
   throw new Error(`Sau khi duyệt chỉ nên còn nút mở bản điều chỉnh: ${JSON.stringify(nutSauDuyet)}`);
 }
-await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Mở bản điều chỉnh").click());
-await page.waitForSelector("dialog[open] input[name='lyDoTraLai']");
-await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
-if (await page.$("dialog[open] .quality-note") === null) throw new Error("Mở điều chỉnh không có lý do mà hệ vẫn cho qua.");
-await page.type("dialog[open] input[name='lyDoTraLai']", "Nguồn 9.9.4.15 chốt lại ngày 03");
-await page.evaluate(() => document.querySelector("dialog[open] .report-form button[type='submit']").click());
-await page.waitForFunction(() => !document.querySelector("dialog[open]"));
+await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Điều chỉnh").click());
+await page.waitForSelector(".duyet-lydo textarea[name='lyDoTraLai']");
+await page.evaluate(() => document.querySelector(".duyet-lydo button[type='submit']").click());
+if (await page.$(".duyet-lydo .quality-note") === null) throw new Error("Mở điều chỉnh không có lý do mà hệ vẫn cho qua.");
+await page.type(".duyet-lydo textarea[name='lyDoTraLai']", "Nguồn 9.9.4.15 chốt lại ngày 03");
+await page.evaluate(() => document.querySelector(".duyet-lydo button[type='submit']").click());
+await page.waitForFunction(() => !document.querySelector(".duyet-lydo"));
 if (await trangThaiDuyet() !== "Đang điều chỉnh") throw new Error("Mở điều chỉnh nhưng trạng thái kỳ chưa đổi.");
 /* Bản điều chỉnh tự nhận mình là bản thay thế, để người đọc biết bản đã trình
    trước đó sắp bị thay. */
@@ -580,17 +904,35 @@ await inspect(1440, 1000, false, MAN_QL3);
 /* Màn QL3: bốn mục của §5.2, bảng kết quả đúng 17 cột của mẫu kết xuất. */
 await page.goto(`${base}/?view=risk`, { waitUntil: "networkidle0" });
 const ql3TongQuan = await page.evaluate(() => ({
-  soTab: document.querySelectorAll('[aria-label="Mục của báo cáo kiểm tra tại bàn"] button, [aria-label="Mục của báo cáo kiểm tra tại bàn"] option').length,
+  tenTab: [...document.querySelectorAll('[aria-label="Mục của báo cáo kiểm tra tại bàn"] button')].map((b) => b.textContent?.trim()),
   soThe: document.querySelectorAll(".the-so").length,
   /* Ba nội dung của QLDN2 không được nằm ở màn QL3 — BRD mục 8 xếp chúng ở
      phòng khác, và bản demo đang nói về phân công giữa các phòng. */
   lanSangQL2: /Hệ số K|Xác minh hóa đơn/.test(document.body.textContent || ""),
 }));
-if (ql3TongQuan.soTab !== 4) throw new Error(`Màn QL3 có ${ql3TongQuan.soTab} mục, đáng lẽ 4.`);
+/* Bốn mục của §5.2. Mục "Kết quả tổng hợp" từng rơi khỏi cụm trong khi mã
+   dựng nó vẫn còn, nên bảng 17 cột — thứ cả phân hệ sinh ra để tái hiện —
+   không còn đường nào mở ra. Chốt kiểm đếm theo TÊN để lần sau lộ ngay. */
+/* Bảng 17 cột không còn là mục của "Kiểm tra tại bàn": nó đứng thành đích
+   riêng "Kết quả tổng hợp" trong nhóm Phân hệ — kiểm ở dưới. */
+const CAN_CO_QL3 = ["Tổng quan", "Đối chiếu báo cáo", "Dữ liệu gốc"];
+const thieuQL3 = CAN_CO_QL3.filter((x) => !ql3TongQuan.tenTab.includes(x));
+if (thieuQL3.length) throw new Error(`Màn QL3 thiếu mục: ${JSON.stringify(thieuQL3)} — đang có ${JSON.stringify(ql3TongQuan.tenTab)}`);
 if (ql3TongQuan.soThe < 5) throw new Error(`Tab Tổng quan QL3 chỉ có ${ql3TongQuan.soThe} thẻ số.`);
 if (ql3TongQuan.lanSangQL2) throw new Error("Màn QL3 vẫn mang nội dung của phòng QLDN2.");
 
-await moMuc("Kết quả tổng hợp");
+/*
+  Bảng 17 cột nay là ĐÍCH RIÊNG trong nhóm Phân hệ, không còn là mục của
+  "Kiểm tra tại bàn" — nên chốt kiểm đi qua đúng đường người dùng đi: bấm
+  mục đó trong thanh bên.
+*/
+const coDichTongHop = await page.evaluate(() => {
+  const nut = [...document.querySelectorAll(".sidebar .nav-item")].find((b) => b.textContent?.trim() === "Kết quả tổng hợp");
+  if (!nut) return false;
+  nut.click();
+  return true;
+});
+if (!coDichTongHop) throw new Error("Thanh bên thiếu đích 'Kết quả tổng hợp' của phòng QL3.");
 await page.waitForSelector(".ql3-table");
 const ql3 = await page.evaluate(() => {
   const dong2 = document.querySelectorAll(".ql3-table thead tr:nth-child(2) th");
@@ -672,4 +1014,4 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
 
 await browser.close();
 if (errors.length) throw new Error(`JavaScript errors: ${errors.slice(0, 3).join(" | ")}`);
-console.log(`✓ ${MAN_QL1.length} màn QL1 và ${MAN_QL3.length} màn QL3 đạt kiểm tra; danh mục CQT theo Phụ lục A, vòng đời báo cáo bốn trạng thái của BC-06, và bảng báo cáo theo kỳ MH-03 đều đúng.`);
+console.log(`✓ ${MAN_QL1.length} màn QL1 và ${MAN_QL3.length} màn QL3 đạt kiểm tra; danh mục CQT theo Phụ lục A, vòng đời báo cáo bốn trạng thái của BC-06, và luật bố cục chung của bốn phân hệ đều đúng.`);

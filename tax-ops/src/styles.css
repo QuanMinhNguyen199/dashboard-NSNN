@@ -28,6 +28,33 @@
 
 
 
+.ql3-doichieu { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.ql3-doichieu-heading { padding: 16px 20px; color: var(--ink); }
+.ql3-doichieu-heading > span:first-of-type { display: inline-flex; flex-direction: column; gap: 4px; margin-inline: 8px 16px; vertical-align: middle; }
+.ql3-doichieu-heading small { color: var(--ink-2); font-weight: 400; }
+.ql3-doichieu-heading:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; border-radius: 12px; }
+.ql3-doichieu-body { padding: 0 20px 20px; border-top: 1px solid var(--line); }
+.ql3-doichieu-body p { color: var(--ink-2); line-height: 1.6; max-width: 78ch; }
+.ql3-doichieu-context { display: flex; flex-wrap: wrap; gap: 16px 40px; padding-block: 12px; }
+.ql3-doichieu-context dt { color: var(--ink-2); font-size: 12px; }
+.ql3-doichieu-context dd { margin: 4px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.ql3-doichieu-sources { display: grid; grid-template-columns: 1fr 1fr; border-block: 1px solid var(--line); }
+.ql3-doichieu-sources section { min-width: 0; padding: 20px 20px 20px 0; }
+.ql3-doichieu-sources section + section { border-left: 1px solid var(--line); padding-left: 20px; }
+.ql3-doichieu-sources h3 { font-size: 14px; margin: 0; }
+.ql3-doichieu-sources p { overflow-wrap: anywhere; }
+.ql3-doichieu-sources section > .button { display: flex; margin-top: 16px; }
+.ql3-doichieu-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 16px 12px; }
+.ql3-doichieu-sources small { display: block; color: var(--ink-2); line-height: 1.6; }
+.ql3-doichieu-status { padding-top: 20px; }
+.ql3-doichieu-status p { margin-top: 6px; }
+.ql3-doichieu-note { font-size: 12px; margin-bottom: 0; }
+@media (max-width: 700px) {
+  .ql3-doichieu-sources { grid-template-columns: 1fr; }
+  .ql3-doichieu-sources section + section { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
+  .ql3-doichieu-heading > .badge { margin: 12px 0 0 20px; }
+}
+
 :root {
   --canvas: #f2f5f9;
   --surface: #ffffff;
@@ -128,7 +155,7 @@ table { width: 100%; table-layout: fixed; border-collapse: collapse; }
 :where(input, select, textarea) { caret-color: var(--brand); accent-color: var(--brand); }
 ::placeholder { color: var(--ink-3); opacity: 1; }
 a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 1px; }
-:where(button, input, select, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-control); }
+:where(button, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-control); }
 /* `:where()` không cộng độ ưu tiên, nên rule này phải nằm SAU rule chung,
    nếu không shorthand `outline` ở trên sẽ ghi đè lại màu. */
 :where(.sidebar, .mobile-drawer, .login-context) :where(button, a, input, [tabindex]):focus-visible { outline-color: var(--focus-on-chrome); }
@@ -211,8 +238,8 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 
  .topbar { position: sticky; top: 0; z-index: 20; min-height: var(--topbar-h); margin-left: 252px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 20px; border-bottom: 1px solid var(--line); background: var(--surface);  box-shadow: 0 1px 3px rgb(22 38 60 / 3%); }
 
-select, input { min-height: 32px; border: 1px solid var(--control-line); border-radius: var(--radius-control); background: var(--surface); transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
-select:hover:not(:disabled), input:hover:not(:disabled) { border-color: var(--control-line-hover); }
+select, input, textarea { min-height: 32px; border: 1px solid var(--control-line); border-radius: var(--radius-control); background: var(--surface); transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
+select:hover:not(:disabled), input:hover:not(:disabled), textarea:hover:not(:disabled) { border-color: var(--control-line-hover); }
 select { min-width: 150px; padding: 0 28px 0 9px; }
 input { padding: 0 9px; }
 select:disabled { color: var(--ink-2); background: var(--surface-soft); border-color: var(--line); cursor: not-allowed; opacity: 1; }
@@ -225,6 +252,20 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
    bảng vẫn cuộn ngang trong vùng cuộn của chính nó. */
 .page-stack { width: min(100%, 1540px); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .case-layout, .case-list { min-width: 0; }
+.case-drawer { position: fixed; inset: 0 0 0 auto; margin: 0; width: min(600px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; padding: 0; border: 0; border-left: 1px solid var(--line); background: var(--canvas); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; }
+.case-drawer::backdrop { background: rgb(14 42 71 / 35%); }
+.case-drawer-heading { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.case-drawer-heading h2 { margin: 0; font-size: 16px; }
+.case-drawer-heading .case-detail-close { margin: 0; min-height: 44px; flex-shrink: 0; }
+.case-drawer-body { padding: 20px; }
+.case-drawer .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.case-drawer .detail-grid > div { border-top: 1px solid var(--line-soft); overflow-wrap: anywhere; }
+.case-drawer .detail-grid > div:nth-child(-n + 2) { border-top: 0; }
+.case-drawer .detail-grid > div:nth-child(odd) { border-left: 0; }
+.case-drawer .notice { flex-direction: column; align-items: flex-start; }
+@media (prefers-reduced-motion: no-preference) { .case-drawer[open] { animation: case-drawer-enter 180ms var(--ease-out) both; } }
+@keyframes case-drawer-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@media (max-width: 480px) { .case-drawer-heading, .case-drawer-body { padding: 14px; } }
 /*
   Tên màn đã nằm ở mục điều hướng đang mở trong sidebar; in lại nó ở đầu nội
   dung là nói hai lần và ăn mất dòng đắt nhất của trang. `h1` vẫn còn trong DOM
@@ -238,7 +279,23 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 @media (prefers-reduced-motion: no-preference) {
   .workspace-view { animation: workspace-enter 200ms var(--ease-out) both; }
 }
-@keyframes workspace-enter { from { opacity: .35; transform: translateX(8px); } to { opacity: 1; transform: none; } }
+/*
+  Chuyển động vào màn đi theo TRỤC DỌC, không phải trục ngang.
+
+  Bản trước trượt vào từ bên phải: `translateX(8px)`. Trong 200ms chạy ấy, cả
+  mặt làm việc nằm lấn 8px ra ngoài mép phải, nên trang có bề rộng cuộn 398px
+  trên khung 390px. Thường thì nó biến mất cùng chuyển động và không ai thấy —
+  trừ khi có một phần tử `position: fixed` lấy số đo đúng vào lúc ấy. Thanh
+  điều hướng đáy ở khổ điện thoại khai `inset: auto 0 0 0`, nên nó giãn theo
+  khung đã bị nới, và GIỮ NGUYÊN bề rộng 398px sau khi chuyển động kết thúc.
+  Trang kẹt lại ở trạng thái cuộn ngang được mà không ô nào bị cắt chữ.
+
+  Đây là lỗi tiềm ẩn của MỌI màn, không riêng màn nào — nó chỉ lộ ra ở màn mà
+  nhịp vẽ rơi đúng vào giữa chuyển động. Trục dọc không có vấn đề ấy vì trang
+  vốn đã cuộn dọc, và nó cũng là trục mà hai chuyển động còn lại trong hệ
+  (toast, khối chi tiết) đang dùng.
+*/
+@keyframes workspace-enter { from { opacity: .35; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 .button { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 11px; border: 1px solid transparent; border-radius: var(--radius-control); font-size: 13px; font-weight: 600; white-space: nowrap; transition: background 120ms var(--ease-out), border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
 .button.is-primary { color: white; background: var(--brand); border-color: var(--brand); box-shadow: 0 1px 1px #16263c14; }
@@ -250,6 +307,19 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .button.is-quiet { min-height: 32px; padding: 0 8px; color: var(--brand); background: transparent; }
 .button.is-quiet:hover { background: var(--surface-tint); }
 .button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }
+/*
+  Nút "đã xong" trên thanh duyệt: tắt, nhưng KHÔNG mờ.
+
+  `opacity: .45` là đúng cho một nút tạm thời không bấm được — mắt lướt qua nó
+  và đi tiếp. Nút này thì ngược lại: nó là thứ xác nhận việc vừa làm xong, nên
+  nó phải đọc được như mọi chữ khác trên thanh. Vì vậy nó lấy mực phụ trên nền
+  giấy mềm thay vì làm mờ mực chính xuống dưới ngưỡng tương phản.
+*/
+.button.duyet-xong:disabled { opacity: 1; color: var(--ink-2); background: var(--surface-soft); border-color: var(--line); }
+.button.duyet-xong:disabled svg { color: var(--positive); }
+/* "Chưa đủ dữ liệu" không phải việc vừa làm xong mà là một lối đang bị chặn,
+   nên dấu của nó là cảnh báo chứ không phải dấu tích. */
+.button.duyet-xong-chan:disabled svg { color: var(--critical); }
 
 .badge { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 0; border: 0; background: none; font-size: 12px; font-weight: 600; line-height: 1.35; white-space: nowrap; }
 .badge::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
@@ -288,18 +358,22 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 /* Chú thích nguồn ở chân thân khối: mờ, nhỏ, và không bao giờ chạm vào chiều
    cao đầu khối. Khối không khai nguồn thì đơn giản là không có dòng này. */
 .workbench-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 14px; }
-.case-detail-dialog .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.case-detail-dialog .detail-grid > div:nth-child(odd) { border-left: 0; }
-.case-detail-dialog .detail-grid > div:nth-child(n + 3) { border-top: 1px solid var(--line-soft); }
-.case-detail-dialog { position: fixed; inset: 0 0 0 auto; width: min(100vw, 520px); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: 18px; border: 0; background: var(--canvas); box-shadow: var(--shadow-overlay); overflow-y: auto; }
-.case-detail-dialog::backdrop { background: rgb(14 42 71 / 45%); }
-.case-detail-dialog .panel { width: 100%; }
-.case-detail-close { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 0 12px auto; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); }
+/*
+  Chi tiết hồ sơ: khối TRONG LUỒNG, nằm dưới bảng (xem `CaseLayout.tsx`).
+
+  Không khai bề rộng và không ghim vào mép phải: nó ăn trọn cột nội dung, nên
+  lưới chi tiết được chạy bốn cột như mọi `detail-grid` khác thay vì bị bóp
+  thành hai cột trong một ngăn 520px.
+
+  `scroll-margin-top` chừa chỗ cho thanh trên cùng khi khối được cuộn tới.
+*/
+.case-detail { display: block; margin-top: 14px; scroll-margin-top: 16px; }
+.case-detail:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+/* `display: flex` + `width: fit-content`, KHÔNG phải `inline-flex`: lề trái
+   `auto` chỉ đẩy được một hộp cấp khối, còn hộp cấp dòng thì lề auto tính
+   bằng 0 và nút nằm lì bên trái. */
+.case-detail-close { min-height: 32px; width: fit-content; display: flex; align-items: center; gap: 6px; margin: 0 0 8px auto; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius-control); color: var(--ink); background: var(--surface); font-size: 12.5px; font-weight: 600; }
 .case-detail-close:hover { background: var(--hover-surface); }
-.case-detail-dialog .approval-flow { grid-template-columns: 1fr; gap: 8px; }
-.case-detail-dialog .approval-flow > div { min-height: 48px; padding: 0; }
-.case-detail-dialog .approval-flow > div::after { display: none; }
-.case-detail-dialog .approval-flow small { grid-column: 2; }
 .batch-file-list { display: grid; margin-inline: -14px; }
 .batch-file-list > div { display: grid; gap: 4px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); }
 .batch-file-list > div:last-child { border-bottom: 0; }
@@ -308,8 +382,11 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .batch-file-list code { color: var(--ink-2); font: 600 11px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
 .batch-file-list small, .case-source-note { color: var(--ink-3); font-size: 12px; line-height: 1.5; }
 .case-source-note { padding-top: 12px; border-top: 1px solid var(--line-soft); }
-@media (prefers-reduced-motion: no-preference) { .case-detail-dialog[open] { animation: case-detail-enter 180ms var(--ease-out) both; } }
-@keyframes case-detail-enter { from { opacity: .7; transform: translateX(18px); } to { opacity: 1; transform: none; } }
+/* Khối nay mở ra TỪ TRÊN XUỐNG chứ không trượt vào từ mép phải, nên chuyển
+   động cũng đi theo trục ấy — chuyển động ngang ở một khối đứng im theo chiều
+   ngang chỉ là tiếng ồn còn sót của bản ngăn trượt. */
+@media (prefers-reduced-motion: no-preference) { .case-detail { animation: case-detail-enter 180ms var(--ease-out) both; } }
+@keyframes case-detail-enter { from { opacity: .7; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
 .task-list { margin-inline: -14px; }
 .task-row { width: 100%; min-width: 0; min-height: 54px; display: grid; grid-template-columns: minmax(0, 1fr) auto 20px; align-items: center; gap: 10px; padding: 8px 14px; border: 0; border-bottom: 1px solid var(--line-soft); background: var(--surface); text-align: left; transition: background 100ms var(--ease-out); }
@@ -462,9 +539,25 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
 .empty-state svg { color: var(--positive); }
 .empty-state span { color: var(--ink-3); }
 
-.toast { position: fixed; right: 20px; bottom: 20px; z-index: 100; width: min(420px, calc(100vw - 28px)); min-height: 46px; display: grid; grid-template-columns: 20px minmax(0, 1fr) 30px; align-items: center; gap: 10px; padding: 9px 9px 9px 13px; color: white; border-radius: var(--radius-panel); background: var(--chrome); box-shadow: var(--shadow-overlay); }
+/*
+  Toast ở góc phải TRÊN, không phải góc phải dưới.
+
+  Ba lý do. Thao tác sinh ra thông báo đều nằm ở nửa trên trang — thanh duyệt,
+  măng sét, đầu khối — nên mắt đang ở đó lúc thông báo hiện. Góc dưới phải là
+  chỗ của thanh điều hướng đáy ở khổ điện thoại và của nút nổi trên nhiều nền
+  khác, nên toast phải né, và nó đã phải né thật (`bottom: 74px + safe-area`).
+  Và trên một trang dài cuộn được, góc dưới là chỗ người dùng ít nhìn nhất.
+
+  Nó nằm ĐÈ LÊN topbar, không lùi xuống dưới. Lùi xuống thì nó rơi đúng vào
+  khối nội dung đầu tiên — mà khối ấy thường chính là thứ vừa đổi (thanh duyệt
+  sau khi bấm Gửi duyệt), nên thông báo sẽ che mất bằng chứng cho điều nó đang
+  báo. Topbar là khung, lặp lại ở mọi màn, và che nó vài giây thì không ai mất
+  thông tin gì.
+*/
+.toast { position: fixed; right: 20px; top: 12px; z-index: 100; width: min(420px, calc(100vw - 28px)); min-height: 46px; display: grid; grid-template-columns: 20px minmax(0, 1fr) 30px; align-items: center; gap: 10px; padding: 9px 9px 9px 13px; color: white; border-radius: var(--radius-panel); background: var(--chrome); box-shadow: var(--shadow-overlay); }
 @media (prefers-reduced-motion: no-preference) { .toast { animation: toast-in 220ms var(--ease-out) both; } }
-@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* Trượt XUỐNG, vì nay nó vào từ mép trên. */
+@keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 .toast > svg { color: var(--positive-on-chrome); }
 .toast span { font-size: 13px; font-weight: 600; }
 .toast button { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: var(--radius-control); color: var(--on-chrome-1); background: transparent; }
@@ -584,7 +677,7 @@ td code { color: var(--ink-2); font: 600 12px/1.4 ui-monospace, SFMono-Regular, 
   th, td { padding-inline: 10px; }
   td { height: 44px; }
   .mobile-nav button span { font-size: 10px; }
-  .toast { right: 10px; bottom: calc(74px + env(safe-area-inset-bottom)); }
+  .toast { right: 10px; top: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -661,19 +754,33 @@ tbody tr.is-selected { background: var(--selected-surface); }
 .nav-item:not(.is-active) span { font-weight: 400; }
 .nav-item.is-active span { font-weight: 600; }
 .task-copy small, .task-meta small, .source-name small, .source-files small, .source-quality > div, .detail-grid dt, .timeline-step span, td small { font-size: 12px; }
-.report-dialog { width: min(480px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow-overlay); overflow-y: auto; }
-.report-dialog::backdrop { background: rgb(14 42 71 / 45%); }
-.report-form { display: grid; gap: 16px; }
-.report-form h2 { font-size: 20px; }
-.report-form > p { color: var(--ink-2); font-size: 13px; }
-.report-form label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
-.report-form input, .report-form select { width: 100%; min-height: 44px; }
-.report-form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+/*
+  Khối tải tay tệp bổ sung — khối TRONG LUỒNG, không phải hộp thoại; lý do ghi
+  ở đầu `components/TaiTep.tsx`. Bề rộng của ô nhập bị chặn ở 480px: tên tệp
+  ngắn, một ô trải hết cột nội dung chỉ làm mắt chạy dài vô ích.
+*/
+.khoi-tai-tep { display: block; }
+.tai-tep-form { display: grid; gap: 14px; max-width: 480px; padding-top: 12px; }
+/* `align-items: center` để nút giữ đúng cao của nó — nút co giãn theo ô chứa
+   là thứ đã thống nhất bỏ. */
+.tai-tep-nut { display: flex; align-items: center; gap: 10px; }
 /* Nhóm là tiêu đề cấu trúc; các mục bên dưới là đích điều hướng. */
 .side-nav { gap: 0; }
 .nav-section { display: grid; gap: 3px; }
 .nav-section + .nav-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #ffffff2b; }
-.nav-group { display: block; padding: 0 10px 8px; color: var(--on-chrome-3); font-size: 10px; font-weight: 700; line-height: 1.35; letter-spacing: .1em; text-transform: uppercase; }
+/*
+  Nhãn nhóm điều hướng: chữ THƯỜNG, không còn bậc viết hoa nào trong hệ.
+
+  Đây từng là bậc viết hoa duy nhất được giữ lại, với lý do nó ở 10px trên nền
+  navy và là vạch chia cấu trúc chứ không phải chữ để đọc. Nhưng lý do đã bỏ
+  ba bậc kia vẫn đúng với bậc này: chữ hoa mất hình lên xuống của từ, và tiếng
+  Việt còn nặng hơn vì dấu dồn lên một dải chữ vốn đã cao bằng nhau. Giữ đúng
+  một ngoại lệ chỉ để có ngoại lệ thì không đáng.
+
+  Cỡ nhích lên 10.5px và giãn chữ giảm còn .01em: bỏ chữ hoa thì nhãn ngắn lại
+  và nhạt đi, nên nó cần một chút bù để vẫn đọc ra là một tầng riêng.
+*/
+.nav-group { display: block; padding: 0 10px 8px; color: var(--on-chrome-3); font-size: 10.5px; font-weight: 700; line-height: 1.35; letter-spacing: .01em; }
 .nav-section .nav-item { width: 100%; }
 .ql1-nav-items { display: grid; gap: 2px; margin: 3px 0 6px 16px; padding-left: 8px; border-left: 1px solid var(--on-dark-line); }
 .ql1-nav-item { width: 100%; min-height: 34px; display: flex; align-items: center; padding: 4px 8px; border: 1px solid transparent; border-radius: 4px; color: var(--on-chrome-2); background: transparent; font: inherit; font-size: 12px; line-height: 1.35; text-align: left; }
@@ -720,9 +827,6 @@ tbody tr.is-selected { background: var(--selected-surface); }
   .case-list .table-wrap { max-height: none; }
 
 
-  /* Hộp thoại chi tiết ở khổ hẹp cũng theo cùng luật cuộn. */
-  .case-detail-dialog .panel { display: flex; flex-direction: column; max-height: calc(100dvh - 96px); }
-  .case-detail-dialog .panel-body { min-height: 0; overflow: auto; }
 
 }
 
@@ -752,23 +856,22 @@ tbody tr.is-selected { background: var(--selected-surface); }
 }
 
 /*
-  Hai khối đặt CẠNH NHAU phải có đầu khối cao bằng nhau, giống dải `case-layout`.
-  Ở Trang công việc và Hoàn thuế, một khối có nút ở đầu còn khối kia không, nên
-  đầu lệch 5–7px — đủ để mắt thấy hai mép không thẳng khi so hai cột.
+  Hai khối đặt CẠNH NHAU phải có đầu khối VÀ chân khối ngang nhau, giống dải
+  `case-layout`. Ở Trang công việc và Hoàn thuế, một khối có nút ở đầu còn khối
+  kia không, nên đầu lệch 5–7px — đủ để mắt thấy hai mép không thẳng khi so hai
+  cột. `subgrid` giữ hàng đầu khối chung một chiều cao, còn hàng thân nhận phần
+  còn lại nên hai chân cũng thẳng.
+
   Khối xếp DỌC thì không áp: chúng không nằm cạnh nhau để mà so.
 */
 @supports (grid-template-rows: subgrid) {
   @media (min-width: 1181px) {
-    .workbench-grid, .two-column { grid-template-rows: auto minmax(0, 1fr); }
-    .workbench-grid > .panel, .two-column > .panel { grid-row: span 2; display: grid; grid-template-rows: subgrid; }
+    .workbench-grid, .two-column, .tq-doi { grid-template-rows: auto minmax(0, 1fr); }
+    .workbench-grid > .panel, .two-column > .panel, .tq-doi > .panel { grid-row: span 2; display: grid; grid-template-rows: subgrid; }
   }
 }
 
-/*
-  Hộp thoại nhập dùng chung. `.report-form label` là lưới hai dòng nhãn/ô nhập,
-  nhưng hai khối dưới đây là lựa chọn và ô chọn tệp, không phải cặp nhãn/ô, nên
-  chúng khai lại bố cục của mình thay vì thừa hưởng.
-*/
+/* Ô chọn tệp: nhãn trên, vùng chọn dưới. */
 .file-field { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
 .file-field small { color: var(--ink-3); font-weight: 400; }
 .file-pick { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 7px 10px; border: 1px dashed var(--control-line); border-radius: var(--radius-control); background: var(--surface-soft); }
@@ -940,14 +1043,27 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 */
 .bo-loc-chung { position: sticky; top: var(--topbar-h); z-index: 15; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 20px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 3px rgb(22 38 60 / 4%); }
 .bo-loc-muc { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.bo-loc-nhan { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+/*
+  ── Viết hoa toàn bộ: ĐÚNG MỘT bậc trong hệ ───────────────────────────────
+
+  DESIGN.md mục Typography đã chốt điều này từ lâu — "Nav-group … bậc duy nhất
+  viết hoa toàn bộ trong hệ" — nhưng mã có tới bốn chỗ viết hoa: nhãn bộ lọc,
+  nhãn thẻ số, đầu cột so sánh, và nhãn nhóm điều hướng. Ba chỗ đầu bị gỡ.
+
+  Lý do không phải thẩm mỹ. Chữ viết hoa mất hình dáng lên xuống của từ, nên
+  mắt phải đọc từng chữ cái thay vì nhận dạng cả từ; với tiếng Việt còn nặng
+  hơn vì dấu dồn lên trên một dải chữ vốn đã cao bằng nhau. Trên một màn có
+  bốn bậc viết hoa ở bốn cỡ khác nhau, chúng còn cạnh tranh nhau để giành vai
+  "tiêu đề", và người đọc hết manh mối để biết cái nào quản cái nào.
+
+  Nhãn nhóm điều hướng giữ viết hoa vì nó ở 10px trên nền navy, không phải
+  chữ để đọc mà là vạch chia cấu trúc, và nó là bậc duy nhất như thế.
+*/
+.bo-loc-nhan { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .01em; }
 .bo-loc-ky { color: var(--ink-1); font-size: 13px; font-weight: 600; }
 .bo-loc-chon { position: relative; }
 .bo-loc-nut { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); color: var(--ink-1); font-size: 13px; font-weight: 600; cursor: pointer; }
 .bo-loc-nut:hover { border-color: var(--ink-3); }
-/* Màn trong suốt phủ toàn trang: bấm ra ngoài là đóng, và nó là một <button>
-   nên bàn phím cũng có đường thoát không cần Escape. */
-.bo-loc-man { position: fixed; inset: 0; z-index: 1; border: 0; background: transparent; cursor: default; }
 .bo-loc-menu { position: absolute; z-index: 2; top: calc(100% + 6px); left: 0; display: grid; gap: 2px; width: max(240px, 100%); max-height: 320px; overflow-y: auto; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 10px 24px rgb(22 38 60 / 12%); }
 .bo-loc-menu label { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 4px 8px; border-radius: 6px; color: var(--ink-1); font-size: 13px; cursor: pointer; }
 .bo-loc-menu label:hover { background: var(--surface-soft); }
@@ -996,7 +1112,6 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 .ql1-table th.nhom { text-align: center; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); white-space: normal; }
 /* Đáy dòng tiêu đề thứ nhất, đo bằng JS và truyền vào qua biến — xem ghi chú
    `caoDau` trong DebtQL1.tsx. 34px chỉ là giá trị đỡ cho lần dựng đầu. */
-.ql1-table thead tr:nth-child(2) th { top: var(--cao-dau, 34px); }
 .ql1-table th.dv-cot, .ql1-table tbody th { position: sticky; top: auto; left: 0; z-index: 3; background: var(--surface-soft); text-align: left; }
 /* Tên khối dài hơn một dòng thì XUỐNG DÒNG, không tràn sang cột số bên cạnh:
    cột này dính trái nên phần tràn sẽ nằm đè lên dữ liệu khi cuộn ngang. */
@@ -1095,6 +1210,18 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 /* Hai khối cạnh nhau ở khổ rộng, xếp dọc khi hết chỗ. Không khai số cột cứng
    cho thẻ: để `auto-fit` quyết thì bốn thẻ nợ và ba thẻ cưỡng chế dùng chung
    một luật, không phải hai luật phải nuôi riêng. */
+/*
+  Hai khối cạnh nhau CAO BẰNG NHAU, và nội dung lấp đầy chỗ được chia.
+
+  Có lúc đã thử cho mỗi khối cao theo nội dung của chính nó, để khỏi còn dải
+  trống dưới hàng thẻ. Cách ấy đổi một lỗi lấy một lỗi khác: hết dải trống thì
+  hai chân khối so le, và hai thẻ cạnh nhau lệch chân đọc ra như một cái chưa
+  dựng xong.
+
+  Cách đúng là giữ hai khối bằng nhau RỒI cho nội dung giãn theo — dải thẻ cao
+  lên lấp hết phần được chia, chữ trong thẻ vẫn bám mép trên nhờ
+  `align-content: start`. Không còn khoảng trống nào để đọc nhầm.
+*/
 .tq-doi { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
 .the-luoi { display: grid; grid-template-columns: repeat(auto-fit, minmax(196px, 1fr)); gap: 1px; margin-inline: -14px; background: var(--line-soft); }
 .the-luoi.is-hep { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
@@ -1102,7 +1229,7 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 /* Chừa sẵn chỗ cho nhãn hai dòng. Nhãn dài ("Trạng thái 06 chưa tạm hoãn")
    xuống dòng sẽ đẩy con số của riêng thẻ đó xuống, và ba thẻ cạnh nhau mất
    mốc chung — thứ mắt dùng để so chúng với nhau. */
-.the-nhan { display: block; min-height: 2.6em; color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: .02em; line-height: 1.3; text-transform: uppercase; }
+.the-nhan { display: block; min-height: 2.6em; color: var(--ink-3); font-size: 11.5px; font-weight: 700; letter-spacing: .01em; line-height: 1.35; }
 .the-gia { color: var(--ink); font-size: 24px; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .the-dvt { color: var(--ink-3); font-size: 11.5px; }
 .the-moc { display: grid; gap: 3px; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--line-soft); }
@@ -1151,22 +1278,75 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 .duyet-chu strong { color: var(--ink); font-size: 13.5px; font-weight: 650; }
 .duyet-chu span { color: var(--ink-2); font-size: 12.5px; line-height: 1.45; }
 .duyet-vet { display: grid; gap: 2px; min-width: 0; color: var(--ink-3); font-size: 12px; }
-.duyet-tralai { color: var(--critical); font-weight: 600; }
-.duyet-nut { display: flex; align-items: center; gap: 8px; }
+/*
+  Lý do trả lại / điều chỉnh: khối riêng trải hết thanh — xem ghi chú trong
+  `ThanhDuyet.tsx`. `overflow-wrap: anywhere` vì nội dung do người dùng gõ:
+  một mã số thuế hay một đường dẫn dán vào không được đẩy thanh rộng ra.
+
+  Nhãn đỏ, thân chữ mực thường: màu nói đây là một lời từ chối, nhưng 200 ký
+  tự in màu cảnh báo thì đọc mệt và mất luôn nghĩa của màu.
+*/
+.duyet-tralai { grid-column: 1 / -1; display: grid; gap: 3px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 12.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.duyet-tralai strong { color: var(--critical); font-size: 12.5px; font-weight: 650; }
+/*
+  Hai ô: ĐỌC rồi QUYẾT ĐỊNH, cách nhau 20px.
+
+  Khoảng cách giữa hai ô phải rộng hơn khoảng cách trong một ô, nếu không
+  "Xem báo cáo" đọc thành nút thứ nhất của bộ ba cùng loại với "Trả lại" và
+  "Duyệt" — mà xem là đọc, còn hai cái kia là ký.
+
+  `.duyet-hanh-dong` phải tự khai `display: flex`: nó từng là một `<span>`
+  trơn, nên các nút bên trong chỉ cách nhau bằng khoảng trắng của mã nguồn —
+  "Trả lại" và "Duyệt" gần như dính vào nhau.
+*/
+.duyet-nut { display: flex; align-items: center; gap: 20px; }
+.duyet-doc, .duyet-hanh-dong { display: flex; align-items: center; gap: 8px; }
+
+/*
+  Ô lý do trả lại / điều chỉnh, nằm NGAY TRONG thanh duyệt.
+
+  Trải hết ba cột của lưới và ngăn bằng một vạch: nó không phải cột thứ tư
+  đứng cạnh các nút, mà là bước tiếp theo mở ra bên dưới chúng. Người viết lý
+  do vẫn còn nhìn thấy bảng số ở dưới — thứ một hộp thoại phủ lên trang che
+  mất đúng lúc cần nhất.
+*/
+.duyet-lydo { grid-column: 1 / -1; display: grid; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+.duyet-lydo-dan { color: var(--ink-2); font-size: 12.5px; line-height: 1.45; }
+/*
+  Nhãn ô nhập viết THƯỜNG, không viết hoa.
+
+  Chữ hoa nhỏ trong hệ này dành cho nhãn cột và nhãn bộ lọc — thứ mắt lướt
+  qua để định vị. Nhãn của một ô người ta sắp gõ vào thì đọc, không lướt, và
+  chữ hoa làm chậm việc đọc.
+*/
+.duyet-lydo label { display: grid; gap: 6px; max-width: 560px; color: var(--ink-2); font-size: 12.5px; font-weight: 650; }
+/*
+  Ô tự giãn: `rows=1` cho chiều cao mở đầu, JS đặt lại theo `scrollHeight` mỗi
+  lần gõ. `resize: none` vì chiều cao đã do nội dung quyết định — để lại tay
+  nắm kéo là mời người dùng chỉnh một thứ đang tự chỉnh.
+  `field-sizing: content` là bản gốc của trình duyệt cho đúng việc này; chưa
+  đủ nền hỗ trợ nên nó chỉ là lớp lót, phần chắc chắn vẫn là JS.
+*/
+.duyet-lydo textarea { width: 100%; min-height: 36px; max-height: 140px; padding: 8px 9px; resize: none; overflow-y: auto; font: inherit; font-size: 13px; line-height: 1.45; field-sizing: content; }
+/* `align-items: center` để nút giữ đúng cao của nó: mặc định của flex là kéo
+   giãn theo trục ngang, và nút co giãn theo ô chứa là thứ đã thống nhất bỏ. */
+.duyet-lydo-nut { display: flex; align-items: center; gap: 10px; }
+
+/*
+  Nút đang mở ô lý do: sợi dây nhìn thấy được giữa nút vừa bấm và ô vừa hiện
+  ra bên dưới. Không dùng nền thương hiệu đặc — nó sẽ đọc thành nút chính,
+  mà nút này mới chỉ MỞ một ô chứ chưa quyết định gì.
+*/
+.button.is-mo { border-color: var(--brand); color: var(--brand); background: var(--surface-tint); }
+.button.is-mo:hover { background: var(--surface-tint); border-color: var(--brand-strong); }
 
 @media (max-width: 900px) {
   .thanh-duyet { grid-template-columns: minmax(0, 1fr); }
-  .duyet-nut { flex-wrap: wrap; }
-  .duyet-nut .button { flex: 1 1 140px; }
+  .duyet-nut, .duyet-hanh-dong { flex-wrap: wrap; }
+  /* Nút KHÔNG co giãn, kể cả ở khổ hẹp. Một nút rộng ra vì bên cạnh thiếu
+     nút là bố cục đổi theo dữ liệu — xem The Fixed Slots Rule. */
 }
 
-/*
-  Bảng trạng thái báo cáo theo kỳ (MH-03). Cột dấu vết để trống bề rộng để nó
-  hứng phần dư — nó là cột chữ dài nhất và cũng là cột ít cần căn thẳng nhất.
-*/
-.ky-table { min-width: 940px; }
-.ky-table td { white-space: nowrap; }
-.ky-table td small { color: var(--ink-3); font-size: 12px; }
 
 /*
   Mực phụ trong hàng ĐANG CHỌN lùi lên một bậc.
@@ -1186,24 +1366,20 @@ tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
    còn lại là ngày, số và mã nên giữ một dòng. */
 .nguon-table td:last-child { white-space: normal; }
 
-/* Câu "việc đang ở ai" đứng đúng chỗ của các nút, vì nó thay cho chúng. Mực
-   phụ và không viền: nó là lời giải thích, không phải một thứ bấm được. */
-.duyet-cho { color: var(--ink-2); font-size: 12.5px; line-height: 1.45; text-align: right; }
-@media (max-width: 900px) { .duyet-cho { text-align: left; } }
 
 /*
-  Hộp xem trước bộ báo cáo (MH-04). Rộng gần hết khung nhìn vì nội dung là
-  bảng nhiều cột — bóp lại thì người duyệt phải cuộn ngang để đọc thứ họ sắp
-  ký, đúng cái khó mà màn này sinh ra để gỡ.
+  Khối xem trước bộ báo cáo (MH-04) — một KHỐI TRONG LUỒNG trang, nằm ngay
+  dưới thanh duyệt. Lý do bỏ hộp thoại ghi ở đầu `features/XemTruocBaoCao.tsx`.
+
+  Không khai bề rộng và không khai `max-height`. Khối ăn trọn cột nội dung
+  như mọi panel khác, nên bảng nhiều cột đã có chỗ rộng nhất trang mà không
+  cần lớp phủ; và nó cao bao nhiêu thì trang dài bấy nhiêu, cuộn bằng chính
+  thanh cuộn của trang thay vì một vùng cuộn lồng bên trong.
 */
-.xem-truoc { width: min(1180px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 48px); padding: 18px 20px 20px; border: 0; border-radius: var(--radius-panel); background: var(--canvas); overflow: auto; }
-.xem-truoc::backdrop { background: rgb(22 38 60 / 45%); }
-.xt-dau { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
-.xt-dau h2 { font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
-.xt-dau p { display: flex; align-items: center; gap: 8px; margin-top: 4px; color: var(--ink-2); font-size: 12.5px; }
-.xt-dau .case-detail-close { margin: 0; }
-.xt-sheet { margin-top: 14px; padding: 14px 0 2px; border-radius: var(--radius-panel); background: var(--surface); }
-.xt-ten { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 0 14px 10px; }
+.xem-truoc { display: block; margin-top: 14px; scroll-margin-top: 16px; }
+.xem-truoc .panel-body { padding-top: 12px; }
+.xt-ten { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 0 0 10px; }
+.xem-truoc .panel-body > .xt-ten:first-child { margin-top: 0; }
 .xt-ten strong { font-size: 13.5px; font-weight: 650; }
 .xt-ten small { color: var(--ink-3); font-size: 12px; }
 /* Tiêu đề sheet dài (`Tăng giảm so với tuần trước – Số tuyệt đối – Tổng cộng`)
@@ -1216,9 +1392,6 @@ tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
 .xt-bang td.num { white-space: nowrap; }
 .xt-bang tr.is-tong td { background: var(--surface-tint); font-weight: 700; }
 
-@media (max-width: 720px) {
-  .xem-truoc { width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; padding: 14px 12px; }
-}
 
 /*
   ── Sidebar vừa khung, bỏ thanh cuộn ───────────────────────────────────────
@@ -1250,21 +1423,15 @@ tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
      đích thì không màn điện thoại nào chứa hết mà không cuộn. */
   .nav-item { min-height: 44px; }
   .ql1-nav-item { min-height: 44px; }
+  .case-detail-close { min-height: 44px; }
   .nav-section + .nav-section { margin-top: 14px; padding-top: 12px; }
 }
 
 /*
-  Hủy lề âm "tràn viền" bên trong hộp xem trước.
-
-  `.table-shell` mang `margin-inline: -14px` để bảng chạm hẳn mép khối — luật
-  ấy chỉ đúng khi khối cha có đệm ngang 14px, đúng như `.panel-body`. Thẻ
-  `.xt-sheet` đệm ngang bằng 0, nên bảng thò ra ngoài thẻ trắng 14px mỗi bên
-  và số ở cột cuối trông như rơi khỏi bảng.
-
-  Cách sửa là hủy lề âm, không phải thêm đệm cho thẻ: thêm đệm thì tiêu đề
-  sheet và dòng ghi chú — vốn đã có đệm 14px riêng — bị đẩy thành 28px.
+  Bảng xem trước nay nằm thẳng trong `.panel-body`, nơi đệm ngang đúng bằng
+  14px mà `.table-shell` giả định, nên lề âm tràn viền lại khớp và không cần
+  luật hủy riêng. Thẻ `.xt-sheet` của bản hộp thoại đã bỏ cùng hộp thoại.
 */
-.xt-sheet .table-shell { margin-inline: 0; }
 
 @media (max-width: 720px) {
   /*
@@ -1286,3 +1453,232 @@ tbody tr.is-selected :is(small, .cell-empty) { color: var(--ink-2); }
   trông như một câu nội dung chứ không phải chú thích.
 */
 .bang-ghi-chu { margin: 0; max-width: 92ch; color: var(--ink-3); font-size: 12px; line-height: 1.55; }
+
+/*
+  ── QL2 và QL4: tầng chọn báo cáo, khung chờ mẫu, hai bảng mới ─────────────
+
+  Khối này nằm CUỐI tệp vì vài luật dưới đây chỉnh lại luật chung ở trên (nhãn
+  nhóm trong cụm mục, nút phủ cả dòng xếp hạng). Media query không cộng độ ưu
+  tiên, nên thứ tự trong tệp là thứ quyết định — bài học đã trả giá một lần ở
+  khối tràn viền phía trên.
+*/
+
+/* Nhãn nhóm báo cáo trong thanh bên. Nhỏ, mực mờ trên nền navy, và KHÔNG bấm
+   được: nó là tên của một nhóm, không phải một đích đến. */
+.muc-nhom + .muc-nhom { margin-top: 10px; }
+.muc-nhom-nhan { display: flex; align-items: center; gap: 6px; padding: 0 8px 4px; color: var(--on-chrome-3); font-size: 10.5px; font-weight: 700; line-height: 1.35; letter-spacing: .01em; }
+.muc-nhom-nhan em { padding: 1px 5px; border-radius: 3px; color: var(--chrome); background: var(--on-chrome-3); font-size: 9.5px; font-style: normal; letter-spacing: .02em; }
+
+/* Khối "chờ mẫu": hai cột cân nhau vì hai danh sách có cùng trọng lượng —
+   biết gì rồi và thiếu gì là hai nửa của cùng một câu trả lời. */
+.khung { display: grid; gap: 14px; padding-top: 12px; }
+.khung-cot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.khung-cot h3 { margin-bottom: 6px; color: var(--ink); font-size: 12.5px; font-weight: 700; }
+.khung-cot ul { display: grid; gap: 6px; margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 12.5px; line-height: 1.5; }
+.khung-hoi { color: var(--ink-3); font-size: 12px; }
+@media (max-width: 900px) { .khung-cot { grid-template-columns: minmax(0, 1fr); } }
+
+/* Dòng SỐ CỘT của mẫu Excel: mảnh hơn hai dòng tiêu đề trên nó, vì nó là chỉ
+   mục để đối chiếu chứ không phải tên chỉ tiêu. */
+.ql1-table .cot-so th { height: 24px; padding-top: 0; padding-bottom: 4px; color: var(--ink-3); font-size: 10.5px; font-weight: 600; letter-spacing: 0; }
+/* Tiêu đề cột mang ngày chốt ("Số liệu ngày 22/09/2026") xuống dòng riêng. */
+.ql1-table th small { display: block; margin-top: 2px; color: var(--ink-3); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+
+/* Thanh giao phiếu PRS: câu giải thích bên trái, nút bên phải, và nút KHÔNG
+   co giãn — xem The Fixed Slots Rule. */
+.prs-thanh { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 10px 0 12px; color: var(--ink-2); font-size: 12.5px; }
+.bang-chu { padding-top: 10px; color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+
+/* Dòng có cờ kiểm tra: nền cảnh báo rất nhạt, KHÔNG đổi màu chữ. Cờ đã là một
+   chip đọc được; tô đỏ cả dòng thì 200 ký tự trong dòng mất tương phản. */
+tbody tr.is-co td { background: var(--warning-bg); }
+
+/* Thanh xếp chồng theo trạng thái: một thanh, nhiều đoạn, mỗi đoạn một bước.
+   Khe 1px giữa các đoạn để hai bước liền nhau không đọc thành một. */
+.xm-thanh { display: flex; gap: 1px; width: 100%; min-width: 120px; height: 10px; border-radius: 3px; overflow: hidden; background: var(--data-track); }
+.xm-thanh i { display: block; height: 100%; }
+
+/* Hai chỉ tiêu cạnh nhau trên cùng một trục, cộng vạch bình quân. */
+.so-sanh { display: grid; gap: 6px; padding-top: 10px; }
+.so-sanh-dau, .so-sanh-dong { display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 12px; }
+.so-sanh-dau { color: var(--ink-3); font-size: 11.5px; font-weight: 700; letter-spacing: .01em; }
+.so-sanh-ten { min-width: 0; overflow: hidden; color: var(--ink-1); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+.so-sanh-o { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
+.so-sanh-o em { flex: none; width: 7ch; color: var(--ink-2); font-size: 12px; font-style: normal; font-variant-numeric: tabular-nums; text-align: right; }
+/* `overflow: hidden` giữ vạch bình quân ở mép trong khi nó rơi đúng 100%. */
+.so-sanh-thanh { position: relative; flex: 1 1 auto; min-width: 0; height: 8px; border-radius: 4px; background: var(--data-track); overflow: hidden; }
+.so-sanh-thanh i { display: block; height: 100%; border-radius: 4px; background: var(--data); }
+/* Dưới bình quân thì đổi MÀU, và cột số bên cạnh vẫn đọc được — màu không
+   phải kênh duy nhất (G5 của bản QL1, và yêu cầu [R] ở §5.4). */
+.so-sanh-thanh i.is-duoi { background: var(--critical); }
+.so-sanh-thanh b { position: absolute; top: -3px; width: 2px; height: 14px; border-radius: 1px; background: var(--ink-3); transform: translateX(-1px); }
+@media (max-width: 720px) {
+  .so-sanh-dau { display: none; }
+  .so-sanh-dong { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+
+/*
+  Dòng xếp hạng bấm được thì CẢ DÒNG bấm được, không riêng mấy chữ.
+
+  Phần tràn viền do CHÍNH DANH SÁCH gánh, không phải do cái nút. Bản trước cho
+  nút rộng `calc(100% + 20px)` với lề âm hai bên: lề âm bên phải không giữ lại
+  phần thừa, nó chỉ không chiếm chỗ — nên nút thò ra khỏi `<li>` 10px, và chỗ
+  thò ấy đẩy bề rộng cuộn của cả trang ở khổ 390. Cho danh sách lùi ra hai bên
+  rồi nút rộng đúng 100% thì không phần tử nào vượt khỏi cha của nó.
+*/
+.xep-hang:has(.xh-nut) { margin-inline: -10px; }
+.xep-hang li:has(.xh-nut) { display: block; }
+.xh-nut { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; padding: 6px 10px; border: 0; border-radius: var(--radius-chip); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+@media (any-hover: hover) and (any-pointer: fine) { .xh-nut:hover { background: var(--hover-surface); } }
+
+
+/* Vùng bấm của ô tích trải hết chiều cao hàng, không co về 16px của chính ô —
+   The 44px Floor Rule áp cho mọi thứ bấm được, kể cả ô tích trong bảng. */
+.o-chon { position: relative; display: flex; align-items: center; justify-content: center; min-height: 40px; cursor: pointer; }
+/* Ô tích thật: trong suốt, trải hết ô, nên bounding box của CHÍNH nó đạt sàn
+   44px — không phải một ô 17px nằm giữa một vùng bấm 44px mà trình duyệt và
+   chốt kiểm đo ra hai số khác nhau. */
+.o-chon input { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; border: 0; border-radius: 0; background: transparent; opacity: 0; cursor: pointer; }
+.o-chon > span { width: 17px; height: 17px; border: 1px solid var(--control-line); border-radius: 3px; background: var(--surface); }
+.o-chon input:checked + span { border-color: var(--brand); background: var(--brand); }
+.o-chon input:checked + span::after { content: ""; display: block; width: 4px; height: 8px; margin: 2px auto 0; border: solid white; border-width: 0 2px 2px 0; transform: rotate(42deg); }
+.o-chon input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
+tbody tr:has(.o-chon) { cursor: pointer; }
+@media (max-width: 900px) {
+  .o-chon { min-height: 44px; }
+  .xh-nut { min-height: 44px; }
+}
+
+/* ── QL4 ──────────────────────────────────────────────────────────────────
+
+   Ô số bấm được trong bảng tổng hợp: mở danh sách đã lọc (G3). Nó trông như
+   số chứ không như nút — thứ bấm được ở đây là CON SỐ, và viền một nút quanh
+   mỗi ô sẽ biến bảng thành một lưới nút.
+*/
+.o-so { padding: 0; border: 0; background: none; color: var(--brand); font: inherit; font-variant-numeric: tabular-nums; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--brand) 35%, transparent); text-underline-offset: 3px; cursor: pointer; }
+.o-so:hover { text-decoration-color: var(--brand); }
+
+/* Cột kiểm tra tự động của 6.29.1: tích và chéo, kèm màu và `title` — ba kênh
+   chứ không riêng màu, vì bảng này hay được in ra đen trắng. */
+.kt-dat { color: var(--positive); font-weight: 700; }
+.kt-khong { color: var(--critical); font-weight: 700; }
+
+/* Dòng chưa gán đơn vị (G15): nền cảnh báo, và ô tên mang luôn nút gán. */
+tbody tr.is-chua-gan th, tbody tr.is-chua-gan td { background: var(--warning-bg); }
+.chua-gan-ten { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* Ô "đang xử lý · hết hạn": ô duy nhất trong ma trận phiếu cần người làm ngay. */
+td.o-nong { color: var(--critical); font-weight: 700; }
+
+/* Mô tả phiếu: cắt hai dòng trong bảng, mở đầy đủ ở khối dưới bảng. */
+.o-mota { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; padding: 0; border: 0; overflow: hidden; background: none; color: var(--ink); font: inherit; font-size: 12.5px; line-height: 1.4; text-align: left; white-space: normal; cursor: pointer; }
+.ql1-ds-table td:has(.o-mota) { white-space: normal; }
+.mota-day { padding-top: 10px; color: var(--ink); font-size: 13px; line-height: 1.6; }
+
+/* Liên kết dạng chữ trong dòng chú thích dưới bảng. */
+.lien-ket { margin-left: 8px; padding: 0; border: 0; background: none; color: var(--brand); font: inherit; font-size: 12px; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+/* Ô chứa cả chip trạng thái lẫn một câu lý do: cho xuống dòng thay vì cắt —
+   lý do là thứ người đọc cần, không phải phần thừa của ô. */
+.ql1-ds-table td.o-xuong-dong { display: table-cell; white-space: normal; line-height: 1.4; }
+.ql1-ds-table td.o-xuong-dong small { display: block; margin-top: 2px; color: var(--ink-2); font-size: 11.5px; }
+
+/*
+  Nút CHỮ nằm trong ô bảng có sàn chiều cao riêng, ở MỌI khổ.
+
+  Một con số bấm được cao đúng 21px theo dòng chữ của nó thì chuột cũng phải
+  ngắm, không riêng ngón tay — nên sàn là 28px ở khổ trỏ và 44px ở khổ chạm,
+  cùng hai ngưỡng mà lượt soát dùng. Vùng bấm trải hết ô thay vì co về đúng
+  chiều cao chữ.
+*/
+.o-so { display: flex; align-items: center; justify-content: flex-end; width: 100%; min-height: 28px; }
+.o-mota { min-height: 28px; }
+@media (max-width: 900px) {
+  .o-so, .o-mota, .dv-nut { min-height: 44px; }
+}
+
+/*
+  ── Hai lỗi dùng chung, trước đây chỉ QL1 được sửa ────────────────────────
+
+  1. Dải số đặt TRONG một khối thì không mang viền của riêng nó.
+
+  `.kpi-strip` và `.figure-line` tự khai viền, bo góc và nền để đứng một mình
+  ở cấp trang — đúng ở Trang công việc và màn Giám sát. Nhưng đặt một trong hai
+  vào `.panel-body` là dựng một thẻ BÊN TRONG một thẻ: hai đường viền cách nhau
+  14px, và mắt đọc ra hai khối lồng nhau thay vì một khối có mấy ô.
+
+  Luật này viết theo VỊ TRÍ chứ không sửa từng nơi gọi: hễ dải nằm trong thân
+  khối thì nó tràn hết bề ngang và bỏ viền, giống `.the-luoi`. Nơi gọi không
+  phải nhớ gì thêm, và chỗ nào lồng vào sau này cũng tự đúng.
+*/
+.panel-body > .kpi-strip, .panel-body > .figure-line {
+  margin-inline: -14px;
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  border-radius: 0;
+  box-shadow: none;
+}
+@media (max-width: 720px) {
+  .panel-body > .kpi-strip, .panel-body > .figure-line { margin-inline: -12px; }
+}
+
+/*
+  2. Đầu bảng phải nằm TRÊN cột đơn vị dính, không nằm dưới.
+
+  Cột đơn vị dính trái mang `z-index: 3`, còn đầu bảng dính trên chỉ có `2`.
+  Cuộn dọc một bảng dài thì tên đơn vị của các dòng chui lên che mất hàng tiêu
+  đề — đúng thứ ảnh chụp QL3 cho thấy. QL1 không dính lỗi này vì bảng danh sách
+  của nó mang thêm lớp `.co-stt`, và lớp ấy đã nâng cả `thead` lên `5`.
+
+  Sửa ở `.ql1-table` nên nó áp cho cả bốn phân hệ cùng lúc, không phải thêm
+  một lớp cho từng bảng.
+
+  Nguyên nhân THẬT không phải thứ tự chồng mà là ô góc KHÔNG dính trên.
+
+  `.ql1-table th.dv-cot` khai `top: auto`, tức nó chỉ dính TRÁI. Cuộn dọc thì
+  phần còn lại của hàng tiêu đề đứng yên nhờ `th { top: 0 }`, riêng ô góc trôi
+  đi mất — chỗ trống ấy để lộ tên đơn vị của các dòng bên dưới, và trông y như
+  tên đơn vị đang che tiêu đề.
+
+  Cách chữa là cho CẢ `thead` dính thành một khối, rồi trả từng ô về `static`;
+  chỉ hai ô cột đầu giữ `sticky` để dính trái. Đây đúng cách bảng danh sách
+  của QL1 đã làm bằng lớp `.co-stt` — nay áp cho mọi `.ql1-table` nên không
+  phân hệ nào phải tự nhớ thêm một lớp.
+
+  Hệ quả: các luật lùi hàng tiêu đề tầng hai, tầng ba theo `--cao-dau` không
+  còn tác dụng (ô đã `static`), và cũng không cần nữa — cả khối dính cùng nhau.
+*/
+.ql1-table thead { position: sticky; top: 0; z-index: 5; background: var(--surface-soft); }
+.ql1-table thead th { position: static; }
+.ql1-table thead th.dv-cot, .ql1-table thead th.stt-cot { position: sticky; top: auto; left: 0; z-index: 6; }
+
+/* Dải thẻ lấp đầy thân khối khi khối bị kéo cao bằng khối bên cạnh. Chữ vẫn
+   bám mép trên nhờ `.the-so { align-content: start }`, nên thẻ cao hơn mà
+   không có chữ trôi xuống giữa ô. */
+.panel-body > .the-luoi { height: 100%; }
+.panel > .panel-body { min-height: 0; }
+
+/*
+  ── Phiếu rà soát (§6) ────────────────────────────────────────────────────
+
+  Khối điền hàng loạt: bốn ô nhập trên một hàng, nút ở hàng dưới cùng với số
+  dòng đang chọn. Số dòng đứng CẠNH nút chứ không ở đầu khối — người dùng đọc
+  nó ngay trước lúc bấm, không phải lúc bắt đầu chọn.
+*/
+.phieu-dien { display: grid; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.phieu-dien-o { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px 14px; }
+.phieu-dien-o label { display: grid; gap: 6px; color: var(--ink-2); font-size: 12.5px; font-weight: 650; }
+.phieu-dien-o input, .phieu-dien-o select { width: 100%; min-height: 36px; font-size: 13px; font-weight: 400; }
+.phieu-dien-nut { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--ink-2); font-size: 12.5px; }
+@media (max-width: 900px) { .phieu-dien-o input, .phieu-dien-o select { min-height: 44px; } }
+
+/*
+  Cột HỆ THỐNG có nền riêng và không sửa được — G17: "Phân biệt số máy tính
+  với số do người nhập". Trong vòng email cũ, mỗi tệp quay về là một lần phải
+  dò xem đơn vị có sửa nhầm cột nào không; ở đây chúng đơn giản là không sửa
+  được, và nền nói ra điều đó trước khi ai kịp thử.
+*/
+.phieu-bang td.o-he-thong { background: var(--surface-soft); color: var(--ink-2); }
+/* Gợi ý kỳ trước là ĐỀ XUẤT, không phải câu trả lời — nó nhạt hơn và nghiêng,
+   để không ai đọc nhầm thành dòng đã điền. */
+.phieu-goiy { color: var(--ink-3); font-style: italic; }

@@ -40,8 +40,8 @@ export function Badge({ tone = "neutral", children }: { tone?: Tone; children: R
   return <span className={`badge tone-${tone}`}>{children}</span>;
 }
 
-export function Button({ kind = "secondary", icon, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { kind?: "primary" | "secondary" | "quiet"; icon?: IconName }) {
-  return <button className={`button is-${kind}`} {...props}>{icon && <Icon name={icon} size={17}/>}<span>{children}</span></button>;
+export function Button({ kind = "secondary", icon, className, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { kind?: "primary" | "secondary" | "quiet"; icon?: IconName }) {
+  return <button className={`button is-${kind}${className ? ` ${className}` : ""}`} {...props}>{icon && <Icon name={icon} size={17}/>}<span>{children}</span></button>;
 }
 
 /**

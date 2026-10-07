@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { Icon } from "@/components/ui";
+import { createPortal } from "react-dom";
 
 /*
   Chi tiết một bản ghi mở trong THANH TRƯỢT bên phải, ở MỌI khổ màn hình.
@@ -41,27 +42,74 @@ export function useCaseSelection(initialId: string) {
   return { selectedId, setSelectedId, select, mobileOpen, close };
 }
 
-export function CaseLayout({ children, detail, mobileOpen, onClose, label }: {
+export function CaseLayout({ children, detail, mobileOpen, onClose, label, presentation = "inline" }: {
   children: ReactNode;
   detail: ReactNode;
   mobileOpen: boolean;
   onClose: () => void;
   label: string;
+  presentation?: "inline" | "drawer";
 }) {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const khoi = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const modal = dialog.current;
-    if (!modal) return;
-    if (mobileOpen && !modal.open) modal.showModal();
-    else if (!mobileOpen && modal.open) modal.close();
-  }, [mobileOpen]);
+  /*
+    Chi tiết hồ sơ mở ngay DƯỚI bảng, trong luồng trang — không còn là ngăn
+    trượt phủ lên bảng.
+
+    Ngăn trượt che mất chính cái bảng mà người dùng vừa chọn một dòng trong
+    đó, nên muốn so hồ sơ này với dòng kế bên thì phải đóng ra đóng vào. Nó
+    cũng mang đủ ba cái giá đã khiến bản xem trước bỏ hộp thoại (ghi ở đầu
+    `features/XemTruocBaoCao.tsx`): không lọt vào ảnh chụp hay bản bàn giao,
+    dựa vào `<dialog>`/`::backdrop`/bẫy focus của riêng nền web, và không có
+    địa chỉ để trợ lý dẫn tới.
+
+    `tabIndex={-1}` cùng cú `focus()`: khối mới hiện ra ở cuối trang thì người
+    dùng bàn phím và trình đọc màn hình phải được đưa tới đó, vì không có bẫy
+    focus nào làm việc ấy thay nữa. Nút Đóng trả focus về đúng dòng vừa bấm,
+    như cũ.
+  */
+  useEffect(() => { if (mobileOpen && presentation === "inline") khoi.current?.focus(); }, [mobileOpen, presentation]);
 
   return <div className="case-layout">
     <div className="case-list">{children}</div>
-    <dialog ref={dialog} className="case-detail-dialog" aria-label={label} onClose={onClose}>
-      <button type="button" className="case-detail-close" onClick={() => dialog.current?.close()} aria-label="Đóng chi tiết"><Icon name="close" size={20}/></button>
+    {mobileOpen && presentation === "drawer" && <CaseDrawer label={label} onClose={onClose}>{detail}</CaseDrawer>}
+    {mobileOpen && presentation === "inline" && <section
+      ref={khoi}
+      tabIndex={-1}
+      className="case-detail"
+      aria-label={label}
+      onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}
+    >
+      {/* Nút mang NHÃN, không chỉ dấu nhân: khối nay rộng bằng cả cột nội dung,
+          nên một ô vuông 44px đứng một mình ở góc phải đọc thành một dải trống
+          có vết mực, chứ không thành một hàng công cụ. */}
+      <button type="button" className="case-detail-close" onClick={onClose}><Icon name="close" size={16}/><span>Đóng chi tiết</span></button>
       {detail}
-    </dialog>
+    </section>}
   </div>;
+}
+
+function CaseDrawer({ children, label, onClose }: { children: ReactNode; label: string; onClose: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const node = dialog.current;
+    const overflow = document.body.style.overflow;
+    node?.showModal();
+    document.body.style.overflow = "hidden";
+    return () => { node?.close(); document.body.style.overflow = overflow; };
+  }, []);
+  return createPortal(<dialog
+    ref={dialog}
+    className="case-drawer"
+    aria-label={label}
+    onCancel={(event) => { event.preventDefault(); onClose(); }}
+    onClick={(event) => {
+      if (event.target !== event.currentTarget) return;
+      const bounds = event.currentTarget.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose();
+    }}
+  >
+    <header className="case-drawer-heading"><h2>{label}</h2><button autoFocus type="button" className="case-detail-close" onClick={onClose}><Icon name="close" size={16}/><span>Đóng chi tiết</span></button></header>
+    <div className="case-drawer-body">{children}</div>
+  </dialog>, document.body);
 }

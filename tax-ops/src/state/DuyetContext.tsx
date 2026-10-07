@@ -14,8 +14,15 @@ import type { ReportStatus } from "@/domain/types";
   Khóa là `phân hệ + kỳ`: cùng một phòng, hai kỳ khác nhau duyệt độc lập, và
   đổi kỳ ở thanh lọc là thấy ngay kỳ ấy đang ở bước nào.
 
-  Lưu trong `sessionStorage` của tab để hai tài khoản demo đi hết được luồng
-  lập → duyệt mà không cần máy chủ.
+  Lưu trong `localStorage`, KHÔNG phải `sessionStorage`.
+
+  `sessionStorage` chỉ sống trong một tab. Chuyên viên gửi duyệt ở tab này,
+  trợ lý gửi liên kết cho người duyệt, người duyệt mở tab mới — và thấy kỳ ở
+  trạng thái Nháp, không có gì để duyệt. Cả luồng gãy ở đúng chỗ nó cần chạy.
+
+  `localStorage` chỉ là bản vá cho bản demo: nó sống qua mọi tab của CÙNG một
+  máy, không qua hai người. Bản thật phải giữ trạng thái ở máy chủ, vì duyệt
+  là hành vi có hiệu lực và phải có một nguồn sự thật duy nhất.
 */
 
 export interface BanGhiDuyet {
@@ -57,10 +64,10 @@ const dauThoiGian = () => {
 
 export function DuyetProvider({ children, user }: { children: ReactNode; user: DemoUser }) {
   const [kho, setKho] = useState<Kho>(() => {
-    try { return JSON.parse(sessionStorage.getItem(KHOA) ?? "{}") as Kho; } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(KHOA) ?? "{}") as Kho; } catch { return {}; }
   });
   useEffect(() => {
-    try { sessionStorage.setItem(KHOA, JSON.stringify(kho)); } catch { /* phiên riêng tư: luồng vẫn chạy, chỉ không nhớ qua lần tải sau */ }
+    try { localStorage.setItem(KHOA, JSON.stringify(kho)); } catch { /* chế độ riêng tư: luồng vẫn chạy, chỉ không nhớ qua lần tải sau */ }
   }, [kho]);
 
   const current = useRef(kho);

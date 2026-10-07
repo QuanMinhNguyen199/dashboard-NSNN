@@ -3,15 +3,17 @@ import { NSNN_LINK, Shell } from "@/components/Shell";
 import { NAV, navCho } from "@/components/nav";
 import { TaxLogo } from "@/components/TaxLogo";
 import { GiamSat } from "@/features/GiamSat";
-import { Debt } from "@/features/Debt";
-import { Risk } from "@/features/Risk";
+import { DebtQL1 } from "@/features/DebtQL1";
+import { RiskQL3 } from "@/features/RiskQL3";
 import { Workbench } from "@/features/Workbench";
 import { TinhTrangDuLieu } from "@/features/TinhTrangDuLieu";
-import { BaoCaoTheoKy } from "@/features/BaoCaoTheoKy";
 import type { ViewId } from "@/domain/types";
 import { ActionProvider } from "@/state/ActionContext";
-import { DuLieuThatProvider } from "@/state/DuLieuThatContext";
 import { BoLocProvider } from "@/components/BoLoc";
+import { HoaDonQL2 } from "@/features/HoaDonQL2";
+import { HoanQL4 } from "@/features/HoanQL4";
+import { PhieuProvider } from "@/state/PhieuContext";
+import { xoaThamSoMan } from "@/state/diaChi";
 import { DuyetProvider } from "@/state/DuyetContext";
 import { LoginScreen } from "@/auth/LoginScreen";
 import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAuth";
@@ -22,10 +24,40 @@ import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAut
 const views: ViewId[] = NAV.map((item) => item.id);
 const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location.pathname === `${import.meta.env.BASE_URL}nsnn/dang-nhap/`;
 
+/*
+  Phân hệ của từng phòng, để biết "tổng quan của phòng mình" là màn nào.
+*/
+const PHAN_HE_CUA: Record<string, ViewId> = { QL1: "debt", QL2: "hoadon", QL3: "risk", QL4: "hoan" };
+
+/*
+  Trang mặc định sau đăng nhập KHÁC NHAU theo vai — §3 của cả hai bản thiết kế
+  ghi thành một dòng riêng trong ma trận quyền:
+
+    CV QL1, QL3  → "Danh sách việc / dữ liệu kỳ"
+    CV QL2       → "Danh sách việc"
+    CV QL4       → "Báo cáo tổng đài hôm qua"
+    TP mọi phòng → "Tổng quan QL1 / QL2 / QL3 / QL4"
+
+  Trước đây mọi vai đều rơi về Trang công việc. Với trưởng phòng đó là một màn
+  liệt kê việc cần LÀM, trong khi việc của họ là đọc số rồi quyết — nên họ phải
+  bấm thêm một lần ở mọi lần đăng nhập để tới chỗ mình thật sự làm việc.
+*/
+function manMacDinh(user: Pick<DemoUser, "phong" | "vaiTro"> | null): ViewId {
+  if (!user?.phong) return "workbench";
+  const phanHe = PHAN_HE_CUA[user.phong];
+  if (user.vaiTro === "TP") return phanHe ?? "workbench";
+  /* CV QL4 mở thẳng báo cáo tổng đài: nó ra số hằng ngày và có hạn vài giờ
+     (G18), nên nó là việc đầu tiên trong ngày chứ không phải một mục để tìm. */
+  if (user.vaiTro === "CV" && user.phong === "QL4") return "hoan";
+  return "workbench";
+}
+
 function readView(): ViewId {
   const value = new URLSearchParams(window.location.search).get("view");
+  if (value === "risk" && new URLSearchParams(window.location.search).get("muc") === "ketqua") return "tonghopql3";
   if (value === "reports") return readDemoSession()?.phong === "QL3" ? "risk" : "debt";
-  return views.includes(value as ViewId) ? value as ViewId : "workbench";
+  if (views.includes(value as ViewId)) return value as ViewId;
+  return manMacDinh(readDemoSession());
 }
 
 export function App() {
@@ -33,6 +65,10 @@ export function App() {
   const [user, setUser] = useState<DemoUser | null>(readDemoSession);
   const setView = (next: ViewId) => {
     if (next === view) return;
+    /* Tham số của màn cũ không có nghĩa ở màn mới — `muc=cc` của báo cáo nợ
+       mà còn lại ở màn tình trạng dữ liệu thì địa chỉ mô tả một trạng thái
+       không tồn tại. Dọn trước, rồi mới ghi màn mới. */
+    xoaThamSoMan();
     const query = new URLSearchParams(window.location.search);
     query.set("view", next);
     window.history.pushState({}, "", `${window.location.pathname}?${query}`);
@@ -66,13 +102,24 @@ export function App() {
       document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { workbench: "Công việc theo kỳ", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", theoky: "Báo cáo theo kỳ", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
+    const title: Record<ViewId, string> = { workbench: "Công việc theo kỳ", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", tonghopql3: "Kết quả tổng hợp", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
   const login = (next: DemoUser) => {
     writeDemoSession(next);
     setUser(next);
+    /* Đăng nhập xong thì đi thẳng tới trang mặc định của vai, và ghi nó vào
+       địa chỉ — người dùng gửi lại liên kết ấy phải mở ra đúng chỗ họ đang
+       nhìn, không phải chỗ hệ chọn hộ lần sau. */
+    const dau = manMacDinh(next);
+    if (dau !== "workbench") {
+      const q = new URLSearchParams(window.location.search);
+      q.set("view", dau);
+      if (next.vaiTro === "CV" && next.phong === "QL4") q.set("muc", "goi");
+      window.history.replaceState({}, "", `${window.location.pathname}?${q}`);
+      setViewState(dau);
+    }
     if (new URLSearchParams(window.location.search).get("view") === "reports") {
       setViewState(next.phong === "QL3" ? "risk" : "debt");
     }
@@ -99,16 +146,18 @@ export function App() {
 
   const moDuoc = duoc.some((item) => item.id === view) ? view : duoc[0].id;
 
-  return <DuLieuThatProvider><ActionProvider><BoLocProvider><DuyetProvider user={user}>
+  return <ActionProvider><BoLocProvider><DuyetProvider user={user}><PhieuProvider nguoiDung={user.name}>
     <Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
     {moDuoc === "workbench" && <Workbench onNavigate={setView} vaiTro={user.vaiTro} phong={user.phong}/>}
-    {moDuoc === "debt" && <Debt actor={user.name}/>}
-    {moDuoc === "risk" && <Risk actor={user.name}/>}
-    {moDuoc === "theoky" && <BaoCaoTheoKy phong={user.phong} onNavigate={setView}/>}
+    {moDuoc === "debt" && <DebtQL1 actor={user.name}/>}
+    {moDuoc === "risk" && <RiskQL3 actor={user.name}/>}
+    {moDuoc === "tonghopql3" && <RiskQL3 actor={user.name} ketQua/>}
+    {moDuoc === "hoadon" && <HoaDonQL2 actor={user.name} vaiTro={user.vaiTro}/>}
+    {moDuoc === "hoan" && <HoanQL4 actor={user.name} vaiTro={user.vaiTro}/>}
     {moDuoc === "tinhtrang" && <TinhTrangDuLieu vaiTro={user.vaiTro}/>}
     {moDuoc === "giamsat" && <GiamSat/>}
     </Shell>
-  </DuyetProvider></BoLocProvider></ActionProvider></DuLieuThatProvider>;
+  </PhieuProvider></DuyetProvider></BoLocProvider></ActionProvider>;
 }
 
 /*

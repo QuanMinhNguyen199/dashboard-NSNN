@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Badge, Button, Icon, Segmented, TableWrap, money } from "@/components/ui";
-import { statusLabel, type ReportMeta, type ReportSheet, type ReportValue } from "@/domain/reportExport";
+import { Button, Panel, Segmented, TableWrap, money } from "@/components/ui";
+import type { ReportMeta, ReportSheet, ReportValue } from "@/domain/reportExport";
 
 /*
   Xem trước bộ báo cáo sẽ nộp — phần còn thiếu của MH-04.
@@ -14,6 +13,20 @@ import { statusLabel, type ReportMeta, type ReportSheet, type ReportValue } from
   Màn này dựng đúng những sheet mà `reportExport` sẽ ghi ra file, không dựng
   lại từ nguồn khác — nên thứ người duyệt nhìn và thứ được nộp đi là một.
 
+  ── Vì sao KHÔNG phải hộp thoại ─────────────────────────────────────────────
+
+  Bản đầu dùng `<dialog showModal()>`. Ba lý do phải bỏ:
+
+  1. Nội dung trong lớp phủ KHÔNG lọt vào ảnh chụp toàn trang, bản xuất PDF
+     hay bản bàn giao thiết kế. Với một bản mẫu sắp được dựng lại trên nền
+     khác, bản xem trước sẽ đơn giản là vô hình trong mọi bản chụp tĩnh.
+  2. `<dialog>`, `::backdrop`, bẫy focus và `z-index` là giả định về nền web.
+     Một khối trong luồng trang thì nền nào dựng được `div` là chạy được.
+  3. Hộp thoại không có địa chỉ. Trợ lý không thể gửi một liên kết mở thẳng
+     bản xem trước ở đúng sheet cần bàn.
+
+  Nên nó là một khối trong luồng trang, mở bằng `?xem=<tên sheet>`.
+
   Chỉ hiện SỐ DÒNG ĐẦU của mỗi sheet: danh sách chi tiết tới vài nghìn dòng,
   và người duyệt đọc số tổng hợp chứ không đọc từng người nộp thuế. Bảng đầy
   đủ nằm trong file kết xuất.
@@ -24,23 +37,17 @@ const MOI_SHEET = 12;
 /*
   Bề rộng từng cột tính từ NỘI DUNG của chính cột đó.
 
-  Bản trước khai theo VỊ TRÍ — cột 1 là số thứ tự 60px, cột 2 là tên đơn vị
-  230px, còn lại chia đều. Giả định ấy chỉ đúng với một sheet duy nhất. Tám
-  sheet kia có hình dạng khác: `QuyTac_Nguon` cột đầu là "Nội dung" bị bóp còn
-  60px; `Bao_cao_tong_hop` mở đầu bằng "Phòng/Thuế cơ sở" cũng 60px; các sheet
-  danh sách thì cột 2 là mã số thuế, không phải tên.
-
-  Mười sheet là mười hình dạng, nên không có công thức theo vị trí nào đúng cả
-  — phải đo chữ thật trong cột.
+  Khai theo VỊ TRÍ — cột 1 là số thứ tự, cột 2 là tên đơn vị — chỉ đúng với
+  một sheet duy nhất. `QuyTac_Nguon` mở đầu bằng "Nội dung", `Bao_cao_tong_hop`
+  bằng "Phòng/Thuế cơ sở", các sheet danh sách thì cột 2 là mã số thuế. Mười
+  sheet là mười hình dạng, nên phải đo chữ thật trong cột.
 */
 const PX_MOI_CHU = 7.4;
 
 /*
-  Chuỗi sẽ HIỆN trong ô. Đo bề rộng và vẽ ô đều gọi hàm này.
-
-  Lần trước tôi đo độ dài của số THÔ (`3026500000`, 10 ký tự) nhưng màn vẽ ra
-  số đã chấm nghìn (`3.026.500.000`, 13 ký tự), nên mọi cột tiền hụt đúng phần
-  dấu chấm. Một hàm dùng chung thì cái sai ấy không quay lại được.
+  Chuỗi sẽ HIỆN trong ô. Đo bề rộng và vẽ ô đều gọi hàm này — đo số thô
+  (`3026500000`) rồi vẽ số đã chấm nghìn (`3.026.500.000`) là cách mọi cột
+  tiền hụt đúng phần dấu chấm.
 */
 const chuTrongO = (v: ReportValue, laPhanTram: boolean) => {
   if (v === null || v === undefined || v === "") return "—";
@@ -67,58 +74,70 @@ const oGiaTri = (v: ReportValue, laPhanTram: boolean) => {
   return String(v);
 };
 
-export function XemTruocBaoCao({ sheets, meta, ten }: { sheets: ReportSheet[]; meta: ReportMeta; ten: string }) {
-  const hop = useRef<HTMLDialogElement>(null);
-  const [chon, setChon] = useState(0);
+/*
+  Nút gạt, đặt trong thanh duyệt cạnh nút Duyệt.
 
-  /* Đổi kỳ hoặc đổi phạm vi lọc thì bộ sheet đổi theo; quay về sheet đầu để
-     không trỏ vào một sheet không còn tồn tại. */
-  useEffect(() => { setChon(0); }, [sheets.length, meta.period, meta.scope]);
+  Nhãn là "Xem báo cáo", không phải "Xem trước báo cáo". Chữ "trước" chỉ có
+  nghĩa khi có một cái "sau" — bản nộp đi khác bản đang nhìn. Ở đây không có:
+  khối này dựng đúng những sheet mà `reportExport` ghi ra file. Giữ chữ ấy là
+  hứa với người duyệt rằng thứ họ đang đọc chưa phải bản thật.
+*/
+export function NutXemTruoc({ mo, onToggle }: { mo: boolean; onToggle: () => void }) {
+  return <Button icon={mo ? "close" : "search"} aria-expanded={mo} aria-controls="khoi-xem-truoc" onClick={onToggle}>
+    {mo ? "Đóng báo cáo" : "Xem báo cáo"}
+  </Button>;
+}
 
-  const s = sheets[Math.min(chon, sheets.length - 1)];
-  const phanTram = new Set(s?.percent ?? []);
-  const dam = new Set(s?.bold ?? []);
+export function KhoiXemTruoc({ sheets, meta, ten, sheet, onChonSheet }: {
+  sheets: ReportSheet[];
+  meta: ReportMeta;
+  ten: string;
+  /** Tên sheet đang xem; không khớp cái nào thì rơi về sheet đầu. */
+  sheet: string;
+  onChonSheet: (ten: string) => void;
+}) {
+  const i = Math.max(0, sheets.findIndex((x) => x.name === sheet));
+  const s = sheets[i];
+  if (!s) return null;
 
+  const phanTram = new Set(s.percent ?? []);
+  const dam = new Set(s.bold ?? []);
   /* Đo trên đúng những dòng được dựng ra, không đo cả sheet: bảng chỉ cần vừa
      thứ nó đang hiện, và danh sách chi tiết có tới hàng nghìn dòng. */
-  const hienThi = s ? s.rows.slice(0, MOI_SHEET) : [];
-  const rong = s ? s.headers.map((h, i) => rongCot(h, hienThi.map((r) => r[i]), phanTram.has(i))) : [];
+  const hienThi = s.rows.slice(0, MOI_SHEET);
+  const rong = s.headers.map((h, j) => rongCot(h, hienThi.map((r) => r[j]), phanTram.has(j)));
 
-  return <>
-    <Button icon="search" onClick={() => hop.current?.showModal()}>Xem trước báo cáo</Button>
-
-    <dialog ref={hop} className="xem-truoc" aria-labelledby="xem-truoc-title">
-      <header className="xt-dau">
-        <div>
-          <h2 id="xem-truoc-title">{ten}</h2>
-          <p>{meta.period} · {meta.scope} · <Badge tone={meta.status === "APPROVED" ? "positive" : "neutral"}>{statusLabel[meta.status]}</Badge></p>
-        </div>
-        <button type="button" className="case-detail-close" onClick={() => hop.current?.close()} aria-label="Đóng xem trước"><Icon name="close" size={20}/></button>
-      </header>
-
+  return <section id="khoi-xem-truoc" className="xem-truoc" aria-label={ten}>
+    <Panel
+      title={ten}
+      subtitle={`${meta.period} · ${meta.scope}`}
+      /* Không nút đóng và không chip trạng thái ở đây. Cả hai đã có trên
+         thanh duyệt cách đó một trăm pixel: nút gạt "Đóng xem trước", và chip
+         trạng thái của chính kỳ này. Nhắc lại chúng buộc người đọc dừng lại
+         hỏi hai chỗ có nói cùng một thứ không. */
+    >
       {sheets.length > 1 && <Segmented
         label="Sheet trong bộ báo cáo"
-        value={String(Math.min(chon, sheets.length - 1))}
-        onChange={(v) => setChon(Number(v))}
-        options={sheets.map((x, i) => ({ value: String(i), label: x.name }))}
+        value={s.name}
+        onChange={onChonSheet}
+        options={sheets.map((x) => ({ value: x.name, label: x.name }))}
       />}
 
-      {s && <section className="xt-sheet">
-        <div className="xt-ten">
-          <strong>{s.title}</strong>
-          {s.unit && <small>{s.unit}</small>}
-        </div>
-        <TableWrap label={`xem trước sheet ${s.name}`}><table
-          className="xt-bang"
-          style={{ minWidth: rong.reduce((t, x) => t + x, 0) }}
-        >
-          <colgroup>{rong.map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
-          <thead><tr>{s.headers.map((h, i) => <th key={i} scope="col">{h}</th>)}</tr></thead>
-          <tbody>{hienThi.map((r, i) => <tr key={i} className={dam.has(i) ? "is-tong" : undefined}>
-            {r.map((v, j) => <td key={j} className={typeof v === "number" ? "num" : undefined}>{oGiaTri(v, phanTram.has(j))}</td>)}
-          </tr>)}</tbody>
-        </table></TableWrap>
-      </section>}
-    </dialog>
-  </>;
+      <div className="xt-ten">
+        <strong>{s.title}</strong>
+        {s.unit && <small>{s.unit}</small>}
+      </div>
+
+      <TableWrap label={`sheet ${s.name}`}><table
+        className="xt-bang"
+        style={{ minWidth: rong.reduce((t, x) => t + x, 0) }}
+      >
+        <colgroup>{rong.map((w, j) => <col key={j} style={{ width: w }}/>)}</colgroup>
+        <thead><tr>{s.headers.map((h, j) => <th key={j} scope="col">{h}</th>)}</tr></thead>
+        <tbody>{hienThi.map((r, j) => <tr key={j} className={dam.has(j) ? "is-tong" : undefined}>
+          {r.map((v, k) => <td key={k} className={typeof v === "number" ? "num" : undefined}>{oGiaTri(v, phanTram.has(k))}</td>)}
+        </tr>)}</tbody>
+      </table></TableWrap>
+    </Panel>
+  </section>;
 }

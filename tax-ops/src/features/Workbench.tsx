@@ -34,7 +34,6 @@ export function Workbench({ onNavigate, vaiTro, phong }: { onNavigate: (view: Vi
       { label: "Việc cần xử lý", value: tasks.length, tone: "warning" },
       { label: "Báo cáo chờ duyệt", value: pending, tone: "info" },
       { label: "Nguồn dữ liệu còn thiếu", value: chuaDu.length, tone: "critical" },
-      { label: "NNT chưa xác định đơn vị quản lý", value: 18, tone: "warning", onSelect: vaiTro === "CV" ? () => onNavigate("tinhtrang") : undefined },
     ]}/>
 
     <div className="workbench-grid">

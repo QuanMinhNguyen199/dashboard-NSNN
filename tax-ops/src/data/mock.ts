@@ -1,5 +1,5 @@
 import type {
-  DataRun, DebtRow, MappingIssue, RefundRow, ReportRun, RiskRow, SourceBatch, WorkItem } from "@/domain/types";
+  DataRun, DebtRow, RefundRow, ReportRun, RiskRow, SourceBatch, WorkItem } from "@/domain/types";
 
 export const DATA_AS_OF = "27/09/2026 – 18:00";
 
@@ -31,13 +31,6 @@ export const sourceBatches: SourceBatch[] = [
      nhưng không tồn tại là bịa ra một đường dữ liệu, không phải dựng giao diện. */
   { id: "XMHD-2026-09", source: "XMHĐ", period: "Tháng 9/2026", received: 12, expected: 12, rows: 96_120, quality: 99.1, status: "READY", updatedAt: "27/09 – 17:05" },
   { id: "TMS-NO-2026-08", source: "TMS", period: "Tháng 8/2026", received: 18, expected: 21, rows: 54_907, quality: 86.3, status: "PROCESSING", updatedAt: "27/09 – 18:11" },
-];
-
-export const mappingIssues: MappingIssue[] = [
-  { id: "m1", maskedTaxId: "0108•••219", taxpayer: "Doanh nghiệp mô phỏng 0219", currentUnit: null, suggestedUnit: "Phòng QLDN1", reason: "MST có trong danh bạ, chưa có phân công hiệu lực" },
-  { id: "m2", maskedTaxId: "0110•••846", taxpayer: "Doanh nghiệp mô phỏng 0846", currentUnit: "Thuế cơ sở 8", suggestedUnit: "Phòng QLDN3", reason: "Hai nguồn trả về đơn vị quản lý khác nhau" },
-  { id: "m3", maskedTaxId: "0102•••104", taxpayer: "Doanh nghiệp mô phỏng 1104", currentUnit: null, suggestedUnit: null, reason: "Thiếu mã số thuế trên một dòng nguồn" },
-  { id: "m4", maskedTaxId: "0107•••532", taxpayer: "Doanh nghiệp mô phỏng 2532", currentUnit: "Thuế cơ sở 12", suggestedUnit: "Thuế cơ sở 17", reason: "Phân công thay đổi trong kỳ báo cáo" },
 ];
 
 export const debtRows: DebtRow[] = [

@@ -11,11 +11,12 @@
     DINH      — cột dính để lọt nội dung chạy phía dưới
     CHAM      — vùng chạm dưới ngưỡng
     TUONGPHAN — chữ trên nền không đủ tương phản
+    CAO       — hai khối cạnh nhau lệch chân
 */
 import puppeteer from "puppeteer-core";
 
 const base = (process.argv[2] ?? "http://127.0.0.1:5174").replace(/\/+$/, "");
-const TAI_KHOAN = ["cv.ql1", "tp.ql1", "cv.ql3", "tp.ql3", "vanhanh.dulieu"];
+const TAI_KHOAN = ["cv.ql1", "tp.ql1", "cv.ql2", "tp.ql2", "cv.ql3", "tp.ql3", "cv.ql4", "tp.ql4", "vanhanh.dulieu"];
 const KHO = [{ w: 1512, h: 1000, m: false }, { w: 1280, h: 900, m: false }, { w: 390, h: 844, m: true }];
 
 const phat = [];
@@ -44,7 +45,7 @@ async function dangNhap(ma) {
   đầu, phần còn lại nằm trong ngăn kéo — bấm theo tên sẽ im lặng không đổi màn
   và lượt soát báo cùng một lỗi ba lần cho ba màn khác nhau.
 */
-const MAN = ["workbench", "debt", "risk", "theoky", "tinhtrang", "giamsat"];
+const MAN = ["workbench", "debt", "tonghopql3", "hoadon", "risk", "hoan", "tinhtrang", "phieu", "giamsat"];
 
 /* Danh sách mục con của màn đang mở, để soát cả những tab không mở sẵn. */
 const mucCua = () => page.evaluate(() =>
@@ -78,7 +79,7 @@ async function soatMan(nhan, kho) {
       }
       return 1;
     };
-    const ra = { tran: false, oTran: [], cham: [], dinh: [], tuongPhan: [] };
+    const ra = { tran: false, oTran: [], cham: [], dinh: [], tuongPhan: [], cao: [] };
     const doc = document.documentElement;
     ra.tran = doc.scrollWidth > doc.clientWidth + 1;
 
@@ -140,7 +141,7 @@ async function soatMan(nhan, kho) {
             hướng đáy, măng sét) và một ô DÍNH KHÁC — dòng tiêu đề dính che
             hàng đang cuộn qua nó là đúng việc của nó, không phải lỗi.
           */
-          const laPhu = tren?.closest(".mobile-nav, .nav-scrim, .topbar, dialog");
+          const laPhu = tren?.closest(".mobile-nav, .nav-scrim, .topbar");
           const oTren = tren?.closest("th, td");
           const laDinhKhac = oTren && getComputedStyle(oTren).position === "sticky";
           if (tren && !laPhu && !laDinhKhac && !el.contains(tren) && tren !== el) {
@@ -150,6 +151,34 @@ async function soatMan(nhan, kho) {
         }
       }
       void o1;
+    }
+
+    /*
+      Hai khối đặt CẠNH NHAU phải thẳng chân.
+
+      Lệch chân từng được "sửa" bằng cách cho mỗi khối cao theo nội dung của
+      chính nó — cách ấy đổi một lỗi lấy một lỗi khác, và lỗi mới chỉ nhìn mắt
+      mới thấy. Nên nó có phép đo riêng: gom các khối cùng mép trên thành một
+      hàng, rồi so mép dưới.
+    */
+    for (const lu of document.querySelectorAll(".tq-doi, .two-column, .workbench-grid")) {
+      const hang = new Map();
+      for (const c of lu.children) {
+        const r = c.getBoundingClientRect();
+        if (r.height <= 0) continue;
+        const khoa = Math.round(r.top / 4);
+        if (!hang.has(khoa)) hang.set(khoa, []);
+        hang.get(khoa).push({ c, r });
+      }
+      for (const nhom of hang.values()) {
+        if (nhom.length < 2) continue;
+        const day = nhom.map((x) => x.r.bottom);
+        const d = Math.round(Math.max(...day) - Math.min(...day));
+        if (d > 2) {
+          const ten = nhom.map((x) => (x.c.querySelector(".panel-head h2")?.textContent ?? "?").trim().slice(0, 18));
+          ra.cao.push(`lệch chân ${d}px: ${ten.join(" | ")}`);
+        }
+      }
     }
 
     /* Vùng chạm. */
@@ -188,6 +217,7 @@ async function soatMan(nhan, kho) {
   for (const x of [...new Set(ket.dinh)].slice(0, 4)) bao("DINH", cho, x);
   for (const x of [...new Set(ket.cham)].slice(0, 4)) bao("CHAM", cho, x);
   for (const x of [...new Set(ket.tuongPhan)].slice(0, 6)) bao("TUONGPHAN", cho, x);
+  for (const x of [...new Set(ket.cao)].slice(0, 4)) bao("CAO", cho, x);
 }
 
 for (const tk of TAI_KHOAN) {
@@ -223,7 +253,7 @@ await browser.close();
 
 const nhom = {};
 for (const p of phat) (nhom[p.loai] ??= []).push(p);
-for (const loai of ["TRAN", "DINH", "CHAM", "TUONGPHAN"]) {
+for (const loai of ["TRAN", "DINH", "CHAM", "TUONGPHAN", "CAO"]) {
   const ds = nhom[loai] ?? [];
   console.log(`\n### ${loai} — ${ds.length} phát hiện`);
   const gon = new Map();
