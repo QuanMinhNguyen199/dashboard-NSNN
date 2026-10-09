@@ -154,6 +154,34 @@ async function soatChuHoa(nhan) {
     .filter((x, i, a) => a.indexOf(x) === i)
     .slice(0, 5));
   if (pham.length) throw new Error(`${nhan}: còn bậc viết hoa — ${JSON.stringify(pham)}`);
+
+  /*
+    Chữ hoa GÕ CỨNG cũng là bậc viết hoa, và `text-transform` không bắt được.
+
+    Ngưỡng là BA TỪ trở lên. Mã định danh của ngành đều viết hoa và đều là
+    một "từ" — `PRS-05/2621`, `XM/07208`, `R-0906`, `01/GTGT`, `(AC)` — nên
+    đếm theo số từ tách được mã khỏi nhãn mà không cần nuôi một danh sách
+    viết tắt, thứ sẽ lạc hậu ngay khi thêm một nguồn dữ liệu mới. Một nhãn
+    như "TỶ LỆ ĐÃ CƯỠNG CHẾ" có bốn từ và rơi vào lưới này.
+  */
+  const goCung = await page.evaluate(() => {
+    const ra = [];
+    const di = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = di.nextNode(); n; n = di.nextNode()) {
+      const t = (n.textContent ?? "").trim();
+      /* Chỉ đếm TỪ CHỮ (từ hai chữ cái trở lên). Không thế thì "39,45% ·
+         THXC 47,45%" đếm ra bốn từ, trong khi nó là ba con số và một mã. */
+      if ((t.match(/\p{L}{2,}/gu) ?? []).length < 3) continue;
+      if (t !== t.toLocaleUpperCase("vi") || t === t.toLocaleLowerCase("vi")) continue;
+      const el = n.parentElement;
+      if (!el || el.closest(".sr-only")) continue;
+      const k = getComputedStyle(el);
+      if (k.display === "none" || k.visibility === "hidden") continue;
+      ra.push(t.slice(0, 48));
+    }
+    return [...new Set(ra)].slice(0, 4);
+  });
+  if (goCung.length) throw new Error(`${nhan}: còn chữ hoa gõ cứng — ${JSON.stringify(goCung)}`);
 }
 
 async function soatTrucDoc(nhan) {
@@ -168,11 +196,26 @@ async function soatTrucDoc(nhan) {
       duyet: thu(".thanh-duyet"),
       loc: thu(".bo-loc-chung"),
       mucTrenTrang: Boolean(document.querySelector('.page-stack [aria-label^="Mục "]')),
-      mucTrongBen: Boolean(document.querySelector('.sidebar [aria-label^="Mục "]')),
+      /*
+        Mục của phân hệ phải TỚI ĐƯỢC từ thanh bên. Hai hình dạng hợp lệ:
+
+        • Phân hệ một báo cáo (QL3): một cụm `[aria-label^="Mục "]` nằm dưới
+          tên phân hệ.
+        • Phân hệ nhiều báo cáo (QL1, QL2, QL4): từng báo cáo là một mục cấp
+          ngoài trong cụm Phân hệ, và cụm mục con chỉ hiện khi báo cáo đang
+          mở — xem The Report Is The Tab Rule. Ở mục lá thì không có cụm con
+          nào, nên đếm cụm là đếm nhầm.
+      */
+      mucTrongBen: (() => {
+        if (document.querySelector('.sidebar [aria-label^="Mục "]')) return true;
+        const cum = [...document.querySelectorAll(".sidebar .nav-section")]
+          .find((sec) => sec.querySelector(".nav-group")?.textContent?.trim() === "Phân hệ");
+        return [...(cum?.children ?? [])].filter((c) => c.tagName === "BUTTON").length >= 2;
+      })(),
     };
   });
   if (d.mucTrenTrang) throw new Error(`${nhan}: cụm mục của phân hệ đang nằm trên trang, đáng lẽ trong thanh bên.`);
-  if (!d.mucTrongBen) throw new Error(`${nhan}: không thấy cụm mục trong thanh bên.`);
+  if (!d.mucTrongBen) throw new Error(`${nhan}: mục của phân hệ không tới được từ thanh bên.`);
   if (d.duyet !== -1 && d.loc !== -1 && d.duyet > d.loc) {
     throw new Error(`${nhan}: thanh duyệt đứng SAU thanh lọc — xem The Same Spine Rule.`);
   }
@@ -223,17 +266,19 @@ async function inspect(width, height, mobile, views) {
       vào `PageIntro` là một dòng.
     */
     /*
-      Nút xuất CẢ BỘ báo cáo chỉ được nằm TRONG khối xem báo cáo.
-
-      Phạm vi mã hóa bằng vị trí: cả bộ ở khối xem trước · một bảng ở đầu khối
-      của bảng ấy · danh sách đang lọc ở chân khối ấy. Bản trước đặt nút cả bộ
-      vào đầu khối chính, nên ở màn KPI nó đứng cạnh "Lưu KPI đã nhập" — hai
-      nút cùng hàng mà khác phạm vi.
+      Nút xuất CẢ BỘ báo cáo nằm trong ĐẦU KHỐI CHỨA BẢNG, cạnh bộ lọc của
+      chính khối ấy — không đứng lẻ, không ở chân bảng, không ở thanh lọc
+      chung. Mỗi màn có nhiều nhất MỘT chỗ đặt nó: cùng một việc ở hai nơi
+      thì người dùng phải dừng lại hỏi hai nút có khác nhau không.
     */
     const xuatLacCho = await page.evaluate(() => [...document.querySelectorAll("button")]
-      .filter((b) => /^Xuất (Excel|Word)$/.test(b.textContent.trim()) && !b.closest(".xem-truoc"))
+      .filter((b) => /^Xuất (Excel|Word)$/.test(b.textContent.trim()) && !b.closest(".panel-head"))
       .map((b) => b.textContent.trim()));
-    if (xuatLacCho.length) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: nút ${JSON.stringify(xuatLacCho)} nằm ngoài khối xem báo cáo.`);
+    if (xuatLacCho.length) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: nút ${JSON.stringify(xuatLacCho)} không nằm trong đầu khối.`);
+    const soKhoiXuat = await page.evaluate(() => new Set([...document.querySelectorAll(".panel-head button")]
+      .filter((b) => /^Xuất (Excel|Word)$/.test(b.textContent.trim()))
+      .map((b) => b.closest(".panel"))).size);
+    if (soKhoiXuat > 1) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: nút xuất xuất hiện ở ${soKhoiXuat} khối khác nhau.`);
 
     const hangNutLe = await page.evaluate(() => document.querySelectorAll(".page-actions").length);
     if (hangNutLe) throw new Error(`${mobile ? "mobile" : "desktop"}/${view}: còn ${hangNutLe} hàng nút lẻ ở đầu trang — nút cấp báo cáo phải nằm trong đầu khối chính.`);
@@ -279,54 +324,207 @@ async function chanCheoPhong(view, nhan) {
   thay vì bị một phép kiểm lỏng tay cho qua.
 */
 await inspect(1440, 1000, false, MAN_QL1);
+/*
+  BẢNG GỌN CỘNG NGĂN TRƯỢT — luật chung của mọi danh sách hồ sơ.
+
+  Sáu danh sách của bốn phòng từng bày đủ mọi cột của nguồn: 1.510px tới
+  2.304px trong khung 1.146px, tức phải kéo ngang hai ba lần cho mỗi dòng.
+  Nay mỗi bảng giữ những cột đủ để CHỌN, phần còn lại đọc trong ngăn trượt.
+
+  Ba điều kiểm cho từng màn, và cả ba từng sai ở đâu đó:
+
+  • Bảng vừa khung ở khổ 1440 — không còn cuộn ngang.
+  • Bấm một dòng mở ngăn trượt, ngăn ra sát mép phải, và nó mang ĐỦ những cột
+    bảng đã bỏ. Bỏ cột mà không có chỗ đọc lại là giấu số, không phải thu gọn.
+  • Địa chỉ mang hồ sơ đang mở, nên gửi được liên kết tới đúng hồ sơ đang bàn.
+*/
 {
-  /* Mục này thuộc QL4 nên phải đổi tài khoản; đổi lại ngay sau đó để phần
-     còn lại của chốt kiểm chạy tiếp trên QL1 như cũ. */
-  await dangXuat(page);
-  await dangNhap(page, "cv.ql4");
-  await page.goto(`${base}/?view=hoan&muc=dsphieu`, { waitUntil: "networkidle0" });
-  await page.waitForSelector(".ql1-ds-table .o-mota");
-  if (await page.$(".case-detail") !== null) throw new Error("Danh sách phiếu: khối chi tiết hiện sẵn khi chưa ai bấm hàng nào.");
+  const BANG_GON = [
+    { tk: "cv.ql2", view: "hoadon&muc=xmqh", khoa: "so", cot: ["Số hóa đơn", "Trạng thái", "Ngày quá hạn"], ngan: ["Ngày gửi", "Hạn xử lý", "MST bên bán", "Tên bên bán"] },
+    { tk: "cv.ql4", view: "hoan&muc=dsphieu", khoa: "so", cot: ["ID", "Chủ đề", "Tiến độ"], ngan: ["Phân loại", "Chuyên viên tiếp nhận", "Tạo bởi"] },
+    { tk: "cv.ql4", view: "hoan&muc=dxvp", khoa: "so", cot: ["Số hồ sơ", "Trạng thái hồ sơ", "Số ngày quá hạn"], ngan: ["Ngày nhận", "Hạn xử lý", "Trạng thái ký điện tử", "Khớp kỳ hoàn"] },
+    { tk: "cv.ql4", view: "hoan&muc=venh", khoa: "so", cot: ["Số hồ sơ", "Loại vênh", "Phiếu PRS-05"], ngan: ["Chiều vênh", "Lý do"] },
+    { tk: "cv.ql1", view: "debt&muc=cc", khoa: "nnt", cot: ["MST", "Tình trạng cưỡng chế"], ngan: ["Số quyết định", "Kết luận", "Ghi chú", "Chương"] },
+    { tk: "cv.ql1", view: "debt&muc=t06", khoa: "nnt", cot: ["MST", "Nhóm xử lý"], ngan: ["Mã CQT", "Ngày tạm hoãn"] },
+  ];
 
-  await page.$eval(".ql1-ds-table tbody tr:nth-child(2) .o-mota", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
-  await page.click(".ql1-ds-table tbody tr:nth-child(2) .o-mota");
-  await page.waitForSelector(".case-detail", { timeout: 5000 });
+  let dangDung = "cv.ql1";
+  for (const m of BANG_GON) {
+    if (m.tk !== dangDung) {
+      await dangXuat(page);
+      await dangNhap(page, m.tk);
+      dangDung = m.tk;
+    }
+    await page.goto(`${base}/?view=${m.view}`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".ql1-ds-table tbody .row-select");
+    if (await page.$("dialog.case-drawer[open]") !== null) throw new Error(`${m.view}: ngăn chi tiết mở sẵn khi chưa ai bấm dòng nào.`);
 
-  const chiTiet = await page.evaluate(() => {
-    const ct = document.querySelector(".case-detail").getBoundingClientRect();
-    /* Đo VÙNG CUỘN chứ không đo thẻ `<table>`: bảng dài hơn vùng chứa nó,
-       nên hộp của chính thẻ bảng thò xuống dưới khối chi tiết và phép so sẽ
-       báo chồng ở chỗ mắt không thấy chồng. */
-    const bang = document.querySelector(".ql1-ds-table").closest(".table-wrap").getBoundingClientRect();
+    const bang = await page.evaluate(() => {
+      const t = document.querySelector(".ql1-ds-table");
+      return {
+        cot: [...t.querySelectorAll("thead tr:last-child th")].map((x) => x.textContent.trim()),
+        tran: t.scrollWidth - t.closest(".table-wrap").clientWidth,
+      };
+    });
+    if (bang.tran > 0) throw new Error(`${m.view}: bảng tràn ${bang.tran}px ở khổ 1440 — bảng gọn phải vừa khung.`);
+    if (bang.cot.length > 7) throw new Error(`${m.view}: bảng còn ${bang.cot.length} cột, bản gọn chỉ giữ tới 7: ${JSON.stringify(bang.cot)}`);
+    for (const c of m.cot) {
+      if (!bang.cot.some((x) => x.startsWith(c))) throw new Error(`${m.view}: bảng thiếu cột "${c}": ${JSON.stringify(bang.cot)}`);
+    }
+
+    await page.evaluate(() => document.querySelector(".ql1-ds-table tbody tr").click());
+    await page.waitForSelector("dialog.case-drawer[open]", { timeout: 5000 });
+    /* Ngăn trượt vào bằng một cú `translateX` 180ms; đo trước khi nó chạy xong
+       thì phép so mép phải báo lệch ở chỗ mắt không thấy lệch. */
+    const ngan = await page.evaluate(async () => {
+      const dlg = document.querySelector("dialog.case-drawer[open]");
+      await Promise.all(dlg.getAnimations().map((a) => a.finished.catch(() => {})));
+      const b = dlg.getBoundingClientRect();
+      return {
+        chamPhai: Math.abs(b.right - window.innerWidth) < 2,
+        nhan: [...dlg.querySelectorAll(".detail-grid dt")].map((x) => x.textContent.trim()),
+        thamSo: Object.fromEntries(new URLSearchParams(location.search)),
+      };
+    });
+    if (!ngan.chamPhai) throw new Error(`${m.view}: ngăn chi tiết không ra sát mép phải.`);
+    if (!ngan.thamSo[m.khoa]) throw new Error(`${m.view}: mở ngăn chi tiết nhưng địa chỉ không mang tham số \`${m.khoa}\`.`);
+    for (const n of m.ngan) {
+      if (!ngan.nhan.some((x) => x.startsWith(n))) throw new Error(`${m.view}: ngăn chi tiết thiếu "${n}" — cột bảng đã bỏ phải có chỗ khác để đọc.`);
+    }
+
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector("dialog.case-drawer[open]"), { timeout: 5000 });
+  }
+
+  /*
+    Xác minh hóa đơn · theo đơn vị: bảng TỔNG HỢP, không phải danh sách hồ sơ,
+    nên nó không có ngăn trượt. Thứ phải kiểm ở đây là cách trình bày.
+
+    Bản trước xếp năm trạng thái theo đúng thứ tự tệp nguồn (10 · 14 · 6 · 7 ·
+    8) rồi để chú thích bên dưới dặn "Tồn = 6 + 7 + 8 + 10", và thêm một cột
+    "Đang kẹt ở bước nào" vẽ thanh năm sắc — một cách đọc KHÔNG có trong tài
+    liệu. Nay bốn trạng thái cộng thành tồn đứng cạnh nhau dưới một tiêu đề
+    nhóm, nên bảng tự nói công thức ấy.
+  */
+  if (dangDung !== "cv.ql2") {
+    await dangXuat(page);
+    await dangNhap(page, "cv.ql2");
+    dangDung = "cv.ql2";
+  }
+  await page.goto(`${base}/?view=hoadon&muc=xm`, { waitUntil: "networkidle0" });
+  await page.waitForSelector(".ql1-table tbody tr");
+  const xm = await page.evaluate(() => {
+    const t = document.querySelector(".ql1-table");
     return {
-      coTieuDe: Boolean(document.querySelector(".case-detail .panel-head h2")),
-      chong: ct.top < bang.bottom - 1,
+      nhom: [...t.querySelectorAll("thead th.nhom")].map((x) => x.textContent.trim()),
+      cot: [...t.querySelectorAll("thead th")].map((x) => x.textContent.trim()),
+      tran: t.scrollWidth - t.closest(".table-wrap").clientWidth,
+      chu: document.querySelector(".ql2-note")?.textContent ?? "",
     };
   });
-  if (!chiTiet.coTieuDe) throw new Error("Khối chi tiết của Danh sách phiếu không có tiêu đề.");
-  if (chiTiet.chong) throw new Error("Khối chi tiết phủ lên bảng — xem The No-Overlay Rule.");
+  if (xm.tran > 0) throw new Error(`Xác minh hóa đơn: bảng tràn ${xm.tran}px ở khổ 1440.`);
+  if (!xm.nhom.includes("Còn tồn")) throw new Error(`Xác minh hóa đơn: bốn trạng thái tồn không còn đứng dưới một tiêu đề nhóm: ${JSON.stringify(xm.nhom)}`);
+  if (xm.cot.some((c) => /Đang kẹt|Grand Total/i.test(c))) throw new Error(`Xác minh hóa đơn: còn cột không có trong tài liệu: ${JSON.stringify(xm.cot)}`);
+  if (/6 \+ 7 \+ 8 \+ 10/.test(xm.chu)) throw new Error("Xác minh hóa đơn: chú thích vẫn phải viết công thức bằng mã trạng thái — tiêu đề nhóm đã nói thay.");
 
-  await page.keyboard.press("Escape");
-  await page.waitForFunction(() => !document.querySelector(".case-detail"), { timeout: 5000 });
+  /*
+    Lọc theo KHỐI. Thanh lọc chung chọn được từng đơn vị nhưng không chọn được
+    cả khối, mà khối Thuế cơ sở có 25 đơn vị — tick đủ 25 ô là một việc khác.
+
+    Dòng tổng phải cộng ĐÚNG phần đang xem: lọc còn một khối mà tổng vẫn là
+    tổng toàn ngành thì mọi phép so dòng-với-tổng trên màn đều sai. Nên phép
+    kiểm là cộng hai khối lại phải bằng tổng chung.
+  */
+  const soKhoi = {};
+  for (const k of ["", "VP", "TCS"]) {
+    await page.goto(`${base}/?view=hoadon&muc=xm${k ? `&khoi=${k}` : ""}`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".ql1-table tbody tr");
+    soKhoi[k || "tatca"] = await page.evaluate(() => {
+      const tr = [...document.querySelectorAll(".ql1-table tbody tr")];
+      const soO = (o) => Number((o?.textContent ?? "0").replace(/\./g, "")) || 0;
+      return { dong: tr.length, nhan: tr[0].querySelector("th").textContent.trim(), tong: soO(tr[0].children[7]) };
+    });
+  }
+  if (soKhoi.VP.dong < 2 || soKhoi.TCS.dong < 2) throw new Error(`Lọc khối không còn dòng nào: ${JSON.stringify(soKhoi)}`);
+  if (soKhoi.VP.dong + soKhoi.TCS.dong !== soKhoi.tatca.dong + 1) {
+    throw new Error(`Hai khối cộng lại không bằng danh sách đầy đủ: ${JSON.stringify(soKhoi)}`);
+  }
+  if (soKhoi.VP.tong + soKhoi.TCS.tong !== soKhoi.tatca.tong) {
+    throw new Error(`Dòng tổng của mỗi khối không cộng thành tổng chung — dòng tổng đang cộng cả phần đã lọc đi: ${JSON.stringify(soKhoi)}`);
+  }
+  if (!/Khối Văn phòng/.test(soKhoi.VP.nhan)) throw new Error(`Lọc còn một khối nhưng dòng tổng vẫn ghi "${soKhoi.VP.nhan}".`);
+
+  /*
+    NHÃN KỲ TUẦN — một cách viết cho cả bốn phòng.
+
+    Bốn báo cáo từng đặt nhãn tuần theo bốn kiểu: "Tuần · nợ đến 31/07/2026",
+    "Tuần 39/2026 · 18/09–24/09", "Tuần 39/2026 · đến 25/09", "Tuần 39/2026".
+    Hai kiểu đầu không nói số tuần, kiểu cuối không nói ngày nào — đổi tab là
+    đổi cách đọc, trong khi kỳ là thứ người dùng kiểm lại mỗi lần mở báo cáo.
+
+    Dạng chuẩn nói đủ hai thứ: `Tuần 39/2026 · 18/09–24/09`. QL1 là ngoại lệ
+    đã ghi trong `data/nhanKy.ts` — ngày chốt của nó không cách nhau bảy ngày
+    nên nhãn nói "nợ đến", không bịa ra một khoảng.
+  */
+  const DANG_TUAN = /^Tuần \d{1,2}\/\d{4} · (\d{2}\/\d{2}–\d{2}\/\d{2}|nợ đến \d{2}\/\d{2})$/;
+  for (const [ma, diaChi] of [
+    ["cv.ql1", "debt&muc=no"],
+    ["cv.ql2", "hoadon&muc=kbc"],
+    ["cv.ql2", "hoadon&muc=xmqh&ky=q204-w39"],
+    ["cv.ql4", "hoan&muc=tuan&ky=q401-w39"],
+    ["cv.ql4", "hoan&muc=goi&ky=q402-w39"],
+  ]) {
+    if (dangDung !== ma) { await dangXuat(page); await dangNhap(page, ma); dangDung = ma; }
+    await page.goto(`${base}/?view=${diaChi}`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".bo-loc-select");
+    const nhan = await page.$$eval(".bo-loc-select option", (o) => o.map((x) => x.textContent.trim()));
+    const tuan = nhan.filter((x) => x.startsWith("Tuần"));
+    if (tuan.length === 0) throw new Error(`${diaChi}: không tìm thấy kỳ tuần nào để kiểm nhãn.`);
+    for (const n of tuan) {
+      if (!DANG_TUAN.test(n)) throw new Error(`${diaChi}: nhãn kỳ tuần "${n}" không theo dạng chuẩn "Tuần 39/2026 · 18/09–24/09".`);
+    }
+  }
 
   await dangXuat(page);
   await dangNhap(page, "cv.ql1");
 }
 
 /* ---- Màn báo cáo nợ QL1: bảy mục, hai tầng tiêu đề, lọc theo kỳ ---- */
+/*
+  Mở một mục của phân hệ trên thanh bên.
+
+  Từ khi QL1 tách theo báo cáo, mục nằm ở HAI tầng: báo cáo là mục cấp ngoài
+  (`.nav-item`), mục con của nó nằm trong cụm `[aria-label^="Mục "]`. Tìm ở
+  cả hai, cụm con trước — tên mục con cụ thể hơn nên khớp chính xác hơn.
+*/
+const bamMuc = (c) => page.evaluate((chu) => {
+  const nut = [...document.querySelectorAll('[aria-label^="Mục "] button'), ...document.querySelectorAll(".side-nav .nav-item")]
+    .find((b) => b.textContent?.includes(chu));
+  if (!nut) return false;
+  nut.click();
+  return true;
+}, c);
+
 const moMuc = async (chu) => {
-  const duoc = await page.evaluate((c) => {
-    const nut = [...document.querySelectorAll('[aria-label^="Mục "] button')]
-      .find((b) => b.textContent?.includes(c));
-    if (!nut) return false;
-    nut.click();
-    return true;
-  }, chu);
-  if (!duoc) throw new Error(`Không tìm thấy mục "${chu}".`);
-  await new Promise((r) => setTimeout(r, 180));
+  if (await bamMuc(chu)) { await new Promise((r) => setTimeout(r, 180)); return; }
+  /* Chưa thấy nghĩa là nó là MỤC CON của một báo cáo đang đóng: mục con chỉ
+     dựng khi báo cáo của nó mở. Mở lần lượt từng báo cáo rồi tìm lại. */
+  const cha = await page.evaluate(() => {
+    const cum = [...document.querySelectorAll(".sidebar .nav-section")]
+      .find((x) => x.querySelector(".nav-group")?.textContent?.trim() === "Phân hệ");
+    return [...(cum?.children ?? [])].filter((c) => c.tagName === "BUTTON").map((c) => c.textContent.trim());
+  });
+  for (const ten of cha) {
+    await bamMuc(ten);
+    await new Promise((r) => setTimeout(r, 160));
+    if (await bamMuc(chu)) { await new Promise((r) => setTimeout(r, 180)); return; }
+  }
+  throw new Error(`Không tìm thấy mục "${chu}" kể cả sau khi mở từng báo cáo (${JSON.stringify(cha)}).`);
 };
 
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+/* Mục Tổng quan KHÔNG thuộc báo cáo nào, nên đi thẳng vào nó: từ khi QL1
+   tách theo báo cáo, mục mặc định của màn không còn là chỗ duy nhất. */
+await page.goto(`${base}/?view=debt&muc=tongquan`, { waitUntil: "networkidle0" });
 
 /* Màn mở ở tab Tổng quan, đúng §4.3: trưởng phòng nhìn một màn là biết nợ
    tăng hay giảm. Bảng chi tiết nằm ở các mục sau. */
@@ -358,13 +556,21 @@ if (nguon.soNguon < 4) throw new Error(`Tab Dữ liệu gốc chỉ liệt kê $
 if (!nguon.coCanhBao) throw new Error("Tab Dữ liệu gốc không cảnh báo lệch ngày chốt hoặc lệch số dòng.");
 if (nguon.loDuongDan) throw new Error("Tab Dữ liệu gốc để lộ đường dẫn thư mục máy cá nhân.");
 
-await moMuc("So sánh nợ");
+await moMuc("Đánh giá nợ");
 await page.waitForSelector(".ql1-table");
 const ql1 = await page.evaluate(() => {
   const dong = [...document.querySelectorAll(".ql1-table thead tr")];
   const goc = document.querySelector(".ql1-table th.dv-cot");
   return {
-    soTab: document.querySelectorAll('[aria-label="Mục của báo cáo nợ"] button, [aria-label="Mục của báo cáo nợ"] option').length,
+    /* QL1 tách theo báo cáo: ba báo cáo và hai mục chung là mục cấp ngoài
+       của cụm Phân hệ, còn "Dữ liệu gốc" xuống cụm Dữ liệu. Đếm một cụm duy
+       nhất như trước là đếm một cấu trúc không còn tồn tại. */
+    mucNgoai: (() => {
+      const cum = [...document.querySelectorAll(".sidebar .nav-section")]
+        .find((x) => x.querySelector(".nav-group")?.textContent?.trim() === "Phân hệ");
+      return [...(cum?.children ?? [])].filter((c) => c.tagName === "BUTTON").map((c) => c.textContent.trim());
+    })(),
+    coDuLieuGoc: [...document.querySelectorAll(".sidebar .nav-item")].some((b) => b.textContent.trim() === "Dữ liệu gốc"),
     soDongDau: dong.length,
     coNhomCot: document.querySelectorAll(".ql1-table th.nhom").length,
     gocDinh: goc ? getComputedStyle(goc).position === "sticky" : false,
@@ -374,7 +580,11 @@ const ql1 = await page.evaluate(() => {
     soDongDs: document.querySelectorAll(".ql1-ds-table tbody tr").length,
   };
 });
-if (ql1.soTab !== 7) throw new Error(`Màn QL1 có ${ql1.soTab} mục, đáng lẽ 7.`);
+const MUC_NGOAI_QL1 = ["Tổng quan", "Đánh giá nợ", "Đánh giá kết quả cưỡng chế", "Tạm hoãn xuất cảnh", "Quy tắc và nguồn"];
+if (JSON.stringify(ql1.mucNgoai) !== JSON.stringify(MUC_NGOAI_QL1)) {
+  throw new Error(`Cụm Phân hệ của QL1 phải là ${JSON.stringify(MUC_NGOAI_QL1)}, đang là ${JSON.stringify(ql1.mucNgoai)}`);
+}
+if (!ql1.coDuLieuGoc) throw new Error("QL1 thiếu mục Dữ liệu gốc ở cụm Dữ liệu.");
 if (ql1.soDongDau !== 2 || !ql1.coNhomCot) throw new Error(`Bảng tổng hợp QL1 chưa có hai tầng tiêu đề: ${JSON.stringify(ql1)}`);
 if (!ql1.gocDinh) throw new Error("Cột đơn vị của bảng tổng hợp QL1 không cố định khi cuộn ngang.");
 if (!ql1.coTong || !ql1.coKhoi) throw new Error(`Bảng tổng hợp QL1 thiếu dòng tổng hoặc dòng khối: ${JSON.stringify(ql1)}`);
@@ -432,7 +642,7 @@ const sauLoc = await page.evaluate(() => ({
 if (sauLoc.soHang >= truocLoc) throw new Error("Bấm một đơn vị trên bảng tổng hợp không thu hẹp được bảng.");
 if (sauLoc.nhanLoc !== tenDonVi) throw new Error(`Bấm đơn vị không cập nhật thanh lọc chung: "${sauLoc.nhanLoc}" ≠ "${tenDonVi}".`);
 /* Lựa chọn phải theo sang mục khác — G1: đổi tab không mất lựa chọn. */
-await page.evaluate(() => [...document.querySelectorAll('[aria-label^="Mục "] button')].find((b) => b.textContent?.includes("Kết quả cưỡng chế"))?.click());
+await moMuc("Đánh giá kết quả cưỡng chế");
 await new Promise((resolve) => setTimeout(resolve, 150));
 const giuQuaTab = await page.$eval(".bo-loc-nut span", (el) => el.textContent.trim());
 if (giuQuaTab !== tenDonVi) throw new Error(`Đổi mục làm mất lựa chọn đơn vị: "${giuQuaTab}" ≠ "${tenDonVi}".`);
@@ -443,28 +653,47 @@ await page.evaluate(() => [...document.querySelectorAll(".bo-loc-chung button")]
   thứ tự. Ba sheet Excel gốc tự chúng xếp khác nhau — sheet cưỡng chế để
   "Phòng/TCS" ở cột 5, sheet trạng thái 06 để nó ở cột 10 — nên bê nguyên lên
   màn là người dùng đổi mục phải dò lại từ đầu xem cột đơn vị nằm đâu.
+
+  Từ khi ba mục xử lý thu gọn bảng, khối định danh chỉ còn BA cột trên bảng;
+  Mã CQT và Loại NNT lùi vào ngăn chi tiết. Luật không đổi, chỗ áp thì có:
+  bảng giữ ba cột đầu giống nhau, còn ngăn chi tiết phải bày ĐỦ cột của mục
+  theo đúng thứ tự chuẩn — kể cả hai cột chữ tự do ở cuối cùng.
 */
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
-const DAU_CHUNG = ["MST", "Tên NNT", "Phòng / Thuế cơ sở", "Mã CQT", "Loại NNT"];
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
+const DAU_CHUNG = ["MST", "Tên NNT", "Phòng / Thuế cơ sở"];
 const dauCotCua = async (chu) => {
   await moMuc(chu);
   await page.waitForSelector(".ql1-ds-table");
   return page.$$eval(".ql1-ds-table thead th", (th) => th.map((x) => x.textContent.trim()));
 };
-for (const chu of ["So sánh nợ", "Kết quả cưỡng chế", "Tạm hoãn xuất cảnh", "trạng thái 06"]) {
+/* Tên mục theo cấu trúc mới: ba báo cáo là mục cấp ngoài, RS-QL1-04 có hai
+   mục con phân biệt bằng "trên ngưỡng nợ" và "trạng thái 06". */
+for (const chu of ["Đánh giá nợ", "Đánh giá kết quả cưỡng chế", "Trên ngưỡng nợ", "Trạng thái 06"]) {
   const cot = await dauCotCua(chu);
   const dau = cot.slice(0, DAU_CHUNG.length);
   if (JSON.stringify(dau) !== JSON.stringify(DAU_CHUNG)) {
     throw new Error(`Mục "${chu}" mở đầu bằng ${JSON.stringify(dau)}, đáng lẽ ${JSON.stringify(DAU_CHUNG)}`);
   }
-  /* Hai cột chữ tự do, khi có, phải ở CUỐI cùng — chúng dài và không căn thẳng
-     được, để giữa bảng là chen vào giữa các cột số. */
-  const iKetLuan = cot.indexOf("Kết luận");
-  if (iKetLuan !== -1 && (cot[iKetLuan + 1] !== "Ghi chú" || iKetLuan + 2 !== cot.length)) {
-    throw new Error(`Mục "${chu}": Kết luận và Ghi chú phải là hai cột cuối, hiện ${JSON.stringify(cot.slice(iKetLuan))}`);
+  if (cot.length > 7) throw new Error(`Mục "${chu}": bảng chi tiết còn ${cot.length} cột, bản gọn chỉ giữ tới 7.`);
+
+  await page.evaluate(() => document.querySelector(".ql1-ds-table tbody tr").click());
+  await page.waitForSelector("dialog.case-drawer[open]", { timeout: 5000 });
+  const truong = await page.$$eval("dialog.case-drawer .detail-grid dt", (dt) => dt.map((x) => x.textContent.trim()));
+  /* Khối định danh của ngăn: Tên NNT đã là tiêu đề của ngăn nên nó không lặp
+     lại thành một dòng nữa. */
+  if (JSON.stringify(truong.slice(0, 3)) !== JSON.stringify(["MST", "Phòng / Thuế cơ sở", "Mã CQT"])) {
+    throw new Error(`Mục "${chu}": ngăn chi tiết mở đầu bằng ${JSON.stringify(truong.slice(0, 3))}, không theo thứ tự cột chuẩn.`);
   }
+  /* Hai cột chữ tự do, khi có, phải ở CUỐI cùng — chúng dài và không căn thẳng
+     được, để giữa là chen vào giữa các cột số. */
+  const iKetLuan = truong.indexOf("Kết luận");
+  if (iKetLuan !== -1 && (truong[iKetLuan + 1] !== "Ghi chú" || iKetLuan + 2 !== truong.length)) {
+    throw new Error(`Mục "${chu}": Kết luận và Ghi chú phải là hai dòng cuối của ngăn chi tiết, hiện ${JSON.stringify(truong.slice(iKetLuan))}`);
+  }
+  await page.keyboard.press("Escape");
+  await page.waitForFunction(() => !document.querySelector("dialog.case-drawer[open]"), { timeout: 5000 });
 }
-await moMuc("So sánh nợ");
+await moMuc("Đánh giá nợ");
 
 await chanCheoPhong("risk", "Kiểm tra tại bàn");
 await chanCheoPhong("giamsat", "Giám sát dữ liệu");
@@ -486,7 +715,7 @@ for (const cu of ["reports", "runs", "batches", "mapping", "rules", "refund"]) {
 }
 
 /* Măng sét không còn nút cấp hệ thống nào; tải tay chỉ hiện ở Tình trạng dữ liệu. */
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
 if (await page.$("#global-create-report") !== null) throw new Error("Măng sét vẫn còn nút Tạo báo cáo.");
 /* Măng sét đã bỏ; nút "Tải tay" nay phải không có mặt ở BẤT KỲ đâu trên màn
    phân hệ, nên phép kiểm quét cả trang thay vì chỉ quét một khung. */
@@ -523,18 +752,18 @@ for (const view of ["hoan&muc=dsphieu"]) {
   await dangNhap(page, "cv.ql4");
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
   await page.goto(`${base}/?view=${view}`, { waitUntil: "networkidle0" });
-  await page.$eval(".ql1-ds-table tbody tr:nth-child(2) .o-mota", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
-  await page.click(".ql1-ds-table tbody tr:nth-child(2) .o-mota");
-  await page.waitForSelector(".case-detail");
+  await page.$eval(".ql1-ds-table tbody tr:nth-child(2) .row-select", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click(".ql1-ds-table tbody tr:nth-child(2) .row-select");
+  await page.waitForSelector("dialog.case-drawer[open]");
   await new Promise((resolve) => setTimeout(resolve, 220));
   await page.screenshot({ path: `.impeccable/review/chitiet-mobile.png` });
   await page.keyboard.press("Escape");
-  /* Khối bị gỡ khỏi cây rồi focus mới được trả về, qua một `requestAnimationFrame`
+  /* Ngăn bị gỡ khỏi cây rồi con trỏ mới được trả về, qua một `requestAnimationFrame`
      — nên phải chờ React dựng lại xong mới đo được con trỏ đang ở đâu. */
-  await page.waitForFunction(() => !document.querySelector(".case-detail"), { timeout: 5000 });
+  await page.waitForFunction(() => !document.querySelector("dialog.case-drawer[open]"), { timeout: 5000 });
   await new Promise((resolve) => setTimeout(resolve, 120));
-  const restored = await page.evaluate(() => !document.querySelector(".case-detail") && document.activeElement?.matches(".ql1-ds-table tbody tr:nth-child(2) .o-mota"));
-  if (!restored) throw new Error(`${view}: đóng chi tiết chưa trả focus về ô vừa bấm.`);
+  const restored = await page.evaluate(() => document.activeElement?.matches(".ql1-ds-table tbody tr:nth-child(2) .row-select"));
+  if (!restored) throw new Error(`${view}: đóng ngăn chi tiết chưa trả con trỏ về đúng dòng vừa bấm.`);
   await dangXuat(page);
   await dangNhap(page, "cv.ql1");
 }
@@ -551,7 +780,7 @@ for (const view of ["hoan&muc=dsphieu"]) {
     if (dau !== manDau) throw new Error(`${ma} đăng nhập xong vào "${dau}", đáng lẽ "${manDau}" — §3 ghi trang mặc định theo vai.`);
   }
   /* Giao phiếu rà soát: "● (PRS-03) | ✗" — chuyên viên giao, trưởng phòng không. */
-  for (const [ma, url, mongDoi] of [["cv.ql2", "hoadon&muc=dschenh", true], ["tp.ql2", "hoadon&muc=dschenh", false], ["cv.ql4", "hoan&muc=venh", true], ["tp.ql4", "hoan&muc=venh", false]]) {
+  for (const [ma, url, mongDoi] of [["cv.ql2", "hoadon&muc=dschenh", false], ["cv.ql2", "hoadon&muc=dschenh&ky=q201-m08&donvi=T1", true], ["tp.ql2", "hoadon&muc=dschenh", false], ["cv.ql4", "hoan&muc=venh", true], ["tp.ql4", "hoan&muc=venh", false]]) {
     await dangXuat(page);
     await dangNhap(page, ma);
     await page.goto(`${base}/?view=${url}`, { waitUntil: "networkidle0" });
@@ -586,7 +815,8 @@ for (const view of ["hoan&muc=dsphieu"]) {
   await page.goto(`${base}/?view=phieu`, { waitUntil: "networkidle0" });
   if (await page.$(".phieu-bang")) throw new Error("Địa chỉ ?view=phieu của vai đã gỡ vẫn dựng được màn phiếu.");
 
-  await page.goto(`${base}/?view=hoadon&muc=dschenh`, { waitUntil: "networkidle0" });
+  await page.goto(`${base}/?view=hoadon&muc=dschenh&ky=q201-m08&donvi=T1`, { waitUntil: "networkidle0" });
+  await page.evaluate(() => [...document.querySelectorAll("button")].find((b) => b.textContent.includes("Theo dõi phiếu dự phòng")).click());
   await page.waitForSelector(".phieu-bang tbody tr");
   /* Cột Đơn vị là cột bắt buộc: người gõ không phải người trả lời (G17). */
   const cot = await page.$eval(".phieu-bang thead tr", (tr) => [...tr.children].map((th) => th.textContent.trim()));
@@ -642,7 +872,7 @@ const chot = async (nhan) => {
 };
 
 await page.setViewport({ width: 1440, height: 1000 });
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 if (await trangThaiDuyet() !== "Nháp") throw new Error("Kỳ chưa gửi phải ở trạng thái Nháp.");
 const nutCV = await nutDuyet();
@@ -660,7 +890,7 @@ if (!nutCV.includes("Gửi duyệt") || nutCV.includes("Duyệt") || nutCV.inclu
 const khongCoViec = async (ma, mongDoi) => {
   await dangXuat(page);
   await dangNhap(page, ma);
-  await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+  await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
   await page.waitForSelector(".thanh-duyet");
   /*
     Lời giải thích có thể nằm ở khối trạng thái bên trái (`DIEN_GIAI`) hoặc ở
@@ -682,7 +912,7 @@ const khongCoViec = async (ma, mongDoi) => {
 await khongCoViec("tp.ql1", "Chưa gửi duyệt");
 await dangXuat(page);
 await dangNhap(page, "cv.ql1");
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 /*
   Mở báo cáo RỒI mới gửi duyệt — đúng thứ tự một người thật làm: nhìn lại bộ
@@ -747,7 +977,7 @@ await page.screenshot({ path: ".impeccable/review/duyet-cv-da-gui.png" });
 await dangXuat(page);
 
 await dangNhap(page, "tp.ql1");
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 if (await trangThaiDuyet() !== "Đã rà soát") throw new Error("Trưởng phòng không thấy kỳ chuyên viên đã gửi.");
 await thuTuO("tp.ql1 ở Đã rà soát");
@@ -769,15 +999,26 @@ await page.waitForSelector(".thanh-duyet");
 */
 await page.evaluate(() => [...document.querySelectorAll(".duyet-nut button")].find((b) => /Xem báo cáo/.test(b.textContent)).click());
 await page.waitForSelector(".xem-truoc", { timeout: 5000 });
-/* Mở khối ra thì nút xuất cả bộ phải có mặt NGAY TRONG đầu khối ấy. */
-const xuatTrongKhoi = await page.evaluate(() => [...document.querySelectorAll(".xem-truoc .panel-actions button")].map((b) => b.textContent.trim()));
-if (!xuatTrongKhoi.includes("Xuất Excel")) throw new Error(`Khối xem báo cáo không có nút Xuất Excel: ${JSON.stringify(xuatTrongKhoi)}`);
-
 const xemTruoc = await page.evaluate(() => ({
-  soSheet: document.querySelectorAll('.xem-truoc [aria-label="Sheet trong bộ báo cáo"] button, .xem-truoc [aria-label="Sheet trong bộ báo cáo"] option').length,
+  ten: [...document.querySelectorAll('.xem-truoc [aria-label="Sheet trong bộ báo cáo"] button, .xem-truoc [aria-label="Sheet trong bộ báo cáo"] option')].map((b) => b.textContent.trim()),
   coBang: document.querySelectorAll(".xt-bang tbody tr").length,
 }));
-if (xemTruoc.soSheet < 5) throw new Error(`Xem trước chỉ có ${xemTruoc.soSheet} sheet, đáng lẽ cả bộ báo cáo.`);
+const soSheetMo = xemTruoc.ten.length;
+/*
+  Bộ sheet là của MỘT BÁO CÁO, không phải của cả phòng.
+
+  Trước đây workbook của QL1 gom chín sheet của ba báo cáo khác kỳ và khác
+  đầu mối vào một tệp; người nhận không có cách nào biết sheet nào thuộc kỳ
+  nào. Đang mở RS-QL1-01 thì tệp phải có sheet của nó cộng sheet quy tắc, và
+  KHÔNG được có sheet của báo cáo khác.
+*/
+if (soSheetMo < 3) throw new Error(`Xem trước chỉ có ${soSheetMo} sheet, đáng lẽ đủ bộ của báo cáo đang mở: ${JSON.stringify(xemTruoc.ten)}`);
+for (const can of ["So_Sanh_No", "QuyTac_Nguon"]) {
+  if (!xemTruoc.ten.includes(can)) throw new Error(`Bộ sheet của RS-QL1-01 thiếu "${can}": ${JSON.stringify(xemTruoc.ten)}`);
+}
+for (const thua of ["Danh gia Ket qua cuong che", "Danh gia Tam hoan XC", "Bao_cao_tong_hop"]) {
+  if (xemTruoc.ten.includes(thua)) throw new Error(`Bộ sheet của RS-QL1-01 mang theo sheet của báo cáo khác: "${thua}"`);
+}
 if (!xemTruoc.coBang) throw new Error("Xem trước không dựng được bảng của sheet.");
 
 /*
@@ -874,7 +1115,7 @@ if (nutChongCheo.includes("Gửi duyệt") && nutChongCheo.includes("Duyệt")) 
 /* Chuyên viên phải ĐỌC ĐƯỢC lý do bị trả lại, nếu không vòng duyệt thứ hai
    hỏng y như vòng thứ nhất. */
 await dangNhap(page, "cv.ql1");
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 const thayLyDo = await page.evaluate((l) => (document.querySelector(".duyet-tralai")?.textContent ?? "").includes(l), lyDo);
 /*
@@ -930,7 +1171,7 @@ await chot("Gửi duyệt");
 await dangXuat(page);
 
 await dangNhap(page, "tp.ql1");
-await page.goto(`${base}/?view=debt`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/?view=debt&muc=no`, { waitUntil: "networkidle0" });
 await page.waitForSelector(".thanh-duyet");
 await chot("Duyệt");
 if (await trangThaiDuyet() !== "Đã duyệt") throw new Error("Chốt số nhưng trạng thái kỳ chưa đổi.");
@@ -1114,7 +1355,7 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
     });
     if (!k.co) throw new Error(`${ma}: nút Gửi duyệt bị GIẤU thay vì tắt kèm lý do.`);
     if (k.tat !== true) throw new Error(`${ma}: báo cáo khung vẫn gửi duyệt được.`);
-    if (!/chưa có mẫu/.test(k.lyDo)) throw new Error(`${ma}: chặn gửi duyệt mà không nói vì sao — ${JSON.stringify(k.lyDo.slice(0, 80))}`);
+    if (!/chưa có mẫu|Chưa nạp tệp mẫu/.test(k.lyDo)) throw new Error(`${ma}: chặn gửi duyệt mà không nói vì sao — ${JSON.stringify(k.lyDo.slice(0, 80))}`);
   }
 
   /*
@@ -1125,7 +1366,8 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
     Kết quả. Chốt kiểm này đo từng bảng trên màn: tràn thì phải có dải, không
     tràn thì không được có.
   */
-  await page.goto(`${base}/?view=hoadon&muc=dschenh`, { waitUntil: "networkidle0" });
+  await page.goto(`${base}/?view=hoadon&muc=dschenh&ky=q201-m08&donvi=T1`, { waitUntil: "networkidle0" });
+  await page.evaluate(() => [...document.querySelectorAll("button")].find((b) => b.textContent.includes("Theo dõi phiếu dự phòng")).click());
   await page.waitForSelector(".phieu-bang tbody tr");
   await new Promise((resolve) => setTimeout(resolve, 260));
   const lech = await page.evaluate(() => {
@@ -1383,6 +1625,282 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
     if (tp.coO || tp.coLuu) throw new Error("Trưởng phòng QL3 nhập được KPI, đáng lẽ chỉ đọc.");
   }
 
+
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql1");
+}
+
+/*
+  Phân hệ NHIỀU BÁO CÁO: mỗi báo cáo là một mục cấp ngoài của thanh bên.
+
+  Bản trước gộp cả sáu báo cáo của QL2 vào trong một mục "Rủi ro hóa đơn",
+  nên thanh bên có ba tầng và tầng giữa không bấm được. Bốn điều phải đúng:
+
+  • KHÔNG còn mục mang tên phân hệ; sáu báo cáo đứng thẳng ở cụm Phân hệ.
+  • Nhãn chỉ mang TÊN CHỦ ĐỀ — không mã `QL2-01`. Mã là của bảng phân công
+    báo cáo, có ích khi đối chiếu tài liệu chứ không khi tìm đường.
+  • Bấm vào một báo cáo thì mở mục ĐẦU của nó, và chỉ báo cáo đang mở mới
+    bày mục con.
+  • "Dữ liệu gốc" nằm ở cụm Dữ liệu, cạnh "Tình trạng dữ liệu" — nó nói về
+    nguồn kéo về, không thuộc báo cáo nào.
+*/
+{
+  await page.setViewport({ width: 1440, height: 1100 });
+  await dangXuat(page);
+  await dangNhap(page, "cv.ql2");
+  await page.goto(`${base}/?view=hoadon&muc=tongquan`, { waitUntil: "networkidle0" });
+  await page.waitForSelector(".side-nav");
+
+  const ben = await page.evaluate(() => {
+    const cum = (ten) => [...document.querySelectorAll(".side-nav .nav-section")]
+      .find((sec) => sec.querySelector(".nav-group")?.textContent?.trim() === ten);
+    const nut = (sec) => [...(sec?.children || [])].filter((c) => c.tagName === "BUTTON").map((c) => c.textContent.trim());
+    return { phanHe: nut(cum("Phân hệ")), duLieu: nut(cum("Dữ liệu")) };
+  });
+
+  for (const t of ["Chênh lệch TK – HĐĐT", "Cảnh báo hệ số K", "Xác minh hóa đơn", "Rủi ro TPR"]) {
+    if (!ben.phanHe.includes(t)) throw new Error(`Cụm Phân hệ của QL2 thiếu "${t}": ${JSON.stringify(ben.phanHe)}`);
+  }
+  if (ben.phanHe.some((x) => /^Rủi ro hóa đơn/.test(x))) {
+    throw new Error(`Vẫn còn mục mang tên phân hệ trong cụm Phân hệ: ${JSON.stringify(ben.phanHe)}`);
+  }
+  if (ben.phanHe.some((x) => /QL2-\d/.test(x))) {
+    throw new Error(`Nhãn mục còn mang mã báo cáo: ${JSON.stringify(ben.phanHe)}`);
+  }
+  if (!ben.duLieu.includes("Dữ liệu gốc")) {
+    throw new Error(`"Dữ liệu gốc" không nằm ở cụm Dữ liệu: ${JSON.stringify(ben.duLieu)}`);
+  }
+
+  /* Bấm một báo cáo → mở mục đầu của nó, và chỉ nó bày mục con. */
+  await page.evaluate(() => [...document.querySelectorAll(".side-nav button")]
+    .find((b) => b.textContent.trim() === "Cảnh báo hệ số K").click());
+  await page.waitForFunction(() => new URLSearchParams(location.search).get("muc") === "kbc", { timeout: 5000 });
+  const sauBam = await page.evaluate(() => ({
+    soCum: document.querySelectorAll(".side-nav .ql1-nav-items").length,
+    con: [...document.querySelectorAll(".side-nav .ql1-nav-items button")].map((b) => b.textContent.trim()),
+  }));
+  if (sauBam.soCum !== 1) throw new Error(`Có ${sauBam.soCum} cụm mục con mở cùng lúc, đáng lẽ đúng một.`);
+  if (JSON.stringify(sauBam.con) !== JSON.stringify(["Hệ số K – Báo cáo", "Hệ số K – Lượt còn tồn"])) {
+    throw new Error(`Mục con của Cảnh báo hệ số K sai: ${JSON.stringify(sauBam.con)}`);
+  }
+
+  /*
+    Báo cáo CÓ CON thì cha không tự bày nội dung: bấm cha là nhảy xuống con
+    thứ nhất, và chính con ấy sáng. Trước đây mục con trùng tên với cha bị
+    giấu đi, nên bấm "Xác minh hóa đơn" ra nội dung mà không con nào sáng —
+    nhìn như cha đang bày bảng, trong khi cha chỉ là lối vào.
+  */
+  for (const [cha, conDau] of [["Xác minh hóa đơn", "Tổng hợp theo đơn vị"], ["Chênh lệch TK – HĐĐT", "Tổng hợp 01GTGT"]]) {
+    await page.evaluate((t) => [...document.querySelectorAll(".side-nav .nav-item")]
+      .find((b) => b.textContent.trim().startsWith(t)).click(), cha);
+    await page.waitForFunction(() => document.querySelector(".side-nav .ql1-nav-item.is-active"), { timeout: 5000 });
+    const o = await page.evaluate(() => ({
+      conSang: [...document.querySelectorAll(".side-nav .ql1-nav-item.is-active")].map((x) => x.textContent.trim()),
+      chaTrang: [...document.querySelectorAll('.side-nav .nav-item[aria-current="page"]')].map((x) => x.textContent.trim()),
+    }));
+    if (o.conSang.length !== 1 || o.conSang[0] !== conDau) {
+      throw new Error(`Bấm "${cha}" đáng lẽ nhảy xuống "${conDau}", đang sáng ${JSON.stringify(o.conSang)}.`);
+    }
+    /* Cha có con thì KHÔNG được khai là trang hiện tại — trang là mục con. */
+    if (o.chaTrang.some((x) => x.startsWith(cha))) {
+      throw new Error(`"${cha}" có con mà vẫn khai aria-current="page": ${JSON.stringify(o.chaTrang)}`);
+    }
+  }
+
+  /*
+    Bảng 27 cột của QL2-01 phải ĐỌC THEO NHÓM, không bắt cuộn ngang 2.358px.
+
+    Đo trước khi sửa: bảng 3.504px trong khung 1.146px ở khổ 1440 — 67% nằm
+    ngoài tầm nhìn, và ngay cả màn 1920 cũng chỉ thấy 44%. Mẫu báo cáo vốn
+    chia 27 cột thành năm nhóm bằng tiêu đề hai tầng, nên lọc theo nhóm là
+    đọc bảng đúng cách bảng tự tổ chức.
+
+    Ba điều phải đúng: mặc định là "Tóm tắt" và nó VỪA KHUNG; "Tất cả" vẫn
+    trả lại đủ 27 chỉ tiêu; và cột "Loại tờ khai" — in cùng một giá trị ở mọi
+    dòng — không còn chiếm chỗ của bảng.
+  */
+  {
+    await page.goto(`${base}/?view=hoadon&muc=th01`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".ql2-01-table");
+    const macDinh = await page.evaluate(() => {
+      const t = document.querySelector(".ql2-01-table");
+      const wrap = t.closest(".table-wrap");
+      return {
+        chon: document.querySelector(".panel-actions select")?.value ?? null,
+        tran: t.scrollWidth - wrap.clientWidth,
+        dauCot: [...document.querySelectorAll(".ql2-01-table thead th")].map((x) => x.textContent.trim()),
+        phu: document.querySelector(".panel-head p")?.textContent ?? "",
+      };
+    });
+    if (macDinh.chon !== "tomtat") throw new Error(`Bảng QL2-01 không mặc định ở nhóm Tóm tắt: ${JSON.stringify(macDinh.chon)}`);
+    if (macDinh.tran > 0) throw new Error(`Nhóm Tóm tắt vẫn tràn ${macDinh.tran}px ở khổ 1440.`);
+    if (macDinh.dauCot.includes("Loại tờ khai")) throw new Error("Cột \"Loại tờ khai\" in cùng một giá trị ở mọi dòng mà vẫn chiếm một cột.");
+    /*
+      Mọi hàng phải có CÙNG số ô. Bỏ một cột khỏi `thead` mà quên dòng dữ
+      liệu là lỗi đã xảy ra: giá trị lệch sang phải một cột và cả bảng đọc
+      sai, trong khi không có gì trông hỏng.
+    */
+    const soO = await page.evaluate(() => {
+      const t = document.querySelector(".ql2-01-table");
+      const dem = (tr) => [...tr.children].reduce((n, c) => n + (c.colSpan || 1), 0);
+      return {
+        dau: dem(t.querySelector("thead tr")),
+        tong: dem(t.querySelector("tbody tr.is-tong")),
+        donVi: dem([...t.querySelectorAll("tbody tr")].filter((r) => !r.className)[0]),
+      };
+    });
+    if (soO.dau !== soO.tong || soO.dau !== soO.donVi) {
+      throw new Error(`Số ô lệch giữa các hàng của QL2-01: ${JSON.stringify(soO)}`);
+    }
+    /* Hàng số cột của mẫu đã bỏ: nó đứng ngay trên "A. Tổng cộng" và đọc ra
+       như một dòng dữ liệu toàn số trong ngoặc. */
+    if (await page.$(".ql2-01-table .cot-so")) throw new Error("Bảng QL2-01 vẫn còn hàng số cột của mẫu.");
+    if (!/01\/GTGT/.test(macDinh.phu)) throw new Error(`Loại tờ khai phải nói ở dòng phụ đề: ${JSON.stringify(macDinh.phu.slice(0, 80))}`);
+
+    /* Đổi nhóm thì địa chỉ phải mang theo, để dẫn nhau tới đúng nhóm. */
+    await page.select(".panel-actions select", "n3");
+    await page.waitForFunction(() => new URLSearchParams(location.search).get("nhom") === "n3", { timeout: 5000 });
+
+    await page.select(".panel-actions select", "tatca");
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    const tatCa = await page.evaluate(() => document.querySelectorAll(".ql2-01-table thead tr:last-child th").length);
+    if (tatCa < 27) throw new Error(`Nhóm "Tất cả" chỉ có ${tatCa} cột, đáng lẽ đủ 27 chỉ tiêu.`);
+
+    await page.select(".panel-actions select", "tomtat");
+    await new Promise((resolve) => setTimeout(resolve, 220));
+  }
+
+  /*
+    DS NNT chênh lệch — §4.2 tab 3: "1 dòng = MST × loại (01 bán ra / 01 mua
+    vào / 03 / 04) × kỳ; cờ khai thiếu / khai thừa / không nộp TK".
+
+    Ba điều phải đúng, cả ba từng sai:
+
+    • MST PHẢI LẶP LẠI. Bản trước phát mỗi dòng một MST mới, nên 240 dòng ra
+      240 doanh nghiệp và chiều "× loại tờ khai" chỉ tồn tại trên phụ đề —
+      giấu mất tình huống một NNT lệch cả đầu ra lẫn đầu vào.
+    • LỌC ĐƯỢC THEO CỜ. Ba cờ của tài liệu trước đây chỉ đọc được, không lọc
+      được, trong khi chúng là thứ cán bộ lọc trước khi giao phiếu.
+    • Bảng tám cột phải VỪA KHUNG; bản trước tràn 108px.
+  */
+  {
+    await page.goto(`${base}/?view=hoadon&muc=dschenh`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".prs-thanh");
+    const K = ".panel:has(.prs-thanh) ";
+    const ds = await page.evaluate((k) => {
+      const bang = document.querySelector(k + ".ql1-ds-table");
+      const dau = [...bang.querySelectorAll("thead th")].map((x) => x.textContent.trim());
+      const iMst = dau.indexOf("MST");
+      const mst = [...bang.querySelectorAll("tbody tr")].map((tr) => tr.children[iMst]?.textContent.trim());
+      return {
+        phu: document.querySelector(k + ".panel-head p")?.textContent ?? "",
+        tran: bang.scrollWidth - bang.closest(".table-wrap").clientWidth,
+        boLoc: [...document.querySelectorAll(k + ".panel-actions label span")].map((x) => x.textContent.trim()),
+        lapTrenTrang: mst.length - new Set(mst).size,
+      };
+    }, K);
+
+    const soDong = Number((ds.phu.match(/([\d.]+) dòng/) || [])[1]?.replace(/\./g, "") || 0);
+    const soNNT = Number((ds.phu.match(/([\d.]+) NNT/) || [])[1]?.replace(/\./g, "") || 0);
+    if (!soDong || !soNNT) throw new Error(`Phụ đề phải nói CẢ số dòng và số NNT: ${JSON.stringify(ds.phu.slice(0, 110))}`);
+    if (soNNT >= soDong) {
+      throw new Error(`${soDong} dòng nhưng ${soNNT} NNT — một dòng vẫn là một doanh nghiệp, chiều "× loại tờ khai" không có thật.`);
+    }
+    if (ds.tran > 0) throw new Error(`Bảng DS NNT chênh lệch tràn ${ds.tran}px ở khổ 1440.`);
+    if (!ds.boLoc.includes("Cờ")) throw new Error(`Thiếu bộ lọc theo cờ: ${JSON.stringify(ds.boLoc)}`);
+
+    /*
+      Lọc "Khai thừa" chỉ còn dòng đầu vào — §4.4: đầu vào → cờ khai thừa.
+
+      Đi bằng ĐỊA CHỈ chứ không bằng cách gán `value` cho ô chọn: React theo
+      dõi giá trị qua setter riêng nên gán thẳng rồi bắn `change` bị bỏ qua.
+      Đi bằng địa chỉ còn kiểm luôn một điều đáng kiểm — bộ lọc phải dẫn được.
+    */
+    await page.goto(`${base}/?view=hoadon&muc=dschenh&co=thua`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".prs-thanh");
+    const sauLoc = await page.evaluate((k) => {
+      const bang = document.querySelector(k + ".ql1-ds-table");
+      const dau = [...bang.querySelectorAll("thead th")].map((x) => x.textContent.trim());
+      const i = dau.indexOf("Loại tờ khai");
+      return [...new Set([...bang.querySelectorAll("tbody tr")].map((tr) => tr.children[i]?.textContent.trim()))];
+    }, K);
+    if (sauLoc.length !== 1 || !/Đầu vào/.test(sauLoc[0])) {
+      throw new Error(`Lọc cờ "Khai thừa" còn lẫn loại khác: ${JSON.stringify(sauLoc)}`);
+    }
+  }
+
+  /*
+    Hệ số K · Lượt còn tồn — bảng GỌN cộng ngăn trượt.
+
+    Bản trước bày cả mười ba cột: 2.116px trong khung 1.146px, gần một nghìn
+    pixel ngoài tầm nhìn. Việc trên màn này là TRIAGE — tìm lượt tồn lâu, có
+    cờ, của cán bộ nào — nên ba giá trị lũy kế và ba hệ số K là thứ đọc KHI
+    đã chọn một lượt, không phải thứ quét qua mười hai dòng.
+
+    Ba điều phải đúng:
+
+    • Bảng vừa khung ở 1440, không còn cuộn ngang.
+    • Bấm một dòng mở ngăn trượt, và ngăn mang ĐỦ những cột bảng đã bỏ.
+    • Bấm nút "Đánh dấu gửi QLRR" trong hàng KHÔNG mở ngăn — nút là việc
+      riêng của nó, và hàng bấm được là đường tắt cho chuột chứ không phải
+      cái bẫy nuốt mọi cú bấm.
+  */
+  {
+    await page.goto(`${base}/?view=hoadon&muc=kton`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".ql1-ds-table tbody tr");
+    const bang = await page.evaluate(() => {
+      const t = document.querySelector(".ql1-ds-table");
+      return { cot: [...t.querySelectorAll("thead th")].map((x) => x.textContent.trim()), tran: t.scrollWidth - t.closest(".table-wrap").clientWidth };
+    });
+    if (bang.tran > 0) throw new Error(`Bảng Lượt còn tồn tràn ${bang.tran}px ở khổ 1440.`);
+    if (bang.cot.length > 7) throw new Error(`Bảng Lượt còn tồn có ${bang.cot.length} cột, bản gọn chỉ giữ tới 7: ${JSON.stringify(bang.cot)}`);
+    for (const c of ["MST", "Số ngày tồn", "K tính lại"]) {
+      if (!bang.cot.includes(c)) throw new Error(`Bảng Lượt còn tồn thiếu cột "${c}": ${JSON.stringify(bang.cot)}`);
+    }
+
+    /* Nút trong hàng không được mở ngăn. */
+    await page.evaluate(() => [...document.querySelectorAll(".ql1-ds-table tbody tr button")]
+      .find((b) => /gửi QLRR|Gỡ đánh dấu/.test(b.textContent || ""))?.click());
+    await new Promise((resolve) => setTimeout(resolve, 260));
+    if (await page.$("dialog.case-drawer[open]")) throw new Error("Bấm nút trong hàng lại mở ngăn chi tiết.");
+
+    await page.evaluate(() => document.querySelector(".ql1-ds-table tbody tr").click());
+    await page.waitForSelector("dialog.case-drawer[open]", { timeout: 5000 });
+    const ngan = await page.evaluate(() => ({
+      nhan: [...document.querySelectorAll("dialog.case-drawer .detail-grid dt")].map((x) => x.textContent.trim()),
+      so: new URLSearchParams(location.search).get("so"),
+    }));
+    if (!ngan.so) throw new Error("Mở ngăn chi tiết lượt K nhưng địa chỉ không mang tham số `so`.");
+    for (const n of ["Giá trị mua vào lũy kế", "Giá trị bán ra lũy kế", "Giá trị hàng tồn kho", "Hệ số K hệ thống", "Tên ngành nghề chính"]) {
+      /* So khớp theo ĐẦU nhãn: nhãn còn mang đơn vị trong ngoặc — "Giá trị mua
+         vào lũy kế (đồng)" — và đơn vị là thứ được phép đổi. */
+      if (!ngan.nhan.some((x) => x.startsWith(n))) throw new Error(`Ngăn chi tiết lượt K thiếu "${n}" — cột bảng đã bỏ phải có chỗ khác để đọc.`);
+    }
+    /*
+      Hai thứ đoạn chú thích cũ gánh, nay nằm trong chính nội dung — và phải
+      kiểm, vì bỏ chú thích mà không có chỗ thay thì người đọc mất cả đơn vị
+      tiền lẫn lý do vì sao lượt này có cờ.
+    */
+    if (!ngan.nhan.some((x) => /\(đồng\)/.test(x))) {
+      throw new Error(`Ngăn chi tiết lượt K không còn nói đơn vị tiền ở nhãn nào: ${JSON.stringify(ngan.nhan)}`);
+    }
+    const co = await page.evaluate(() => {
+      const dt = [...document.querySelectorAll("dialog.case-drawer .detail-grid dt")].find((x) => x.textContent.trim() === "Cờ kiểm tra");
+      const dd = dt?.nextElementSibling;
+      return { co: /Có cờ/.test(dd?.textContent ?? ""), ly: dd?.querySelector(".ql3-chitiet-vi")?.textContent?.trim() ?? "" };
+    });
+    if (co.co && co.ly.length < 12) throw new Error(`Lượt có cờ nhưng ngăn chi tiết không nói điều gì đã bật cờ: ${JSON.stringify(co)}`);
+
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector("dialog.case-drawer[open]"), { timeout: 5000 });
+  }
+
+  /* Báo cáo một mục trùng tên thu về một mục lá, không có cụm con. */
+  await page.evaluate(() => [...document.querySelectorAll(".side-nav button")]
+    .find((b) => /^Rủi ro TPR/.test(b.textContent.trim())).click());
+  await page.waitForFunction(() => new URLSearchParams(location.search).get("muc") === "tpr", { timeout: 5000 });
+  const conTPR = await page.evaluate(() => document.querySelectorAll(".side-nav .ql1-nav-items button").length);
+  if (conTPR) throw new Error(`"Rủi ro TPR" chỉ có một mục trùng tên mà vẫn bày ${conTPR} mục con.`);
 
   await dangXuat(page);
   await dangNhap(page, "cv.ql1");

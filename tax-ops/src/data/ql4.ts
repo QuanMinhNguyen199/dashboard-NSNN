@@ -1,6 +1,7 @@
 import { DAY_TCS, maCuaTCS, nhanTCS, phongVPCua } from "@/data/danhMuc";
 import { hatCua, mstGia, nguyen, prng, tenCanBoGia, tenNNTGia } from "@/data/ngauNhien";
 import type { MucKy } from "@/components/BoLoc";
+import { nhanTuanDenNgay } from "@/data/nhanKy";
 
 /*
   Dữ liệu mẫu của phân hệ QL4 — hoàn thuế TNCN và tổng đài (`design_ql2ql4` §5).
@@ -53,13 +54,10 @@ export const KY_QL4_01: KyQL4[] = [
     nhan: `Hồ sơ xử lý từ 01/01/2026 đến ${d}`,
     hat: 4100 + i,
   })),
-  ...[39, 38, 37].map((w, i) => ({
-    id: `q401-w${w}`,
-    loai: "TUAN" as const,
-    ngayChot: ["24/09/2026", "17/09/2026", "10/09/2026"][i],
-    nhan: `Tuần ${w}/2026`,
-    hat: 4140 + i,
-  })),
+  ...[39, 38, 37].map((w, i) => {
+    const chot = ["24/09/2026", "17/09/2026", "10/09/2026"][i];
+    return { id: `q401-w${w}`, loai: "TUAN" as const, ngayChot: chot, nhan: nhanTuanDenNgay(chot), hat: 4140 + i };
+  }),
 ];
 
 /** QL4-02: ngày là nhịp chính (mặc định hôm qua), cộng tuần và tháng. */
@@ -73,13 +71,13 @@ export const KY_QL4_02: KyQL4[] = [
     nhan: `Ngày ${d}`,
     hat: 4200 + i,
   })),
-  ...[39, 38, 37].map((w, i) => ({
-    id: `q402-w${w}`,
-    loai: "TUAN" as const,
-    ngayChot: NGAY_QL4_02[0],
-    nhan: `Tuần ${w}/2026`,
-    hat: 4240 + i,
-  })),
+  /* Mỗi tuần chốt vào ngày cuối của CHÍNH nó. Trước đây cả ba tuần cùng mang
+     ngày chốt 26/09 của kỳ ngày mới nhất, nên dải trạng thái đầu màn nói "Số
+     liệu ngày 26/09" cho cả tuần 37 — một ngày nằm ngoài tuần ấy. */
+  ...[39, 38, 37].map((w, i) => {
+    const chot = ["24/09/2026", "17/09/2026", "10/09/2026"][i];
+    return { id: `q402-w${w}`, loai: "TUAN" as const, ngayChot: chot, nhan: nhanTuanDenNgay(chot), hat: 4240 + i };
+  }),
   ...[9, 8].map((m) => ({
     id: `q402-m${String(m).padStart(2, "0")}`,
     loai: "THANG" as const,

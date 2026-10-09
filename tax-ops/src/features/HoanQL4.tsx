@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { BoLocChung, theoDonVi, useBoLoc, type MucDonVi } from "@/components/BoLoc";
 import { baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { ExportButton } from "@/components/ExportButton";
+import { XuatProvider } from "@/components/ui";
 import { PageIntro, Panel, money } from "@/components/ui";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
@@ -74,7 +75,7 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     status: banGhi?.trangThai ?? "DRAFT",
   };
 
-  return <div className="page-stack">
+  return <XuatProvider nut={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
     <PageIntro title="Hoàn thuế TNCN và tổng đài · Phòng QL4"/>
 
     {baoCao && <ThanhDuyet
@@ -86,7 +87,6 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     />}
 
     {moXemTruoc && <KhoiXemTruoc
-      xuat={<ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton>}
       sheets={boSheet}
       meta={meta}
       ten={`${baoCao} · ${nhanBaoCaoQL4(baoCao!)}`}
@@ -123,7 +123,7 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     {muc === "diem" && <ChamDiem ky={ky}/>}
 
     {muc === "nguon" && <DuLieuGoc nguon={NGUON_QL4} ngayBaoCao={ky.ngayChot}/>}
-  </div>;
+  </div></XuatProvider>;
 }
 
 /* ── Tổng quan (§5.3) ────────────────────────────────────────────────────── */
@@ -160,7 +160,7 @@ function TongQuanQL4() {
   const hienTyLe = (x: number | null) => (x === null ? "—" : `${(x * 100).toFixed(2).replace(".", ",")}%`);
 
   return <>
-    <Panel title="Tổng đài hỗ trợ người nộp thuế" subtitle={`${kyTD.nhan} · từ mục Cuộc gọi, Phiếu ghi, Sai hạn`}>
+    <Panel chinh title="Tổng đài hỗ trợ người nộp thuế" subtitle={`${kyTD.nhan} · từ mục Cuộc gọi, Phiếu ghi, Sai hạn`}>
     {/*
       Dải thẻ là `.the-luoi` chứ không phải `KpiStrip`.
 

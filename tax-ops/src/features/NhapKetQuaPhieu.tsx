@@ -12,12 +12,10 @@ import { CAU_HINH, dsPhieu, kiemTraLoi, type DongPhieu, type LoaiPhieu } from "@
   đăng nhập và điền. Vai ấy mang nhãn [R] và treo ở Q-95 — "Phòng, TCS có đăng
   nhập xem hồ sơ và nhập kết quả rà soát vênh không" — nên nó đã được gỡ.
 
-  Q-96 nêu đúng hai nhánh cho cùng một việc: "đơn vị nhập qua phiếu PRS-03 HAY
-  QL2 tự tổng hợp". Nhánh còn lại sau khi gỡ vai kia chính là nhánh thứ hai, và
-  nó không cần vai mới nào: chuyên viên của phòng giao phiếu nhập lại phản hồi
-  mà đơn vị gửi về qua thư hay Zalo. Ma trận §3 đã cho chuyên viên quyền "Giao
-  phiếu rà soát cho đơn vị | ● | ✗", nên việc theo dõi và đóng vòng phiếu vốn
-  thuộc về họ.
+  Cập nhật 06/10, Q-96 đã rõ: QL2 lấy kết quả từ hddtbaocao r31.
+  PRS-03 chỉ dự phòng khi thiếu r31 theo kỳ/đơn vị; nơi gọi truyền
+  donViChoPhep để giới hạn dữ liệu. Quy trình PRS-05 của QL4 giữ nguyên.
+  Nhập lại phản hồi tại phòng là hành vi demo đang có, không phải kết nối r31.
 
   Ba thứ vòng cũ làm tệ vẫn phải giữ, vì chúng không phụ thuộc vào ai gõ:
 
@@ -31,7 +29,7 @@ import { CAU_HINH, dsPhieu, kiemTraLoi, type DongPhieu, type LoaiPhieu } from "@
   NGƯỜI TRẢ LỜI, nên mỗi ô điền tay phải nói nó đến từ phản hồi của đơn vị nào.
   Cột "Đơn vị" vì thế là cột bắt buộc, không phải tiện ích lọc.
 */
-export function NhapKetQuaPhieu({ loai, hatKy }: { loai: LoaiPhieu; hatKy: number }) {
+export function NhapKetQuaPhieu({ loai, hatKy, donViChoPhep }: { loai: LoaiPhieu; hatKy: number; donViChoPhep?: string[] }) {
   const notify = useAction();
   const { layTraLoi, ghiNhieu } = usePhieu();
   const [donVi, datDonVi] = useState("");
@@ -41,8 +39,8 @@ export function NhapKetQuaPhieu({ loai, hatKy }: { loai: LoaiPhieu; hatKy: numbe
 
   const ch = CAU_HINH[loai];
   const tatCa = useMemo(
-    () => dsPhieu(loai, hatKy).sort((a, b) => b.quaHan - a.quaHan),
-    [loai, hatKy],
+    () => dsPhieu(loai, hatKy).filter((d) => !donViChoPhep || donViChoPhep.includes(d.donVi)).sort((a, b) => b.quaHan - a.quaHan),
+    [loai, hatKy, donViChoPhep],
   );
   const dsDonVi = useMemo(() => [...new Set(tatCa.map((d) => d.donVi))], [tatCa]);
   const dong = donVi ? tatCa.filter((d) => d.donVi === donVi) : tatCa;

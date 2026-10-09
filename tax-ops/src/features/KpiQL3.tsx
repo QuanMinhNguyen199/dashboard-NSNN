@@ -95,7 +95,7 @@ export function KpiQL3({ trongPhamVi, ky, vaiTro }: {
     datLoi("");
   };
 
-  return <Panel
+  return <Panel chinh
     title={`KPI đăng ký · ${ky.thangKPI}`}
     subtitle={`${money(soDaDangKy)}/${money(trongPhamVi.length)} đơn vị đã đăng ký trên hệ thống · hạn trước ngày 25`}
     actions={suaDuoc ? <div className="inline-controls">

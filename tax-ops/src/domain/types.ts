@@ -80,7 +80,7 @@ export interface WorkItem {
 
 export interface SourceBatch {
   id: string;
-  source: "TMS" | "TTR" | "HĐĐT" | "XMHĐ" | "VIETTEL";
+  source: "TMS" | "TTR" | "HĐĐT" | "XMHĐ" | "Viettel";
   period: string;
   received: number;
   expected: number;

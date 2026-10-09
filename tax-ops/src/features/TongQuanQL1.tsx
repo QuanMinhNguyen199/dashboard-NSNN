@@ -111,13 +111,13 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
   }, [ky, trongPhamVi]);
 
   if (trongPhamVi.length === 0) {
-    return <Panel title="Tổng quan"><div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div></Panel>;
+    return <Panel chinh title="Tổng quan"><div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div></Panel>;
   }
 
   const maxTang = xepHang[0]?.muc ?? 0;
 
   return <>
-    <Panel title="Nợ đến ngày báo cáo" subtitle={`Chốt số ngày ${ky.ngayChot} · lấy từ mục So sánh nợ`}>
+    <Panel chinh title="Nợ đến ngày báo cáo" subtitle={`Chốt số ngày ${ky.ngayChot} · lấy từ mục So sánh nợ`}>
       <div className="the-luoi">
         <TheNo nhan="Tổng cộng (B)" khoa="B" o={no}/>
         <TheNo nhan="Nợ khả năng thu (C)" khoa="C" o={no}/>

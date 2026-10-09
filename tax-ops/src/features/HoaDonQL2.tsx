@@ -1,15 +1,17 @@
+import { KhoangNgayK, ngayHopLe } from "@/features/KhoangNgayK";
+import { CongAnQL2, TPRQL2 } from "@/features/QL2BoSung";
+import { QL2Provider, useQL2 } from "@/state/QL2Context";
 import { useMemo } from "react";
 import { BoLocChung, useBoLoc, theoDonVi, type MucDonVi } from "@/components/BoLoc";
 import { Khung } from "@/components/Khung";
 import { baoCaoCuaMuc, nhomCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { ExportButton } from "@/components/ExportButton";
+import { XuatProvider } from "@/components/ui";
 import { PageIntro, Panel, money } from "@/components/ui";
 import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
 import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
 import { BangQL2_01, DanhSachChenhLech } from "@/features/QL2ChenhLech";
-import { TienDoPhieu } from "@/features/TienDoPhieu";
-import { NhapKetQuaPhieu } from "@/features/NhapKetQuaPhieu";
 import { BangHeSoK, DanhSachK } from "@/features/QL2HeSoK";
 import { BangXacMinh, TonQuaHanXM } from "@/features/QL2XacMinh";
 import { NGUON_QL2 } from "@/data/nguonDuLieu";
@@ -23,7 +25,7 @@ import {
 import { exportExcel } from "@/domain/reportFiles";
 import { ql2Workbook, type ReportMeta } from "@/domain/reportExport";
 import { useDuyet } from "@/state/DuyetContext";
-import { useThamSo } from "@/state/diaChi";
+import { datThamSo, useThamSo } from "@/state/diaChi";
 
 /*
   Phân hệ QL2 — rủi ro hóa đơn (`design_ql2ql4` §4).
@@ -44,32 +46,37 @@ import { useThamSo } from "@/state/diaChi";
 
 const DON_VI_CO: MucDonVi[] = DON_VI_QL2.map((d) => ({ id: d.id, ten: d.ten }));
 
-export function HoaDonQL2({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
+export function HoaDonQL2(props: { actor: string; vaiTro: VaiTro }) {
+  return <QL2Provider><HoaDonQL2NoiDung {...props}/></QL2Provider>;
+}
+function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
+  const { vuongMac } = useQL2();
   const { muc, datMuc } = useMucPhanHe();
-  const { chon } = useBoLoc();
+  const { chon, datDonVi, datKy } = useBoLoc();
   const { layBanGhi } = useDuyet();
   const [xem, datXem] = useThamSo<string>("xem", "");
 
   const baoCao = baoCaoCuaMuc("hoadon", muc);
-  /*
-    Bốn báo cáo QL2-03/04/05/06 mới có KHUNG, chưa có mẫu từ phòng nghiệp vụ:
-    màn của chúng tự nói "bố cục cột sẽ đổi khi mẫu về, đừng trích số từ đây".
-
-    Trước đây nút Gửi duyệt vẫn bật trên chính những màn ấy, nên chuyên viên
-    đẩy được một báo cáo rỗng vào hàng chờ của trưởng phòng, và trưởng phòng
-    duyệt một cái vỏ. Nó cũng đi ngược nguyên tắc sản phẩm "báo cáo chính
-    thức luôn có người duyệt và phiên bản phát hành" — không có nội dung thì
-    không có cái gì để phát hành.
-  */
+  // QL2-05 còn chờ mẫu; TPR/Công an đã có mẫu theo tài liệu nhưng chưa có tệp đối chiếu trong workspace.
   const nhom = nhomCuaMuc("hoadon", muc);
-  const kyCo = baoCao ? KY_CUA_BAO_CAO[baoCao] : undefined;
+  const [tuK, datTuK] = useThamSo<string>("ktu", "");
+  const [denK, datDenK] = useThamSo<string>("kden", "");
+  const kyCo = useMemo(() => {
+    const ds = baoCao ? KY_CUA_BAO_CAO[baoCao] : undefined;
+    if (baoCao !== "QL2-02") return ds;
+    if (!ngayHopLe(tuK) || !ngayHopLe(denK) || tuK > denK) {
+      return [...KY_QL2_02, { ...KY_QL2_02[0], id: "q202-custom", loai: "TUYCHON" as const, nhan: "Tùy chọn" }];
+    }
+    const format = (s: string) => s.split("-").reverse().join("/");
+    return [...(ds ?? []), { id: `q202-custom-${tuK}-${denK}`, loai: "TUYCHON" as const, ngayDau: format(tuK), ngayChot: format(denK), nhan: `${format(tuK)} – ${format(denK)}`, hat: [...tuK + denK].reduce((n, c) => (n * 31 + c.charCodeAt(0)) >>> 0, 0) }];
+  }, [baoCao, tuK, denK]);
   const ky: KyQL2 = (kyCo?.find((k) => k.id === chon.ky) ?? kyCo?.[0] ?? KY_QL2_01[0]);
 
   const khoa = baoCao ? `QL2|${baoCao}|${ky.id}` : "";
   const banGhi = baoCao ? layBanGhi(khoa) : null;
   const choXem = useChoXemTruoc(khoa);
 
-  const boSheet = useMemo(() => (baoCao ? ql2Workbook(baoCao, ky, chon.donVi) : []), [baoCao, ky, chon.donVi]);
+  const boSheet = useMemo(() => (baoCao ? ql2Workbook(baoCao, ky, chon.donVi, vuongMac[ky.id] ?? []) : []), [baoCao, ky, chon.donVi, vuongMac]);
   const moXemTruoc = choXem && xem !== "" && boSheet.some((s) => s.name === xem);
 
   const meta: ReportMeta = {
@@ -79,19 +86,25 @@ export function HoaDonQL2({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
     status: banGhi?.trangThai ?? "DRAFT",
   };
 
-  return <div className="page-stack">
+  const moDanhSachChenh = (maDonVi: string, co = "", loc = "tatca", loai = "", ketqua = "") => {
+    const ma = maDonVi.split(",");
+    datDonVi(DON_VI_QL2.filter((d) => ma.includes(d.id)).map((d) => d.ten));
+    datThamSo({ donvi: maDonVi, co, loc, loaitk: loai, ketqua, trang: null });
+    datMuc("dschenh");
+  };
+
+  return <XuatProvider nut={baoCao && boSheet.length ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
     <PageIntro title="Rủi ro hóa đơn · Phòng QL2"/>
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
       nhanKy={`${baoCao} · ${ky.nhan.toLowerCase()}`}
-      chan={nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
-      xemTruoc={<NutXemTruoc mo={moXemTruoc} onToggle={() => datXem(moXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
+      chan={baoCao === "QL2-03" || baoCao === "QL2-06" ? "Chưa nạp tệp mẫu để đối chiếu đầy đủ các cột; chưa phát hành báo cáo." : nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
+      xemTruoc={boSheet.length > 0 && <NutXemTruoc mo={moXemTruoc} onToggle={() => datXem(moXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
       tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", meta.scope]]}
     />}
 
     {moXemTruoc && <KhoiXemTruoc
-      xuat={<ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton>}
       sheets={boSheet}
       meta={meta}
       ten={`${baoCao} · ${nhanBaoCao(baoCao!)}`}
@@ -107,47 +120,28 @@ export function HoaDonQL2({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
     <BoLocChung
       ky={baoCao ? undefined : "Theo từng báo cáo"}
       kyCo={kyCo}
+      kyTuyChon={baoCao === "QL2-02" ? <KhoangNgayK key={ky.id} ky={ky} onApply={(tu, den) => { datTuK(tu); datDenK(den); const id = `q202-custom-${tu}-${den}`; datKy(id); datThamSo({ ky: id }); }}/> : undefined}
       donViCo={DON_VI_CO}
       rutGon={rutGonTenDonVi}
       phuChu={baoCao ? `Báo cáo ${baoCao}` : undefined}
     />
 
+
     {muc === "tongquan" && <TongQuanQL2 onMo={datMuc}/>}
 
-    {muc === "th01" && <BangQL2_01 ky={ky} loaiTK="01" onMoDanhSach={() => datMuc("dschenh")}/>}
-    {muc === "th0304" && <BangQL2_01 ky={ky} loaiTK="0304" onMoDanhSach={() => datMuc("dschenh")}/>}
+    {muc === "th01" && <BangQL2_01 ky={ky} loaiTK="01" onMoDanhSach={moDanhSachChenh}/>}
+    {muc === "th0304" && <BangQL2_01 ky={ky} loaiTK="0304" onMoDanhSach={moDanhSachChenh}/>}
     {muc === "dschenh" && <>
-      <DanhSachChenhLech ky={ky} vaiTro={vaiTro}/>
-      {/* Tiến độ phiếu đứng NGAY DƯỚI danh sách sinh ra nó — §6 đặt hai thứ
-          này cùng một góc nhìn của phòng giao phiếu. */}
-      {vaiTro === "CV" && <TienDoPhieu loai="PRS-03" hatKy={ky.hat}/>}
-      {/* Nhập kết quả đứng SAU tiến độ: tiến độ nói còn đơn vị nào chưa trả,
-          khối nhập là chỗ gõ lại những gì đã trả. Cùng quyền với giao phiếu,
-          nên cùng một điều kiện vai trò. */}
-      {vaiTro === "CV" && <NhapKetQuaPhieu loai="PRS-03" hatKy={ky.hat}/>}
+      <DanhSachChenhLech ky={ky} vaiTro={vaiTro} meta={meta}/>
     </>}
 
     {muc === "kbc" && <BangHeSoK ky={ky}/>}
-    {muc === "kton" && <DanhSachK ky={ky}/>}
+    {muc === "kton" && <DanhSachK ky={ky} vaiTro={vaiTro}/>}
 
     {muc === "xm" && <BangXacMinh ky={ky}/>}
     {muc === "xmqh" && <TonQuaHanXM ky={ky}/>}
 
-    {muc === "tpr" && <Khung
-      tieuDe="QL2-03 · Rủi ro hóa đơn TPR"
-      moTa="Ghép kết quả phân tích rủi ro từ webtpr 6.5, mỗi đơn vị một file."
-      daBiet={[
-        "Nguồn: webtpr chức năng 6.5, kéo tự động ngày 26 hằng tháng, một file cho mỗi đơn vị.",
-        "Trục bảng: theo đơn vị — số NNT rủi ro, đã rà soát, chưa rà soát.",
-        "Nhịp kỳ: tháng.",
-      ]}
-      conThieu={[
-        "Mẫu báo cáo của phòng: tên cột nguyên văn và thứ tự nhóm.",
-        "Chỉ tiêu tính: một NNT xuất hiện ở nhiều file thì đếm một hay nhiều lần.",
-        "Khóa ghép giữa các file từng đơn vị.",
-      ]}
-      cauHoi={["Q-99"]}
-    />}
+    {muc === "tpr" && <TPRQL2 key={ky.id} ky={ky}/>}
 
     {muc === "cbrr" && <Khung
       tieuDe="QL2-05 · Ứng dụng cảnh báo rủi ro"
@@ -155,34 +149,20 @@ export function HoaDonQL2({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
       daBiet={[
         "Giai đoạn đầu nhận bốn file tải tay; về sau nối API.",
         "Hiển thị: danh sách cảnh báo đã gắn đơn vị + bảng đếm đơn vị × trạng thái.",
-        "Nhịp kỳ: tuần.",
+        "Nhịp kỳ báo cáo chờ thống nhất với phòng nghiệp vụ.",
       ]}
       conThieu={[
         "Đầu mối API và dạng dữ liệu trả về.",
         "Mẫu và chỉ tiêu của báo cáo.",
-        "File nguồn có cột tên trưởng đoàn và số tiền hay không — hai cột này không được lên web nếu có (S6).",
+        "Xác nhận trường tên trưởng đoàn và số tiền trong file nguồn để hiển thị theo quyền QL2 (Q-12, Q-13).",
       ]}
       cauHoi={["Q-04", "Q-12", "Q-13"]}
     />}
 
-    {muc === "congan" && <Khung
-      tieuDe="QL2-06 · Gói rủi ro hóa đơn Cơ quan Công an"
-      moTa="Danh sách gói và công văn, nhập tay trên hệ thống."
-      daBiet={[
-        "Dữ liệu do phòng nhập trên hệ thống, không kéo tự động.",
-        "Trường đã nêu: gói/công văn, MST, đơn vị, kết quả xử lý, cờ Đã nhập hddtbaocao (C/K).",
-        "Nhịp kỳ: tháng.",
-      ]}
-      conThieu={[
-        "Mô tả nghiệp vụ của báo cáo — hiện chưa có.",
-        "Mẫu báo cáo và chỉ tiêu tổng hợp.",
-        "Quy tắc đối chiếu giữa gói Công an và cột (26) của QL2-01.",
-      ]}
-      cauHoi={["Q-99"]}
-    />}
+    {muc === "congan" && <CongAnQL2 key={ky.id} ky={ky} vaiTro={vaiTro} meta={meta}/>}
 
     {muc === "nguon" && <DuLieuGoc nguon={NGUON_QL2} ngayBaoCao={ky.ngayChot}/>}
-  </div>;
+  </div></XuatProvider>;
 }
 
 export const nhanBaoCao = (ma: string) => ({
@@ -202,6 +182,7 @@ export const nhanBaoCao = (ma: string) => ({
 */
 function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
   const { chon } = useBoLoc();
+  const { vuongMac } = useQL2();
 
   const kyCL = KY_QL2_01[0];
   const kyK = KY_QL2_02[0];
@@ -209,7 +190,7 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
 
   const cl = theoDonVi(bangQL2_01(kyCL.hat, "01"), chon, (h) => h.dv.ten);
   const ds = theoDonVi(danhSachChenhLech(kyCL.hat), chon, (r) => r.dv.ten);
-  const k = theoDonVi(bangHeSoK(kyK.hat), chon, (h) => h.dv.ten);
+  const k = theoDonVi(bangHeSoK(kyK.hat, vuongMac[kyK.id] ?? []), chon, (h) => h.dv.ten);
   const xm = theoDonVi(bangXM(kyXM.hat), chon, (h) => h.dv.ten);
 
   const canRa = cl.reduce((t, h) => t + canRaSoat(h.ra).nnt + canRaSoat(h.vao).nnt, 0);
@@ -241,7 +222,7 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
       hai khối lồng nhau thay vì một khối có mấy ô. QL1 và QL3 dùng `.the-luoi`
       — tràn hết bề ngang thân khối, các ô chia nhau bằng đường kẻ một pixel.
     */}
-    <Panel title="Chênh lệch tờ khai – hóa đơn điện tử" subtitle={`${kyCL.nhan} · từ mục Tổng hợp 01GTGT và DS NNT chênh lệch`}>
+    <Panel chinh title="Chênh lệch tờ khai – hóa đơn điện tử" subtitle={`${kyCL.nhan} · từ mục Tổng hợp 01GTGT và DS NNT chênh lệch`}>
       <div className="the-luoi">
         <div className="the-so"><span className="the-nhan">NNT cần rà soát (lũy kế)</span><strong className="the-gia">{money(canRa)}</strong><span className="the-dvt">người nộp thuế</span></div>
         <div className="the-so"><span className="the-nhan">NNT chưa có kết quả</span><strong className="the-gia">{money(chuaCo)}</strong><span className="the-dvt">người nộp thuế</span></div>

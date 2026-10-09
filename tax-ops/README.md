@@ -91,3 +91,24 @@ kiểm tra cả sáu workspace ở desktop 1440px và mobile 390px, bao gồm tr
 vùng chạm và lỗi JavaScript.
 
 `npm run test:reports` kiểm tra tải báo cáo Excel/Word thực tế và quyền chuyên viên/trưởng phòng trên dev server. QL1 xuất cả bộ Excel 9 sheet, từng bảng/danh sách đang lọc và Word tổng hợp; QL3 xuất Excel 17 cột. Các tệp dùng dữ liệu mô phỏng, chưa phải văn bản chính thức đã phê duyệt.
+
+
+### Danh sách NNT chênh lệch QL2 — đối chiếu §4.2, §4.4, Q-96
+
+- Mặc định đọc kết quả r31, lọc theo kỳ, đơn vị, cờ, loại tờ khai và kết quả; xuất Excel theo danh sách đã lọc (mọi trang).
+- Ô số (9)–(31) của bảng tổng hợp mở danh sách theo đơn vị/khối, loại tờ khai và cờ/kết quả tương ứng.
+- PRS-03 là nhánh dự phòng. Chỉ CV thấy thao tác giao và mở phần phiếu khi metadata báo thiếu r31; các bảng phiếu giới hạn trong đơn vị thiếu nguồn.
+- Dữ liệu hiện vẫn mô phỏng. Fixture tháng 09/2026 có đủ r31; tháng 08/2026 thiếu T1. `donViThieuR31` trong `src/data/ql2.ts` là điểm thay bằng metadata tiếp nhận thật, không suy việc thiếu nguồn từ trạng thái “Chưa có kết quả”.
+- Chưa nối hddtbaocao thật; ánh xạ trạng thái r31 vẫn chờ Q-100. Dữ liệu tổng hợp và chi tiết là các fixture riêng, chưa dùng để nghiệm thu đối soát số. Giao/nhắc phiếu vẫn là demo, phản hồi chưa cập nhật báo cáo.
+- Kiểm tra: `node scripts/check-ql2-list.mjs http://127.0.0.1:5174/quan-ly/`.
+
+
+### QL2: hệ số K, XMHD, TPR, cảnh báo và gói Công an
+
+- Hệ số K mặc định tuần thứ Sáu–thứ Năm; có ngày, tháng và khoảng ngày/ngày chốt tùy chọn. Mỗi khoảng ngày có khóa báo cáo riêng. Danh sách chỉ lấy “Chưa xử lý”; đánh dấu/gỡ QLRR theo kỳ cập nhật tồn và Excel từ cùng nguồn dòng. Dữ liệu và ngưỡng ngành hiện mô phỏng; chưa phân loại các trạng thái còn chờ Q-98.
+- XMHD dùng thứ tự trạng thái 10, 14, 6, 7, 8; tồn = 6+7+8+10. Bảng và Excel đếm từ cùng dòng hóa đơn. Danh sách mặc định mọi dòng còn tồn; lọc quá hạn/sắp đến hạn chỉ là tiện ích tra cứu. Kỳ tuần chốt thứ Sáu.
+- QL2-05 vẫn là khung; tên trưởng đoàn/số tiền là các trường cần lấy theo Q-12/Q-13, không bị cấm hiển thị bởi S6 của QL4.
+- TPR dựng được cơ cấu 8501/Văn phòng, 25 TCS, phần “Trong đó” và lựa chọn lũy kế. Chưa có nguồn nên để trống; không tự tạo đủ 16 tên cột.
+- Gói Công an nhập được các tổng DN/HĐ phải/đã xử lý; tính còn lại và tỷ lệ DN, lưu nguồn/người/thời điểm trong phiên, CV sửa/TP xem. Bản xuất chỉ chứa số đã lưu. Đây chưa phải báo cáo đầy đủ bốn hình thức xử lý.
+- **Còn thiếu tệp để hoàn thiện đúng mẫu**: `Báo cáo TPR 01.10.xlsx`, `BC gói hđ CA 3007.xls`, `2.3. BC_QLTT3…(he so k).xlsx`. Thiết kế ghi đã nhận các mẫu ngày 06/10 nhưng chúng chưa có trong workspace; QLTT3 còn chờ Q-102. Các màn này thông báo đúng phần thiếu và chặn phát hành bản chưa đủ cột. Không xuất nhầm XMHD cho mã báo cáo khác.
+- Kiểm tra dev: `node scripts/check-ql2-tabs.mjs` (đối soát, kỳ, xuất dữ liệu, quyền, lưu dữ liệu và ảnh desktop/mobile); `node scripts/check-ql2-list.mjs` (hồi quy danh sách chênh lệch).

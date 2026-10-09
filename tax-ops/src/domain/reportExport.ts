@@ -7,7 +7,7 @@ import {
   thoiGianTB, tongDen, tongDi, tongTiepNhan, tyLeNho, tyLeQuaHan, tyLeTuDong, type KyQL4,
 } from "@/data/ql4";
 import {
-  I_DA_TRA, KHAC_QL2_01, TRANG_THAI_XM, bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua,
+  ngayTonDauK, I_DA_TRA, KHAC_QL2_01, TRANG_THAI_XM, bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua,
   daTraXM, tonCuoiK, tonXM, tongXM, type KyQL2,
 } from "@/data/ql2";
 import type { ReportStatus } from "@/domain/types";
@@ -103,15 +103,32 @@ export function ql1Details(tab: TabQL1, rows: HangQL1[]): ReportSheet {
   }
   return { name: names[tab], title: names[tab].replace(/_/g, " "), headers, rows: rows.map(values), unit: "Đồng" };
 }
-export function ql1Workbook(ky: KyQL1, units: string[]): ReportSheet[] {
-  const summaries = (["no", "cc", "th", "t06"] as const).map(tab => ql1Summary(ky, units, tab));
-  const details = (["no", "cc", "th", "t06"] as const).map(tab => ql1Details(tab, danhSachQL1(ky.hat, tab).filter(r => (!units.length || units.includes(r.donVi)) && inReportList(tab, r))));
+/*
+  Mỗi BÁO CÁO một bộ sheet — cùng luật đã ghi ở QL2 ngay dưới.
+
+  Trước đây hàm này trả cả chín sheet của phòng trong một tệp, tức ba báo cáo
+  khác kỳ và khác đầu mối nằm chung một workbook; người nhận không có cách
+  nào biết sheet nào thuộc kỳ nào. `baoCao` rỗng vẫn trả cả bộ, cho những chỗ
+  còn cần bản tổng hợp của phòng.
+*/
+const TAB_CUA_BAO_CAO_QL1: Record<string, readonly TabQL1[]> = {
+  "QL1-01": ["no"],
+  "QL1-03": ["cc"],
+  "QL1-04": ["th", "t06"],
+};
+
+export function ql1Workbook(ky: KyQL1, units: string[], baoCao?: string | null): ReportSheet[] {
+  const tabs: readonly TabQL1[] = (baoCao ? TAB_CUA_BAO_CAO_QL1[baoCao] : undefined) ?? ["no", "cc", "th", "t06"];
+  const summaries = tabs.map(tab => ql1Summary(ky, units, tab));
+  const details = tabs.map(tab => ql1Details(tab, danhSachQL1(ky.hat, tab).filter(r => (!units.length || units.includes(r.donVi)) && inReportList(tab, r))));
   const rules: ReportSheet = { name: "QuyTac_Nguon", title: "QUY TẮC VÀ NGUỒN", headers: ["Nội dung", "Giá trị/Nguyên tắc"], rows: [
     ["Ngày báo cáo", ky.ngayChot], ["Phạm vi", units.join("; ") || "Toàn ngành"],
     ...NGUON_QL1.map(n => [n.ten, `${n.heThong}; ngày chốt ${n.ngayChot}`]),
     ...ruleItems.filter(r => r.scope === "Nợ và cưỡng chế").map(r => [r.name, `${r.value}; hiệu lực: ${r.effectiveFrom ?? "chưa xác nhận"}`]),
   ] };
-  return [summaries[0], details[0], summaries[1], summaries[2], details[1], details[2], rules, summaries[3], details[3]];
+  /* Mỗi tab đi liền một cặp tổng hợp + danh sách, rồi mới tới sheet quy tắc:
+     người mở tệp đọc hết một chỉ tiêu trước khi sang chỉ tiêu sau. */
+  return [...tabs.flatMap((_, i) => [summaries[i], details[i]]), rules];
 }
 /* ── QL2 ─────────────────────────────────────────────────────────────────
 
@@ -142,7 +159,7 @@ const dongQL2 = <T extends { dv: { ten: string; ma: string; nhom: string; stt: n
   return { rows: out, bold };
 };
 
-export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[]): ReportSheet[] {
+export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[], vuongMac: readonly string[] = []): ReportSheet[] {
   const loc = <T extends { dv: { ten: string } }>(rows: T[]) => rows.filter((r) => !donVi.length || donVi.includes(r.dv.ten));
 
   if (baoCao === "QL2-01") {
@@ -192,7 +209,7 @@ export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[]): ReportS
   }
 
   if (baoCao === "QL2-02") {
-    const rows = loc(bangHeSoK(ky.hat));
+    const rows = loc(bangHeSoK(ky.hat, vuongMac));
     const gia = (r: typeof rows[number]): ReportValue[] => {
       const mau = r.tonDau + r.phatSinh;
       return [r.tonDau, r.phatSinh, r.daXuLy, tonCuoiK(r), ratio(r.daXuLy, mau), mau ? 1 - r.daXuLy / mau : null];
@@ -210,7 +227,7 @@ export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[]): ReportS
       title: `BÁO CÁO CẢNH BÁO HỆ SỐ K – ${ky.nhan.toUpperCase()}`,
       headers: [
         "STT", "Mã cơ quan thuế", "Tên cơ quan thuế",
-        `Số lượt cảnh báo tồn đầu kỳ`, "Số lượt cảnh báo phát sinh trong kỳ",
+        `Số lượt cảnh báo tồn đầu kỳ (Số liệu ngày ${ngayTonDauK(ky)})`, "Số lượt cảnh báo phát sinh trong kỳ",
         "Số lượt cảnh báo đã xử lý trong kỳ", `Số lượt cảnh báo tồn cuối kỳ (Số liệu ngày ${ky.ngayChot})`,
         "Tỉ lệ đã xử lý trong kỳ", "Tỷ lệ chưa xử lý trong kỳ",
       ],
@@ -220,18 +237,18 @@ export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[]): ReportS
     }];
   }
 
+  if (baoCao !== "QL2-04") return [];
   const rows = loc(bangXM(ky.hat));
   const gia = (r: typeof rows[number]): ReportValue[] => [
-    tongXM(r), daTraXM(r), tonXM(r), Math.max(0, tonXM(r) - r.quaHan), r.quaHan,
     ...TRANG_THAI_XM.map((_, i) => r.theoTrangThai[i]),
+    tongXM(r), tonXM(r),
     ratio(daTraXM(r), tongXM(r)),
   ];
   const congGia = (ds: typeof rows): ReportValue[] => {
     const theo = TRANG_THAI_XM.map((_, i) => ds.reduce((t, r) => t + r.theoTrangThai[i], 0));
     const tong = theo.reduce((t, x) => t + x, 0);
     const daTra = theo[I_DA_TRA];
-    const quaHan = ds.reduce((t, r) => t + r.quaHan, 0);
-    return [tong, daTra, tong - daTra, Math.max(0, tong - daTra - quaHan), quaHan, ...theo, ratio(daTra, tong)];
+    return [...theo, tong, tong - daTra, ratio(daTra, tong)];
   };
   const { rows: r2, bold } = dongQL2(rows, gia, congGia);
   return [{
@@ -239,13 +256,13 @@ export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[]): ReportS
     title: `TỔNG HỢP XÁC MINH HÓA ĐƠN – ${ky.nhan.toUpperCase()}`,
     headers: [
       "STT", "Mã cơ quan thuế", "Tên cơ quan thuế",
-      "Tổng", "Đã trả kết quả", "Tồn", "Tồn trong hạn", "Tồn quá hạn",
       ...TRANG_THAI_XM.map((t) => `Trạng thái ${t.ma} – ${t.nhan}`),
+      "Grand Total", "TỒN",
       "Tỷ lệ hoàn thành",
     ],
     rows: r2,
     bold,
-    percent: [8 + TRANG_THAI_XM.length + 1],
+    percent: [5 + TRANG_THAI_XM.length],
   }];
 }
 

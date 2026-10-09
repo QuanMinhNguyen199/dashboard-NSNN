@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Badge, Button, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
-import { useMucPhanHe } from "@/components/MucPhanHe";
+import { Badge, Button, DetailGrid, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
+import { CaseLayout } from "@/components/CaseLayout";
+import { ONhan, useChonHang } from "@/components/ChonHang";
+import { baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
+import { XuatProvider } from "@/components/ui";
 import { useDuyet } from "@/state/DuyetContext";
 import { inReportList, ql1Summary, ql1Details, ql1Workbook, type ReportMeta } from "@/domain/reportExport";
 import { exportExcel, exportWord } from "@/domain/reportFiles";
 import { useAction } from "@/state/ActionContext";
 import {
-  DON_VI_QL1, KY_QL1, KY_THEO_ID, NHAN_MOC, danhSachQL1, donViCuaTab, tongHopCuaTab,
+  DON_VI_QL1, KY_CUA_BAO_CAO_QL1, KY_QL1, KY_THEO_ID, NHAN_MOC, danhSachQL1, donViCuaTab, tongHopCuaTab,
   type BoNo, type DonViQL1, type HangQL1, type MocSoSanh, type OTongHop06, type OTongHopNo, type OTongHopXuLy, type TabQL1,
 } from "@/data/ql1";
 import { NGUONG, ruleItems, trieu, hienTyLe } from "@/data/thamSo";
@@ -112,6 +115,19 @@ interface CauHinhTab {
     trên màn này: người đọc không có cách nào biết mình đang nhìn tập nào.
   */
   cotDs: CotDs[];
+  /*
+    Cột nào ở lại trên BẢNG; phần còn lại đọc trong ngăn chi tiết.
+
+    Ba mục xử lý có mười ba tới mười lăm cột, rộng 1.578–2.304px trong khung
+    1.146px — tức phải kéo ngang hai, ba lần cho mỗi dòng. Mà việc trên bảng
+    là CHỌN ra người nộp thuế cần xử lý: là ai, thuộc đơn vị nào, nợ bao nhiêu
+    và đã làm tới đâu. Số quyết định, ngày thực hiện, kết luận và ghi chú là
+    thứ đọc khi đã chọn một dòng.
+
+    Bỏ trống thì bảng giữ nguyên mọi cột — mục "So sánh nợ" chỉ có bảy cột và
+    vừa đúng khung.
+  */
+  cotGon?: (keyof HangQL1)[];
 }
 
 const TIEN = (v: number) => <span className="num">{money(v)}</span>;
@@ -203,6 +219,7 @@ const CAU_HINH: CauHinhTab[] = [
     id: "cc", nhan: "Kết quả cưỡng chế",
     tieuDeDs: "Danh sách NNT chưa cưỡng chế",
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "tinhTrang", nhan: "Tình trạng" }],
+    cotGon: ["mst", "ten", "donVi", "tongDanhGia", "tinhTrang", "bienPhap"],
     cotDs: [
       ...COT_DINH_DANH, COT_CHUONG,
       { khoa: "noThang", nhan: "Nợ >90 ngày – nợ tháng", kieu: "tien" },
@@ -218,6 +235,7 @@ const CAU_HINH: CauHinhTab[] = [
     id: "th", nhan: "Tạm hoãn xuất cảnh",
     tieuDeDs: "Danh sách NNT trên ngưỡng chưa tạm hoãn xuất cảnh",
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "chuong", nhan: "Chương" }, { khoa: "tinhTrang", nhan: "Tình trạng" }],
+    cotGon: ["mst", "ten", "donVi", "tongDanhGia", "nguong", "tinhTrang"],
     cotDs: [
       ...COT_DINH_DANH, COT_CHUONG,
       { khoa: "noThang", nhan: "Nợ >120 ngày – nợ tháng", kieu: "tien" },
@@ -235,6 +253,7 @@ const CAU_HINH: CauHinhTab[] = [
     id: "t06", nhan: "Tạm hoãn XC · trạng thái 06",
     tieuDeDs: "Danh sách NNT trạng thái 06 chưa tạm hoãn xuất cảnh",
     locUngVien: [{ khoa: "maCQT", nhan: "Mã CQT" }, { khoa: "nhomXuLy", nhan: "Nhóm xử lý" }, { khoa: "chuong", nhan: "Chương" }],
+    cotGon: ["mst", "ten", "donVi", "noDanhGia", "nhomXuLy", "tinhTrang"],
     cotDs: [
       ...COT_DINH_DANH, COT_CHUONG,
       { khoa: "noDanhGia", nhan: "Tổng nợ KCHĐ theo MST", kieu: "tien" },
@@ -334,7 +353,16 @@ export function DebtQL1({ actor }: { actor: string }) {
      chúng. Khi đang ở tab phụ, giá trị này chỉ là chỗ dựa để hook không đổi
      số lần gọi giữa các lần dựng. */
   const tabNV: TabQL1 = laNghiepVu ? (tab as TabQL1) : "no";
-  const ky = KY_THEO_ID[chon.ky] ?? KY_QL1[0];
+  /*
+    Kỳ và vòng duyệt đi theo BÁO CÁO, không theo phòng — cùng mô hình QL2.
+
+    `SPec/QLDN1` giao mỗi báo cáo một kỳ riêng và một đầu mối riêng, nên một
+    khóa duyệt cho cả phòng nghĩa là bấm "Gửi duyệt" một lần là gửi cả ba báo
+    cáo dù chúng khác hạn.
+  */
+  const baoCao = baoCaoCuaMuc("debt", tab);
+  const kyCo = baoCao ? KY_CUA_BAO_CAO_QL1[baoCao] : undefined;
+  const ky = kyCo?.find((k) => k.id === chon.ky) ?? kyCo?.[0] ?? KY_THEO_ID[chon.ky] ?? KY_QL1[0];
   const dsDonVi = useMemo(() => donViCuaTab(tabNV), [tabNV]);
 
   /* Đổi mục thì bộ lọc của mục cũ không còn nghĩa; đổi kỳ hay đơn vị thì nó
@@ -387,6 +415,11 @@ export function DebtQL1({ actor }: { actor: string }) {
   const trangHienTai = Math.min(trang, soTrang);
   const rows = locDay.slice((trangHienTai - 1) * MOI_TRANG, (trangHienTai - 1) * MOI_TRANG + MOI_TRANG);
   const coLoc = search !== "" || Object.values(loc).some(Boolean);
+  /* Khóa riêng `nnt`, không dùng chung `so` với ô "dạng số" của bảng tổng hợp
+     ngay trên cùng màn. */
+  const { dangMo, datDangMo, dong: dongNNT, hang } = useChonHang("nnt");
+  const cotHien = cau.cotGon ? cau.cotDs.filter((c) => cau.cotGon!.includes(c.khoa)) : cau.cotDs;
+  const nnt = useMemo(() => locDay.find((r) => r.id === dangMo) ?? null, [locDay, dangMo]);
 
   const oDs = (row: HangQL1, c: CotDs) => {
     const v = row[c.khoa];
@@ -422,28 +455,28 @@ export function DebtQL1({ actor }: { actor: string }) {
     {cotPhang.map((c, i) => <td key={i} className="num">{c.o(o)}</td>)}
   </tr>;
 
-  const boSheet = useMemo(() => ql1Workbook(ky, chon.donVi), [ky, chon.donVi]);
+  const boSheet = useMemo(() => ql1Workbook(ky, chon.donVi, baoCao), [ky, chon.donVi, baoCao]);
   /* Hết lượt thì khối xem trước đóng lại VÀ địa chỉ sạch theo. Để lại `?xem=`
      là để lại một liên kết mở ra đúng thứ người nhận không được xem. */
-  const choXem = useChoXemTruoc(`QL1|${ky.id}`);
+  const khoa = baoCao ? `QL1|${baoCao}|${ky.id}` : "";
+  const choXem = useChoXemTruoc(khoa);
   useEffect(() => { if (!choXem && xem !== "") datXem(""); }, [choXem, xem, datXem]);
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
-  const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL1|${ky.id}`).trangThai };
-  const filename = `QL1_${ky.id}_${reportMeta.status}_mo-phong`;
-  return <div className="page-stack ql1-page">
+  const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(khoa).trangThai };
+  const filename = `${baoCao ?? "QL1"}_${ky.id}_${reportMeta.status}_mo-phong`;
+  return <XuatProvider nut={baoCao ? <><ExportButton onExport={() => exportExcel(boSheet, reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton onExport={() => exportWord(boSheet, reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></> : undefined}><div className="page-stack ql1-page">
     <PageIntro title="Báo cáo công tác nợ · Phòng QL1"/>
 
-    <ThanhDuyet
-      khoa={`QL1|${ky.id}`}
-      nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}
+    {baoCao && <ThanhDuyet
+      khoa={khoa}
+      nhanKy={`${baoCao} · ${ky.nhan.toLowerCase()}`}
       xemTruoc={<NutXemTruoc mo={moMoXemTruoc} onToggle={() => datXem(moMoXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
       tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", reportMeta.scope]]}
-    />
+    />}
 
     {/* Khối xem trước nằm NGAY SAU thanh duyệt, trong luồng trang: người duyệt
         nhìn thứ mình sắp ký ngay tại chỗ ký, và cả khối lọt vào ảnh chụp. */}
     {moMoXemTruoc && <KhoiXemTruoc
-      xuat={<><ExportButton onExport={() => exportExcel(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton onExport={() => exportWord(ql1Workbook(ky, chon.donVi), reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></>}
       sheets={boSheet}
       meta={reportMeta}
       ten="Báo cáo đánh giá công tác nợ · Phòng QL1"
@@ -451,16 +484,23 @@ export function DebtQL1({ actor }: { actor: string }) {
       onChonSheet={datXem}
     />}
 
-    {/* Thanh lọc đứng TRÊN cụm tab vì nó áp cho cả bốn mục. */}
+    {/*
+      Danh sách kỳ đi theo BÁO CÁO đang mở: RS-QL1-01 có thêm kỳ năm, hai báo
+      cáo kia không. Mục không thuộc báo cáo nào (Tổng quan, Quy tắc và
+      nguồn) thì ô kỳ nói thẳng "Theo từng báo cáo" thay vì bày một danh sách
+      không áp cho cái gì.
+    */}
     <BoLocChung
-      kyCo={KY_QL1.map((k) => ({ id: k.id, nhan: k.nhan, loai: k.loai }))}
+      ky={baoCao ? undefined : "Theo từng báo cáo"}
+      kyCo={kyCo?.map((k) => ({ id: k.id, nhan: k.nhan, loai: k.loai }))}
+      phuChu={baoCao ? `Báo cáo ${baoCao}` : undefined}
       donViCo={dsDonVi.map((d) => ({ id: d.id, ten: d.ten }))}
       rutGon={rutGon}
     />
 
     {tab === "tongquan" && <TongQuanQL1 ky={ky} trongPhamVi={trongPhamVi}/>}
 
-    {tab === "quytac" && <Panel title="Quy tắc và tham số" actions={<Button kind="quiet" onClick={() => setTab("nguon")}>Xem nguồn dữ liệu</Button>}>
+    {tab === "quytac" && <Panel chinh title="Quy tắc và tham số" actions={<Button kind="quiet" onClick={() => setTab("nguon")}>Xem nguồn dữ liệu</Button>}>
       <TableWrap label="quy tắc và tham số đang áp dụng"><table className="rules-table">
         <thead><tr><th scope="col">Quy tắc</th><th scope="col">Giá trị</th><th scope="col">Phạm vi</th><th scope="col">Hiệu lực từ</th><th scope="col">Tài liệu tham chiếu</th><th scope="col">Trạng thái</th></tr></thead>
         <tbody>{ruleItems.filter((r) => r.scope === "Nợ và cưỡng chế" || r.scope === "Toàn ngành").map((r) => <tr key={r.id}>
@@ -477,6 +517,7 @@ export function DebtQL1({ actor }: { actor: string }) {
     {tab === "nguon" && <DuLieuGoc nguon={NGUON_QL1} ngayBaoCao={ky.ngayChot}/>}
 
     {laNghiepVu && <Panel
+      chinh
       title="Tổng hợp theo đơn vị"
       actions={<div className="inline-controls">
         <ExportButton onExport={() => exportExcel([ql1Summary(ky, chon.donVi, tabNV)], reportMeta, `${filename}_${tabNV}.xlsx`)}>Xuất bảng này</ExportButton>
@@ -529,7 +570,13 @@ export function DebtQL1({ actor }: { actor: string }) {
           </table></TableWrap>}
     </Panel>}
 
-    {laNghiepVu && <Panel
+    {laNghiepVu && <CaseLayout
+      presentation="drawer"
+      label={nnt ? `Người nộp thuế ${nnt.mst}` : "Chi tiết người nộp thuế"}
+      mobileOpen={Boolean(nnt)}
+      onClose={dongNNT}
+      detail={nnt ? <ChiTietNNT row={nnt} cot={cau.cotDs} o={oDs}/> : null}
+    ><Panel
       title={cau.tieuDeDs}
       actions={<div className="inline-controls">
         <SearchField value={search} onChange={setSearch} placeholder="Tìm MST, tên hoặc đơn vị"/>
@@ -542,19 +589,41 @@ export function DebtQL1({ actor }: { actor: string }) {
         {coLoc && <Button kind="quiet" onClick={() => { setLoc({}); setSearch(""); }}>Đặt lại</Button>}
       </div>}
     >
-      <TableWrap label={cau.tieuDeDs}><table className="ql1-ds-table" style={{ minWidth: cau.cotDs.reduce((t, c) => t + rongCot(c), 0) }}>
-        <colgroup>{cau.cotDs.map((c) => <col key={c.khoa} style={{ width: rongCot(c) }}/>)}</colgroup>
-        <thead><tr>{cau.cotDs.map((c) => <th key={c.khoa} scope="col" className={c.kieu === "tien" ? "num" : undefined}>{c.nhan}</th>)}</tr></thead>
+      <TableWrap label={cau.tieuDeDs}><table className="ql1-ds-table" style={{ minWidth: cotHien.reduce((t, c) => t + rongCot(c), 0) }}>
+        <colgroup>{cotHien.map((c) => <col key={c.khoa} style={{ width: rongCot(c) }}/>)}</colgroup>
+        <thead><tr>{cotHien.map((c) => <th key={c.khoa} scope="col" className={c.kieu === "tien" ? "num" : undefined}>{c.nhan}</th>)}</tr></thead>
         <tbody>
-          {rows.map((row) => <tr key={row.id}>{cau.cotDs.map((c) => <td key={c.khoa} className={c.kieu === "tien" ? "num" : undefined}>{oDs(row, c)}</td>)}</tr>)}
-          {locDay.length === 0 && <tr><td className="table-empty" colSpan={cau.cotDs.length}>Không có người nộp thuế nào khớp bộ lọc đang đặt.</td></tr>}
+          {rows.map((row) => <tr key={row.id} {...hang(row.id)}>
+            {cotHien.map((c, i) => (i === 0
+              ? <ONhan key={c.khoa} id={row.id} dangMo={dangMo}>{oDs(row, c)}</ONhan>
+              : <td key={c.khoa} className={c.kieu === "tien" ? "num" : undefined}>{oDs(row, c)}</td>))}
+          </tr>)}
+          {locDay.length === 0 && <tr><td className="table-empty" colSpan={cotHien.length}>Không có người nộp thuế nào khớp bộ lọc đang đặt.</td></tr>}
         </tbody>
       </table></TableWrap>
       <footer className="table-footer">
-        <Pager trang={trangHienTai} soTrang={soTrang} onChange={setTrang}/>
+        {/* Sang trang thì dòng đang mở không còn trên bảng nữa, nên đóng ngăn
+            cùng lúc — để lại một ngăn trỏ vào dòng đã biến mất thì người đọc
+            không biết mình đang xem cái gì. */}
+        <Pager trang={trangHienTai} soTrang={soTrang} onChange={(v) => { setTrang(v); datDangMo(""); }}/>
         <ExportButton onExport={() => exportExcel([ql1Details(tabNV, locDay)], { ...reportMeta, scope: `${reportMeta.scope}; ${locDay.length} NNT phù hợp với bộ lọc` }, `${filename}_${tabNV}_danh-sach.xlsx`)}>Xuất danh sách đang lọc</ExportButton>
       </footer>
-    </Panel>}
+    </Panel></CaseLayout>}
+  </div></XuatProvider>;
+}
+
+/*
+  Chi tiết một người nộp thuế — bày ĐỦ mọi cột của mục đang mở, kể cả những
+  cột bảng gọn đã bỏ, và theo đúng thứ tự cột của mục ấy.
+
+  Dựng từ chính `cotDs` và chính hàm vẽ ô của bảng, nên thêm hay đổi một cột
+  là ngăn chi tiết đổi theo. Chép tay danh sách trường ra đây thì mỗi lần mẫu
+  đổi lại có một nơi quên sửa.
+*/
+function ChiTietNNT({ row, cot, o }: { row: HangQL1; cot: CotDs[]; o: (row: HangQL1, c: CotDs) => ReactNode }) {
+  return <div className="ql3-chitiet">
+    <p className="ql3-chitiet-ten"><strong>{row.ten}</strong><span>{row.mst} · {rutGon(row.donVi)}</span></p>
+    <DetailGrid items={cot.filter((c) => c.khoa !== "ten").map((c) => ({ label: c.nhan, value: o(row, c) }))}/>
   </div>;
 }
 
