@@ -13,6 +13,7 @@
 
 import { NGUONG, trieu } from "@/data/thamSo";
 import { DAY_TCS, maCuaTCS, nhanTCS, phongVPCua } from "@/data/danhMuc";
+import { nhanTuanChupNgay } from "@/data/nhanKy";
 
 export interface DonViQL1 {
   id: string;
@@ -51,7 +52,7 @@ export const DON_VI_THEO_ID = Object.fromEntries(DON_VI_QL1.map((d) => [d.id, d]
 
 export interface KyQL1 {
   id: string;
-  loai: "TUAN" | "THANG";
+  loai: "TUAN" | "THANG" | "NAM";
   /** Ngày chốt số của kỳ, dùng cho cả nhãn lẫn hạt giống sinh số. */
   ngayChot: string;
   nhan: string;
@@ -64,14 +65,34 @@ export interface KyQL1 {
   xếp cho đều bảy ngày một lần.
 */
 export const KY_QL1: KyQL1[] = [
-  { id: "t-3107", loai: "TUAN", ngayChot: "31/07/2026", nhan: "Tuần · nợ đến 31/07/2026", hat: 731 },
-  { id: "t-2207", loai: "TUAN", ngayChot: "22/07/2026", nhan: "Tuần · nợ đến 22/07/2026", hat: 722 },
-  { id: "t-1607", loai: "TUAN", ngayChot: "16/07/2026", nhan: "Tuần · nợ đến 16/07/2026", hat: 716 },
-  { id: "t-0707", loai: "TUAN", ngayChot: "07/07/2026", nhan: "Tuần · nợ đến 07/07/2026", hat: 707 },
+  { id: "t-3107", loai: "TUAN", ngayChot: "31/07/2026", nhan: nhanTuanChupNgay("31/07/2026"), hat: 731 },
+  { id: "t-2207", loai: "TUAN", ngayChot: "22/07/2026", nhan: nhanTuanChupNgay("22/07/2026"), hat: 722 },
+  { id: "t-1607", loai: "TUAN", ngayChot: "16/07/2026", nhan: nhanTuanChupNgay("16/07/2026"), hat: 716 },
+  { id: "t-0707", loai: "TUAN", ngayChot: "07/07/2026", nhan: nhanTuanChupNgay("07/07/2026"), hat: 707 },
   { id: "m-07", loai: "THANG", ngayChot: "31/07/2026", nhan: "Tháng 07/2026 · nợ đến 31/07/2026", hat: 1731 },
   { id: "m-06", loai: "THANG", ngayChot: "30/06/2026", nhan: "Tháng 06/2026 · nợ đến 30/06/2026", hat: 1630 },
   { id: "m-05", loai: "THANG", ngayChot: "31/05/2026", nhan: "Tháng 05/2026 · nợ đến 31/05/2026", hat: 1531 },
+  /* Kỳ NĂM chỉ có ở RS-QL1-01: bảng báo cáo của `SPec/QLDN1` ghi kỳ của nó
+     là "Tuần, tháng, năm", còn RS-QL1-03 và RS-QL1-04 là "Tuần, tháng". */
+  { id: "y-2025", loai: "NAM", ngayChot: "31/12/2025", nhan: "Năm 2025 · nợ đến 31/12/2025", hat: 2531 },
 ];
+
+/*
+  MỖI BÁO CÁO MỘT DANH SÁCH KỲ, không phải mỗi phòng một danh sách.
+
+  `SPec/QLDN1` giao kỳ theo từng báo cáo: RS-QL1-01 "Tuần, tháng, năm";
+  RS-QL1-03 và RS-QL1-04 "Tuần, tháng". Dùng chung một danh sách thì hoặc
+  RS-QL1-01 mất kỳ năm, hoặc hai báo cáo kia được chọn một kỳ chúng không có
+  — và người dùng không có cách nào biết kỳ nào hợp lệ với báo cáo nào.
+
+  Đây cũng là mô hình mà QL2 và QL4 đã theo; QL1 đi sau vì nó dựng từ
+  `design_ql1ql3`, tài liệu mô hình hóa cả phòng là MỘT báo cáo nhiều tab.
+*/
+export const KY_CUA_BAO_CAO_QL1: Record<string, KyQL1[]> = {
+  "QL1-01": KY_QL1,
+  "QL1-03": KY_QL1.filter((k) => k.loai !== "NAM"),
+  "QL1-04": KY_QL1.filter((k) => k.loai !== "NAM"),
+};
 
 export const KY_MAC_DINH = KY_QL1[0].id;
 export const KY_THEO_ID = Object.fromEntries(KY_QL1.map((k) => [k.id, k]));

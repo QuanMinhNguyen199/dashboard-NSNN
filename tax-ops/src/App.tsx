@@ -14,7 +14,7 @@ import { HoaDonQL2 } from "@/features/HoaDonQL2";
 import { HoanQL4 } from "@/features/HoanQL4";
 import { PhieuProvider } from "@/state/PhieuContext";
 import { KpiProvider } from "@/state/KpiContext";
-import { xoaThamSoMan } from "@/state/diaChi";
+import { xoaThamSoMan , datThamSo} from "@/state/diaChi";
 import { DuyetProvider } from "@/state/DuyetContext";
 import { LoginScreen } from "@/auth/LoginScreen";
 import { readDemoSession, writeDemoSession, type DemoUser } from "@/auth/demoAuth";
@@ -64,14 +64,24 @@ function readView(): ViewId {
 export function App() {
   const [view, setViewState] = useState<ViewId>(readView);
   const [user, setUser] = useState<DemoUser | null>(readDemoSession);
-  const setView = (next: ViewId) => {
-    if (next === view) return;
+  /*
+    `muc` đi kèm vì một mục trên thanh bên nay có thể trỏ thẳng vào một báo
+    cáo của phân hệ khác: QL2 không còn mục mang tên phân hệ, nên "Cảnh báo
+    hệ số K" vừa đổi màn vừa chọn mục. Đổi màn rồi mới đặt mục trong một lần
+    bấm thứ hai là một khung hình hiện mục cũ.
+  */
+  const setView = (next: ViewId, muc?: string) => {
+    if (next === view) {
+      if (muc) datThamSo({ muc });
+      return;
+    }
     /* Tham số của màn cũ không có nghĩa ở màn mới — `muc=cc` của báo cáo nợ
        mà còn lại ở màn tình trạng dữ liệu thì địa chỉ mô tả một trạng thái
        không tồn tại. Dọn trước, rồi mới ghi màn mới. */
     xoaThamSoMan();
     const query = new URLSearchParams(window.location.search);
     query.set("view", next);
+    if (muc) query.set("muc", muc);
     window.history.pushState({}, "", `${window.location.pathname}?${query}`);
     setViewState(next);
     window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });

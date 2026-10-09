@@ -40,7 +40,7 @@ export function DuLieuGoc({ nguon, ngayBaoCao }: { nguon: NguonDuLieu[]; ngayBao
       </span>
     </div>}
 
-    <Panel title="Nguồn dữ liệu của kỳ">
+    <Panel chinh title="Nguồn dữ liệu của kỳ">
       <TableWrap label="danh sách nguồn dữ liệu của kỳ"><table className="nguon-table">
         {/* Bề rộng đo theo chuỗi dài nhất THỰC SỰ có trong cột, không ước
             lượng: "Đối chiếu người nộp thuế" ở cột cuối và "Thời điểm thu

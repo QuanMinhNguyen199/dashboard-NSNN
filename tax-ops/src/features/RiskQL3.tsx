@@ -2,6 +2,7 @@ import { useEffect, useMemo, type ReactNode } from "react";
 import { PageIntro, Panel, TableWrap, integer, money } from "@/components/ui";
 import { BoLocChung, useBoLoc } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
+import { XuatProvider } from "@/components/ui";
 import { useDuyet } from "@/state/DuyetContext";
 import { ql3Workbook, type ReportMeta } from "@/domain/reportExport";
 import { exportExcel } from "@/domain/reportFiles";
@@ -153,7 +154,7 @@ export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiT
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL3|${ky.id}`).trangThai };
   const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
-  return <div className="page-stack ql1-page">
+  return <XuatProvider nut={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}><div className="page-stack ql1-page">
     <PageIntro title={ketQua ? "Kết quả tổng hợp · Phòng QL3" : "Kiểm tra tại bàn · Phòng QL3"}/>
 
     <ThanhDuyet
@@ -165,7 +166,6 @@ export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiT
 
     {/* Khối xem trước nằm NGAY SAU thanh duyệt, trong luồng trang. */}
     {moMoXemTruoc && <KhoiXemTruoc
-      xuat={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}
       sheets={boSheet}
       meta={reportMeta}
       ten="Kết quả kiểm tra tại bàn · Phòng QL3"
@@ -194,7 +194,7 @@ export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiT
     />}
 
     {tab === "kpi" && <KpiQL3 trongPhamVi={trongPhamVi} ky={ky} vaiTro={vaiTro}/>}
-    {tab === "ketqua" && <Panel title="Tổng hợp kết quả theo đơn vị" subtitle={`Lũy kế đến ${ky.denNgay}`}>
+    {tab === "ketqua" && <Panel chinh title="Tổng hợp kết quả theo đơn vị" subtitle={`Lũy kế đến ${ky.denNgay}`}>
       {trongPhamVi.length === 0
         ? <div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div>
         : <TableWrap label="tổng hợp kết quả kiểm tra tại bàn theo đơn vị"><table
@@ -226,10 +226,9 @@ export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiT
           Cột "đã hoàn thành" không tính hồ sơ đang chờ giải trình, nên luôn nhỏ hơn "đã thực hiện".
           Tỷ lệ theo KPI vượt 100% là bình thường, vì KPI do từng đơn vị tự đăng ký theo tháng.
         </p>
-        <ExportButton onExport={exportReport}>Xuất Excel</ExportButton>
       </footer>
     </Panel>}
-  </div>;
+  </div></XuatProvider>;
 }
 
 const pt2 = pt;
@@ -248,7 +247,7 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
   ky: { denNgay: string; thangKPI: string };
 }) {
   if (trongPhamVi.length === 0) {
-    return <Panel title="Tổng quan"><div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div></Panel>;
+    return <Panel chinh title="Tổng quan"><div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div></Panel>;
   }
   const xep = trongPhamVi
     .map((dv) => { const o = oCua.get(dv.id)!; return { dv, x: o.keHoach ? o.daHoanThanh / o.keHoach : 0, duoiKPI: o.kpiDangKy > 0 && o.daHoanThanh < o.kpiDangKy }; })
@@ -263,7 +262,7 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
   const tongTT = trangThai.reduce((t, x) => t + x.v, 0);
 
   return <>
-    <Panel title="Tiến độ kế hoạch năm" subtitle={`Lũy kế đến ${ky.denNgay}`}>
+    <Panel chinh title="Tiến độ kế hoạch năm" subtitle={`Lũy kế đến ${ky.denNgay}`}>
       <div className="the-luoi">
         <div className="the-so"><span className="the-nhan">Trong kế hoạch</span><strong className="the-gia">{integer(toan.keHoach)}</strong><span className="the-dvt">doanh nghiệp</span></div>
         <div className="the-so"><span className="the-nhan">Đã thực hiện</span><strong className="the-gia">{integer(toan.daThucHien)}</strong><span className="the-dvt">doanh nghiệp</span></div>

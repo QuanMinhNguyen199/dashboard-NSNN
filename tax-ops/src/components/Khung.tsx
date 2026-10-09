@@ -26,7 +26,7 @@ export function Khung({ tieuDe, moTa, daBiet, conThieu, cauHoi }: {
   /** Mã câu hỏi đang chờ trả lời, theo §8 bản thiết kế. */
   cauHoi: string[];
 }) {
-  return <Panel title={tieuDe} subtitle={moTa}>
+  return <Panel chinh title={tieuDe} subtitle={moTa}>
     <div className="khung">
       <div className="notice warning">
         <strong>Chưa có mẫu báo cáo từ phòng nghiệp vụ</strong>

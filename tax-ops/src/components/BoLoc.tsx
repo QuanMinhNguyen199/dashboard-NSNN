@@ -69,7 +69,7 @@ export function theoDonVi<T>(rows: T[], chon: LuaChonLoc, lay: (row: T) => strin
 
 export interface MucDonVi { id: string; ten: string }
 
-export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu }: {
+export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuyChon }: {
   /** Kỳ viết sẵn thành chữ. Dùng khi dữ liệu chỉ có MỘT kỳ. */
   ky?: string;
   /** Danh sách kỳ chọn được. Có nó thì `ky` bị bỏ qua. */
@@ -79,6 +79,8 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu }: {
   rutGon?: (donVi: string) => string;
   /** Một dòng ngắn nói phạm vi dữ liệu đang xem, đứng cuối thanh. */
   phuChu?: string;
+  /** Ô nhập kỳ tùy chọn thay cho danh sách kỳ cố định. */
+  kyTuyChon?: ReactNode;
 }) {
   const { chon, datDonVi, datKy } = useBoLoc();
   const [mo, setMo] = useState(false);
@@ -184,12 +186,12 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu }: {
               {loaiCo.map((l) => <button key={l} type="button" aria-pressed={loai === l} onClick={() => doiLoai(l)}>{NHAN_LOAI_KY[l]}</button>)}
             </div>
           </div>}
-          <div className="bo-loc-muc">
+          {loai === "TUYCHON" && kyTuyChon ? kyTuyChon : <div className="bo-loc-muc">
             <span className="bo-loc-nhan" id="bo-loc-ky-nhan">Kỳ</span>
             <select className="bo-loc-select" aria-labelledby="bo-loc-ky-nhan" value={kyHienTai?.id ?? ""} onChange={(e) => doiKy(e.target.value)}>
               {kyCungLoai.map((k) => <option key={k.id} value={k.id}>{k.nhan}</option>)}
             </select>
-          </div>
+          </div>}
         </>
       : <div className="bo-loc-muc">
           <span className="bo-loc-nhan">Kỳ</span>

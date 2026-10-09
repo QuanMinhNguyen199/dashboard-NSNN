@@ -17,13 +17,13 @@ import { CAU_HINH, dsPhieu, type LoaiPhieu } from "@/data/phieu";
   Chỉ CHUYÊN VIÊN thấy khối này. Ma trận §3 ghi "Giao phiếu rà soát cho đơn
   vị | ● | ✗" — trưởng phòng đọc số, không giao việc xuống đơn vị.
 */
-export function TienDoPhieu({ loai, hatKy }: { loai: LoaiPhieu; hatKy: number }) {
+export function TienDoPhieu({ loai, hatKy, donViChoPhep }: { loai: LoaiPhieu; hatKy: number; donViChoPhep?: string[] }) {
   const notify = useAction();
   const { daTraLoi } = usePhieu();
   const ch = CAU_HINH[loai];
 
   const theoDonVi = useMemo(() => {
-    const dong = dsPhieu(loai, hatKy);
+    const dong = dsPhieu(loai, hatKy).filter((d) => !donViChoPhep || donViChoPhep.includes(d.donVi));
     const bo = new Map<string, { donVi: string; ids: string[]; quaHan: string[]; maPhieu: string }>();
     for (const d of dong) {
       const cu = bo.get(d.donVi) ?? { donVi: d.donVi, ids: [], quaHan: [], maPhieu: d.maPhieu };
@@ -32,7 +32,7 @@ export function TienDoPhieu({ loai, hatKy }: { loai: LoaiPhieu; hatKy: number })
       bo.set(d.donVi, cu);
     }
     return [...bo.values()];
-  }, [loai, hatKy]);
+  }, [loai, hatKy, donViChoPhep]);
 
   const tongGiao = theoDonVi.reduce((t, x) => t + x.ids.length, 0);
   const tongTra = theoDonVi.reduce((t, x) => t + daTraLoi(x.ids), 0);

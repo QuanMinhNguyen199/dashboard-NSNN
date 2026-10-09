@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { Badge, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { Badge, DetailGrid, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { CaseLayout } from "@/components/CaseLayout";
+import { ONhan, useChonHang } from "@/components/ChonHang";
 import { theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { rutGonTenDonVi } from "@/data/danhMuc";
@@ -7,7 +9,7 @@ import type { VaiTro } from "@/domain/types";
 import {
   BAC_DIEM, COT_KIEM_TRA, KET_QUA_PRS05, LOAI_VENH, TRANG_THAI_KDT,
   bacCua, bangQL4_01, binhQuanQuaHan, canCapSo, chuaCapSo, dangXuLy, danhSachHoSo, danhSachVenh,
-  tongTiepNhan, tyLeQuaHan, tyLeTuDong, type HangQL4_01, type KyQL4,
+  tongTiepNhan, tyLeQuaHan, tyLeTuDong, type HangQL4_01, type HoSoHoan, type HoSoVenh, type KyQL4,
 } from "@/data/ql4";
 
 /*
@@ -111,7 +113,7 @@ export function BangQL4_01({ ky, onMoChiTiet }: { ky: KyQL4; onMoChiTiet: (muc: 
     ...(cot === "gon" ? [150, 150] : Array.from({ length: 12 }, () => 268)),
     126, 112, 118, 150, 150, 120, 96, 96];
 
-  return <Panel
+  return <Panel chinh
     title="Tiến độ giải quyết hồ sơ hoàn thuế TNCN"
     subtitle={`${ky.nhan} · nguồn: TMS 1.5.1 và 6.29.1, kéo thứ Năm`}
     actions={<Segmented
@@ -227,6 +229,7 @@ export function DangXuLy({ ky, nhom }: { ky: KyQL4; nhom: "VP" | "TCS" }) {
   const [kiemTra, datKiemTra] = useThamSo<"an" | "hien">("kt", "an", ["an", "hien"]);
   const [trang, datTrang] = useThamSoSo("trang", 1);
   const [tim, datTim] = useState("");
+  const { dangMo, datDangMo, dong, hang } = useChonHang();
 
   const tatCa = useMemo(() => danhSachHoSo(ky.hat, nhom), [ky.hat, nhom]);
   const loc = useMemo(() => {
@@ -240,71 +243,110 @@ export function DangXuLy({ ky, nhom }: { ky: KyQL4; nhom: "VP" | "TCS" }) {
   const soTrang = Math.max(1, Math.ceil(loc.length / MOI_TRANG));
   const t = Math.min(trang, soTrang);
   const hien = loc.slice((t - 1) * MOI_TRANG, t * MOI_TRANG);
+  const hoSo = useMemo(() => loc.find((r) => r.so === dangMo) ?? null, [loc, dangMo]);
   const rong = kiemTra === "hien"
-    ? [150, 136, 180, 230, 116, 116, 130, 160, 352, 180, ...COT_KIEM_TRA.map(() => 180)]
-    : [150, 136, 180, 230, 116, 116, 130, 160, 352, 180];
+    ? [150, 136, 230, 180, 160, 130, ...COT_KIEM_TRA.map(() => 180)]
+    : [150, 136, 230, 180, 160, 130];
 
-  return <Panel
-    title={`Hồ sơ đang xử lý · khối ${nhom === "VP" ? "Văn phòng" : "Thuế cơ sở"}`}
-    subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ · nguồn: TMS 6.29.1, 63 cột · sắp theo số ngày quá hạn`}
-    actions={<div className="inline-controls">
-      <Segmented
-        label="Nhóm cột kiểm tra tự động"
-        value={kiemTra}
-        onChange={datKiemTra}
-        options={[{ value: "an" as const, label: "Ẩn cột kiểm tra" }, { value: "hien" as const, label: "Hiện cột kiểm tra" }]}
-      />
-      <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm số hồ sơ hoặc MST"/>
-    </div>}
+  return <CaseLayout
+    presentation="drawer"
+    label={hoSo ? `Hồ sơ ${hoSo.so}` : "Chi tiết hồ sơ hoàn thuế"}
+    mobileOpen={Boolean(hoSo)}
+    onClose={dong}
+    detail={hoSo ? <ChiTietHoSo r={hoSo}/> : null}
   >
-    {/*
-      6.29.1 có 63 cột; màn hình mở sẵn mười cột người xử lý dùng hằng ngày,
-      còn nhóm "Kiểm tra tự động" bật khi cần (§5.6). Cột Số CMND/Căn cước của
-      nguồn KHÔNG có mặt ở đây — mục S7 bắt ẩn mặc định, và bản mẫu không có
-      lý do nào để mở nó ra.
-    */}
-    <TableWrap label={`hồ sơ đang xử lý khối ${nhom}`}>
-      <table className="ql1-ds-table" style={{ minWidth: rong.reduce((a, b) => a + b, 0) }}>
-        <colgroup>{rong.map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
-        <thead><tr>
-          <th scope="col">Số hồ sơ</th>
-          <th scope="col">MST</th>
-          <th scope="col">Tên người nộp thuế</th>
-          <th scope="col">Cơ quan thuế</th>
-          <th scope="col">Ngày nhận</th>
-          <th scope="col">Hạn xử lý</th>
-          <th scope="col" className="num">Số ngày quá hạn</th>
-          <th scope="col">Trạng thái hồ sơ</th>
-          <th scope="col">Trạng thái ký điện tử</th>
-          <th scope="col">Hình thức xử lý</th>
-          {kiemTra === "hien" && COT_KIEM_TRA.map((c) => <th key={c} scope="col" className="center">{c}</th>)}
-        </tr></thead>
-        <tbody>
-          {hien.map((r) => <tr key={r.so}>
-            <td>{r.so}</td>
-            <td>{r.mst}</td>
-            <td>{r.tenNNT}</td>
-            <td title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</td>
-            <td>{r.ngayNhan}</td>
-            <td>{r.hanXuLy}</td>
-            <td className="num">
-              {r.soNgayQuaHan > 0
-                ? <Badge tone="critical">quá {r.soNgayQuaHan}</Badge>
-                : <Badge tone="positive">còn {Math.abs(r.soNgayQuaHan)}</Badge>}
-            </td>
-            <td>{r.trangThai}</td>
-            <td>{r.trangThaiKDT}</td>
-            <td>{r.hinhThuc}</td>
-            {kiemTra === "hien" && r.kiemTra.map((ok, i) => <td key={i} className="center">
-              <span className={ok ? "kt-dat" : "kt-khong"} title={ok ? "Đạt" : "Không đạt"}>{ok ? "✓" : "✕"}</span>
-            </td>)}
-          </tr>)}
-          {hien.length === 0 && <tr><td className="table-empty" colSpan={rong.length}>Không có hồ sơ nào khớp bộ lọc.</td></tr>}
-        </tbody>
-      </table>
-    </TableWrap>
-    <Pager trang={t} soTrang={soTrang} onChange={datTrang}/>
-  </Panel>;
+    <Panel chinh
+      title={`Hồ sơ đang xử lý · khối ${nhom === "VP" ? "Văn phòng" : "Thuế cơ sở"}`}
+      subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ · nguồn: TMS 6.29.1, 63 cột · sắp theo số ngày quá hạn`}
+      actions={<div className="inline-controls">
+        <Segmented
+          label="Nhóm cột kiểm tra tự động"
+          value={kiemTra}
+          onChange={(v) => { datKiemTra(v); datDangMo(""); }}
+          options={[{ value: "an" as const, label: "Ẩn cột kiểm tra" }, { value: "hien" as const, label: "Hiện cột kiểm tra" }]}
+        />
+        <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); datDangMo(""); }} placeholder="Tìm số hồ sơ hoặc MST"/>
+      </div>}
+    >
+      {/*
+        6.29.1 có 63 cột. Bảng giữ SÁU cột đủ để chọn ra hồ sơ cần xử lý — là
+        ai, ở đơn vị nào, đang ở trạng thái nào và quá hạn bao lâu; ngày nhận,
+        hạn xử lý, trạng thái ký điện tử, hình thức xử lý và bốn cột kiểm tra
+        tự động đọc trong ngăn chi tiết. Mười cột của bản trước rộng 1.750px
+        trong khung 1.146px.
+
+        Nhóm "Kiểm tra tự động" vẫn bật ra thành cột được (§5.4): nó là thứ
+        người dùng quét theo CHIỀU DỌC — tìm xem cả trang có mấy hồ sơ trượt
+        cùng một phép kiểm — mà ngăn chi tiết mỗi lần chỉ mở một hồ sơ nên
+        không làm thay được.
+
+        Cột Số CMND/Căn cước của nguồn KHÔNG có mặt ở đây, kể cả trong ngăn
+        chi tiết — mục S7 bắt ẩn mặc định, và bản mẫu không có lý do nào để
+        mở nó ra.
+      */}
+      <TableWrap label={`hồ sơ đang xử lý khối ${nhom}`}>
+        <table className="ql1-ds-table" style={{ minWidth: rong.reduce((a, b) => a + b, 0) }}>
+          <colgroup>{rong.map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
+          <thead><tr>
+            <th scope="col">Số hồ sơ</th>
+            <th scope="col">MST</th>
+            <th scope="col">Tên người nộp thuế</th>
+            <th scope="col">Cơ quan thuế</th>
+            <th scope="col">Trạng thái hồ sơ</th>
+            <th scope="col" className="num">Số ngày quá hạn</th>
+            {kiemTra === "hien" && COT_KIEM_TRA.map((c) => <th key={c} scope="col" className="center">{c}</th>)}
+          </tr></thead>
+          <tbody>
+            {hien.map((r) => <tr key={r.so} {...hang(r.so)}>
+              <ONhan id={r.so} dangMo={dangMo}>{r.so}</ONhan>
+              <td>{r.mst}</td>
+              <td>{r.tenNNT}</td>
+              <td title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</td>
+              <td>{r.trangThai}</td>
+              <td className="num">
+                {r.soNgayQuaHan > 0
+                  ? <Badge tone="critical">quá {r.soNgayQuaHan}</Badge>
+                  : <Badge tone="positive">còn {Math.abs(r.soNgayQuaHan)}</Badge>}
+              </td>
+              {kiemTra === "hien" && r.kiemTra.map((ok, i) => <td key={i} className="center">
+                <span className={ok ? "kt-dat" : "kt-khong"} title={ok ? "Đạt" : "Không đạt"}>{ok ? "✓" : "✕"}</span>
+              </td>)}
+            </tr>)}
+            {hien.length === 0 && <tr><td className="table-empty" colSpan={rong.length}>Không có hồ sơ nào khớp bộ lọc.</td></tr>}
+          </tbody>
+        </table>
+      </TableWrap>
+      <Pager trang={t} soTrang={soTrang} onChange={(v) => { datTrang(v); datDangMo(""); }}/>
+    </Panel>
+  </CaseLayout>;
+}
+
+function ChiTietHoSo({ r }: { r: HoSoHoan }) {
+  return <div className="ql3-chitiet">
+    <p className="ql3-chitiet-ten"><strong>{r.tenNNT}</strong><span>{r.so} · {r.mst} · {rutGonTenDonVi(r.dv.ten)}</span></p>
+    <DetailGrid items={[
+      { label: "Trạng thái hồ sơ", value: r.trangThai },
+      { label: "Hình thức xử lý", value: r.hinhThuc },
+      { label: "Ngày nhận", value: r.ngayNhan },
+      { label: "Hạn xử lý", value: r.hanXuLy },
+      {
+        label: "Số ngày quá hạn",
+        value: r.soNgayQuaHan > 0
+          ? <Badge tone="critical">quá {r.soNgayQuaHan} ngày</Badge>
+          : <Badge tone="positive">còn {Math.abs(r.soNgayQuaHan)} ngày</Badge>,
+      },
+      { label: "Trạng thái ký điện tử", value: r.trangThaiKDT },
+      { label: "Phòng xử lý", value: r.phongXuLy },
+    ]}/>
+
+    {/* Bốn phép kiểm của 6.29.1 đọc theo CẶP tên–kết quả, không phải một hàng
+        tích chéo không nhãn như khi chúng là cột. */}
+    <h3 className="ql3-chitiet-de">Kiểm tra tự động</h3>
+    <DetailGrid items={COT_KIEM_TRA.map((c, i) => ({
+      label: c,
+      value: r.kiemTra[i] ? "Đạt" : <Badge tone="warning">Không đạt</Badge>,
+    }))}/>
+  </div>;
 }
 
 /* ── Tab 4 · Hồ sơ vênh ──────────────────────────────────────────────────── */
@@ -313,6 +355,7 @@ export function HoSoVenhBang({ ky, vaiTro, onGiaoPhieu }: { ky: KyQL4; vaiTro: V
   const { chon } = useBoLoc();
   const [loc1, datLoc] = useThamSo<"tatca" | "chuaco">("loc", "tatca", ["tatca", "chuaco"]);
   const [trang, datTrang] = useThamSoSo("trang", 1);
+  const { dangMo, datDangMo, dong, hang } = useChonHang();
 
   const tatCa = useMemo(() => danhSachVenh(ky.hat), [ky.hat]);
   const loc = useMemo(() => theoDonVi(tatCa, chon, (r) => r.dv.ten)
@@ -322,14 +365,22 @@ export function HoSoVenhBang({ ky, vaiTro, onGiaoPhieu }: { ky: KyQL4; vaiTro: V
   const t = Math.min(trang, soTrang);
   const hien = loc.slice((t - 1) * MOI_TRANG, t * MOI_TRANG);
   const chuaGiao = loc.filter((r) => r.ketQua === "Chưa có kết quả" && !r.phieu);
+  const venh = useMemo(() => loc.find((r) => r.so === dangMo) ?? null, [loc, dangMo]);
 
-  return <Panel
+  return <CaseLayout
+    presentation="drawer"
+    label={venh ? `Hồ sơ vênh ${venh.so}` : "Chi tiết hồ sơ vênh"}
+    mobileOpen={Boolean(venh)}
+    onClose={dong}
+    detail={venh ? <ChiTietVenh r={venh}/> : null}
+  >
+    <Panel chinh
     title="Hồ sơ vênh giữa TMS 1.5.1 và 6.29.1"
     subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ · ba loại vênh theo BR-40`}
     actions={<Segmented
       label="Lọc kết quả"
       value={loc1}
-      onChange={(v) => { datLoc(v); datTrang(1); }}
+      onChange={(v) => { datLoc(v); datTrang(1); datDangMo(""); }}
       options={[{ value: "tatca" as const, label: "Tất cả" }, { value: "chuaco" as const, label: "Chưa có kết quả" }]}
     />}
   >
@@ -345,26 +396,25 @@ export function HoSoVenhBang({ ky, vaiTro, onGiaoPhieu }: { ky: KyQL4; vaiTro: V
       >Giao phiếu PRS-05 · {money(chuaGiao.length)} hồ sơ</button>
     </div>}
 
+    {/* Sáu cột đủ để chọn: hồ sơ nào, của ai, vênh kiểu gì, đã rà soát chưa
+        và đã có phiếu chưa. MST với chiều vênh đọc trong ngăn chi tiết — tám
+        cột của bản trước rộng 1.510px trong khung 1.146px. */}
     <TableWrap label="hồ sơ vênh">
-      <table className="ql1-ds-table" style={{ minWidth: 1510 }}>
-        <colgroup>{[150, 136, 180, 230, 160, 260, 234, 160].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
+      <table className="ql1-ds-table" style={{ minWidth: 1140 }}>
+        <colgroup>{[150, 210, 170, 240, 220, 150].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
         <thead><tr>
           <th scope="col">Số hồ sơ</th>
-          <th scope="col">MST</th>
           <th scope="col">Tên người nộp thuế</th>
           <th scope="col">Cơ quan thuế</th>
-          <th scope="col">Chiều vênh</th>
           <th scope="col">Loại vênh</th>
           <th scope="col">Kết quả rà soát</th>
           <th scope="col">Phiếu PRS-05</th>
         </tr></thead>
         <tbody>
-          {hien.map((r) => <tr key={r.so}>
-            <td>{r.so}</td>
-            <td>{r.mst}</td>
+          {hien.map((r) => <tr key={r.so} {...hang(r.so)}>
+            <ONhan id={r.so} dangMo={dangMo}>{r.so}</ONhan>
             <td>{r.tenNNT}</td>
             <td title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</td>
-            <td>{r.chieu}</td>
             <td title={r.loai === LOAI_VENH[2] ? "Loại chưa có cách giải thích sẵn — đây là thứ phiếu PRS-05 sinh ra để hỏi" : undefined}>{r.loai}</td>
             <td className="o-xuong-dong">
               <Badge tone={r.ketQua === KET_QUA_PRS05[0] ? "warning" : "positive"}>{r.ketQua}</Badge>
@@ -372,12 +422,26 @@ export function HoSoVenhBang({ ky, vaiTro, onGiaoPhieu }: { ky: KyQL4; vaiTro: V
             </td>
             <td>{r.phieu || <span className="cell-empty">chưa giao</span>}</td>
           </tr>)}
-          {hien.length === 0 && <tr><td className="table-empty" colSpan={8}>Không có hồ sơ vênh nào khớp bộ lọc.</td></tr>}
+          {hien.length === 0 && <tr><td className="table-empty" colSpan={6}>Không có hồ sơ vênh nào khớp bộ lọc.</td></tr>}
         </tbody>
       </table>
     </TableWrap>
-    <Pager trang={t} soTrang={soTrang} onChange={datTrang}/>
-  </Panel>;
+    <Pager trang={t} soTrang={soTrang} onChange={(v) => { datTrang(v); datDangMo(""); }}/>
+    </Panel>
+  </CaseLayout>;
+}
+
+function ChiTietVenh({ r }: { r: HoSoVenh }) {
+  return <div className="ql3-chitiet">
+    <p className="ql3-chitiet-ten"><strong>{r.tenNNT}</strong><span>{r.so} · {r.mst} · {rutGonTenDonVi(r.dv.ten)}</span></p>
+    <DetailGrid items={[
+      { label: "Chiều vênh", value: r.chieu },
+      { label: "Loại vênh", value: r.loai },
+      { label: "Kết quả rà soát", value: <Badge tone={r.ketQua === KET_QUA_PRS05[0] ? "warning" : "positive"}>{r.ketQua}</Badge> },
+      { label: "Lý do", value: r.lyDo || <span className="cell-empty">—</span> },
+      { label: "Phiếu PRS-05", value: r.phieu || <span className="cell-empty">chưa giao</span> },
+    ]}/>
+  </div>;
 }
 
 /* ── Tab 5 · Chấm điểm ───────────────────────────────────────────────────── */
@@ -389,7 +453,7 @@ export function ChamDiem({ ky }: { ky: KyQL4 }) {
   const bq = binhQuanQuaHan(hang);
 
   return <>
-    <Panel
+    <Panel chinh
       title="Quy tắc chấm điểm đang áp"
       subtitle="Nạp từ sheet CHẤM ĐIỂM · chỉ xem; trưởng phòng sửa ở Danh mục của phòng"
     >

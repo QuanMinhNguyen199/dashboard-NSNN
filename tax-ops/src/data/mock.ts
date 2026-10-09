@@ -26,7 +26,7 @@ export const sourceBatches: SourceBatch[] = [
   { id: "TTR-2026-09", source: "TTR", period: "Tháng 9/2026", received: 35, expected: 35, rows: 182_406, quality: 98.4, status: "READY", updatedAt: "27/09 – 17:42" },
   { id: "TMS-NO-2026-09", source: "TMS", period: "Tháng 9/2026", received: 5, expected: 5, rows: 3_812, quality: 94.8, status: "WARNING", updatedAt: "27/09 – 16:20" },
   { id: "HDDT-2026-08", source: "HĐĐT", period: "Tháng 8/2026", received: 26, expected: 52, rows: 428_905, quality: 50, status: "MISSING", updatedAt: "26/09 – 15:08" },
-  { id: "VIETTEL-2026-09-27", source: "VIETTEL", period: "Ngày 27/09/2026", received: 1, expected: 1, rows: 684, quality: 100, status: "READY", updatedAt: "27/09 – 18:03" },
+  { id: "VIETTEL-2026-09-27", source: "Viettel", period: "Ngày 27/09/2026", received: 1, expected: 1, rows: 684, quality: 100, status: "READY", updatedAt: "27/09 – 18:03" },
   /* Chỉ dùng nguồn CÓ THẬT trong danh mục hệ thống. Thêm một cái tên nghe hợp lý
      nhưng không tồn tại là bịa ra một đường dữ liệu, không phải dựng giao diện. */
   { id: "XMHD-2026-09", source: "XMHĐ", period: "Tháng 9/2026", received: 12, expected: 12, rows: 96_120, quality: 99.1, status: "READY", updatedAt: "27/09 – 17:05" },
@@ -80,6 +80,6 @@ export const dataRuns: DataRun[] = [
   { id: "R-0908", source: "TMS", period: "Tháng 9/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 16:20", rowsSource: 3_812, rowsStore: 3_812, version: 4, status: "OK", note: "Kéo theo lịch 16h; tham số kỳ và phạm vi đúng như cán bộ chọn tay" },
   { id: "R-0907", source: "XMHĐ", period: "Tháng 9/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 17:05", rowsSource: 96_120, rowsStore: 96_120, version: 3, status: "OK", note: "Chia 3 lần kéo để nguồn không quá tải" },
   { id: "R-0906", source: "HĐĐT", period: "Tháng 8/2026", scope: "26 file mua vào", mode: "AUTO", startedAt: "26/09 – 15:08", rowsSource: null, rowsStore: 0, version: 1, status: "FAILED", note: "Hết thời gian chờ ở bước đăng nhập; chưa lấy được số dòng ở nguồn để đối soát" },
-  { id: "R-0905", source: "VIETTEL", period: "Ngày 27/09/2026", scope: "Tổng đài", mode: "AUTO", startedAt: "27/09 – 18:03", rowsSource: 684, rowsStore: 684, version: 1, status: "OK", note: "Chạy đúng 18h theo BR-42" },
+  { id: "R-0905", source: "Viettel", period: "Ngày 27/09/2026", scope: "Tổng đài", mode: "AUTO", startedAt: "27/09 – 18:03", rowsSource: 684, rowsStore: 684, version: 1, status: "OK", note: "Chạy đúng 18h theo BR-42" },
   { id: "R-0904", source: "TMS", period: "Tháng 8/2026", scope: "Toàn thành phố", mode: "AUTO", startedAt: "27/09 – 18:11", rowsSource: null, rowsStore: 54_907, version: 2, status: "RUNNING", note: "Đang kéo; đối soát số dòng chạy sau khi xong" },
 ];

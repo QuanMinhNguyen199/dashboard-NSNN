@@ -185,7 +185,7 @@ export function DanhSachDNQL3({ trongPhamVi, hatKy, ky, meta, tenTep }: {
     onClose={dong}
     detail={chon ? <ChiTiet d={chon}/> : null}
   >
-    <Panel
+    <Panel chinh
       title="Danh sách NNT đã kiểm tra tại bàn"
       subtitle={`${money(loc.length)} hồ sơ khai thuế · ${money(soDN)} doanh nghiệp được đếm vào báo cáo`}
       actions={<div className="inline-controls">

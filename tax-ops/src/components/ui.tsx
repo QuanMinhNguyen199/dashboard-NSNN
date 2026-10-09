@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import type { Tone } from "@/domain/types";
 
@@ -72,11 +72,37 @@ export function Kpi({ label, value, note, tone = "neutral" }: { label: string; v
   return <div className={`kpi tone-${tone}`}><span>{label}</span><strong>{value}</strong>{note && <small>{note}</small>}</div>;
 }
 
-export function Panel({ title, subtitle, actions, children, className = "" }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode; className?: string }) {
+/*
+  Nút xuất CẢ BỘ BÁO CÁO nằm trong ĐẦU KHỐI CHỨA BẢNG, cạnh bộ lọc của chính
+  khối ấy.
+
+  Truyền bằng context chứ không bằng prop xuyên tầng: nút dựng ở tệp phân hệ
+  (chỉ nó biết bộ sheet của mình), còn khối nằm trong tệp của từng mục — nối
+  dây qua từng tầng là hai chục chỗ phải nhớ cập nhật.
+
+  Khối nào nhận thì tự khai `chinh`. KHÔNG tự đoán "khối đầu tiên": một màn
+  có ba khối và thứ tự dựng có thể đổi, nên một phép đoán theo thứ tự sẽ lặng
+  lẽ chuyển nút sang khối khác vào một ngày không ai để ý.
+
+  Nút KHÔNG chịu ảnh hưởng của bộ lọc nhóm chỉ tiêu đứng cạnh nó: nhóm chỉ
+  tiêu là cách đọc trên màn, còn tệp phải ra đủ cột theo mẫu. Bộ sheet dựng
+  thẳng từ dữ liệu nên điều này đúng theo cấu trúc, không theo quy ước.
+*/
+const XuatNgu = createContext<ReactNode>(null);
+
+export function XuatProvider({ nut, children }: { nut: ReactNode; children: ReactNode }) {
+  return <XuatNgu.Provider value={nut}>{children}</XuatNgu.Provider>;
+}
+
+export function Panel({ title, subtitle, actions, children, className = "", chinh = false }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode; className?: string; chinh?: boolean }) {
+  const xuat = useContext(XuatNgu);
+  /* Nút xuất đứng TRƯỚC thao tác của khối, và thứ tự ấy do đây quyết định
+     chứ không do nơi gọi — hai màn cạnh nhau phải xếp giống nhau. */
+  const hanhDong = chinh && xuat ? <>{xuat}{actions}</> : actions;
   return <section className={`panel ${className}`.trim()}>
     <header className="panel-head">
       <div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>
-      {actions && <div className="panel-actions">{actions}</div>}
+      {hanhDong && <div className="panel-actions">{hanhDong}</div>}
     </header>
     <div className="panel-body">{children}</div>
   </section>;

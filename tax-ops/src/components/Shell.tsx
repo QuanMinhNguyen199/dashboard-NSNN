@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui";
-import { CUM_MUC, MucPhanHeProvider, MucSidebar } from "@/components/MucPhanHe";
+import { CUM_MUC, MucPhanHeProvider, MucDuLieuCuaPhanHe, MucSidebar, MucTheoBaoCao, tachTheoBaoCao } from "@/components/MucPhanHe";
 import { TaxLogo } from "@/components/TaxLogo";
 import type { ViewId } from "@/domain/types";
 import { NAV, NHAN_VAI, NHOM, navCho } from "@/components/nav";
@@ -21,7 +21,7 @@ export const NSNN_LINK = (() => {
   return url.href;
 })();
 
-export function Shell({ view, user, onView, onLogout, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId) => void; onLogout: () => void; children: ReactNode }) {
+export function Shell({ view, user, onView, onLogout, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId, muc?: string) => void; onLogout: () => void; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -67,12 +67,32 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
         return <div className="nav-section" role="group" aria-label={nhan} key={nhom}>
           <span className="nav-group" aria-hidden="true">{nhan}</span>
           {muc.map((item) => <Fragment key={item.id}>
-            <NavItem item={item} active={view === item.id} onView={onView}/>
-            {/* Cụm mục chỉ hiện dưới phân hệ ĐANG MỞ. Dựng nó dưới mọi phân
-                hệ thì thanh bên thành một mục lục ba chục dòng, và người dùng
-                phải đọc mục của phòng khác để tìm mục của mình. */}
-            {CUM_MUC[item.id] && <MucSidebar view={item.id} visible={view === item.id} onNavigate={() => setMenuOpen(false)}/>}
+            {/*
+              Phân hệ NHIỀU BÁO CÁO không còn mục mang tên phân hệ: từng báo
+              cáo lên thẳng cấp này. Giữ thêm một mục "Rủi ro hóa đơn" ở trên
+              sáu báo cáo của nó là một tầng chỉ để bấm qua.
+            */}
+            {tachTheoBaoCao(item.id)
+              ? <MucTheoBaoCao view={item.id} dangMo={view === item.id} onMo={onView} onNavigate={() => setMenuOpen(false)}/>
+              : <>
+                  <NavItem item={item} active={view === item.id} onView={onView}/>
+                  {/* Cụm mục chỉ hiện dưới phân hệ ĐANG MỞ. Dựng nó dưới mọi
+                      phân hệ thì thanh bên thành một mục lục ba chục dòng. */}
+                  {CUM_MUC[item.id] && <MucSidebar view={item.id} visible={view === item.id} onNavigate={() => setMenuOpen(false)}/>}
+                </>}
           </Fragment>)}
+          {/*
+            Mục của phân hệ thuộc cụm này nhưng không thuộc báo cáo nào —
+            "Dữ liệu gốc" của QL2 và QL4. Nó nói về NGUỒN kéo về, cùng một
+            việc với "Tình trạng dữ liệu" đứng ngay trên.
+          */}
+          {nhom === "data" && duoc.filter((x) => tachTheoBaoCao(x.id)).map((x) => <MucDuLieuCuaPhanHe
+            key={x.id}
+            view={x.id}
+            dangMo={view === x.id}
+            onMo={onView}
+            onNavigate={() => setMenuOpen(false)}
+          />)}
         </div>;
       })}
     </nav>
@@ -142,6 +162,6 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   </div></MucPhanHeProvider>;
 }
 
-function NavItem({ item, active, onView }: { item: (typeof NAV)[number]; active: boolean; onView: (view: ViewId) => void }) {
+function NavItem({ item, active, onView }: { item: (typeof NAV)[number]; active: boolean; onView: (view: ViewId, muc?: string) => void }) {
   return <button type="button" className={`nav-item${active ? " is-active" : ""}`} aria-current={active ? "page" : undefined} onClick={() => onView(item.id)}><span>{item.label}</span></button>;
 }

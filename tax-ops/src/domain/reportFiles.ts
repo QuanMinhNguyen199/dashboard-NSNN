@@ -40,18 +40,33 @@ export async function exportExcel(sheets: ReportSheet[], meta: ReportMeta, filen
 export async function exportWord(sheets: ReportSheet[], meta: ReportMeta, filename: string) {
   const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, Footer } = await import("docx");
   const paragraph = (text: string, bold = false) => new Paragraph({ children: [new TextRun({ text, bold, font: "Times New Roman", size: 24 })], spacing: { after: 160 } });
-  const sections = [
-    { sheet: sheets[0], title: "I. Đánh giá tình hình nợ", indices: [1, 2, 3, 4, 5] },
-    { sheet: sheets[2], title: "II. Kết quả cưỡng chế nợ thuế", indices: [0, 2, 4, 6, 7] },
-    { sheet: sheets[3], title: "III. Tạm hoãn xuất cảnh", indices: [0, 2, 4, 6, 7] },
-    { sheet: sheets[7], title: "IV. Tạm hoãn xuất cảnh đối với NNT trạng thái 06", indices: [0, 2, 4, 7, 5] },
+  /*
+    Lấy sheet theo TÊN, không theo vị trí.
+
+    Bản trước dò `sheets[0]`, `sheets[2]`, `sheets[3]`, `sheets[7]` — đúng khi
+    workbook của QL1 luôn có đủ chín sheet. Từ khi mỗi báo cáo một bộ sheet,
+    workbook có thể chỉ còn ba, và chỉ số cố định sẽ lấy nhầm sheet hoặc lấy
+    `undefined`. Phần nào không có trong bộ thì bỏ qua, và số La Mã đánh lại
+    theo những phần thật sự có.
+  */
+  const KHOI = [
+    { ten: "So_Sanh_No", title: "Đánh giá tình hình nợ", indices: [1, 2, 3, 4, 5] },
+    { ten: "Danh gia Ket qua cuong che", title: "Kết quả cưỡng chế nợ thuế", indices: [0, 2, 4, 6, 7] },
+    { ten: "Danh gia Tam hoan XC", title: "Tạm hoãn xuất cảnh", indices: [0, 2, 4, 6, 7] },
+    { ten: "Bao_cao_tong_hop", title: "Tạm hoãn xuất cảnh đối với NNT trạng thái 06", indices: [0, 2, 4, 7, 5] },
   ];
+  const SO = ["I", "II", "III", "IV"];
+  const sections = KHOI
+    .map((k) => ({ ...k, sheet: sheets.find((s) => s.name === k.ten) }))
+    .filter((k) => k.sheet)
+    .map((k, i) => ({ sheet: k.sheet, title: `${SO[i]}. ${k.title}`, indices: k.indices }));
   const children: (InstanceType<typeof Paragraph> | InstanceType<typeof Table>)[] = [
     paragraph("THUẾ THÀNH PHỐ HÀ NỘI – PHÒNG QL1", true),
     paragraph("BÁO CÁO ĐÁNH GIÁ CÔNG TÁC NỢ VÀ CƯỠNG CHẾ NỢ THUẾ", true),
     paragraph("KHỐI DOANH NGHIỆP, TỔ CHỨC", true), ...metaLines(meta).map(t => paragraph(t)),
   ];
   for (const { sheet, title, indices } of sections) {
+    if (!sheet) continue;
     children.push(paragraph(title, true), paragraph("Đơn vị tính số tiền: triệu đồng."));
     const rows = [indices.map(i => sheet.headers[i]), ...sheet.rows.map(row => indices.map(i => {
       const v = row[i]; return typeof v === "number" ? new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1, style: sheet.percent?.includes(i) ? "percent" : "decimal" }).format(v) : v ?? "—";

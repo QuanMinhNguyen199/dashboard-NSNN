@@ -390,6 +390,41 @@ Ba lý do chọn thanh bên cho cả mục nội dung:
 
 Hệ quả bắt buộc: cụm mục KHÔNG được xuất hiện trên trang — xem chốt kiểm `soatTrucDoc` trong `scripts/acceptance.mjs`.
 
+**The Report Is The Tab Rule (chốt 08/10/2026).** Phân hệ có NHIỀU báo cáo thì mỗi **báo cáo** là một mục cấp ngoài của thanh bên, không phải một nhãn nằm trong mục mang tên phân hệ.
+
+Bản trước gộp cả sáu báo cáo của QL2 vào trong mục "Rủi ro hóa đơn", nên thanh bên có ba tầng: phân hệ → nhãn nhóm → mục. Tầng giữa chỉ để đọc, không bấm được, nên muốn sang báo cáo khác phải nhắm vào một mục con của nó; và sáu báo cáo nằm chung một mục buộc người dùng cuộn qua hai chục dòng của báo cáo khác để tới cái của mình.
+
+Bốn ràng buộc:
+
+- **Không còn mục mang tên phân hệ.** Giữ thêm một mục "Rủi ro hóa đơn" trên sáu báo cáo của nó là một tầng chỉ để bấm qua.
+- **Nhãn chỉ mang TÊN CHỦ ĐỀ**, bỏ mã `QL2-01`. Mã là của bảng phân công báo cáo: có ích khi đối chiếu tài liệu, không có ích khi tìm đường. Nó vẫn nằm ở `baoCao` và vẫn hiện trên tiêu đề kỳ của thanh duyệt.
+- **Bấm vào báo cáo mở mục ĐẦU của nó**, và chỉ báo cáo đang mở mới bày mục con. Không có màn riêng cho "một báo cáo nói chung", mà để nó không làm gì thì nó vẫn chỉ là một nhãn.
+- **Cha có con thì cha KHÔNG tự bày nội dung.** Bấm vào báo cáo là nhảy xuống mục con thứ nhất, và chính mục con ấy bày nội dung — nên lúc nào cũng có đúng một mục con đang sáng và người dùng biết mình đang đọc cái gì. Cha mang `is-active` để thấy đang ở nhóm nào nhưng KHÔNG mang `aria-current="page"`: trang hiện tại là mục con, và hai thứ cùng khai "page" thì trình đọc màn hình đọc ra hai trang đang mở.
+- **Báo cáo chỉ có MỘT mục là một mục lá**, bày nội dung ngay, vì không có con nào để nhảy xuống (QL2-03, QL2-05, QL2-06). Cùng hình dạng với "Tổng quan".
+- **Không giấu mục con nào.** Bản đầu giấu mục con trùng tên với cha rồi cho cha mở thẳng nó; kết quả là bấm "Xác minh hóa đơn" ra nội dung mà không mục con nào sáng, nhìn như cha đang bày bảng. Chỗ nào trùng tên thì ĐỔI TÊN mục con cho đúng nội dung của nó — §4.2 gọi tab 6 của QL2-04 đúng bằng tên báo cáo, nên nó lấy tên theo nội dung ("Tổng hợp theo đơn vị"), song song với cách đặt tên của QL2-01 ngay trên.
+
+Mục không thuộc báo cáo nào đi theo nghĩa của nó: **Tổng quan** đứng đầu cụm Phân hệ; **Dữ liệu gốc** xuống cụm Dữ liệu cạnh "Tình trạng dữ liệu", vì nó nói về NGUỒN kéo về chứ không về một báo cáo.
+
+QL3 hiện mới dựng một báo cáo nên **giữ nguyên** một tầng mục phẳng dưới tên phân hệ: không có báo cáo nào để tách, tách là tạo một tầng rỗng. Nó sẽ theo luật này khi RS-QL3-02 (bộ báo cáo khối) được dựng.
+
+**QL1 đã tách (08/10/2026).** Nó dựng từ `design_ql1ql3`, tài liệu mô hình hóa cả phòng là MỘT báo cáo mười một tab, nên nó từng có một cụm phẳng bảy mục, một danh sách kỳ và MỘT vòng duyệt. `SPec/QLDN1` thì giao sáu báo cáo riêng, mỗi cái một kỳ và một đầu mối — và ba trong số đó đã dựng:
+
+| Mục cấp ngoài | Báo cáo | Kỳ theo spec |
+|---|---|---|
+| Đánh giá nợ | RS-QL1-01 | Tuần, tháng, **năm** |
+| Đánh giá kết quả cưỡng chế | RS-QL1-03 | Tuần, tháng |
+| Tạm hoãn xuất cảnh → *Trên ngưỡng nợ* · *Trạng thái 06* | RS-QL1-04 | Tuần, tháng |
+
+Ba hệ quả bắt buộc đi kèm, cả ba đều từng sai khi còn gộp:
+
+- **Mỗi báo cáo một vòng duyệt**, khóa là `QL1|<báo cáo>|<kỳ>`. Một khóa cho cả phòng nghĩa là bấm "Gửi duyệt" một lần là gửi cả ba báo cáo, dù chúng khác hạn và khác người chịu trách nhiệm.
+- **Mỗi báo cáo một danh sách kỳ.** Dùng chung một danh sách thì hoặc RS-QL1-01 mất kỳ năm, hoặc hai báo cáo kia được chọn một kỳ chúng không có.
+- **Mỗi báo cáo một bộ sheet** (`ql1Workbook(ky, donVi, baoCao)`). Trước đây một tệp gom chín sheet của ba báo cáo khác kỳ; người nhận không có cách nào biết sheet nào thuộc kỳ nào. Bản xuất Word vì thế cũng lấy sheet theo TÊN chứ không theo vị trí, và đánh lại số La Mã theo những phần thật sự có.
+
+Ba báo cáo còn thiếu so với spec — RS-QL1-02 Thu hồi nợ đọng, RS-QL1-05 Cảnh báo phân loại nợ, RS-QL1-06 TTHC về nợ — **chưa dựng**. Đây mới là sửa mô hình của phần đã có.
+
+Ràng buộc kỹ thuật đi kèm: đổi mục TRONG cùng phân hệ phải gọi `datMuc` của `MucPhanHeProvider`; `setView` chỉ ghi địa chỉ nên thanh bên sẽ đứng yên. Sang phân hệ khác thì ngược lại — provider của phân hệ kia chưa dựng, nên phải đổi màn và đặt mục trong cùng một lần (`setView(view, muc)`).
+
 **The Summary And Its List Are One Section Rule.** Bảng tổng hợp theo đơn vị và danh sách chi tiết của chính nó nằm trong CÙNG một mục, không tách thành hai tab. Vì thế bảy mục của QL1 phủ mười một tab mà §4.2 liệt kê:
 
 | Mục trên màn | Tab của §4.2 |
@@ -448,19 +483,28 @@ Dải gợi ý cuộn từng chỉ hiện từ 900px xuống. Nhưng tràn ngang
 
 Cùng một lý do áp cho **The 44px Floor Rule**: luật ghi "từ 900px trở xuống" thì khối CSS phải là `max-width: 900px`, và nó phải đứng **sau** luật nền của cùng selector — media query không cộng thêm độ đặc hiệu. Hai luật vùng chạm của thanh lọc từng nằm trong khối 720px, nên dải 721–900px rơi lại 32px suốt một thời gian mà không ai thấy: bộ khổ của `soat` nhảy thẳng từ 1280 xuống 390. **Phép kiểm không đo dải nào thì không bảo vệ được dải ấy** — 768×1024 nay nằm trong bộ khổ.
 
-**The Export Lives On What It Exports Rule (chốt 07/10/2026).** Phạm vi của một nút xuất mã hóa bằng **VỊ TRÍ**, không chỉ bằng nhãn:
+**The Export Lives On What It Exports Rule (chốt 08/10/2026).** Phạm vi của một nút xuất mã hóa bằng **VỊ TRÍ**, không chỉ bằng nhãn:
 
 | Xuất cái gì | Nút nằm ở đâu | Nhãn |
 |---|---|---|
-| Cả bộ sheet của báo cáo | trong **khối Xem báo cáo** | ,  |
-| Một bảng | đầu khối của chính bảng ấy |  |
-| Danh sách đang lọc | chân khối của chính danh sách ấy |  |
+| Cả bộ sheet của báo cáo | **đầu khối chứa bảng**, cạnh bộ lọc của chính khối ấy | `Xuất Excel`, `Xuất Word` |
+| Một bảng | đầu khối của chính bảng ấy | `Xuất bảng này` |
+| Danh sách đang lọc | chân khối của chính danh sách ấy | `Xuất danh sách đang lọc` |
 
-Luật này sinh ra từ một lỗi có thật. Khi măng sét bỏ, nút xuất cả bộ được đưa vào đầu khối chính của mục — và ở màn KPI đăng ký nó đứng ngay cạnh : hai nút cùng một hàng mà khác phạm vi, một cái xuất cả bộ báo cáo, một cái lưu bảng đang mở. Nhãn phân biệt được, nhưng vị trí thì mời đọc nhầm — và bộ nhãn ba tên ở trên vốn đã sinh ra vì người dùng từng phải đoán.
+Chỗ đặt nút xuất cả bộ đã đi qua ba bản, và lý do loại từng bản ghi lại ở đây để không ai thử lại:
 
-Khối Xem báo cáo đang hiện đúng bộ sheet mà nút sinh ra, nên nút nằm trên chính vật nó tác động. Đầu khối của nó vốn bỏ trống (không nút đóng, không chip trạng thái — cả hai đã có trên thanh duyệt).
+1. **Măng sét** — bỏ cùng măng sét (The No Masthead Rule).
+2. **Hàng nút lẻ ở đầu trang** — một nút đứng một mình trên một hàng trắng, đúng thứ chú thích cũ của `PageIntro` gọi là "bơ vơ".
+3. **Trong khối Xem báo cáo** — nút nằm trên chính vật nó xuất, nhưng phải mở khối mới tới được, và khối ấy chỉ dựng khi `choXemTruoc` đúng nên trưởng phòng xem kỳ Bản nháp mất luôn đường xuất.
 
-**Cái giá, đã biết và đã chọn:** khối Xem báo cáo chỉ dựng khi  đúng — có việc để làm, hoặc kỳ đã  / . Trưởng phòng mở một kỳ  không có việc gì để làm sẽ **không xuất được**. Đây là đổi quyền chứ không phải đổi bố cục; nếu sau này cần trả lại thì nới , đừng thêm một nút xuất thứ hai ở chỗ khác.
+Bản đang dùng: **đầu khối chứa bảng**. Nút đi tới đó qua context (`XuatProvider`), khối nào nhận thì tự khai `chinh` — KHÔNG đoán "khối đầu tiên" theo thứ tự dựng, vì một màn có ba khối và thứ tự có thể đổi.
+
+Bốn ràng buộc:
+
+- **Mỗi màn nhiều nhất MỘT chỗ đặt nút.** Cùng một việc ở hai nơi thì người dùng phải dừng lại hỏi hai nút có khác nhau không. Chốt kiểm đếm số khối mang nút trên mọi màn × hai khổ.
+- **Bộ lọc nhóm chỉ tiêu KHÔNG ảnh hưởng tới tệp.** Nhóm chỉ tiêu là cách đọc trên màn; tệp ra đủ cột theo mẫu. Bộ sheet dựng thẳng từ dữ liệu nên điều này đúng theo cấu trúc, không theo quy ước.
+- **Mục không thuộc báo cáo nào thì không có nút** (Tổng quan, Quy tắc và nguồn, Dữ liệu gốc) — không có bộ sheet để xuất.
+- **Hàng thao tác của đầu khối nằm NGANG.** `.panel-actions` là flex, `align-items: end` để nút thẳng hàng với ô chọn chứ không với nhãn nhỏ phía trên nó. Trước đây nó là khối thường, nên khối nào có hai thứ thì chúng rơi xuống hai dòng và đầu khối cao gấp đôi — lỗi không lộ ra cho tới khi nút xuất về đây, vì phần lớn khối chỉ có một nút.
 
 **The Fixed Furniture Rule.** Không đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay. Sidebar trái, thanh lọc chung dính lên mép trên khung nhìn, bộ lọc riêng của bảng nằm trong đầu khối, thao tác chính nằm bên phải đầu khối — đây là lằn ranh người dùng đặt ra, và mọi màn mới thừa hưởng nó.
 
@@ -702,7 +746,36 @@ Tên trạng thái lấy theo FRS chứ không theo bản thiết kế (G10 gọ
 
 **The Selected Row Keeps Its Fill.** Mực phụ `--ink-3` đạt 5,05:1 trên nền trắng nhưng chỉ 4,07:1 trên nền hàng đang chọn. Cách sửa phía nền đòi làm nhạt nền tới mức chỉ còn 1,11:1 so với trắng — lúc đó hàng đang chọn không còn ra dáng đang chọn. Nên mực đổi, nền giữ: trong hàng đang chọn, `small` lùi lên `--ink-2` (6,04:1).
 
-**The Four Tabs Open The Same Way Rule.** Bốn mục của QL1 mở đầu danh sách chi tiết bằng cùng năm cột, cùng thứ tự: MST · Tên NNT · Phòng / Thuế cơ sở · Mã CQT · Loại NNT. Sau đó là Chương (ba mục có), rồi khối tiền riêng của mục, rồi khối xử lý, và cuối cùng là Kết luận với Ghi chú.
+**The Table Picks, The Drawer Reads Rule (chốt 09/10/2026).** Mọi **danh sách hồ sơ** — một dòng là một ca cần xử lý — giữ trên bảng những cột đủ để **chọn**, và để mọi cột còn lại cho **ngăn trượt** mở khi bấm cả hàng. Việc trên màn danh sách là triage: tìm ra ca cần làm, rồi mới đọc nó. Cột nào không đổi được quyết định "mở dòng này hay dòng kia" thì nó không thuộc về bảng.
+
+Trước ngày chốt, sáu danh sách của bốn phòng bày đủ mọi cột của nguồn: 1.450px tới 2.304px trong khung 1.146px, tức kéo ngang hai ba lần cho mỗi dòng. Nay cả sáu vừa khung, không cuộn ngang ở khổ 1440.
+
+| Màn | Trước | Sau |
+|---|---|---|
+| QL1 · ba mục xử lý (cưỡng chế, tạm hoãn, trạng thái 06) | 13–15 cột, 1.578–2.304px | 6 cột |
+| QL2 · Hóa đơn còn tồn xác minh | 10 cột, 1.550px | 6 cột |
+| QL2 · Hệ số K – Lượt còn tồn | 13 cột, 2.116px | 7 cột |
+| QL4 · Hồ sơ đang xử lý | 10 cột, 1.750px | 6 cột |
+| QL4 · Hồ sơ vênh | 8 cột, 1.510px | 6 cột |
+| QL4 · Danh sách phiếu ghi | 10 cột, 1.748px | 6 cột |
+
+Bốn điều ràng buộc, dựng một lần trong `components/ChonHang.tsx` để sáu màn không lạc nhau: hồ sơ đang mở nằm trong **địa chỉ** (`?so=`, hoặc `?nnt=` ở QL1 vì `so` đã mang nghĩa khác trên cùng màn ấy); đóng ngăn thì con trỏ về đúng dòng vừa bấm; **nút nằm trong hàng là việc riêng của nó**, bấm nút không mở ngăn; và ngăn phải mang **đủ** những cột bảng đã bỏ — bỏ cột mà không có chỗ đọc lại là giấu số, không phải thu gọn.
+
+Ngoại lệ, và lý do: **lưới nhập liệu** không áp luật này. Màn "Nhập kết quả phiếu" và "Gói rủi ro Công an" có ô nhập trong từng hàng và bấm hàng đã mang nghĩa chọn-để-điền, nên một ngăn trượt sẽ cướp mất cú bấm ấy; chúng giữ bảng rộng. **Bảng báo cáo theo mẫu** cũng không áp: cột của chúng là cột của sheet Excel, bỏ bớt là lệch mẫu.
+
+**The Group Header Says The Formula Rule (chốt 09/10/2026).** Khi một bảng tổng hợp có mấy cột cộng lại thành một cột khác, **xếp chúng cạnh nhau dưới một tiêu đề nhóm** thay vì viết công thức vào dòng chú thích. Bảng "Xác minh hóa đơn · theo đơn vị" từng chép đúng thứ tự tệp nguồn (10 · 14 · 6 · 7 · 8) rồi dặn bên dưới "Tồn = 6 + 7 + 8 + 10" — người đọc phải tự ánh xạ bốn mã sang bốn cột rời nhau. Nay bốn trạng thái tồn đứng dưới một tiêu đề "Còn tồn" kèm cột "Cộng tồn", và câu công thức không cần viết nữa. Mã trạng thái lùi vào `title`: nó là khóa đối chiếu với tệp nguồn, không phải thứ người đọc cần trên mỗi tiêu đề cột.
+
+Cùng lần chốt ấy, cột "Đang kẹt ở bước nào" (thanh năm sắc) đã **gỡ**: tài liệu không ghi cách đọc nào như vậy, nên nó là một kết luận bản mẫu tự nghĩ ra — cùng lý do với **The Overview Invents Nothing Rule**.
+
+**The Week Label Says Which Week And Which Days Rule (chốt 09/10/2026).** Nhãn kỳ tuần có MỘT dạng cho cả bốn phòng: `Tuần 39/2026 · 18/09–24/09`. Nó nói đủ hai thứ người dùng cần — tuần nào, và tuần ấy là những ngày nào.
+
+Trước ngày chốt mỗi báo cáo tự đặt một kiểu: QL1 `Tuần · nợ đến 31/07/2026`, QL2-02 `Tuần 39/2026 · 18/09–24/09`, QL2-04 `Tuần 39/2026 · đến 25/09`, QL4 `Tuần 39/2026`. Hai kiểu đầu không nói số tuần, kiểu cuối không nói ngày nào. Đổi tab là đổi cách đọc, trong khi kỳ là thứ người dùng kiểm lại mỗi lần mở một báo cáo. Số tuần tính theo ISO 8601 trong `data/nhanKy.ts`, không viết cứng vào từng danh mục kỳ.
+
+**Một ngoại lệ, có lý do:** ngày chốt tuần của QL1 không cách nhau bảy ngày — tệp gốc có 07/07, 16/07, 22/07, 31/07, tức cách nhau 9, 6 rồi 9 ngày, và tài liệu ghi rõ điều đó là có thật. Số nợ cũng là ảnh chụp TẠI ngày chốt chứ không phải tổng của một khoảng. Nên QL1 giữ hình dạng chung nhưng nói thẳng đây là mốc chụp: `Tuần 31/2026 · nợ đến 31/07`. Bịa ra một khoảng bảy ngày cho nó là dựng một kỳ không tồn tại.
+
+**The Block Is A Filter, Not Just A Sort Rule (chốt 09/10/2026).** Bảng xếp Văn phòng trước, Thuế cơ sở sau là một cách SẮP, không thay được cách LỌC: khối Thuế cơ sở có 25 đơn vị, nên muốn chỉ đọc năm phòng Văn phòng thì phải bỏ qua hai mươi lăm dòng bằng mắt, còn thanh lọc chung thì chọn từng đơn vị — tick đủ 25 ô là một việc khác hẳn. Màn tổng hợp theo đơn vị vì thế có ô lọc **Khối** (`?khoi=`). Khi đang lọc, dòng tổng cộng **tổng của phần đang xem** và đổi nhãn theo (`Cộng Khối Văn phòng Thuế TP Hà Nội`): để nó cộng cả hai khối thì mọi phép so dòng-với-tổng trên màn đều sai.
+
+**The Four Tabs Open The Same Way Rule.** Bốn mục của QL1 mở đầu danh sách chi tiết bằng cùng **ba** cột, cùng thứ tự: MST · Tên NNT · Phòng / Thuế cơ sở. Trong **ngăn chi tiết**, thứ tự đầy đủ vẫn là MST · Tên NNT · Phòng / Thuế cơ sở · Mã CQT · Loại NNT, rồi Chương (ba mục có), rồi khối tiền riêng của mục, rồi khối xử lý, và cuối cùng là Kết luận với Ghi chú. (Trước 09/10/2026 cả năm cột định danh đứng trên bảng; từ khi ba mục xử lý thu gọn, Mã CQT và Loại NNT lùi vào ngăn — luật giữ nguyên, chỗ áp thì đổi.)
 
 Ba sheet Excel gốc tự chúng xếp khác nhau — sheet cưỡng chế để "Phòng/TCS" ở cột 5, sheet trạng thái 06 để nó ở cột 10 dưới tên "Map Phòng/Thuế cơ sở". Bê nguyên từng sheet lên màn thì đổi mục là phải dò lại từ đầu xem cột đơn vị nằm đâu, mà đổi mục là thao tác người dùng làm liên tục.
 

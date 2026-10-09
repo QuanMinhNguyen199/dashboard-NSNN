@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Badge, Button, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { useMemo, useState } from "react";
+import { Badge, Button, DetailGrid, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { CaseLayout } from "@/components/CaseLayout";
+import { ONhan, useChonHang } from "@/components/ChonHang";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { rutGonTenDonVi } from "@/data/danhMuc";
 import {
@@ -106,7 +108,7 @@ export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
 
   const rong = [260, 130, 140, 150, 110, 150, 140, 150, 110, 160, 124, 190, 120];
 
-  return <Panel
+  return <Panel chinh
     title="Báo cáo sản lượng cuộc gọi"
     subtitle={`${ky.nhan} · nguồn: Viettel, kéo 18:00 · gộp theo đơn vị qua danh mục tài khoản`}
     actions={<Segmented
@@ -183,7 +185,7 @@ export function PhieuGhiMaTran({ ky }: { ky: KyQL4 }) {
   const tongO = (trangThai: string, hetHan: boolean | null) =>
     ds.filter((p) => p.trangThai === trangThai && (hetHan === null || p.hetHan === hetHan)).length;
 
-  return <Panel
+  return <Panel chinh
     title="Phiếu ghi theo đơn vị"
     subtitle={`${ky.nhan} · ${money(ds.length)} phiếu · nguồn: Viettel, kéo 18:00`}
   >
@@ -244,7 +246,7 @@ export function SaiHan({ ky }: { ky: KyQL4 }) {
     .sort((a, b) => b.so - a.so);
 
   return <>
-    <Panel title="Phiếu có hạn xử lý không đúng quy trình" subtitle={`${ky.nhan} · ${money(sai.length)} phiếu`}>
+    <Panel chinh title="Phiếu có hạn xử lý không đúng quy trình" subtitle={`${ky.nhan} · ${money(sai.length)} phiếu`}>
       {sai.length === 0
         ? <div className="empty-state"><strong>Không có phiếu nào sai hạn trong kỳ</strong></div>
         : <TableWrap label="sai hạn theo đơn vị">
@@ -297,13 +299,7 @@ export function SaiHan({ ky }: { ky: KyQL4 }) {
 export function DanhSachPhieu({ ky }: { ky: KyQL4 }) {
   const [trang, datTrang] = useThamSoSo("trang", 1);
   const [tim, datTim] = useState("");
-  const [moTa, datMoTa] = useState<PhieuGhi | null>(null);
-  const khoiMoTa = useRef<HTMLElement>(null);
-  /* Nhớ nơi vừa bấm để trả con trỏ về đúng ô khi đóng — người dùng bàn phím
-     không bị ném về đầu bảng sau mỗi lần mở một mô tả. */
-  const oVuaBam = useRef<HTMLElement | null>(null);
-  useEffect(() => { if (moTa) khoiMoTa.current?.focus(); }, [moTa]);
-  const dongMoTa = () => { datMoTa(null); requestAnimationFrame(() => oVuaBam.current?.focus()); };
+  const { dangMo, datDangMo, dong, hang } = useChonHang();
 
   const ds = useMemo(() => danhSachPhieu(ky.hat), [ky.hat]);
   const loc = useMemo(() => {
@@ -314,75 +310,78 @@ export function DanhSachPhieu({ ky }: { ky: KyQL4 }) {
   const soTrang = Math.max(1, Math.ceil(loc.length / MOI_TRANG));
   const t = Math.min(trang, soTrang);
   const hien = loc.slice((t - 1) * MOI_TRANG, t * MOI_TRANG);
+  const phieu = useMemo(() => loc.find((p) => p.id === dangMo) ?? null, [loc, dangMo]);
 
-  return <Panel
-    title="Danh sách phiếu ghi"
-    subtitle={`${ky.nhan} · ${money(loc.length)} phiếu · 14 cột gốc Viettel`}
-    actions={<SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm ID hoặc chủ đề"/>}
+  return <CaseLayout
+    presentation="drawer"
+    label={phieu ? `Phiếu ${phieu.id}` : "Chi tiết phiếu ghi"}
+    mobileOpen={Boolean(phieu)}
+    onClose={dong}
+    detail={phieu ? <ChiTietPhieu p={phieu}/> : null}
   >
-    {/*
-      Cột "Mô tả" là văn bản tự do chứa họ tên, địa chỉ, số điện thoại, CCCD
-      của người nộp thuế (S6). Nó chỉ xuất hiện ở ĐÂY, cắt còn hai dòng, và
-      không bao giờ đi vào thẻ số, biểu đồ hay email.
-
-      Nhãn `expirationDate` của nguồn đổi thành "Hạn xử lý" trên màn hình; tệp
-      xuất ra giữ tên gốc để ghép lại với dữ liệu Viettel vẫn khớp.
-    */}
-    <TableWrap label="danh sách phiếu ghi">
-      <table className="ql1-ds-table" style={{ minWidth: 1748 }}>
-        <colgroup>{[150, 190, 150, 240, 220, 320, 212, 180, 150, 136].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
-        <thead><tr>
-          <th scope="col">ID</th>
-          <th scope="col">Ngày tạo</th>
-          <th scope="col">Trạng thái</th>
-          <th scope="col">Chủ đề</th>
-          <th scope="col">Phân loại</th>
-          <th scope="col">Mô tả</th>
-          <th scope="col">Đơn vị xử lý</th>
-          <th scope="col">Chuyên viên tiếp nhận</th>
-          <th scope="col">Hạn xử lý</th>
-          <th scope="col">Tiến độ</th>
-        </tr></thead>
-        <tbody>
-          {hien.map((p) => <tr key={p.id}>
-            <td>{p.id}</td>
-            <td>{p.ngayTao}</td>
-            <td>{p.trangThai}</td>
-            <td>{p.chuDe}</td>
-            <td>{p.phanLoai}</td>
-            <td>
-              <button type="button" className="o-mota" aria-expanded={moTa?.id === p.id} onClick={(e) => { oVuaBam.current = e.currentTarget; datMoTa(moTa?.id === p.id ? null : p); }}>
-                {p.moTa}
-              </button>
-            </td>
-            <td title={p.donVi}>{p.donVi === CHUA_XAC_DINH ? p.donVi : rutGonTenDonVi(p.donVi)}</td>
-            <td>{p.chuyenVien}</td>
-            <td>{p.hanXuLy}</td>
-            <td>{p.hetHan ? <Badge tone="critical">Hết hạn</Badge> : <Badge tone="positive">Trong hạn</Badge>}</td>
-          </tr>)}
-        </tbody>
-      </table>
-    </TableWrap>
-    <Pager trang={t} soTrang={soTrang} onChange={datTrang}/>
-
-    {/* Mô tả đầy đủ mở TRONG LUỒNG dưới bảng, không phải lớp phủ. */}
-    {/*
-      Khối chi tiết đóng được bằng Escape và nhận con trỏ khi hiện, giống khối
-      chi tiết dựng bằng `CaseLayout` — hai khối cùng vai mà một cái đóng được
-      bằng bàn phím còn cái kia không thì người dùng phải nhớ mình đang ở màn
-      nào mới biết phím nào có tác dụng.
-    */}
-    {moTa && <section
-      ref={khoiMoTa}
-      tabIndex={-1}
-      className="case-detail"
-      aria-label={`Mô tả phiếu ${moTa.id}`}
-      onKeyDown={(e) => { if (e.key === "Escape") dongMoTa(); }}
+    <Panel chinh
+      title="Danh sách phiếu ghi"
+      subtitle={`${ky.nhan} · ${money(loc.length)} phiếu · 14 cột gốc Viettel`}
+      actions={<SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); datDangMo(""); }} placeholder="Tìm ID hoặc chủ đề"/>}
     >
-      <button type="button" className="case-detail-close" onClick={dongMoTa}><span>Đóng mô tả</span></button>
-      <Panel title={`Phiếu ${moTa.id} · ${moTa.chuDe}`} subtitle={`${moTa.phanLoai} · tạo bởi ${moTa.taoBoi} · hạn ${moTa.hanXuLy}`}>
-        <p className="mota-day">{moTa.moTa}</p>
-      </Panel>
-    </section>}
-  </Panel>;
+      {/*
+        Sáu cột đủ để chọn ra phiếu cần xem; mười cột gốc rộng 1.748px trong
+        khung 1.146px.
+
+        Cột "Mô tả" là văn bản tự do chứa họ tên, địa chỉ, số điện thoại, CCCD
+        của người nộp thuế (S6). Trước đây nó là một cột cắt còn hai dòng, mở
+        ra một khối dưới bảng. Nay nó chỉ nằm trong ngăn chi tiết — tức chỉ
+        hiện khi có người chủ động mở một phiếu, không còn phơi hai dòng đầu
+        của mười hai hồ sơ cho bất cứ ai đi ngang màn hình. Nó vẫn không bao
+        giờ đi vào thẻ số, biểu đồ hay email.
+
+        Nhãn `expirationDate` của nguồn đổi thành "Hạn xử lý" trên màn hình;
+        tệp xuất ra giữ tên gốc để ghép lại với dữ liệu Viettel vẫn khớp.
+      */}
+      <TableWrap label="danh sách phiếu ghi">
+        <table className="ql1-ds-table" style={{ minWidth: 1038 }}>
+          <colgroup>{[150, 150, 150, 240, 212, 136].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
+          <thead><tr>
+            <th scope="col">ID</th>
+            <th scope="col">Ngày tạo</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col">Chủ đề</th>
+            <th scope="col">Đơn vị xử lý</th>
+            <th scope="col">Tiến độ</th>
+          </tr></thead>
+          <tbody>
+            {hien.map((p) => <tr key={p.id} {...hang(p.id)}>
+              <ONhan id={p.id} dangMo={dangMo}>{p.id}</ONhan>
+              <td>{p.ngayTao}</td>
+              <td>{p.trangThai}</td>
+              <td title={p.chuDe}>{p.chuDe}</td>
+              <td title={p.donVi}>{p.donVi === CHUA_XAC_DINH ? p.donVi : rutGonTenDonVi(p.donVi)}</td>
+              <td>{p.hetHan ? <Badge tone="critical">Hết hạn</Badge> : <Badge tone="positive">Trong hạn</Badge>}</td>
+            </tr>)}
+            {hien.length === 0 && <tr><td className="table-empty" colSpan={6}>Không có phiếu nào khớp bộ lọc.</td></tr>}
+          </tbody>
+        </table>
+      </TableWrap>
+      <Pager trang={t} soTrang={soTrang} onChange={(v) => { datTrang(v); datDangMo(""); }}/>
+    </Panel>
+  </CaseLayout>;
+}
+
+function ChiTietPhieu({ p }: { p: PhieuGhi }) {
+  return <div className="ql3-chitiet">
+    <p className="ql3-chitiet-ten"><strong>{p.chuDe}</strong><span>{p.id} · {p.donVi === CHUA_XAC_DINH ? p.donVi : rutGonTenDonVi(p.donVi)}</span></p>
+    <DetailGrid items={[
+      { label: "Trạng thái", value: p.trangThai },
+      { label: "Phân loại", value: p.phanLoai },
+      { label: "Ngày tạo", value: p.ngayTao },
+      { label: "Hạn xử lý", value: p.hanXuLy },
+      { label: "Tiến độ", value: p.hetHan ? <Badge tone="critical">Hết hạn</Badge> : <Badge tone="positive">Trong hạn</Badge> },
+      { label: "Hạn đúng quy trình", value: p.saiHan ? "Không" : "Có" },
+      { label: "Chuyên viên tiếp nhận", value: p.chuyenVien },
+      { label: "Tạo bởi", value: p.taoBoi },
+    ]}/>
+
+    <h3 className="ql3-chitiet-de">Mô tả</h3>
+    <p className="mota-day">{p.moTa}</p>
+  </div>;
 }

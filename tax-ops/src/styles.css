@@ -223,6 +223,10 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .nav-item:hover svg { color: var(--on-chrome-1); }
 
 /* Mục đang mở nhận một tín hiệu rõ: nền sáng và chữ xanh hành động. */
+/* Nhãn "Khung" trên mục báo cáo: chip nhỏ nằm cuối hàng, không đẩy tên
+   xuống dòng. Cùng vai với nhãn cũ trong cụm mục, nay lên cấp ngoài. */
+.nav-item .nav-khung { margin-left: auto; flex: none; padding: 1px 6px; border-radius: var(--radius-chip); background: #ffffff1f; color: var(--on-chrome-2); font-size: 10px; font-weight: 700; font-style: normal; letter-spacing: .01em; }
+.nav-item.is-active .nav-khung { background: var(--surface-tint); color: var(--brand-strong); }
 .nav-item.is-active { position: relative; color: var(--brand-strong); background: var(--surface); border-color: var(--surface); font-weight: 600; box-shadow: 0 2px 5px rgb(0 0 0 / 10%); }
 .nav-item.is-active::before { content: none; }
 .nav-item.is-active svg { color: var(--brand); }
@@ -269,6 +273,9 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
 .ql3-chitiet-ten strong { font-size: 15px; font-weight: 650; }
 .ql3-chitiet-ten span { color: var(--ink-3); font-size: 12px; font-weight: 600; }
 .ql3-chitiet-de { margin: 16px 0 0; font-size: 12px; font-weight: 650; color: var(--ink-3); }
+/* Lý do bật cờ đi kèm chính cái chip nó giải thích, nên xuống dòng ngay dưới
+   chip và lùi về chữ phụ — không đứng ngang hàng với giá trị của ô. */
+.ql3-chitiet-vi { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--ink-3); }
 .case-drawer { position: fixed; inset: 0 0 0 auto; margin: 0; width: min(600px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; padding: 0; border: 0; border-left: 1px solid var(--line); background: var(--canvas); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; }
 .case-drawer::backdrop { background: rgb(14 42 71 / 35%); }
 .case-drawer-heading { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--surface); }
@@ -369,7 +376,17 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .panel-head h2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; font-weight: 700; letter-spacing: -.008em; }
 
 .panel-head p { max-width: 72ch; margin-top: 2px; color: var(--ink-3); font-size: 12px; }
-.panel-actions { flex: none; min-width: 0; }
+/*
+  Hàng thao tác của đầu khối nằm NGANG, không xếp chồng.
+
+  Trước đây nó là một khối thường, nên khối nào có hai thứ — nút xuất cộng
+  một ô lọc — thì chúng rơi xuống hai dòng và đầu khối cao gấp đôi. Phần lớn
+  khối chỉ có một nút nên lỗi không lộ ra cho tới khi nút xuất về đây.
+
+  `align-items: end` để nút thẳng hàng với Ô CHỌN chứ không với nhãn nhỏ
+  nằm trên nó; `flex-wrap` giữ cho khổ hẹp không đẩy ô ra ngoài khung.
+*/
+.panel-actions { flex: none; min-width: 0; display: flex; align-items: end; flex-wrap: wrap; gap: 8px; }
 .panel-body { padding: 0 14px 12px; }
 /* Chú thích nguồn ở chân thân khối: mờ, nhỏ, và không bao giờ chạm vào chiều
    cao đầu khối. Khối không khai nguồn thì đơn giản là không có dòng này. */
@@ -1536,8 +1553,6 @@ tbody tr.is-co td { background: var(--warning-bg); }
 
 /* Thanh xếp chồng theo trạng thái: một thanh, nhiều đoạn, mỗi đoạn một bước.
    Khe 1px giữa các đoạn để hai bước liền nhau không đọc thành một. */
-.xm-thanh { display: flex; gap: 1px; width: 100%; min-width: 120px; height: 10px; border-radius: 3px; overflow: hidden; background: var(--data-track); }
-.xm-thanh i { display: block; height: 100%; }
 
 /* Hai chỉ tiêu cạnh nhau trên cùng một trục, cộng vạch bình quân. */
 .so-sanh { display: grid; gap: 6px; padding-top: 10px; }
@@ -1611,9 +1626,7 @@ tbody tr.is-chua-gan th, tbody tr.is-chua-gan td { background: var(--warning-bg)
 /* Ô "đang xử lý · hết hạn": ô duy nhất trong ma trận phiếu cần người làm ngay. */
 td.o-nong { color: var(--critical); font-weight: 700; }
 
-/* Mô tả phiếu: cắt hai dòng trong bảng, mở đầy đủ ở khối dưới bảng. */
-.o-mota { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 100%; padding: 0; border: 0; overflow: hidden; background: none; color: var(--ink); font: inherit; font-size: 12.5px; line-height: 1.4; text-align: left; white-space: normal; cursor: pointer; }
-.ql1-ds-table td:has(.o-mota) { white-space: normal; }
+/* Mô tả phiếu: văn bản tự do, chỉ đọc trong ngăn chi tiết. */
 .mota-day { padding-top: 10px; color: var(--ink); font-size: 13px; line-height: 1.6; }
 
 /* Liên kết dạng chữ trong dòng chú thích dưới bảng. */
@@ -1633,9 +1646,8 @@ td.o-nong { color: var(--critical); font-weight: 700; }
   chiều cao chữ.
 */
 .o-so { display: flex; align-items: center; justify-content: flex-end; width: 100%; min-height: 28px; }
-.o-mota { min-height: 28px; }
 @media (max-width: 900px) {
-  .o-so, .o-mota, .dv-nut { min-height: 44px; }
+  .o-so, .dv-nut { min-height: 44px; }
 }
 
 /*
@@ -1723,3 +1735,10 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 /* Gợi ý kỳ trước là ĐỀ XUẤT, không phải câu trả lời — nó nhạt hơn và nghiêng,
    để không ai đọc nhầm thành dòng đã điền. */
 .phieu-goiy { color: var(--ink-3); font-style: italic; }
+.ql2-chenh-list > .panel-head { flex-wrap: wrap; }
+.ql2-chenh-list > .panel-head > div:first-child { flex-basis: 100%; }
+.ql2-chenh-list > .panel-head > .panel-actions { width: 100%; }
+
+.ql2-manual { width: 100%; min-width: 80px; min-height: 36px; padding: 6px; background: var(--surface-soft, #f7f9fc); border: 1px solid var(--line, #dbe3ed); border-radius: 4px; color: inherit; font: inherit; }
+
+.ql2-note { margin: 0; padding: 12px 14px; color: var(--ink-2); font-size: 13px; line-height: 1.5; }

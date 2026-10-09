@@ -44,7 +44,9 @@ export function datThamSo(cap: Record<string, string | null>) {
   không có nghĩa gì ở màn tình trạng dữ liệu, và để nó lại thì địa chỉ mô tả
   một trạng thái không tồn tại.
 */
-export const THAM_SO_MAN = ["ky", "donvi", "muc", "moc", "so", "trang", "xem"] as const;
+/* `nhom` là nhóm chỉ tiêu đang mở của bảng rộng — cùng loại với `moc` (mốc
+   so sánh của QL1): một lựa chọn hiển thị mà người ta cần dẫn nhau tới. */
+export const THAM_SO_MAN = ["ky", "donvi", "muc", "moc", "nhom", "co", "loc", "loaitk", "ketqua", "nhomk", "ktu", "kden", "khoi", "so", "nnt", "trang", "xem"] as const;
 
 export const xoaThamSoMan = () =>
   datThamSo(Object.fromEntries(THAM_SO_MAN.map((t) => [t, null])));
