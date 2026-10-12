@@ -43,6 +43,10 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
   { username: "tp.ql3", password: "demo123", name: "Phạm Thanh Vy", unit: "Phòng nghiệp vụ QL3", phong: "QL3", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
   { username: "cv.ql4", password: "demo123", name: "Hoàng Diệu Chi", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 4", phong: "QL4", vaiTro: "CV", vaiTroLabel: "Chuyên viên", permissions: ["TAX_OPS_VIEW"] },
   { username: "tp.ql4", password: "demo123", name: "Ngô Bảo Sơn", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 4", phong: "QL4", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
+  /* Hai vai của khối QLDN (biên bản 09/10/2026 §3) đứng thành một cặp: phó
+     phòng xem tổng quan của phòng, lãnh đạo Thuế TP xem toàn thành phố. */
+  { username: "pp.ql1", password: "demo123", name: "Đặng Thu Trang", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1", phong: "QL1", vaiTro: "PP", vaiTroLabel: "Phó phòng", permissions: ["TAX_OPS_VIEW"] },
+  { username: "ld.thuetp", password: "demo123", name: "Lý Minh Châu", unit: "Thuế TP Hà Nội", phong: null, vaiTro: "LD_TP", vaiTroLabel: "Lãnh đạo Thuế TP", permissions: ["TAX_OPS_VIEW"] },
   /*
     Hai cán bộ đơn vị: một ở khối Văn phòng, một ở khối Thuế cơ sở. Cần đủ hai
     vì phiếu PRS-03 và PRS-05 tách theo đơn vị, và bản mẫu phải cho thấy được

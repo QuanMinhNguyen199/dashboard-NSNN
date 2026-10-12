@@ -61,7 +61,15 @@ export function CongAnQL2({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: VaiTro; met
   return <Panel title="Gói rủi ro Công an · nhập số tổng hợp" subtitle={`${ky.nhan} · số liệu nhập tay · lưu trong phiên demo`} actions={<ExportButton onExport={() => exportExcel([sheet], meta, `QL2_CongAn_${ky.id}.xlsx`)}>Xuất số đã lưu</ExportButton>}>
     <p className="ql2-note">Đã có mẫu theo xác nhận 06/10. Chưa nạp tệp “BC gói hđ CA 3007.xls” để đối chiếu tên bốn hình thức xử lý. Phần dưới nhập các chỉ tiêu tổng hợp đã rõ; chưa phát hành báo cáo đầy đủ theo mẫu.</p>
     {loi && <p role="alert" className="quality-note">{loi}</p>}
-    <TableWrap label="số liệu gói Công an"><table className="ql1-ds-table" style={{ minWidth: 1450 }}>
+    {/*
+      Bề rộng cột khai tường minh vì bảng dùng `table-layout: fixed`: không
+      khai thì mọi cột chia đều, và tên "Thuế cơ sở 18 (SSO, MLI)" tràn ra
+      ngoài ô của nó — lượt soát đo được dư 6 tới 14 pixel ở cả bốn khổ.
+    */}
+    <TableWrap label="số liệu gói Công an"><table className="ql1-ds-table" style={{ minWidth: 1476 + (vaiTro === "CV" ? 120 : 0) }}>
+      <colgroup>
+        {[260, ...fields.map(() => 150), 130, 130, 126, 180, ...(vaiTro === "CV" ? [120] : [])].map((w, i) => <col key={i} style={{ width: w }}/>)}
+      </colgroup>
       <thead><tr><th>Đơn vị</th>{labels.map((l) => <th key={l}>{l}</th>)}<th>Còn · số DN</th><th>Còn · số HĐ</th><th>Tỷ lệ theo DN</th><th>Nguồn số liệu</th>{vaiTro === "CV" && <th>Lưu</th>}</tr></thead>
       <tbody>{ds.map((d) => { const r = draft[d.id] ?? rong; const s = saved[d.id]; return <tr key={d.id}>
         <th scope="row" title={s ? `${s.nguoi} · ${s.luc} · ${s.nguon}` : "Chưa nhập số liệu"}>{rutGonTenDonVi(d.ten)}</th>

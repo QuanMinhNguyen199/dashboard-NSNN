@@ -21,10 +21,12 @@ tại bằng `sessionStorage`; đây không phải cơ chế xác thực product
 
 | Tài khoản | Phòng | Vai trò | Màn mở được |
 |---|---|---|---|
-| `cv.ql1` | QL1 | Chuyên viên | Công việc theo kỳ · Báo cáo công tác nợ · Tình trạng dữ liệu |
+| `cv.ql1` | QL1 | Chuyên viên | Ba màn khối QLDN (số của DN được phân công) · các phân hệ · Tình trạng dữ liệu |
 | `tp.ql1` | QL1 | Trưởng phòng | Như trên; duyệt, trả lại hoặc chốt số của kỳ |
-| `cv.ql3` | QL3 | Chuyên viên | Công việc theo kỳ · Kiểm tra tại bàn · Tình trạng dữ liệu |
+| `cv.ql3` | QL3 | Chuyên viên | Như `cv.ql1` |
 | `tp.ql3` | QL3 | Trưởng phòng | Như trên; duyệt, trả lại hoặc chốt số của kỳ |
+| `pp.ql1` | QL1 | Phó phòng | Chỉ ba màn khối QLDN; không xem nợ/thu NSNN |
+| `ld.thuetp` | — | Lãnh đạo Thuế TP | Chỉ ba màn khối QLDN; chọn khối hoặc từng đơn vị |
 | `vanhanh.dulieu` | — | Vận hành dữ liệu | Chỉ Giám sát dữ liệu |
 | `lanhdao.nhanuoc` | — | Lãnh đạo nhà nước | Không vào Web quản lý; chuyển sang Dashboard NSNN |
 
@@ -60,13 +62,13 @@ npm run acceptance:tax-ops -- http://127.0.0.1:5174
 
 ## Các màn hình hiện hành
 
-- `Công việc theo kỳ`: công việc và tình trạng nguồn dữ liệu.
+- `Tổng quan đối tượng`, `Kết quả công tác`, `Cảnh báo nhắc việc`: không gian làm việc chung khối QLDN (biên bản 09/10/2026), một giao diện cho cán bộ, phó phòng, trưởng phòng và lãnh đạo Thuế TP, dữ liệu lọc theo phân quyền. Màn `Công việc theo kỳ` đã gỡ ngày 12/10/2026.
 - `Báo cáo công tác nợ` (QL1): tổng quan, so sánh nợ, cưỡng chế, tạm hoãn xuất cảnh, quy tắc và nguồn, dữ liệu gốc. Gửi duyệt và chốt số ngay tại báo cáo.
 - `Kiểm tra tại bàn` (QL3): tổng quan, kết quả tổng hợp, dữ liệu gốc, đối chiếu báo cáo thủ công.
 - `Tình trạng dữ liệu`: lịch sử thu thập, lô dữ liệu, xác định đơn vị quản lý NNT.
 - `Giám sát dữ liệu`: dành cho vận hành dữ liệu.
 
-Các đường dẫn: `/?view=workbench`, `/?view=debt`, `/?view=risk`, `/?view=tinhtrang`, `/?view=giamsat`.
+Các đường dẫn: `/?view=doituong`, `/?view=dieuhanh`, `/?view=canhbao`, `/?view=debt`, `/?view=risk`, `/?view=tinhtrang`, `/?view=giamsat`.
 Đường dẫn cũ `/?view=reports` mở báo cáo trong phân hệ tương ứng; không có màn tạo báo cáo riêng.
 
 Căn cứ từng tab và danh mục tài liệu đã kiểm tra: [Đối chiếu giao diện với general_data](DOI-CHIEU-GENERAL-DATA.md).

@@ -1,6 +1,6 @@
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui";
-import { CUM_MUC, MucPhanHeProvider, MucDuLieuCuaPhanHe, MucSidebar, MucTheoBaoCao, tachTheoBaoCao } from "@/components/MucPhanHe";
+import { MucPhanHeProvider } from "@/components/MucPhanHe";
 import { TaxLogo } from "@/components/TaxLogo";
 import type { ViewId } from "@/domain/types";
 import { NAV, NHAN_VAI, NHOM, navCho } from "@/components/nav";
@@ -66,33 +66,17 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
         if (!muc.length) return null;
         return <div className="nav-section" role="group" aria-label={nhan} key={nhom}>
           <span className="nav-group" aria-hidden="true">{nhan}</span>
-          {muc.map((item) => <Fragment key={item.id}>
-            {/*
-              Phân hệ NHIỀU BÁO CÁO không còn mục mang tên phân hệ: từng báo
-              cáo lên thẳng cấp này. Giữ thêm một mục "Rủi ro hóa đơn" ở trên
-              sáu báo cáo của nó là một tầng chỉ để bấm qua.
-            */}
-            {tachTheoBaoCao(item.id)
-              ? <MucTheoBaoCao view={item.id} dangMo={view === item.id} onMo={onView} onNavigate={() => setMenuOpen(false)}/>
-              : <>
-                  <NavItem item={item} active={view === item.id} onView={onView}/>
-                  {/* Cụm mục chỉ hiện dưới phân hệ ĐANG MỞ. Dựng nó dưới mọi
-                      phân hệ thì thanh bên thành một mục lục ba chục dòng. */}
-                  {CUM_MUC[item.id] && <MucSidebar view={item.id} visible={view === item.id} onNavigate={() => setMenuOpen(false)}/>}
-                </>}
-          </Fragment>)}
           {/*
-            Mục của phân hệ thuộc cụm này nhưng không thuộc báo cáo nào —
-            "Dữ liệu gốc" của QL2 và QL4. Nó nói về NGUỒN kéo về, cùng một
-            việc với "Tình trạng dữ liệu" đứng ngay trên.
+            THANH BÊN MỘT TẦNG: mỗi phòng đúng một mục, không còn cây mục.
+
+            Trước đây từng báo cáo của QL2 và QL4 lên thẳng cấp này, và mục con
+            của nó nằm ngay dưới — thanh bên của một phòng dài hai chục dòng, và
+            bốn phòng xếp cạnh nhau thì không còn đọc ra cấu trúc hệ thống nữa.
+            Tài liệu thiết kế đổi ngày 09/10/2026: thanh bên nói CÓ NHỮNG PHÒNG
+            NÀO, còn báo cáo và mục của phòng là việc bên trong phòng ấy, nằm
+            trên nội dung dưới dạng hai hàng tab — xem `ThanhMuc`.
           */}
-          {nhom === "data" && duoc.filter((x) => tachTheoBaoCao(x.id)).map((x) => <MucDuLieuCuaPhanHe
-            key={x.id}
-            view={x.id}
-            dangMo={view === x.id}
-            onMo={onView}
-            onNavigate={() => setMenuOpen(false)}
-          />)}
+          {muc.map((item) => <NavItem key={item.id} item={item} active={view === item.id} onView={onView}/>)}
         </div>;
       })}
     </nav>

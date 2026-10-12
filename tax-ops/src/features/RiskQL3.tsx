@@ -1,5 +1,6 @@
 import { useEffect, useMemo, type ReactNode } from "react";
 import { PageIntro, Panel, TableWrap, integer, money } from "@/components/ui";
+import { ThanhMuc } from "@/components/MucPhanHe";
 import { BoLocChung, useBoLoc } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
 import { XuatProvider } from "@/components/ui";
@@ -92,16 +93,16 @@ const NHOM_COT = (thangKPI: string, nam: string): NhomCot[] => [
 
 const RONG_DV = 196;
 
-export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiTro: VaiTro; ketQua?: boolean }) {
+export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
-  /* Mục lấy từ cụm trong THANH BÊN, giống QL1 và QL2 — xem ghi chú ở
-     `components/MucPhanHe.tsx` về vì sao dải mục trên trang đã bỏ. Bản xem
-     trước vẫn nằm trong địa chỉ như cũ. */
   const { muc } = useMucPhanHe();
   const { layKpi } = useKpi();
-  const tab = ketQua ? "ketqua" : muc;
+  /* "Kết quả tổng hợp" từng là một MÀN riêng của thanh bên, nhận qua một cờ
+     `ketQua`. Nay nó là một mục của chính phòng QL3 như mọi mục khác, nên
+     không còn cờ nào — một mục, một chỗ quyết định. */
+  const tab = muc;
   const [xem, datXem] = useThamSo<string>("xem", "");
   const ky = KY_QL3_THEO_ID[chon.ky] ?? KY_QL3[0];
 
@@ -155,7 +156,8 @@ export function RiskQL3({ actor, vaiTro, ketQua = false }: { actor: string; vaiT
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL3|${ky.id}`).trangThai };
   const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
   return <XuatProvider nut={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}><div className="page-stack ql1-page">
-    <PageIntro title={ketQua ? "Kết quả tổng hợp · Phòng QL3" : "Kiểm tra tại bàn · Phòng QL3"}/>
+    <PageIntro title="Kiểm tra tại bàn · Phòng QL3"/>
+    <ThanhMuc view="risk"/>
 
     <ThanhDuyet
       khoa={`QL3|${ky.id}`}

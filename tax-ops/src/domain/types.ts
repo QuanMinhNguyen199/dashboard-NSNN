@@ -11,8 +11,8 @@
   thanh lọc đổi theo báo cáo đang mở (G13).
 */
 export type ViewId =
-  | "workbench"
-  | "debt" | "tonghopql3" | "risk" | "hoadon" | "hoan"
+  | "doituong" | "dieuhanh" | "canhbao"
+  | "debt" | "risk" | "hoadon" | "hoan"
   | "tinhtrang"
   | "giamsat";
 /*
@@ -44,7 +44,12 @@ export type Phong = "QL1" | "QL2" | "QL3" | "QL4" | null;
   | ✗ | ✗ | ●" — cả bốn cột chuyên viên và trưởng phòng đều ✗, và trưởng
   phòng QL2 cũng không phải người biết đơn vị đã xử lý NNT nào.
 */
-export type VaiTro = "CV" | "TP" | "VAN_HANH" | "LANH_DAO_NN";
+/*
+  `PP` phó phòng và `LD_TP` lãnh đạo Thuế TP thêm ngày 12/10/2026 theo biên
+  bản yêu cầu không gian làm việc khối QLDN (§3). Hai vai này chỉ mở các màn
+  khối QLDN — biên bản chưa nói gì về việc họ dùng các phân hệ theo phòng.
+*/
+export type VaiTro = "CV" | "PP" | "TP" | "LD_TP" | "VAN_HANH" | "LANH_DAO_NN";
 export type Tone = "neutral" | "positive" | "warning" | "critical" | "info";
 /*
   BA trạng thái, không phải năm.

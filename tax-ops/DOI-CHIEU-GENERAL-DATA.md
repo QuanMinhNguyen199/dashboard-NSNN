@@ -15,7 +15,7 @@ Ngày đối chiếu: 02/10/2026.
 
 | Mục hiện hành | Căn cứ | Quyết định |
 |---|---|---|
-| Công việc theo kỳ | Thiết kế §3: danh sách việc/dữ liệu kỳ | Giữ |
+| Công việc theo kỳ | Thiết kế §3: danh sách việc/dữ liệu kỳ | Gỡ 12/10/2026 — thay bằng Cảnh báo nhắc việc (biên bản yêu cầu khối QLDN 09/10) |
 | Báo cáo công tác nợ | Thiết kế §4; BRD §8.1 | Giữ, đặt lại tên rõ chức năng báo cáo |
 | QL1: Tổng quan | §4.2 tab 0; §4.3 | Giữ |
 | QL1: So sánh nợ và danh sách DN tăng nợ | §4.2 tab 1–2; sheet So_Sanh_No, DS_DN_TangnoTren500tr | Giữ cùng nhóm nghiệp vụ |

@@ -2,7 +2,7 @@
 version: 1
 slug: "src-features-workbench-tsx"
 primary_target: "src/features/Workbench.tsx"
-related_targets: ["src/components/Shell.tsx","src/styles.css","src/features/Debt.tsx","src/features/Risk.tsx","src/features/Refund.tsx","src/features/Reports.tsx","src/features/DataManagement.tsx"]
+related_targets: ["src/components/Shell.tsx","src/components/MucPhanHe.tsx","src/styles.css","src/features/DebtQL1.tsx","src/features/RiskQL3.tsx","src/features/HoaDonQL2.tsx","src/features/HoanQL4.tsx"]
 ---
 
 Scope: toàn bộ shell và sáu view của Web quản lý nghiệp vụ Thuế. Visitor mode: Operate.
@@ -19,6 +19,6 @@ Operate: prioritize scanable work lists, source status and selectable records. K
 
 Visual contract: navy institutional chrome, white panels on blue-gray canvas, 1px panel boundaries and restrained two-layer shadows. NSNN brand blue marks selected navigation and primary actions; its blue scale represents data. Neutral KPI values; semantic status color stays in labels. Outline icons share 1.6px strokes; remove repeated warning icons from task rows.
 
-Interaction: hover lift only on actionable rows and buttons. Outer panels and read-only values remain still. QL1's seven report sections are a nested submenu beneath the active QL1 module in the sidebar and mobile drawer, replacing the horizontal segmented selector; shared period/unit filters stay in place. Preserve keyboard focus, mobile drawer, 44px touch targets and reduced-motion support.
+Interaction: hover lift only on actionable rows and buttons. Outer panels and read-only values remain still. Updated 09/10/2026: report sections are no longer a sidebar submenu. The sidebar lists the four departments (one entry each, all open to every business account); each department's reports and sections are two horizontal tab rows above the approval bar and the shared filters. The tab rows hide their scrollbar and signal overflow with measured edge fades. Shared period/unit filters stay in place. Preserve keyboard focus, mobile drawer, 44px touch targets and reduced-motion support.
 
 Validation: eight desktop/mobile screens pass acceptance; see DESIGN.md for exact colors, radii and typography.
