@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Badge, Button, DetailGrid, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
-import { baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
+import { ThanhMuc, baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
 import { XuatProvider } from "@/components/ui";
@@ -14,12 +14,10 @@ import {
   DON_VI_QL1, KY_CUA_BAO_CAO_QL1, KY_QL1, KY_THEO_ID, NHAN_MOC, danhSachQL1, donViCuaTab, tongHopCuaTab,
   type BoNo, type DonViQL1, type HangQL1, type MocSoSanh, type OTongHop06, type OTongHopNo, type OTongHopXuLy, type TabQL1,
 } from "@/data/ql1";
-import { NGUONG, ruleItems, trieu, hienTyLe } from "@/data/thamSo";
+import { NGUONG, trieu, hienTyLe } from "@/data/thamSo";
 import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
 import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
-import { NGUON_QL1 } from "@/data/nguonDuLieu";
-import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { TongQuanQL1 } from "@/features/TongQuanQL1";
 
 /*
@@ -334,7 +332,7 @@ export function DebtQL1({ actor }: { actor: string }) {
   const notify = useAction();
   const { layBanGhi } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
-  const { muc: tab, datMuc: setTab } = useMucPhanHe();
+  const { muc: tab } = useMucPhanHe();
   /* Bốn mẩu trạng thái dưới đây nằm trong địa chỉ chứ không trong bộ nhớ: mỗi
      cái là một câu trợ lý cần nói được khi dẫn người dùng tới đúng chỗ. */
   const [moc, setMoc] = useThamSo<MocSoSanh>("moc", "tuanTruoc", ["dauNam", "thangTruoc", "tuanTruoc"]);
@@ -466,6 +464,7 @@ export function DebtQL1({ actor }: { actor: string }) {
   const filename = `${baoCao ?? "QL1"}_${ky.id}_${reportMeta.status}_mo-phong`;
   return <XuatProvider nut={baoCao ? <><ExportButton onExport={() => exportExcel(boSheet, reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton onExport={() => exportWord(boSheet, reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></> : undefined}><div className="page-stack ql1-page">
     <PageIntro title="Báo cáo công tác nợ · Phòng QL1"/>
+    <ThanhMuc view="debt"/>
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
@@ -499,22 +498,6 @@ export function DebtQL1({ actor }: { actor: string }) {
     />
 
     {tab === "tongquan" && <TongQuanQL1 ky={ky} trongPhamVi={trongPhamVi}/>}
-
-    {tab === "quytac" && <Panel chinh title="Quy tắc và tham số" actions={<Button kind="quiet" onClick={() => setTab("nguon")}>Xem nguồn dữ liệu</Button>}>
-      <TableWrap label="quy tắc và tham số đang áp dụng"><table className="rules-table">
-        <thead><tr><th scope="col">Quy tắc</th><th scope="col">Giá trị</th><th scope="col">Phạm vi</th><th scope="col">Hiệu lực từ</th><th scope="col">Tài liệu tham chiếu</th><th scope="col">Trạng thái</th></tr></thead>
-        <tbody>{ruleItems.filter((r) => r.scope === "Nợ và cưỡng chế" || r.scope === "Toàn ngành").map((r) => <tr key={r.id}>
-          <td><strong>{r.name}</strong></td>
-          <td>{r.value}</td>
-          <td><small>{r.scope}</small></td>
-          <td>{r.effectiveFrom ?? <em>Chưa xác nhận</em>}</td>
-          <td>{r.document ? <small>{r.document}</small> : <Badge tone="critical">Thiếu căn cứ</Badge>}</td>
-          <td><Badge tone={r.status === "ACTIVE" ? "positive" : r.status === "PENDING" ? "warning" : "critical"}>{r.status === "ACTIVE" ? "Đang áp dụng" : r.status === "PENDING" ? "Chờ xác nhận" : "Cần đối chiếu"}</Badge></td>
-        </tr>)}</tbody>
-      </table></TableWrap>
-    </Panel>}
-
-    {tab === "nguon" && <DuLieuGoc nguon={NGUON_QL1} ngayBaoCao={ky.ngayChot}/>}
 
     {laNghiepVu && <Panel
       chinh
@@ -569,6 +552,7 @@ export function DebtQL1({ actor }: { actor: string }) {
             </tbody>
           </table></TableWrap>}
     </Panel>}
+
 
     {laNghiepVu && <CaseLayout
       presentation="drawer"

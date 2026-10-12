@@ -378,19 +378,32 @@ Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-lay
 
 **The List Has No Ceiling Rule.** Danh sách không nhận trần chiều cao nào. Mười dòng một trang đã là trần thật của nó, và một trần thứ hai bằng `vh` chỉ sinh ra thanh cuộn dọc bên trong một khối vốn đã vừa — xem **The Long List Gets Pages Rule**. Luật cũ "dải quyết định chiều cao" đã gỡ cùng với dải hai cột: không còn cột nào bên cạnh để kéo bằng.
 
-**The Sections Live In The Sidebar Rule.** Mục của một phân hệ nằm trong THANH BÊN, không phải một hàng tab ngang trên trang. Đây là một **lệch có chủ đích** so với chữ của tài liệu, nên nó được ghi lại kèm căn cứ thay vì để người sau phát hiện rồi đoán.
+**The Sidebar Names The Departments, The Tabs Name The Reports Rule (chốt 09/10/2026).** Thanh bên nói CÓ NHỮNG PHÒNG NÀO: **cả bốn phòng, cho mọi tài khoản nghiệp vụ**, mỗi phòng đúng một mục, cộng các màn chung: ba màn của không gian làm việc khối QLDN (Tổng quan đối tượng, Kết quả công tác, Cảnh báo nhắc việc — thêm 12/10/2026, thay "Công việc theo kỳ") và "Tình trạng dữ liệu". (QL5 chưa có mẫu nên chưa dựng.) Báo cáo và mục của một phòng là việc BÊN TRONG phòng ấy, nên chúng nằm trên nội dung dưới dạng **hai hàng tab** — hàng trên là báo cáo, hàng dưới là mục của báo cáo đang mở.
 
-Hai bản thiết kế gọi các mục nội dung là "tab" và liệt kê chúng thành danh sách phẳng: `design_ql1ql3` §4.2 cho QL1 11 tab, §5.2 cho QL3 4 tab; `design_ql2ql4` §4.2 cho QL2 12 tab, §5.2 cho QL4 11 tab. Riêng tầng chọn báo cáo thì `design_ql2ql4:50` tự đưa ra hai hình dạng: *"1 tầng chọn báo cáo (**menu con** hoặc thanh tab cấp 1)"*. Menu con là hình dạng đang dùng, và nó là một trong hai thứ tài liệu nêu tên.
+Luật này THAY cho *The Sections Live In The Sidebar Rule* (08/10/2026) và viết lại *The Report Is The Tab Rule* bên dưới. Lý do đổi là tài liệu thiết kế đổi, không phải vì lập luận cũ sai: khi từng báo cáo lên thẳng thanh bên, riêng QL2 chiếm hai chục dòng ở đó, và bốn phòng xếp cạnh nhau thì không còn đọc ra cấu trúc hệ thống nữa. Thanh bên trở lại đúng việc của nó — chọn phòng — như bản dựng đầu tiên.
 
-Ba lý do chọn thanh bên cho cả mục nội dung:
+Hình dạng, và vì sao từng điểm:
 
-- **Số lượng.** QL2 có 12 mục, QL4 có 11. Một hàng tab ngang 12 mục ở khổ 1440px gãy thành hai ba dòng hoặc phải cuộn ngang; danh sách dọc không có trần ấy.
-- **Chiều cao.** Tầng chọn báo cáo cộng tầng mục, làm bằng tab ngang là hai thanh xếp chồng ăn khoảng 100px đầu mọi trang — đúng chỗ bảng 30–32 cột đang thiếu bề rộng nhất.
-- **Một nơi duy nhất để tìm.** Người dùng đã tìm màn ở thanh bên; đặt mục ở chỗ thứ hai là bắt họ học hai thói quen cho cùng một việc.
+- **Hai hàng, không một.** Hàng báo cáo quyết định danh mục kỳ, khóa duyệt và bộ sheet xuất ra; ba thứ ấy đổi cùng lúc khi bấm sang báo cáo khác. Trộn báo cáo với mục con vào một danh sách phẳng là bỏ mất chiều phân biệt ấy.
+- **Hàng con chỉ dựng khi báo cáo đang mở có từ HAI mục.** Một hàng tab luôn đúng một nút là một hàng không bấm được gì.
+- **Hai hàng phải phân biệt được ngay**: hàng trên chữ lớn hơn và gạch chân, hàng dưới là viên nén nhỏ hơn một bậc. Hai dãy nút giống hệt nhau xếp chồng thì người đọc không biết dãy nào chi phối dãy nào.
+- **Thanh mục đứng TRƯỚC thanh duyệt và thanh lọc**, vì báo cáo đang mở là thứ quyết định hai thanh ấy hiển thị gì.
+- **Mỗi hàng cuộn ngang riêng.** Hai hàng dài ngắn khác nhau; buộc chúng cuộn cùng nhau thì hàng ngắn kéo theo một vùng trống.
+- **Không thanh cuộn, nhưng không mất tín hiệu** (09/10/2026). Thanh cuộn trong một hàng cao 38px là vật thể lạ: trên Windows nó vẽ một rãnh cộng hai mũi tên ngay cạnh tab cuối, và `margin-bottom: -1px` của tab đang mở còn làm nội dung cao hơn khung một pixel nên trình duyệt dựng thêm cả thanh cuộn DỌC. Gỡ bằng `scrollbar-width: none`; tín hiệu thay thế là **vệt mờ ở mép còn nội dung**, bật theo phép đo `scrollWidth − clientWidth` qua `ResizeObserver` chứ không theo điểm ngắt — cùng cách `TableWrap` làm, và cùng luật **The Overflow Decides Not The Breakpoint Rule**. Ở 390px hàng báo cáo của QL2 tràn 562px, nên đây không phải lo xa.
+- **Tab đang mở tự cuộn vào tầm nhìn** khi đổi mục, và chỉ khi hàng thật sự tràn. Không có nó thì mở một báo cáo ở cuối hàng xong, hàng vẫn đứng ở đầu và không gì sáng trong tầm mắt; có nó ở một hàng vừa khung thì trang giật một khung hình không vì gì cả.
+- **Hàng con là một hộp, không phải một dải trôi.** Nó nằm trên `--surface-soft`, viền 1px trừ cạnh trên, bo hai góc dưới — đọc ra "bên trong báo cáo đang mở". Bản đầu để hai hàng rời nhau trên cùng một nền, nên hàng dưới không nói nó thuộc tab nào, rõ nhất khi tab cha nằm lệch hẳn sang phải.
+- **Trỏ lên tab nghỉ phải thấy được trên NỀN TRANG.** Bản đầu đổi nền sang `--surface-soft` (#f7f9fc) trong khi nền trang là #f2f5f9 — lệch bốn đơn vị sáng, gần như không có phản hồi. Nay phản hồi là chữ đậm màu lên cộng một vạch chân mảnh `--control-line`, tức chính hình dạng của trạng thái đang mở: con trỏ xem trước điều cú bấm sẽ làm.
+- **Nhãn "Khung" mang chữ phụ, không mang xanh thương hiệu.** Nó là lời cảnh báo báo cáo chưa có mẫu. Xanh ở hàng này đã có nghĩa "đang mở"; cho một cảnh báo mượn đúng màu ấy là bắt người đọc phân biệt hai thứ bằng vị trí.
 
-Hệ quả bắt buộc: cụm mục KHÔNG được xuất hiện trên trang — xem chốt kiểm `soatTrucDoc` trong `scripts/acceptance.mjs`.
+Hai mục **đã gỡ** cùng lần chốt: "Dữ liệu gốc" (ở cả bốn phòng) và "Quy tắc và nguồn" (QL1). Nguồn dữ liệu đọc ở màn chung "Tình trạng dữ liệu", nơi §1.2 đặt nó. Cổng kiểm giữ phép kiểm ngược — hai tên ấy không được quay lại thanh mục — vì cả hai từng có phần kiểm riêng, và xóa phần ấy đi thì không còn gì ghi nhận rằng việc gỡ là cố ý.
 
-**The Report Is The Tab Rule (chốt 08/10/2026).** Phân hệ có NHIỀU báo cáo thì mỗi **báo cáo** là một mục cấp ngoài của thanh bên, không phải một nhãn nằm trong mục mang tên phân hệ.
+**Trục phòng đã mở, trục vai thì không.** Thanh bên không còn cắt theo phòng của người đăng nhập. Đây là một **lệch có chủ đích** so với mục S1 ("ẩn hẳn menu, không chỉ làm mờ") và ma trận §3, nên nó được ghi kèm lý do: bản mẫu này được xem bằng cách đi hết bốn phòng trong một phiên, và một tài khoản chỉ mở được một phòng thì người xem phải đăng xuất ba lần để đi hết hệ. Trục VAI TRÒ vẫn cắt nguyên như cũ — Vận hành dữ liệu chỉ mở màn giám sát, Lãnh đạo nhà nước không mở màn nào của hệ này — vì đó mới là trục quyết định ai LÀM được gì. Khi nối Keycloak thì trục phòng bật lại theo đúng ma trận §3.
+
+**"Công việc theo kỳ" là màn DUY NHẤT còn bám theo phòng.** Nó lọc việc theo phòng của người đăng nhập và nút chính của nó dẫn về đúng phân hệ ấy. Trước đây nút ấy ghép cứng `phong === "QL1" ? "debt" : "risk"`, nên chuyên viên QL2 và QL4 bấm "Mở báo cáo của phòng" là rơi sang màn của phòng QL3; và ô "Báo cáo chờ duyệt" đếm bằng khóa `${phong}|${ky}` vốn chỉ đúng hình dạng khóa của QL3, nên ba phòng kia luôn đọc ra 0 — một con số trông hợp lệ nên không ai phát hiện. Khóa duyệt nay hỏi `data/khoaDuyet.ts`, nơi biết ba phòng có mã báo cáo trong khóa còn QL3 thì không.
+
+**QL3 không còn hai đích.** "Kết quả tổng hợp" từng là một mục thanh bên riêng, tức phòng QL3 có hai nút trong khi ba phòng kia có một. Nó là một báo cáo của chính phòng ấy, nên nó về đúng chỗ của một báo cáo: một tab hàng trên. Màn `tonghopql3` và cờ `ketQua` đã gỡ.
+
+**The Report Is The Tab Rule (chốt 08/10/2026, đổi chỗ áp 09/10/2026).** Phân hệ có NHIỀU báo cáo thì mỗi **báo cáo** là một tab của hàng trên, không phải một nhãn chết nằm trong một mục mang tên phân hệ. Ngày 08/10 tầng ấy nằm ở thanh bên; từ 09/10 nó nằm trên nội dung — xem luật ngay trên. Mọi ràng buộc dưới đây giữ nguyên, chỉ đổi chỗ áp.
 
 Bản trước gộp cả sáu báo cáo của QL2 vào trong mục "Rủi ro hóa đơn", nên thanh bên có ba tầng: phân hệ → nhãn nhóm → mục. Tầng giữa chỉ để đọc, không bấm được, nên muốn sang báo cáo khác phải nhắm vào một mục con của nó; và sáu báo cáo nằm chung một mục buộc người dùng cuộn qua hai chục dòng của báo cáo khác để tới cái của mình.
 
@@ -403,9 +416,9 @@ Bốn ràng buộc:
 - **Báo cáo chỉ có MỘT mục là một mục lá**, bày nội dung ngay, vì không có con nào để nhảy xuống (QL2-03, QL2-05, QL2-06). Cùng hình dạng với "Tổng quan".
 - **Không giấu mục con nào.** Bản đầu giấu mục con trùng tên với cha rồi cho cha mở thẳng nó; kết quả là bấm "Xác minh hóa đơn" ra nội dung mà không mục con nào sáng, nhìn như cha đang bày bảng. Chỗ nào trùng tên thì ĐỔI TÊN mục con cho đúng nội dung của nó — §4.2 gọi tab 6 của QL2-04 đúng bằng tên báo cáo, nên nó lấy tên theo nội dung ("Tổng hợp theo đơn vị"), song song với cách đặt tên của QL2-01 ngay trên.
 
-Mục không thuộc báo cáo nào đi theo nghĩa của nó: **Tổng quan** đứng đầu cụm Phân hệ; **Dữ liệu gốc** xuống cụm Dữ liệu cạnh "Tình trạng dữ liệu", vì nó nói về NGUỒN kéo về chứ không về một báo cáo.
+Mục không thuộc báo cáo nào đi theo nghĩa của nó: **Tổng quan** là tab đầu của hàng trên. "Dữ liệu gốc" đã gỡ hẳn ngày 09/10/2026.
 
-QL3 hiện mới dựng một báo cáo nên **giữ nguyên** một tầng mục phẳng dưới tên phân hệ: không có báo cáo nào để tách, tách là tạo một tầng rỗng. Nó sẽ theo luật này khi RS-QL3-02 (bộ báo cáo khối) được dựng.
+QL3 có hai nhóm: ba mục chung (Tổng quan, Danh sách NNT, KPI đăng ký) và báo cáo "Kết quả tổng hợp". Nó sẽ có thêm tab khi RS-QL3-02 (bộ báo cáo khối) được dựng.
 
 **QL1 đã tách (08/10/2026).** Nó dựng từ `design_ql1ql3`, tài liệu mô hình hóa cả phòng là MỘT báo cáo mười một tab, nên nó từng có một cụm phẳng bảy mục, một danh sách kỳ và MỘT vòng duyệt. `SPec/QLDN1` thì giao sáu báo cáo riêng, mỗi cái một kỳ và một đầu mối — và ba trong số đó đã dựng:
 
@@ -425,7 +438,7 @@ Ba báo cáo còn thiếu so với spec — RS-QL1-02 Thu hồi nợ đọng, RS
 
 Ràng buộc kỹ thuật đi kèm: đổi mục TRONG cùng phân hệ phải gọi `datMuc` của `MucPhanHeProvider`; `setView` chỉ ghi địa chỉ nên thanh bên sẽ đứng yên. Sang phân hệ khác thì ngược lại — provider của phân hệ kia chưa dựng, nên phải đổi màn và đặt mục trong cùng một lần (`setView(view, muc)`).
 
-**The Summary And Its List Are One Section Rule.** Bảng tổng hợp theo đơn vị và danh sách chi tiết của chính nó nằm trong CÙNG một mục, không tách thành hai tab. Vì thế bảy mục của QL1 phủ mười một tab mà §4.2 liệt kê:
+**The Summary And Its List Are One Section Rule.** Bảng tổng hợp theo đơn vị và danh sách chi tiết của chính nó nằm trong CÙNG một mục, không tách thành hai tab. Vì thế năm mục của QL1 phủ chín tab mà §4.2 liệt kê (hai tab cuối đã gỡ ngày 09/10/2026):
 
 | Mục trên màn | Tab của §4.2 |
 |---|---|
@@ -434,8 +447,6 @@ Ràng buộc kỹ thuật đi kèm: đổi mục TRONG cùng phân hệ phải g
 | Kết quả cưỡng chế | 3 Đánh giá kết quả cưỡng chế + 5 DS NNT chưa cưỡng chế |
 | Tạm hoãn xuất cảnh | 4 Đánh giá tạm hoãn XC + 6 DS trên ngưỡng chưa THXC |
 | Tạm hoãn XC · trạng thái 06 | 7 THXC NNT trạng thái 06 + 8 DS chưa tạm hoãn (TT06) |
-| Quy tắc và nguồn | 9 |
-| Dữ liệu gốc | 10 |
 
 Lý do gộp là G3: *"Bấm số → xem chi tiết"*. Tách hai thứ thành hai tab thì mỗi lần bấm một ô tổng hợp là một cú nhảy tab, và người dùng mất ngữ cảnh của con số họ vừa bấm. Để chúng trên cùng một màn thì danh sách mở ra ngay dưới bảng sinh ra nó.
 
@@ -503,7 +514,7 @@ Bốn ràng buộc:
 
 - **Mỗi màn nhiều nhất MỘT chỗ đặt nút.** Cùng một việc ở hai nơi thì người dùng phải dừng lại hỏi hai nút có khác nhau không. Chốt kiểm đếm số khối mang nút trên mọi màn × hai khổ.
 - **Bộ lọc nhóm chỉ tiêu KHÔNG ảnh hưởng tới tệp.** Nhóm chỉ tiêu là cách đọc trên màn; tệp ra đủ cột theo mẫu. Bộ sheet dựng thẳng từ dữ liệu nên điều này đúng theo cấu trúc, không theo quy ước.
-- **Mục không thuộc báo cáo nào thì không có nút** (Tổng quan, Quy tắc và nguồn, Dữ liệu gốc) — không có bộ sheet để xuất.
+- **Mục không thuộc báo cáo nào thì không có nút** (Tổng quan) — không có bộ sheet để xuất.
 - **Hàng thao tác của đầu khối nằm NGANG.** `.panel-actions` là flex, `align-items: end` để nút thẳng hàng với ô chọn chứ không với nhãn nhỏ phía trên nó. Trước đây nó là khối thường, nên khối nào có hai thứ thì chúng rơi xuống hai dòng và đầu khối cao gấp đôi — lỗi không lộ ra cho tới khi nút xuất về đây, vì phần lớn khối chỉ có một nút.
 
 **The Fixed Furniture Rule.** Không đổi vị trí điều hướng, bộ lọc hay nút mà người dùng đã quen tay. Sidebar trái, thanh lọc chung dính lên mép trên khung nhìn, bộ lọc riêng của bảng nằm trong đầu khối, thao tác chính nằm bên phải đầu khối — đây là lằn ranh người dùng đặt ra, và mọi màn mới thừa hưởng nó.
@@ -610,7 +621,7 @@ Từ 720px xuống, dải nhận diện co thành một hàng ngang cao tự nhi
 
 ### Navigation
 - **Sidebar** rộng 252px, nền navy, cuộn dọc riêng, đệm `20px 14px 14px`. Các màn cấp hệ thống chia theo nhóm; nhóm "Dữ liệu" mở đầu bằng **Tình trạng dữ liệu**. Chữ làm điều hướng: mục **không có icon**, chỉ có nhãn 14px. Ba nhóm ("Điều hành" / "Nghiệp vụ" / "Dữ liệu") ngăn nhau bằng `margin-top: 24px` và một vạch `#ffffff2b`; nhãn nhóm là bậc `nav-group`, `aria-hidden` vì `role="group"` đã mang tên. Nhóm là tiêu đề cấu trúc, các mục bên dưới mới là đích điều hướng.
-- **QL1 submenu:** khi mở **Báo cáo công tác nợ**, sidebar bung bảy mục con — Tổng quan, So sánh nợ, Kết quả cưỡng chế, Tạm hoãn xuất cảnh, Tạm hoãn XC · trạng thái 06, Quy tắc và nguồn, Dữ liệu gốc. Đây là các vùng trong cùng báo cáo QL1, không phải bảy màn cấp hệ thống; submenu phản ánh mục đang mở và không thay đổi quyền truy cập.
+- **Không còn submenu trong sidebar** (09/10/2026). Mục của một phòng nằm trên nội dung, thành hai hàng tab — xem **The Sidebar Names The Departments, The Tabs Name The Reports Rule**. Sidebar chỉ còn các màn cấp hệ thống, mỗi phòng một mục.
 - **Mục nghỉ:** chữ `--on-chrome-1` cân nặng 400, nền trong suốt, cao 38px. Khai báo `font-weight: 550` cũ đã bị gỡ: nó bị một quy tắc sau đè mất nên chưa bao giờ có hiệu lực, và 550 cạnh 600 của mục đang mở là bậc không ai nhìn ra.
 - **Hover:** nền `#ffffff14`, chữ trắng, trượt phải 3px — chỉ khi có chuột thật và không yêu cầu giảm chuyển động.
 - **Đang mở:** một tín hiệu đặc và duy nhất — mục cấp hệ thống lật thành **thanh trắng** (`background: var(--surface)`, viền cùng màu), chữ xanh `--brand-strong` cân nặng 600, bóng nhẹ. Mục QL1 đang chọn dùng nền navy sáng nhẹ, chữ trắng và vạch xanh dữ liệu.
@@ -672,7 +683,7 @@ Thanh dính ở `top: 0`. Trước đây nó dính ở `top: var(--topbar-h)` v�
 ### Tham số và nguồn
 **The Threshold Has One Home Rule.** Mọi ngưỡng nằm trong `data/thamSo.ts` và chỉ ở đó. Màn Quy tắc đọc nó để hiện; bộ sinh dữ liệu đọc nó để dựng cột "Ngưỡng" và lọc danh sách tăng nợ; tiêu đề danh sách cũng đọc nó. Gõ "500 triệu" vào tiêu đề rồi lọc bằng một hằng khác là cách tiêu đề bắt đầu nói dối mà không ai phát hiện. Tiêu chí NT-06 của BRD kiểm đúng điều này: đổi ngưỡng thì báo cáo đổi theo mà không phải sửa mã.
 
-**The Screen Does Not Print Someone's Disk.** Sheet `QuyTac_Nguon` của file thật ghi đủ `D:\DTNGOC\QLHT DN SO 1\...` cho từng nguồn. Tab Dữ liệu gốc liệt kê cùng những nguồn ấy nhưng bỏ hẳn đường dẫn — mục S4 cấm, và nó cũng không giúp gì người đọc: thứ họ cần biết là nguồn nào, chốt ngày nào, bao nhiêu dòng.
+**The Screen Does Not Print Someone's Disk.** Sheet `QuyTac_Nguon` của file thật ghi đủ `D:\DTNGOC\QLHT DN SO 1\...` cho từng nguồn. Màn Tình trạng dữ liệu liệt kê cùng những nguồn ấy nhưng bỏ hẳn đường dẫn — mục S4 cấm, và nó cũng không giúp gì người đọc: thứ họ cần biết là nguồn nào, chốt ngày nào, bao nhiêu dòng.
 
 **The Mismatch Goes Above The Table.** Cảnh báo lệch ngày chốt và lệch số dòng đứng TRƯỚC danh sách nguồn, không phải chú thích cuối trang: chúng làm thay đổi cách đọc mọi con số bên dưới. File mẫu thật có ba mốc ngày cho cùng một kỳ mà không chỗ nào giải thích; màn hình phải nêu ra thay vì để người dùng phát hiện sau khi đã trích số đi họp.
 

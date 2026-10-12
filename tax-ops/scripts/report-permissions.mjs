@@ -23,7 +23,7 @@ try {
  await click('Gửi trưởng phòng duyệt');assert.equal(await p.$eval('.thanh-duyet .badge',e=>e.textContent.trim()),'Chờ duyệt');assert.equal(await p.$$eval('.duyet-nut button',e=>e.length),0);
  await login('tp.ql1','TP');buttons=await p.$$eval('.duyet-nut button',els=>els.map(e=>e.textContent.trim()));assert.deepEqual(buttons,['Trả lại','Duyệt và chốt số']);await click('Duyệt và chốt số');assert.equal(await p.$eval('.thanh-duyet .badge',e=>e.textContent.trim()),'Đã chốt');console.log('QL1 final:',await download('Xuất cả bộ báo cáo','.xlsx'));
  await p.goto(`${base}/?view=tinhtrang`,{waitUntil:'networkidle0'});assert.equal(await p.evaluate(()=>[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Tải tệp bổ sung'))),false);await click('Đơn vị quản lý NNT');assert.equal(await p.$$eval('.mapping-table button',e=>e.length),0);
- await login('cv.ql1','CV','workbench');assert.equal(await p.$eval('.task-list',e=>/Duyệt|Chốt/.test(e.textContent)),false);
+ await login('cv.ql1','CV','dieuhanh&muc=cc');assert.equal(await p.$$eval('.qd-bang thead th',ths=>ths.some(th=>/^(Hạng|Tỷ lệ|So bình quân)$/.test(th.textContent.trim()))),false,'Cán bộ chỉ được thấy số tuyệt đối (biên bản 09/10 §4)');
  await p.goto(`${base}/?view=debt`,{waitUntil:'networkidle0'});await p.setViewport({width:390,height:844});await p.screenshot({path:'.impeccable/review/report-actions-mobile.png',fullPage:true});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  await login('cv.ql3','CV','risk');console.log('QL3 Excel:',await download('Xuất báo cáo Excel','.xlsx'));
  assert.deepEqual(errors,[]);console.log(`PASS: roles, report downloads, closed period, read-only manager, mobile. Files: ${downloads}`);

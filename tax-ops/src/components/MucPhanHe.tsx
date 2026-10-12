@@ -1,4 +1,4 @@
-import { Fragment, createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useThamSo } from "@/state/diaChi";
 import type { ViewId } from "@/domain/types";
 
@@ -48,14 +48,6 @@ export interface NhomMuc {
   nhan: string | null;
   /** Báo cáo chưa có mẫu từ phòng: màn dựng khung, bố cục cột còn đổi. */
   khung?: boolean;
-  /**
-   * Nhóm điều hướng chứa mục này. Mặc định là cụm Phân hệ.
-   *
-   * `"data"` đẩy nhóm xuống cụm Dữ liệu: "Dữ liệu gốc" nói về NGUỒN kéo về,
-   * cùng một việc với "Tình trạng dữ liệu", và nó không thuộc báo cáo nào để
-   * đứng chung hàng với các báo cáo.
-   */
-  nhomNav?: "data";
   muc: readonly MucPhanHe[];
 }
 
@@ -90,8 +82,6 @@ const QL1: readonly NhomMuc[] = [
     { id: "th", nhan: "Trên ngưỡng nợ" },
     { id: "t06", nhan: "Trạng thái 06" },
   ] },
-  { baoCao: null, nhan: null, muc: [{ id: "quytac", nhan: "Quy tắc và nguồn" }] },
-  { baoCao: null, nhan: null, nhomNav: "data", muc: [{ id: "nguon", nhan: "Dữ liệu gốc" }] },
 ];
 
 /*
@@ -118,8 +108,8 @@ const QL1: readonly NhomMuc[] = [
   Danh sách đứng NGAY SAU Tổng quan, trước Đối chiếu: thứ tự đọc là tổng →
   chi tiết → đối chiếu với bản thủ công, đúng trình tự một kỳ làm việc.
 */
-const QL3: readonly NhomMuc[] = [{
-  baoCao: null, nhan: null, muc: [
+const QL3: readonly NhomMuc[] = [
+  { baoCao: null, nhan: null, muc: [
     { id: "tongquan", nhan: "Tổng quan" },
     { id: "dsnnt", nhan: "Danh sách NNT" },
     /* Đối chiếu bằng tay là việc của giai đoạn chuyển đổi và không nằm
@@ -127,8 +117,12 @@ const QL3: readonly NhomMuc[] = [{
        §6 xếp "nhập KPI" vào nhóm vẫn thủ công sau khi có hệ thống — tức nó
        phải có màn riêng chứ không chờ nguồn nào kéo về. */
     { id: "kpi", nhan: "KPI đăng ký" },
-  ],
-}];
+  ] },
+  /* "Kết quả tổng hợp" từng là một mục THANH BÊN riêng của QL3, tức phòng QL3
+     có hai mục cấp ngoài trong khi ba phòng kia có một. Nó là một báo cáo của
+     chính phòng ấy, nên nó về đúng chỗ của một báo cáo: một tab. */
+  { baoCao: "QL3-TH", nhan: "Kết quả tổng hợp", muc: [{ id: "ketqua", nhan: "Kết quả tổng hợp" }] },
+];
 
 /* Thứ tự nhóm theo §4.2: hai báo cáo có mẫu đầy đủ trước, bốn báo cáo khung
    sau — người dùng gặp thứ dùng được hằng ngày trước thứ còn chờ mẫu. */
@@ -155,7 +149,6 @@ const QL2: readonly NhomMuc[] = [
   { baoCao: "QL2-03", nhan: "Rủi ro TPR", muc: [{ id: "tpr", nhan: "Rủi ro TPR" }] },
   { baoCao: "QL2-05", nhan: "Cảnh báo rủi ro", khung: true, muc: [{ id: "cbrr", nhan: "Cảnh báo rủi ro" }] },
   { baoCao: "QL2-06", nhan: "Gói rủi ro Công an", muc: [{ id: "congan", nhan: "Gói rủi ro Công an" }] },
-  { baoCao: null, nhan: null, nhomNav: "data", muc: [{ id: "nguon", nhan: "Dữ liệu gốc" }] },
 ];
 
 /* QL4 đảo thứ tự so với §5.2: tổng đài đứng TRƯỚC hoàn thuế trong cụm, vì nó
@@ -176,7 +169,6 @@ const QL4: readonly NhomMuc[] = [
     { id: "venh", nhan: "Hồ sơ vênh 1.5.1 – 6.29.1" },
     { id: "diem", nhan: "Chấm điểm" },
   ] },
-  { baoCao: null, nhan: null, nhomNav: "data", muc: [{ id: "nguon", nhan: "Dữ liệu gốc" }] },
 ];
 
 /*
@@ -236,174 +228,119 @@ export function useMucPhanHe() {
   return gia;
 }
 
-/** Phân hệ nào tách báo cáo ra thành mục cấp ngoài của thanh bên. */
-export const tachTheoBaoCao = (view: ViewId) => (CUM_MUC[view] ?? []).some((n) => n.baoCao !== null);
-
-/** Nhóm của một phân hệ, lọc theo cụm điều hướng chứa nó. */
-export const nhomTrongCum = (view: ViewId, cum: "phanhe" | "data") =>
-  (CUM_MUC[view] ?? []).filter((n) => (n.nhomNav ?? "phanhe") === cum);
-
 /*
-  Thanh bên của một phân hệ CÓ NHIỀU BÁO CÁO: mỗi báo cáo là một mục cấp
-  ngoài, mục con của nó nằm dưới đúng kiểu cha–con cũ.
+  ── THANH MỤC: hai hàng tab trên nội dung ───────────────────────────────────
 
-  Bản trước gộp cả sáu báo cáo của QL2 vào trong một mục "Rủi ro hóa đơn",
-  nên thanh bên có ba tầng: phân hệ → nhãn nhóm (không bấm được) → mục. Tầng
-  giữa chỉ để đọc, nên muốn sang báo cáo khác phải nhắm vào một mục con của
-  nó; và cả sáu báo cáo nằm trong một mục làm người dùng cuộn qua hai chục
-  dòng của báo cáo khác để tới cái của mình.
+  Trước ngày 09/10/2026 mục của phân hệ nằm trong THANH BÊN, và mỗi báo cáo là
+  một mục cấp ngoài của thanh ấy. Tài liệu thiết kế đổi: bốn phòng không chia
+  nhỏ trên thanh bên nữa, mỗi phòng là MỘT mục, còn báo cáo và mục con quay về
+  nằm trên nội dung như bản dựng đầu tiên.
 
-  Nay tầng giữa BẤM ĐƯỢC và lên cấp ngoài. Bấm vào nó mở mục đầu của chính
-  nó — không có màn riêng cho "một báo cáo nói chung", và để nó không làm gì
-  thì nó vẫn chỉ là một nhãn.
+  Hai hàng, không một:
 
-  Nhãn chỉ mang TÊN CHỦ ĐỀ, bỏ mã `QL2-01`: mã là của bảng phân công báo cáo,
-  có ích khi đối chiếu tài liệu chứ không khi tìm đường. Mã vẫn hiện trên
-  tiêu đề kỳ của thanh duyệt.
+  • Hàng trên là BÁO CÁO. Nó là thứ quyết định danh mục kỳ, khóa duyệt và bộ
+    sheet xuất ra — ba thứ đổi cùng lúc khi người dùng bấm sang báo cáo khác,
+    nên nó phải là một chiều riêng chứ không trộn chung một danh sách phẳng.
+  • Hàng dưới là MỤC của báo cáo đang mở, và chỉ dựng khi báo cáo ấy có từ hai
+    mục. Một hàng tab luôn đúng một nút là một hàng không bấm được gì.
 
-  CHA CÓ CON THÌ CHA KHÔNG TỰ BÀY NỘI DUNG. Bấm vào cha là nhảy xuống con
-  thứ nhất, và chính con ấy bày nội dung — nên lúc nào cũng có đúng một mục
-  con đang sáng, người dùng biết mình đang đọc cái gì.
-
-  Bản trước giấu mục con trùng tên với cha và cho cha mở thẳng nó. Kết quả:
-  bấm "Xác minh hóa đơn" thì nội dung hiện ra mà không mục con nào sáng, nhìn
-  như chính cha đang bày bảng — trong khi cha chỉ là lối vào. Nay không giấu
-  con nào nữa; chỗ nào trùng tên thì ĐỔI TÊN con cho đúng nội dung của nó.
-
-  Báo cáo chỉ có MỘT mục thì ngược lại: nó là một mục lá, bày nội dung ngay,
-  vì không có con nào để nhảy xuống (QL2-03, QL2-05, QL2-06).
+  Mục chung của phòng (Tổng quan) không thuộc báo cáo nào: nó là một tab hàng
+  trên, không có hàng dưới.
 */
-export function MucTheoBaoCao({ view, dangMo, onMo, onNavigate }: {
-  view: ViewId;
-  /** Phân hệ này có đang là màn đang mở không. */
-  dangMo: boolean;
-  onMo: (view: ViewId, muc: string) => void;
-  onNavigate: () => void;
-}) {
+export function ThanhMuc({ view }: { view: ViewId }) {
   const { muc, datMuc } = useMucPhanHe();
-  const dangChon = dangMo ? muc : null;
+  const nhom = CUM_MUC[view] ?? [];
+  const dangNhom = nhom.find((n) => n.muc.some((m) => m.id === muc)) ?? nhom[0];
+  const laLa = (dangNhom?.muc.length ?? 0) === 1;
 
-  /*
-    Trong CÙNG phân hệ thì đổi mục bằng `datMuc`, không bằng `onMo`.
+  if (nhom.length === 0) return null;
 
-    `onMo` đi qua `setView` của App; khi màn không đổi, nó chỉ ghi lại địa
-    chỉ. Mục đang mở là state của `MucPhanHeProvider` và chỉ `datMuc` chạm
-    tới được, nên bấm trong phân hệ qua `onMo` sẽ đổi URL mà thanh bên đứng
-    yên. Sang phân hệ khác thì ngược lại: provider của phân hệ kia chưa dựng,
-    nên phải đi qua `onMo` để đổi màn và đặt mục trong cùng một lần.
-  */
-  const di = (m: string) => {
-    if (dangMo) datMuc(m);
-    else onMo(view, m);
-    onNavigate();
-  };
-
-  return <>{nhomTrongCum(view, "phanhe").map((nhom, i) => {
-    /* Nhóm chung (Tổng quan): từng mục là một mục cấp ngoài, không có con. */
-    if (!nhom.baoCao) {
-      return nhom.muc.map((m) => <button
-        key={m.id}
-        type="button"
-        className={`nav-item${dangChon === m.id ? " is-active" : ""}`}
-        aria-current={dangChon === m.id ? "page" : undefined}
-        onClick={() => di(m.id)}
-      ><span>{m.nhan}</span></button>);
-    }
-
-    const moNhom = dangChon !== null && nhom.muc.some((m) => m.id === dangChon);
-
-    /* Báo cáo một mục: mục lá, bày nội dung ngay. */
-    if (nhom.muc.length === 1) {
-      return <button
-        key={nhom.baoCao ?? `chung-${i}`}
-        type="button"
-        className={`nav-item${moNhom ? " is-active" : ""}`}
-        aria-current={moNhom ? "page" : undefined}
-        onClick={() => di(nhom.muc[0].id)}
-      >
-        <span>{nhom.nhan}</span>
-        {nhom.khung && <em className="nav-khung">Khung</em>}
-      </button>;
-    }
-
-    return <Fragment key={nhom.baoCao ?? `chung-${i}`}>
-      {/* Cha mang `is-active` để thấy đang ở nhóm nào, nhưng KHÔNG mang
-          `aria-current="page"`: trang hiện tại là mục con, và hai thứ cùng
-          khai "page" thì trình đọc màn hình đọc ra hai trang đang mở. */}
-      <button
-        type="button"
-        className={`nav-item${moNhom ? " is-active" : ""}`}
-        onClick={() => di(nhom.muc[0].id)}
-      >
-        <span>{nhom.nhan}</span>
-        {/* Nhãn "Khung" nói thẳng bố cục còn đổi, thay vì để người dùng tự
-            phát hiện qua một bảng trống không giải thích. */}
-        {nhom.khung && <em className="nav-khung">Khung</em>}
-      </button>
-      {moNhom && <div className="ql1-nav-items" role="group" aria-label={`Mục của ${nhom.nhan}`}>
-        {nhom.muc.map((m) => <button
-          key={m.id}
+  return <nav className="thanh-muc" aria-label={NHAN_CUM[view] ?? "Mục của phân hệ"}>
+    <HangTab lop="thanh-muc-hang" khoaMo={dangNhom?.baoCao ?? dangNhom?.muc[0].id ?? ""}>
+      {nhom.map((n, i) => {
+        const mo = n === dangNhom;
+        return <button
+          key={n.baoCao ?? `chung-${i}`}
           type="button"
-          className={`ql1-nav-item${dangChon === m.id ? " is-active" : ""}`}
-          aria-current={dangChon === m.id ? "page" : undefined}
-          onClick={() => di(m.id)}
-        >{m.nhan}</button>)}
-      </div>}
-    </Fragment>;
-  })}</>;
-}
+          className={`muc-tab${mo ? " is-active" : ""}`}
+          data-mo={mo ? "1" : undefined}
+          /* Tab báo cáo mang `aria-current="page"` CHỈ KHI nó không có hàng
+             con: có con thì trang hiện tại là mục con, và hai nút cùng khai
+             "page" thì trình đọc màn hình đọc ra hai trang đang mở. */
+          aria-current={mo && n.muc.length === 1 ? "page" : undefined}
+          onClick={() => datMuc(n.muc[0].id)}
+        >
+          <span>{n.nhan ?? n.muc[0].nhan}</span>
+          {/*
+            Nhãn "Khung" là một LỜI CẢNH BÁO — báo cáo chưa có mẫu từ phòng —
+            nên nó mang màu chữ phụ, không mang xanh thương hiệu. Xanh ở hàng
+            này đã có nghĩa "đang mở"; cho một cảnh báo mượn đúng màu ấy là
+            bắt người đọc phân biệt hai thứ bằng vị trí.
+          */}
+          {n.khung && <em className="nav-khung">Khung</em>}
+        </button>;
+      })}
+    </HangTab>
 
-/*
-  Mục của phân hệ đứng trong cụm DỮ LIỆU — "Dữ liệu gốc" của QL2 và QL4.
-
-  Nó cần biết mục đang mở để tô sáng, mà `useMucPhanHe` chỉ gọi được bên
-  TRONG provider; `Shell` dựng provider quanh JSX của chính nó nên không gọi
-  được ở thân hàm. Tách thành một component nhỏ là cách rẻ nhất.
-*/
-export function MucDuLieuCuaPhanHe({ view, dangMo, onMo, onNavigate }: {
-  view: ViewId;
-  dangMo: boolean;
-  onMo: (view: ViewId, muc: string) => void;
-  onNavigate: () => void;
-}) {
-  const { muc, datMuc } = useMucPhanHe();
-  /* Cùng lý do đã ghi ở `MucTheoBaoCao`: trong phân hệ thì `datMuc`. */
-  const di = (m: string) => { if (dangMo) datMuc(m); else onMo(view, m); onNavigate(); };
-  return <>{nhomTrongCum(view, "data").flatMap((n) => n.muc).map((m) => {
-    const chon = dangMo && muc === m.id;
-    return <button
-      key={m.id}
-      type="button"
-      className={`nav-item${chon ? " is-active" : ""}`}
-      aria-current={chon ? "page" : undefined}
-      onClick={() => di(m.id)}
-    ><span>{m.nhan}</span></button>;
-  })}</>;
-}
-
-/*
-  Thanh bên của phân hệ MỘT BÁO CÁO (QL1, QL3): giữ nguyên một tầng mục phẳng
-  dưới tên phân hệ. Không có báo cáo nào để tách ra, nên tách là tạo một tầng
-  rỗng.
-*/
-export function MucSidebar({ view, visible, onNavigate }: { view: ViewId; visible: boolean; onNavigate: () => void }) {
-  const { muc, datMuc } = useMucPhanHe();
-  const cum = CUM_MUC[view];
-  if (!visible || !cum) return null;
-
-  return <div className="ql1-nav-items" role="group" aria-label={NHAN_CUM[view] ?? "Mục của phân hệ"}>
-    {cum.map((nhom, i) => <div key={nhom.baoCao ?? `chung-${i}`} className="muc-nhom">
-      {nhom.nhan && <span className="muc-nhom-nhan">
-        {nhom.nhan}
-        {nhom.khung && <em>Khung</em>}
-      </span>}
-      {nhom.muc.map((m) => <button
+    {!laLa && <HangTab lop="thanh-muc-hang is-con" khoaMo={muc}>
+      {dangNhom.muc.map((m) => <button
         key={m.id}
         type="button"
-        className={`ql1-nav-item${muc === m.id ? " is-active" : ""}`}
+        className={`muc-tab-con${muc === m.id ? " is-active" : ""}`}
+        data-mo={muc === m.id ? "1" : undefined}
         aria-current={muc === m.id ? "page" : undefined}
-        onClick={() => { datMuc(m.id); onNavigate(); }}
+        onClick={() => datMuc(m.id)}
       >{m.nhan}</button>)}
-    </div>)}
-  </div>;
+    </HangTab>}
+  </nav>;
+}
+
+/*
+  Một hàng tab cuộn được, KHÔNG có thanh cuộn.
+
+  Thanh cuộn ngang của một hàng tab cao 36px là một vật thể lạ: trên Windows nó
+  vẽ hẳn một rãnh cộng hai mũi tên, chiếm đúng chỗ của tab cuối và hiện ngay cả
+  khi không có gì để cuộn — `scrollbar-width: thin` vẫn chừa một pixel rãnh ở
+  mọi khổ, đo được.
+
+  Gỡ nó thì mất tín hiệu "còn tab bên phải", nên hai thứ thay vào, và cả hai
+  bám PHÉP ĐO thật chứ không bám điểm ngắt:
+
+  • Vệt mờ ở mép nào CÒN nội dung bên ngoài. Ở 390px hàng báo cáo của QL2 tràn
+    562px — hơn một màn rưỡi — nên đây không phải lo xa.
+  • Tab đang mở tự cuộn vào tầm nhìn khi đổi mục. Không có nó thì mở một báo
+    cáo ở cuối hàng xong, hàng vẫn đứng ở đầu và không gì sáng trong tầm mắt.
+*/
+function HangTab({ children, lop, khoaMo }: { children: ReactNode; lop: string; khoaMo: string }) {
+  const vung = useRef<HTMLDivElement>(null);
+  const [mep, datMep] = useState<"khong" | "phai" | "trai" | "hai">("khong");
+
+  useEffect(() => {
+    const el = vung.current;
+    if (!el) return;
+    const do_ = () => {
+      const du = el.scrollWidth - el.clientWidth;
+      if (du <= 1) return datMep("khong");
+      const traiCon = el.scrollLeft > 1;
+      const phaiCon = el.scrollLeft < du - 1;
+      datMep(traiCon && phaiCon ? "hai" : traiCon ? "trai" : "phai");
+    };
+    do_();
+    const theoDoi = new ResizeObserver(do_);
+    theoDoi.observe(el);
+    for (const con of Array.from(el.children)) theoDoi.observe(con);
+    el.addEventListener("scroll", do_, { passive: true });
+    return () => { theoDoi.disconnect(); el.removeEventListener("scroll", do_); };
+  }, [children]);
+
+  /* Cuộn tab đang mở vào tầm nhìn — chỉ khi hàng thật sự tràn, để một hàng vừa
+     khung không bị giật một khung hình vì không lý do gì. */
+  useEffect(() => {
+    const el = vung.current;
+    const nut = el?.querySelector<HTMLElement>("[data-mo]");
+    if (!el || !nut || el.scrollWidth - el.clientWidth <= 1) return;
+    nut.scrollIntoView({ inline: "nearest", block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, [khoaMo]);
+
+  return <div ref={vung} className={lop} data-mep={mep}>{children}</div>;
 }

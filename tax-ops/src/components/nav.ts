@@ -49,15 +49,22 @@ export interface MucNav {
 
 const NGHIEP_VU: VaiTro[] = ["CV", "TP"];
 
-export const NHAN_VAI: Record<VaiTro, string> = { CV: "Chuyên viên", TP: "Trưởng phòng", VAN_HANH: "Vận hành dữ liệu", LANH_DAO_NN: "Lãnh đạo nhà nước" };
+/* Bốn vai của không gian làm việc khối QLDN (biên bản 09/10/2026 §3). */
+const KHOI_QLDN: VaiTro[] = ["CV", "PP", "TP", "LD_TP"];
+
+export const NHAN_VAI: Record<VaiTro, string> = { CV: "Chuyên viên", PP: "Phó phòng", TP: "Trưởng phòng", LD_TP: "Lãnh đạo Thuế TP", VAN_HANH: "Vận hành dữ liệu", LANH_DAO_NN: "Lãnh đạo nhà nước" };
 
 export const NAV: MucNav[] = [
-  { id: "workbench", label: "Công việc theo kỳ", short: "Việc", icon: "home", nhom: "work", phong: null, vaiTro: NGHIEP_VU },
+  /* Ba mô-đun của không gian làm việc chung khối QLDN — biên bản 09/10/2026
+     "Yêu cầu không gian làm việc khối QLDN": một giao diện cho mọi vai, dữ
+     liệu lọc theo phân quyền TMS 2.4.2. */
+  { id: "doituong", label: "Tổng quan đối tượng", short: "Đối tượng", icon: "users", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
+  { id: "dieuhanh", label: "Kết quả công tác", short: "Kết quả", icon: "report", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
+  { id: "canhbao", label: "Cảnh báo nhắc việc", short: "Cảnh báo", icon: "alert", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
 
   { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU },
   { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU },
   { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU },
-  { id: "tonghopql3", label: "Kết quả tổng hợp", short: "Tổng hợp", icon: "report", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU },
   { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU },
 
   { id: "tinhtrang", label: "Tình trạng dữ liệu", short: "Dữ liệu", icon: "database", nhom: "data", phong: null, vaiTro: NGHIEP_VU },
@@ -82,6 +89,26 @@ export const NHOM: { id: MucNav["nhom"]; nhan: string }[] = [
   { id: "vanhanh", nhan: "Vận hành" },
 ];
 
-/** Màn hình người dùng này mở được. Khi nối Keycloak, thay bằng client role trong token. */
+/** Phân hệ của từng phòng — dùng để biết "báo cáo của phòng mình" là màn nào. */
+export const PHAN_HE_CUA: Record<string, ViewId> = { QL1: "debt", QL2: "hoadon", QL3: "risk", QL4: "hoan" };
+
+/*
+  Màn hình người dùng này mở được.
+
+  Từ 09/10/2026 thanh bên mở CẢ NĂM PHÒNG cho mọi tài khoản nghiệp vụ, không
+  còn cắt theo phòng của người đăng nhập. Quyết định của người dùng, và nó
+  LỆCH khỏi mục S1 ("ẩn hẳn menu, không chỉ làm mờ") cùng ma trận §3 — nên nó
+  được ghi ở đây kèm lý do thay vì để người sau phát hiện rồi đoán: bản mẫu
+  này được xem bằng cách đi hết bốn phòng trong một phiên, và một tài khoản
+  chỉ mở được một phòng thì người xem phải đăng xuất ba lần để đi hết hệ.
+
+  Trục VAI TRÒ vẫn cắt như cũ: Vận hành dữ liệu chỉ mở màn giám sát, Lãnh đạo
+  nhà nước không mở màn nào của hệ này. Đó mới là trục quyết định ai LÀM được
+  gì; trục phòng chỉ quyết định ai thấy số của ai, và bản mẫu dùng dữ liệu mô
+  phỏng nên không có số thật nào để che.
+
+  Khi nối Keycloak, chỗ này đọc client role trong token, và lúc ấy trục phòng
+  phải bật lại theo đúng ma trận §3.
+*/
 export const navCho = (user: Pick<DemoUser, "phong" | "vaiTro">) =>
-  NAV.filter((m) => m.vaiTro.includes(user.vaiTro) && (m.phong === null || (user.phong !== null && m.phong.includes(user.phong))));
+  NAV.filter((m) => m.vaiTro.includes(user.vaiTro));

@@ -4,17 +4,15 @@ import { QL2Provider, useQL2 } from "@/state/QL2Context";
 import { useMemo } from "react";
 import { BoLocChung, useBoLoc, theoDonVi, type MucDonVi } from "@/components/BoLoc";
 import { Khung } from "@/components/Khung";
-import { baoCaoCuaMuc, nhomCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
+import { ThanhMuc, baoCaoCuaMuc, nhomCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { ExportButton } from "@/components/ExportButton";
 import { XuatProvider } from "@/components/ui";
 import { PageIntro, Panel, money } from "@/components/ui";
-import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
 import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
 import { BangQL2_01, DanhSachChenhLech } from "@/features/QL2ChenhLech";
 import { BangHeSoK, DanhSachK } from "@/features/QL2HeSoK";
 import { BangXacMinh, TonQuaHanXM } from "@/features/QL2XacMinh";
-import { NGUON_QL2 } from "@/data/nguonDuLieu";
 import { rutGonTenDonVi } from "@/data/danhMuc";
 import type { VaiTro } from "@/domain/types";
 import {
@@ -95,6 +93,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
 
   return <XuatProvider nut={baoCao && boSheet.length ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
     <PageIntro title="Rủi ro hóa đơn · Phòng QL2"/>
+    <ThanhMuc view="hoadon"/>
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
@@ -161,7 +160,6 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
 
     {muc === "congan" && <CongAnQL2 key={ky.id} ky={ky} vaiTro={vaiTro} meta={meta}/>}
 
-    {muc === "nguon" && <DuLieuGoc nguon={NGUON_QL2} ngayBaoCao={ky.ngayChot}/>}
   </div></XuatProvider>;
 }
 

@@ -1740,5 +1740,260 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 .ql2-chenh-list > .panel-head > .panel-actions { width: 100%; }
 
 .ql2-manual { width: 100%; min-width: 80px; min-height: 36px; padding: 6px; background: var(--surface-soft, #f7f9fc); border: 1px solid var(--line, #dbe3ed); border-radius: 4px; color: inherit; font: inherit; }
+/* Ô nhập tay cũng chịu sàn 44px ở khổ chạm — nó là đích gõ, không phải nhãn. */
+@media (max-width: 900px) { .ql2-manual { min-height: 44px; } }
 
 .ql2-note { margin: 0; padding: 12px 14px; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
+
+/*
+  ── THANH MỤC: hai hàng tab trên nội dung ───────────────────────────────────
+
+  Mục của phân hệ nằm trên nội dung (xem `components/MucPhanHe.tsx`), nên nó
+  mang hình dạng của một thanh điều hướng TRONG trang: chữ trên nền sáng, hàng
+  ngang, mục đang mở gạch chân.
+
+  Hai hàng là hai bậc của CÙNG một vật, nên chúng phải trông như một vật:
+
+  • Hàng báo cáo nằm trên nền trang, gạch chân bằng đường kẻ của chính nó.
+  • Hàng mục con nằm trên `--surface-soft` ngay dưới đường kẻ ấy, bo hai góc
+    dưới — đọc ra "bên trong báo cáo đang mở". Bản trước để hai hàng rời nhau
+    trên cùng một nền, nên hàng dưới trôi lơ lửng và không nói nó thuộc về tab
+    nào, nhất là khi tab cha nằm lệch hẳn sang phải.
+
+  Bậc chữ lấy từ THANG CÓ THẬT của hệ, không tự đặt bậc mới: hàng trên 14px
+  như mục thanh bên, hàng dưới 13px, chip "Khung" 11px. Nặng 600 khi nghỉ, 650
+  khi mở. Bản đầu dùng 13,5px · 12,5px · 10,5px và nặng 500 — bốn giá trị không
+  có ở chỗ nào khác trong hệ, tức mỗi lần sửa thang về sau sẽ bỏ sót đúng khối
+  này. Bậc phân biệt hai hàng nằm ở CỠ (14 với 13), nên cân nặng không phải
+  gánh thêm việc ấy.
+*/
+.thanh-muc { display: grid; }
+
+/*
+  Hàng tab cuộn được mà KHÔNG có thanh cuộn.
+
+  Thanh cuộn ngang trong một hàng cao 36px là vật thể lạ: trên Windows nó vẽ
+  một rãnh cộng hai mũi tên ngay cạnh tab cuối, và `scrollbar-width: thin` còn
+  chừa một pixel rãnh ở cả những khổ không có gì để cuộn. Tín hiệu thay thế là
+  vệt mờ ở mép còn nội dung, bật theo PHÉP ĐO thật (`data-mep`).
+*/
+.thanh-muc-hang { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; border-bottom: 1px solid var(--line); }
+.thanh-muc-hang::-webkit-scrollbar { display: none; }
+.thanh-muc-hang[data-mep="phai"] { mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+.thanh-muc-hang[data-mep="trai"] { mask-image: linear-gradient(to right, transparent, #000 40px); }
+.thanh-muc-hang[data-mep="hai"] { mask-image: linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+
+/* Hàng con: cùng một khối với hàng cha, lùi một bậc bằng nền và cỡ chữ. */
+.thanh-muc-hang.is-con { gap: 4px; padding: 5px 6px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; background: var(--surface-soft); }
+
+.muc-tab { flex: none; min-height: 38px; display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: var(--ink-2); font: inherit; font-size: 14px; font-weight: 600; letter-spacing: -0.005em; white-space: nowrap; cursor: pointer; }
+.muc-tab.is-active { color: var(--brand-strong); border-bottom-color: var(--brand); font-weight: 650; }
+
+.muc-tab-con { flex: none; min-height: 30px; display: inline-flex; align-items: center; padding: 4px 11px; border: 1px solid transparent; border-radius: var(--radius-chip); background: none; color: var(--ink-2); font: inherit; font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.muc-tab-con.is-active { color: var(--brand-strong); border-color: var(--control-line-hover); background: var(--surface); font-weight: 650; }
+
+/*
+  Trỏ lên tab nghỉ phải thấy được trên NỀN TRANG.
+
+  Bản trước đổi nền sang `--surface-soft` (#f7f9fc) trong khi nền trang là
+  #f2f5f9 — lệch bốn đơn vị sáng, tức gần như không có phản hồi nào. Nay phản
+  hồi nằm ở chữ đậm màu lên và một vạch chân mảnh: vạch ấy cũng chính là hình
+  dạng của trạng thái đang mở, nên con trỏ đang xem trước điều cú bấm sẽ làm.
+*/
+@media (hover: hover) and (pointer: fine) {
+  .muc-tab:hover { color: var(--ink); border-bottom-color: var(--control-line); }
+  .muc-tab.is-active:hover { color: var(--brand-strong); border-bottom-color: var(--brand); }
+  .muc-tab-con:hover { color: var(--ink); border-color: var(--line); background: var(--surface); }
+  .muc-tab-con.is-active:hover { color: var(--brand-strong); border-color: var(--control-line-hover); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .muc-tab, .muc-tab-con { transition: color 120ms var(--ease-out), border-color 120ms var(--ease-out), background-color 120ms var(--ease-out); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .thanh-muc-hang { scroll-behavior: auto; }
+}
+
+/*
+  "Khung" là lời cảnh báo báo cáo chưa có mẫu, nên nó mang chữ phụ chứ không
+  mang xanh thương hiệu: xanh ở hàng này đã có nghĩa "đang mở", và cho một
+  cảnh báo mượn đúng màu ấy là bắt người đọc phân biệt hai thứ bằng vị trí.
+*/
+.muc-tab .nav-khung { flex: none; padding: 1px 6px; border: 1px solid var(--line); border-radius: var(--radius-chip); background: var(--surface); color: var(--ink-3); font-size: 11px; font-weight: 650; font-style: normal; letter-spacing: 0.01em; }
+
+.muc-tab:focus-visible, .muc-tab-con:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 4px; }
+
+/* Sàn 44px ở khổ chạm, cùng ngưỡng mọi đích bấm khác của hệ. */
+@media (max-width: 900px) {
+  .muc-tab { min-height: 44px; }
+  .muc-tab-con { min-height: 44px; }
+  .thanh-muc-hang.is-con { padding: 4px 6px; }
+}
+
+/*
+  Không gian làm việc khối QLDN — ba mô-đun của biên bản 09/10/2026: Tổng
+  quan đối tượng, Kết quả công tác, Cảnh báo nhắc việc. Tiền tố `qd-`.
+
+  Bảng của các mô-đun dùng `th` trong `tbody` cho hàng nhóm, nên phải gỡ
+  `position: sticky` của `th` toàn cục ở đó.
+*/
+.qd-page .table-wrap { max-height: none; }
+.qd-bang { width: 100%; min-width: 760px; }
+.qd-bang tbody th { position: static; height: auto; white-space: normal; }
+.qd-bang td.num small, .qd-bang td small { display: block; margin-top: 1px; color: var(--ink-3); font-size: 11px; font-weight: 400; }
+.qd-bang tr.is-tong th, .qd-bang tr.is-tong td { background: var(--surface-tint); color: var(--ink); font-size: 13px; font-weight: 650; letter-spacing: 0; border-top: 2px solid var(--ink-3); }
+.qd-bang tr.is-khoi th { background: var(--surface-soft); color: var(--ink); font-size: 12.5px; font-weight: 650; letter-spacing: 0; border-top: 1px solid var(--line); }
+.qd-cua-toi { color: var(--ink-3); font-weight: 500; }
+.qd-chenh { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-2); }
+.qd-chenh.is-tot { color: var(--positive); }
+.qd-chenh.is-xau { color: var(--critical); }
+
+/* Thanh phạm vi */
+.qd-pham-vi .bo-loc-phu b { color: var(--ink-2); font-weight: 650; }
+.qd-cho-chot { color: var(--warning); }
+.qd-menu { width: 300px; max-height: 420px; }
+.qd-loi-tat { display: flex; flex-wrap: wrap; gap: 6px; padding: 2px 2px 8px; border-bottom: 1px solid var(--line-soft); margin-bottom: 4px; }
+.qd-loi-tat button { min-height: 28px; padding: 2px 10px; border: 1px solid var(--line); border-radius: var(--radius-chip); background: var(--surface-soft); color: var(--ink); font-size: 12px; font-weight: 600; cursor: pointer; }
+.qd-loi-tat button:hover { border-color: var(--control-line-hover); }
+.qd-nhom-dv { display: grid; gap: 2px; padding-top: 6px; }
+.qd-nhom-dv > .bo-loc-nhan { padding: 0 8px 2px; }
+
+/* Thẻ chỉ tiêu — cả thẻ là một nút (The Whole Row Rule). */
+.qd-the-luoi { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.qd-the { display: grid; grid-template-rows: auto auto auto 1fr auto; align-content: start; gap: 8px; min-width: 0; padding: 14px 14px 12px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out); }
+.qd-the:hover { border-color: var(--control-line-hover); box-shadow: 0 2px 10px rgb(22 38 60 / 8%); }
+.qd-the:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.qd-the-dau { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.qd-the-ten { color: var(--ink-2); font-size: 13px; font-weight: 650; }
+.qd-the-so { display: grid; gap: 1px; font-size: 24px; font-weight: 700; letter-spacing: -.015em; font-variant-numeric: tabular-nums; }
+.qd-the-so small { color: var(--ink-3); font-size: 11.5px; font-weight: 500; letter-spacing: 0; }
+.qd-the-tl { display: grid; grid-template-columns: auto 1fr; align-items: baseline; column-gap: 8px; row-gap: 6px; min-height: 42px; }
+.qd-the-tl b { font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.qd-the-tl small { color: var(--ink-3); font-size: 11.5px; }
+.qd-the-tl .qd-thanh { grid-column: 1 / -1; }
+.qd-the-moc { display: grid; gap: 3px; margin: 0; padding-top: 8px; border-top: 1px solid var(--line-soft); }
+.qd-the-moc > div { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
+.qd-the-moc dt { color: var(--ink-3); }
+.qd-the-moc dd { margin: 0; font-weight: 600; }
+.qd-the-phu { color: var(--ink-2); font-size: 11.5px; }
+.qd-the-phu.is-cho { color: var(--info); font-weight: 600; }
+
+/* Thanh tỷ lệ + vạch bình quân toàn thuế */
+.qd-thanh { position: relative; display: block; width: 100%; height: 8px; border-radius: 3px; background: var(--data-track); }
+.qd-thanh i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--data-primary); }
+.qd-thanh b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--ink); box-shadow: 0 0 0 1px var(--surface); }
+.qd-thanh.is-lon { height: 12px; }
+.qd-o-thanh { display: inline-grid; grid-template-columns: 80px auto; align-items: center; gap: 10px; }
+
+/* Chi tiết thẻ */
+.qd-tom-tat { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; margin-bottom: 12px; border: 1px solid var(--line-soft); border-radius: var(--radius-control); background: var(--line-soft); overflow: hidden; }
+.qd-tom-tat > div { display: grid; gap: 2px; padding: 10px 12px; background: var(--surface); }
+.qd-tom-tat span { color: var(--ink-3); font-size: 11.5px; }
+.qd-tom-tat strong { font-size: 17px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.qd-tom-tat small { color: var(--ink-3); font-size: 11px; }
+.qd-ghi { margin-bottom: 12px; }
+.qd-ghi-doi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.qd-uoc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.qd-uoc > div { display: grid; gap: 3px; align-content: start; }
+.qd-uoc span { color: var(--ink-3); font-size: 12px; }
+.qd-uoc strong { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.qd-uoc small { color: var(--ink-3); font-size: 11px; }
+.qd-uoc-tl .qd-thanh { margin-top: 6px; }
+
+/* Mô-đun 1 */
+.qd-luoi-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.qd-thanh-ds { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.qd-thanh-ds li > button, .qd-thanh-ds.is-tinh li { width: 100%; display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(0, 1.4fr) 92px; align-items: center; gap: 12px; min-height: 36px; padding: 4px 8px; border: 0; border-radius: var(--radius-chip); background: none; color: var(--ink-2); font: inherit; font-size: 13px; text-align: left; }
+.qd-thanh-ds li > button { cursor: pointer; }
+.qd-thanh-ds li > button:hover { background: var(--surface-soft); color: var(--ink); }
+.qd-thanh-ray { position: relative; height: 12px; border-radius: 4px; background: var(--data-track); }
+.qd-thanh-ray i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--data-primary); }
+.qd-thanh-so { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; font-variant-numeric: tabular-nums; }
+.qd-thanh-so b { color: var(--ink); font-weight: 650; }
+.qd-thanh-so small { min-width: 38px; color: var(--ink-3); font-size: 11px; text-align: right; }
+.qd-cot { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-items: end; height: 220px; padding: 8px 8px 0; }
+.qd-cot-muc { display: grid; grid-template-rows: auto 1fr auto; height: 100%; gap: 6px; text-align: center; }
+.qd-cot-muc b { color: var(--ink); font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.qd-cot-muc small { color: var(--ink-3); font-size: 12px; }
+.qd-cot-ray { position: relative; border-bottom: 1px solid var(--data-reference); }
+.qd-cot-ray i { position: absolute; left: 18%; right: 18%; bottom: 0; border-radius: 4px 4px 0 0; background: var(--data-primary); }
+.qd-cot-ray i.is-do-dang { background: var(--data-family); }
+.qd-donut { display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 24px; }
+.qd-donut svg { width: 160px; height: 160px; overflow: visible; }
+.qd-donut circle { transition: stroke-width 120ms var(--ease-out); }
+.qd-donut-so { fill: var(--ink); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.qd-donut-phu { fill: var(--ink-3); font-size: 11px; }
+.qd-chu-giai { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.qd-chu-giai li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; min-height: 30px; padding: 2px 8px; border-radius: var(--radius-chip); color: var(--ink-2); font-size: 13px; }
+.qd-chu-giai li.is-tro, .qd-chu-giai li:hover { background: var(--surface-soft); color: var(--ink); }
+.qd-chu-giai i { width: 12px; height: 12px; border-radius: 3px; }
+.qd-chu-giai b { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+.qd-chu-giai small { min-width: 42px; color: var(--ink-3); font-size: 11px; text-align: right; }
+.qd-chong { display: flex; gap: 2px; height: 18px; margin: 4px 0 12px; border-radius: 4px; overflow: hidden; }
+.qd-chong i, .qd-chu-giai i.is-tot, .qd-chu-giai i.is-vang, .qd-chu-giai i.is-do { display: block; }
+.qd-chong i.is-tot, .qd-chu-giai i.is-tot { background: var(--positive); }
+.qd-chong i.is-vang, .qd-chu-giai i.is-vang { background: #d9a520; }
+.qd-chong i.is-do, .qd-chu-giai i.is-do { background: var(--critical); }
+.qd-o-so { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.qd-o-so > div { display: grid; gap: 3px; }
+.qd-o-so span { color: var(--ink-3); font-size: 12px; }
+.qd-o-so strong { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.qd-o-so small { color: var(--ink-3); font-size: 11px; }
+
+/* Mô-đun 3 */
+.qd-loc-cb { flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+.qd-bang-cb { min-width: 940px; }
+.qd-bang-cb tr.is-khoi th { display: table-cell; }
+.qd-nhom-ten { margin-right: 12px; }
+.qd-nhom-dem { display: inline-flex; flex-wrap: wrap; gap: 6px 12px; vertical-align: middle; }
+.qd-trong td { color: var(--ink-3); font-size: 12.5px; font-style: italic; }
+.qd-viec { cursor: pointer; }
+.qd-viec:hover { background: var(--surface-soft); }
+.qd-viec.is-selected:hover { background: var(--selected-surface); }
+.qd-ho-so td { background: var(--surface-soft); white-space: normal; }
+.qd-ho-so ul { margin: 6px 0; padding-left: 18px; }
+.qd-ho-so p { margin: 4px 0 0; }
+.qd-ho-so-ghi { color: var(--ink-3); font-size: 12px; }
+.qd-so-muc { font-weight: 650; }
+.qd-so-muc.tone-critical { color: var(--critical); }
+.qd-so-muc.tone-warning { color: var(--warning); }
+.qd-so-muc.tone-positive { color: var(--positive); }
+
+.qd-popup { width: min(460px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 12px; box-shadow: var(--shadow-overlay); color: var(--ink); }
+.qd-popup::backdrop { background: rgb(14 42 71 / 45%); }
+.qd-popup header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 4px; }
+.qd-popup h2 { margin: 0; font-size: 17px; }
+.qd-popup header .drawer-close { position: static; width: 32px; height: 32px; font-size: 20px; }
+.qd-popup-pham-vi { margin: 0; padding: 0 18px 12px; color: var(--ink-3); font-size: 12.5px; }
+.qd-popup-muc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 18px; }
+.qd-popup-muc > div { display: grid; gap: 2px; padding: 10px 12px; border-radius: 8px; }
+.qd-popup-muc strong { font-size: 24px; font-weight: 700; }
+.qd-popup-muc span { font-size: 12px; font-weight: 600; }
+.qd-popup-muc .tone-critical { color: var(--critical); background: var(--critical-bg); }
+.qd-popup-muc .tone-warning { color: var(--warning); background: var(--warning-bg); }
+.qd-popup-muc .tone-positive { color: var(--positive); background: var(--positive-bg); }
+.qd-popup-ds { display: grid; gap: 0; margin: 12px 18px 0; padding: 0; list-style: none; max-height: 240px; overflow: auto; }
+.qd-popup-ds li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 13px; }
+.qd-popup-ds b { font-variant-numeric: tabular-nums; }
+.qd-popup footer { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 18px 16px; }
+
+@media (max-width: 900px) {
+  .qd-luoi-2, .qd-ghi-doi { grid-template-columns: 1fr; }
+  .qd-o-so, .qd-uoc { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qd-loc-cb { justify-content: flex-start; }
+}
+@media (max-width: 560px) {
+  .qd-donut { grid-template-columns: 1fr; justify-items: center; }
+  .qd-chu-giai { width: 100%; }
+  .qd-thanh-ds li > button, .qd-thanh-ds.is-tinh li { grid-template-columns: minmax(0, 1fr) 84px; }
+  .qd-thanh-ray { grid-column: 1 / -1; grid-row: 2; }
+}.qd-the-moc { align-content: start; }
+.qd-khong-co { grid-column: 1 / -1; color: var(--ink-3); font-size: 12px; font-style: italic; }
+.qd-trong-chu { color: var(--ink-3); font-size: 12px; font-style: italic; }
+/* Bảng khối QLDN co theo nội dung: số không được gãy giữa chừng ("93,/9%"). */
+.qd-bang { table-layout: auto; }
+.qd-bang td.num, .qd-bang th.num { white-space: nowrap; }
+.qd-bang td:first-child, .qd-bang td:nth-child(2) { white-space: nowrap; }
+.qd-bang-cb td:nth-child(2), .qd-bang-cb td:nth-child(3) { white-space: normal; }
+.qd-loc-cb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 12px; }
+.qd-page .qd-loc-cb { justify-content: flex-start; }

@@ -1,17 +1,15 @@
 import { useMemo } from "react";
 import { BoLocChung, theoDonVi, useBoLoc, type MucDonVi } from "@/components/BoLoc";
-import { baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
+import { ThanhMuc, baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
 import { ExportButton } from "@/components/ExportButton";
 import { XuatProvider } from "@/components/ui";
 import { PageIntro, Panel, money } from "@/components/ui";
-import { DuLieuGoc } from "@/features/DuLieuGoc";
 import { ThanhDuyet, useChoXemTruoc } from "@/features/ThanhDuyet";
 import { KhoiXemTruoc, NutXemTruoc } from "@/features/XemTruocBaoCao";
 import { BangQL4_01, ChamDiem, DangXuLy, HoSoVenhBang } from "@/features/QL4Hoan";
 import { TienDoPhieu } from "@/features/TienDoPhieu";
 import { NhapKetQuaPhieu } from "@/features/NhapKetQuaPhieu";
 import { CuocGoi, DanhSachPhieu, PhieuGhiMaTran, SaiHan, ThanhNgay } from "@/features/QL4TongDai";
-import { NGUON_QL4 } from "@/data/nguonDuLieu";
 import { rutGonTenDonVi } from "@/data/danhMuc";
 import type { VaiTro } from "@/domain/types";
 import {
@@ -77,6 +75,7 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
 
   return <XuatProvider nut={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
     <PageIntro title="Hoàn thuế TNCN và tổng đài · Phòng QL4"/>
+    <ThanhMuc view="hoan"/>
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
@@ -122,7 +121,6 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     </>}
     {muc === "diem" && <ChamDiem ky={ky}/>}
 
-    {muc === "nguon" && <DuLieuGoc nguon={NGUON_QL4} ngayBaoCao={ky.ngayChot}/>}
   </div></XuatProvider>;
 }
 
