@@ -41,7 +41,11 @@ export interface MucNav {
   label: string;
   short: string;
   icon: IconName;
-  nhom: "work" | "phanhe" | "data" | "vanhanh";
+  nhom: "work" | "qtcv" | "phanhe" | "data" | "vanhanh";
+  /** Tuyến ẩn: mở được bằng đường dẫn nhưng không đứng trên thanh bên. */
+  an?: boolean;
+  /** Mục thanh bên sáng lên khi đang ở tuyến ẩn này. */
+  thuoc?: ViewId;
   /** `null` = khung chung, mọi phòng đều mở. */
   phong: Phong[] | null;
   vaiTro: VaiTro[];
@@ -59,13 +63,27 @@ export const NAV: MucNav[] = [
      "Yêu cầu không gian làm việc khối QLDN": một giao diện cho mọi vai, dữ
      liệu lọc theo phân quyền TMS 2.4.2. */
   { id: "doituong", label: "Tổng quan đối tượng", short: "Đối tượng", icon: "users", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
-  { id: "dieuhanh", label: "Kết quả công tác", short: "Kết quả", icon: "report", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
   { id: "canhbao", label: "Cảnh báo nhắc việc", short: "Cảnh báo", icon: "alert", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
 
-  { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU },
-  { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU },
-  { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU },
-  { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU },
+  /*
+    QUẢN TRỊ CÔNG VIỆC (chốt 13/10/2026): bốn nhóm lớn của file chấm điểm lên
+    thanh bên, thay cho bốn tab trên trang. Nhóm "Phân hệ" theo phòng đã gỡ —
+    biên bản yêu cầu khối QLDN: "không chia theo kiểu phòng 1 làm nợ, phòng 3
+    làm kiểm tra". Báo cáo của bốn phòng nằm trong nhóm chỉ tiêu nó đo, sau
+    công tắc "Kết quả | Báo cáo" — xem `features/qldn/BaoCaoPhanHe`.
+  */
+  { id: "dieuhanh", label: "Tổng quan kết quả", short: "Kết quả", icon: "report", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-thu", label: "Thu NSNN", short: "Thu", icon: "report", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-no", label: "Quản lý nợ", short: "Nợ", icon: "debt", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-tthc", label: "Thủ tục hành chính", short: "TTHC", icon: "file", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-qlht", label: "Quản lý, hỗ trợ DN", short: "QL, hỗ trợ", icon: "risk", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+
+  /* Bốn phân hệ cũ thành TUYẾN ẨN: liên kết đã gửi và các chốt kiểm vẫn mở
+     được, và mục nhóm chứa báo cáo của nó sáng lên trên thanh bên. */
+  { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-no" },
+  { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
+  { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
+  { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
 
   { id: "tinhtrang", label: "Tình trạng dữ liệu", short: "Dữ liệu", icon: "database", nhom: "data", phong: null, vaiTro: NGHIEP_VU },
 
@@ -84,6 +102,7 @@ export const NAV: MucNav[] = [
 */
 export const NHOM: { id: MucNav["nhom"]; nhan: string }[] = [
   { id: "work", nhan: "Điều hành" },
+  { id: "qtcv", nhan: "Quản trị công việc" },
   { id: "phanhe", nhan: "Phân hệ" },
   { id: "data", nhan: "Dữ liệu" },
   { id: "vanhanh", nhan: "Vận hành" },

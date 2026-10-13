@@ -205,6 +205,8 @@ export const nhomCuaMuc = (view: ViewId, muc: string) =>
 interface GiaTri {
   muc: string;
   datMuc: (muc: string) => void;
+  /** Có khi phân hệ được NHÚNG vào một nhóm chỉ tiêu: chỉ các mục này hiện. */
+  choPhep: readonly string[] | null;
 }
 
 const Ngu = createContext<GiaTri | null>(null);
@@ -216,10 +218,16 @@ const Ngu = createContext<GiaTri | null>(null);
   lệ của màn ấy. Giữ nguyên instance qua hai màn thì mục `th01` của QL2 còn
   sống khi đã sang QL4, và nó không có trong danh sách hợp lệ nào cả.
 */
-export function MucPhanHeProvider({ view, children }: { view: ViewId; children: ReactNode }) {
-  const ds = phang(view);
+/*
+  `choPhep` — từ 13/10/2026 nhóm "Phân hệ" đã gỡ khỏi thanh bên (biên bản yêu
+  cầu khối QLDN): báo cáo của bốn phòng nằm TRONG nhóm chỉ tiêu tương ứng của
+  Quản trị công việc. Một phân hệ nhúng vào nhóm "Cưỡng chế" chỉ được mở đúng
+  mục của báo cáo cưỡng chế; mục khác của phòng ấy không thuộc nhóm này.
+*/
+export function MucPhanHeProvider({ view, choPhep = null, children }: { view: ViewId; choPhep?: readonly string[] | null; children: ReactNode }) {
+  const ds = phang(view).filter((m) => !choPhep || choPhep.includes(m.id));
   const [muc, datMuc] = useThamSo<string>("muc", ds[0]?.id ?? "tongquan", ds.map((m) => m.id));
-  return <Ngu.Provider value={{ muc, datMuc }}>{children}</Ngu.Provider>;
+  return <Ngu.Provider value={{ muc, datMuc, choPhep }}>{children}</Ngu.Provider>;
 }
 
 export function useMucPhanHe() {
@@ -248,8 +256,22 @@ export function useMucPhanHe() {
   trên, không có hàng dưới.
 */
 export function ThanhMuc({ view }: { view: ViewId }) {
-  const { muc, datMuc } = useMucPhanHe();
-  const nhom = CUM_MUC[view] ?? [];
+  const { muc, datMuc, choPhep } = useMucPhanHe();
+  /* Nhúng trong nhóm chỉ tiêu: chỉ giữ báo cáo và mục được phép. Còn đúng
+     MỘT báo cáo thì bỏ hàng báo cáo — tên nó đã nằm trên công tắc "Kết quả |
+     Báo cáo" của nhóm — và chỉ dựng hàng mục khi có từ hai mục. */
+  const nhom = (CUM_MUC[view] ?? [])
+    .map((n) => (choPhep ? { ...n, muc: n.muc.filter((m) => choPhep.includes(m.id)) } : n))
+    .filter((n) => n.muc.length > 0);
+  if (choPhep && nhom.length === 1) {
+    const chi = nhom[0];
+    if (chi.muc.length < 2) return null;
+    return <nav className="thanh-muc" aria-label={NHAN_CUM[view] ?? "Mục của báo cáo"}>
+      <HangTab lop="thanh-muc-hang is-con is-don" khoaMo={muc}>
+        {chi.muc.map((m) => <button key={m.id} type="button" className={`muc-tab-con${muc === m.id ? " is-active" : ""}`} data-mo={muc === m.id ? "1" : undefined} aria-current={muc === m.id ? "page" : undefined} onClick={() => datMuc(m.id)}>{m.nhan}</button>)}
+      </HangTab>
+    </nav>;
+  }
   const dangNhom = nhom.find((n) => n.muc.some((m) => m.id === muc)) ?? nhom[0];
   const laLa = (dangNhom?.muc.length ?? 0) === 1;
 
@@ -311,7 +333,7 @@ export function ThanhMuc({ view }: { view: ViewId }) {
   • Tab đang mở tự cuộn vào tầm nhìn khi đổi mục. Không có nó thì mở một báo
     cáo ở cuối hàng xong, hàng vẫn đứng ở đầu và không gì sáng trong tầm mắt.
 */
-function HangTab({ children, lop, khoaMo }: { children: ReactNode; lop: string; khoaMo: string }) {
+export function HangTab({ children, lop, khoaMo }: { children: ReactNode; lop: string; khoaMo: string }) {
   const vung = useRef<HTMLDivElement>(null);
   const [mep, datMep] = useState<"khong" | "phai" | "trai" | "hai">("khong");
 

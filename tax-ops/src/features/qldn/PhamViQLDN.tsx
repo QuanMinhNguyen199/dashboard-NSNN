@@ -47,35 +47,46 @@ export function ThanhPhamVi({ pv, ky, datKy, coKy = true, them }: { pv: PhamVi; 
       </select>
     </div>}
     <div className="bo-loc-muc">
-      <span className="bo-loc-nhan">Phạm vi</span>
-      {pv.vai === "LD" ? <ChonDonVi/> : <strong className="bo-loc-ky">{nhanPhamVi(pv)}</strong>}
+      <span className="bo-loc-nhan" id="qd-pham-vi-nhan">Phạm vi</span>
+      {pv.vai === "LD" ? <ChonDonVi/> : <strong className="bo-loc-ky" aria-labelledby="qd-pham-vi-nhan">{nhanPhamVi(pv)}</strong>}
     </div>
     {them}
+    {/* Thời điểm cập nhật đứng cạnh nhãn mô phỏng: người đọc số cần biết số
+        "tươi" tới đâu trước khi trích nó đi họp. Giờ kéo là giờ của lịch kéo
+        dữ liệu hằng ngày (mô phỏng). */}
     <span className="bo-loc-phu">
       <b>{NHAN_VAI_Q[pv.vai]}</b>
       {cho.length > 0 && <> · <span className="qd-cho-chot" title="Ma trận chỉ số theo vai trò, biên bản 09/10/2026 §4">{cho.map((c) => NHAN_CHI_SO[c]).join(", ")}: chờ chốt quyền</span></>}
-      {" · "}Số liệu mô phỏng
+      {" · "}Cập nhật 06:00 {new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}{" · "}Số liệu mô phỏng
     </span>
   </div>;
 }
 
 /*
   Hộp chọn đơn vị của lãnh đạo: ba lối tắt theo §3 ("theo khối thuế cơ sở,
-  khối phòng") cộng danh sách tích chọn ("một/nhiều đơn vị mình phụ trách").
+  khối phòng"), ô tìm, và danh sách tích chọn ("một/nhiều đơn vị mình phụ
+  trách"). Mỗi đơn vị có thêm nút "Chỉ chọn": chọn năm thuế cơ sở mình phụ
+  trách không còn là bỏ tích hai mươi ô.
+
   Đóng khi bấm ra ngoài bằng `pointerdown` trên tài liệu, không bằng tiêu
   điểm — bấm vào phần chữ của một `<label>` thả tiêu điểm trước khi ô tích
-  nhận nó.
+  nhận nó. Mở thì tiêu điểm vào ô tìm; Esc đóng và trả tiêu điểm về nút mở.
 */
 function ChonDonVi() {
   const ngu = useContext(Ngu)!;
   const [mo, datMo] = useState(false);
+  const [tim, datTim] = useState("");
   const hop = useRef<HTMLDivElement>(null);
+  const nut = useRef<HTMLButtonElement>(null);
+  const oTim = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (!mo) return;
+    oTim.current?.focus();
     const ngoai = (e: PointerEvent) => { if (!hop.current?.contains(e.target as Node)) datMo(false); };
     document.addEventListener("pointerdown", ngoai);
     return () => document.removeEventListener("pointerdown", ngoai);
   }, [mo]);
+  const dong = () => { datMo(false); datTim(""); nut.current?.focus(); };
 
   const dangChon = ngu.chon.length ? ngu.chon : TAT_CA_ID;
   const tomTat = nhanPhamVi({ vai: "LD", canBo: null, donVi: DON_VI_Q.filter((d) => dangChon.includes(d.id)) });
@@ -86,10 +97,12 @@ function ChonDonVi() {
     /* Bỏ hết thì về toàn thành phố, không để phạm vi rỗng. */
     ngu.datChon(moi.length === DON_VI_Q.length ? [] : moi);
   };
+  const q = tim.trim().toLowerCase();
+  const khop = (d: (typeof DON_VI_Q)[number]) => !q || d.ngan.toLowerCase().includes(q) || d.ten.toLowerCase().includes(q);
 
-  return <div className="bo-loc-chon" ref={hop} onKeyDown={(e) => { if (e.key === "Escape") datMo(false); }}>
-    <button type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" onClick={() => datMo((t) => !t)}>
-      <span>{tomTat} ({dangChon.length})</span><Icon name="chevronDown" size={16}/>
+  return <div className="bo-loc-chon" ref={hop} onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); dong(); } }}>
+    <button ref={nut} type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" aria-labelledby="qd-pham-vi-nhan qd-pham-vi-gia" onClick={() => (mo ? dong() : datMo(true))}>
+      <span id="qd-pham-vi-gia">{tomTat} ({dangChon.length})</span><Icon name="chevronDown" size={16}/>
     </button>
     {mo && <div className="bo-loc-menu qd-menu" role="group" aria-label="Chọn đơn vị hiển thị">
       <div className="qd-loi-tat">
@@ -97,18 +110,33 @@ function ChonDonVi() {
         <button type="button" onClick={() => chonKhoi("VP")}>{NHAN_KHOI.VP}</button>
         <button type="button" onClick={() => chonKhoi("TCS")}>{NHAN_KHOI.TCS}</button>
       </div>
-      {(["VP", "TCS"] as Khoi[]).map((k) => <div key={k} className="qd-nhom-dv">
-        <span className="bo-loc-nhan">{NHAN_KHOI[k]}</span>
-        {DON_VI_Q.filter((d) => d.khoi === k).map((d) => <label key={d.id}>
-          <input type="checkbox" checked={dangChon.includes(d.id)} onChange={() => bat(d.id)}/>
-          <span>{d.ngan}</span>
-        </label>)}
-      </div>)}
+      <input ref={oTim} className="qd-menu-tim" type="search" value={tim} onChange={(e) => datTim(e.target.value)} placeholder="Tìm đơn vị (vd: TCS 07, HKI)" aria-label="Tìm đơn vị"/>
+      {(["VP", "TCS"] as Khoi[]).map((k) => {
+        const ds = DON_VI_Q.filter((d) => d.khoi === k && khop(d));
+        if (!ds.length) return null;
+        return <div key={k} className="qd-nhom-dv">
+          <span className="bo-loc-nhan">{NHAN_KHOI[k]}</span>
+          {ds.map((d) => <div key={d.id} className="qd-dong-dv">
+            <label>
+              <input type="checkbox" checked={dangChon.includes(d.id)} onChange={() => bat(d.id)}/>
+              <span>{d.ngan}</span>
+            </label>
+            <button type="button" className="qd-chi-chon" onClick={() => ngu.datChon([d.id])} aria-label={`Chỉ chọn ${d.ngan}`}>Chỉ chọn</button>
+          </div>)}
+        </div>;
+      })}
+      {DON_VI_Q.every((d) => !khop(d)) && <p className="qd-menu-trong">Không có đơn vị khớp “{tim}”.</p>}
     </div>}
   </div>;
 }
 
-/** Màn dành cho vai không thuộc khối QLDN — không xảy ra qua thanh bên, chỉ khi dán đường dẫn. */
+/*
+  Màn dành cho vai không thuộc khối QLDN — không tới được qua thanh bên, chỉ
+  khi dán đường dẫn. Nói lý do VÀ lối đi tiếp, không để một câu cụt.
+*/
 export function NgoaiPhamVi() {
-  return <div className="empty-state"><strong>Tài khoản này không thuộc không gian làm việc khối QLDN.</strong></div>;
+  return <div className="empty-state">
+    <strong>Tài khoản này không thuộc không gian làm việc khối QLDN.</strong>
+    <span>Không gian này dành cho cán bộ, phó phòng, trưởng phòng các phòng QLDN và lãnh đạo Thuế TP. Dùng thanh bên để mở màn của vai bạn; nếu bạn cần quyền xem, liên hệ quản trị hệ thống.</span>
+  </div>;
 }

@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
+import { animate } from "motion/mini";
+import { installWebMotion } from "../../shared/webMotion";
 import { NSNN_LINK, Shell } from "@/components/Shell";
-import { NAV, PHAN_HE_CUA, navCho } from "@/components/nav";
+import { NAV, navCho } from "@/components/nav";
 import { TaxLogo } from "@/components/TaxLogo";
 import { GiamSat } from "@/features/GiamSat";
 import { DebtQL1 } from "@/features/DebtQL1";
 import { RiskQL3 } from "@/features/RiskQL3";
 import { KetQuaCongTac } from "@/features/qldn/KetQuaCongTac";
 import { TongQuanDoiTuong } from "@/features/qldn/TongQuanDoiTuong";
-import { CanhBaoNhacViec, PopupCanhBao } from "@/features/qldn/CanhBaoNhacViec";
+import { CanhBaoNhacViec } from "@/features/qldn/CanhBaoNhacViec";
 import { PhamViProvider } from "@/features/qldn/PhamViQLDN";
+import type { NhomId } from "@/data/qldn";
 import { TinhTrangDuLieu } from "@/features/TinhTrangDuLieu";
 import type { ViewId } from "@/domain/types";
 import { ActionProvider } from "@/state/ActionContext";
@@ -32,9 +35,12 @@ const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location
   Trang mặc định sau đăng nhập KHÁC NHAU theo vai — §3 của cả hai bản thiết kế
   ghi thành một dòng riêng trong ma trận quyền:
 
-    CV QL1–QL3   → Cảnh báo nhắc việc (thay "Danh sách việc / dữ liệu kỳ")
-    CV QL4       → "Báo cáo tổng đài hôm qua"
-    TP mọi phòng → "Tổng quan QL1 / QL2 / QL3 / QL4"
+    CV mọi phòng → Cảnh báo nhắc việc (thay "Danh sách việc / dữ liệu kỳ")
+    TP mọi phòng → Tổng quan kết quả (phân hệ theo phòng đã gỡ 13/10/2026)
+
+  Từ 13/10/2026 năm phòng QLDN làm cùng một việc, nên trang mặc định chỉ còn
+  theo VAI, không theo phòng. Ngoại lệ cũ "chuyên viên QL4 vào thẳng tổng đài"
+  đã gỡ: tổng đài không còn là việc riêng của QL4.
 
   Màn "Công việc theo kỳ" đã gỡ ngày 12/10/2026: biên bản yêu cầu không gian
   làm việc khối QLDN thay nó bằng Cảnh báo nhắc việc, và hai khối còn lại của
@@ -45,17 +51,17 @@ const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location
   liệt kê việc cần LÀM, trong khi việc của họ là đọc số rồi quyết — nên họ phải
   bấm thêm một lần ở mọi lần đăng nhập để tới chỗ mình thật sự làm việc.
 */
+/* Bốn nhóm lớn của Quản trị công việc là bốn mục thanh bên, mỗi mục một màn. */
+const NHOM_CUA_VIEW: Partial<Record<ViewId, NhomId>> = { "kq-thu": "thu", "kq-no": "no", "kq-tthc": "tthc", "kq-qlht": "qlht" };
+const VIEW_CUA_NHOM: Record<NhomId, ViewId> = { thu: "kq-thu", no: "kq-no", tthc: "kq-tthc", qlht: "kq-qlht" };
+
 function manMacDinh(user: Pick<DemoUser, "phong" | "vaiTro"> | null): ViewId {
   /* Phó phòng và lãnh đạo Thuế TP chỉ có các màn khối QLDN; việc của họ là đọc
      kết quả, nên vào thẳng màn kết quả công tác. */
   if (user?.vaiTro === "PP" || user?.vaiTro === "LD_TP") return "dieuhanh";
   if (user?.vaiTro === "VAN_HANH") return "giamsat";
   if (!user?.phong) return "canhbao";
-  const phanHe = PHAN_HE_CUA[user.phong];
-  if (user.vaiTro === "TP") return phanHe ?? "dieuhanh";
-  /* CV QL4 mở thẳng báo cáo tổng đài: nó ra số hằng ngày và có hạn vài giờ
-     (G18), nên nó là việc đầu tiên trong ngày chứ không phải một mục để tìm. */
-  if (user.vaiTro === "CV" && user.phong === "QL4") return "hoan";
+  if (user.vaiTro === "TP") return "dieuhanh";
   return "canhbao";
 }
 
@@ -67,6 +73,7 @@ function readView(): ViewId {
 }
 
 export function App() {
+  useEffect(() => installWebMotion(document.getElementById("root")!, animate), []);
   const [view, setViewState] = useState<ViewId>(readView);
   const [user, setUser] = useState<DemoUser | null>(readDemoSession);
   /*
@@ -118,7 +125,7 @@ export function App() {
       document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Kết quả công tác", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
+    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan kết quả công tác", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-tthc": "Thủ tục hành chính", "kq-qlht": "Quản lý, hỗ trợ doanh nghiệp", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
@@ -132,7 +139,7 @@ export function App() {
     {
       const q = new URLSearchParams(window.location.search);
       q.set("view", dau);
-      if (next.vaiTro === "CV" && next.phong === "QL4") q.set("muc", "goi");
+
       window.history.replaceState({}, "", `${window.location.pathname}?${q}`);
       setViewState(dau);
     }
@@ -164,9 +171,21 @@ export function App() {
 
   return <ActionProvider><BoLocProvider><PhamViProvider><DuyetProvider user={user}><PhieuProvider nguoiDung={user.name}><KpiProvider>
     <Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
-    {moDuoc === "doituong" && <TongQuanDoiTuong user={user}/>}
-    {moDuoc === "dieuhanh" && <KetQuaCongTac user={user}/>}
+    {moDuoc === "doituong" && <TongQuanDoiTuong user={user} moNhom={(nhom, the) => { setView(VIEW_CUA_NHOM[nhom]); datThamSo({ nhom: the }); }}/>}
+    {/* "Việc quá hạn" ở bảng kết quả mở thẳng cảnh báo quá hạn của đơn vị ấy. */}
+    {(moDuoc === "dieuhanh" || NHOM_CUA_VIEW[moDuoc]) && <KetQuaCongTac
+      key={moDuoc}
+      user={user}
+      nhom={NHOM_CUA_VIEW[moDuoc]}
+      moNhom={(nhom, the) => { setView(VIEW_CUA_NHOM[nhom]); datThamSo({ nhom: the }); }}
+      moCanhBao={(dvId) => { setView("canhbao"); datThamSo({ donvi: dvId, muc: "QUA_HAN" }); }}
+    />}
     {moDuoc === "canhbao" && <CanhBaoNhacViec user={user}/>}
+    {/* Tuyến phân hệ cũ (đường dẫn trực tiếp) KHÔNG khóa đơn vị: không còn lối
+        nào trên giao diện dẫn tới nó, và nó giữ lại để liên kết cũ cùng các chốt
+        kiểm toàn ngành (lọc khối, cộng khối, đi xuống đơn vị) vẫn chạy. Lối thật
+        của người dùng là công tắc Báo cáo trong nhóm chỉ tiêu — chỗ ấy khóa theo
+        phòng, xem `BaoCaoPhanHe`. */}
     {moDuoc === "debt" && <DebtQL1 actor={user.name}/>}
     {moDuoc === "risk" && <RiskQL3 actor={user.name} vaiTro={user.vaiTro}/>}
     {moDuoc === "hoadon" && <HoaDonQL2 actor={user.name} vaiTro={user.vaiTro}/>}
@@ -174,7 +193,6 @@ export function App() {
     {moDuoc === "tinhtrang" && <TinhTrangDuLieu vaiTro={user.vaiTro}/>}
     {moDuoc === "giamsat" && <GiamSat/>}
     </Shell>
-    <PopupCanhBao user={user} dangXem={moDuoc} onMo={() => setView("canhbao")}/>
   </KpiProvider></PhieuProvider></DuyetProvider></PhamViProvider></BoLocProvider></ActionProvider>;
 }
 

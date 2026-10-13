@@ -1,7 +1,7 @@
 import { useEffect, useMemo, type ReactNode } from "react";
 import { PageIntro, Panel, TableWrap, integer, money } from "@/components/ui";
 import { ThanhMuc } from "@/components/MucPhanHe";
-import { BoLocChung, useBoLoc } from "@/components/BoLoc";
+import { BoLocChung, useBoLoc, useKhoaDonVi } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
 import { XuatProvider } from "@/components/ui";
 import { useDuyet } from "@/state/DuyetContext";
@@ -95,8 +95,10 @@ const RONG_DV = 196;
 
 export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const notify = useAction();
-  const { layBanGhi } = useDuyet();
+  const { layBanGhi, khoaBaoCao } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
+  /* Khóa theo phòng: thêm dòng toàn thành phố để so (chốt 13/10/2026). */
+  const khoaPhong = useKhoaDonVi() !== null;
   const { muc } = useMucPhanHe();
   const { layKpi } = useKpi();
   /* "Kết quả tổng hợp" từng là một MÀN riêng của thanh bên, nhận qua một cờ
@@ -150,17 +152,19 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const boSheet = useMemo(() => ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), [ky, trongPhamVi, layKpi]);
   /* Hết lượt thì khối xem trước đóng lại VÀ địa chỉ sạch theo. Để lại `?xem=`
      là để lại một liên kết mở ra đúng thứ người nhận không được xem. */
-  const choXem = useChoXemTruoc(`QL3|${ky.id}`);
+  /* Một bản báo cáo cho MỖI PHÒNG — xem `khoaBaoCao` trong DuyetContext. */
+  const khoaQL3 = khoaBaoCao("QL3", "QL3-TH", ky.id);
+  const choXem = useChoXemTruoc(khoaQL3);
   useEffect(() => { if (!choXem && xem !== "") datXem(""); }, [choXem, xem, datXem]);
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
-  const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(`QL3|${ky.id}`).trangThai };
+  const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(khoaQL3).trangThai };
   const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
   return <XuatProvider nut={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}><div className="page-stack ql1-page">
-    <PageIntro title="Kiểm tra tại bàn · Phòng QL3"/>
+    <PageIntro title="Kiểm tra tại bàn"/>
     <ThanhMuc view="risk"/>
 
     <ThanhDuyet
-      khoa={`QL3|${ky.id}`}
+      khoa={khoaQL3}
       nhanKy={`Báo cáo ${ky.nhan.toLowerCase()}`}
       xemTruoc={<NutXemTruoc mo={moMoXemTruoc} onToggle={() => datXem(moMoXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
       tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", reportMeta.scope]]}
@@ -170,7 +174,7 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     {moMoXemTruoc && <KhoiXemTruoc
       sheets={boSheet}
       meta={reportMeta}
-      ten="Kết quả kiểm tra tại bàn · Phòng QL3"
+      ten="Kết quả kiểm tra tại bàn"
       sheet={xem}
       onChonSheet={datXem}
     />}
@@ -212,7 +216,9 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
               <tr>{nhomCot.flatMap((n) => n.cot.map((c) => <th key={`${n.nhan}-${c.nhan}`} scope="col" className="num">{c.nhan}</th>))}</tr>
             </thead>
             <tbody>
-              {hangGop("Tổng cộng toàn ngành", toan, "is-tong")}
+              {/* "Toàn ngành" chỉ đúng khi không lọc: lọc rồi thì dòng này là tổng của phần đang xem. */}
+              {hangGop(khoaPhong ? "Tổng cộng phòng" : dangChon ? "Tổng cộng" : "Tổng cộng toàn ngành", toan, "is-tong")}
+              {khoaPhong && hangGop("Toàn thành phố", congQL3(DON_VI_QL3.map((dv) => oCua.get(dv.id)!)), "is-so-sanh")}
               {khoi("VP").length > 0 && <>
                 {hangGop("I. Khối VP Thuế TP Hà Nội", congQL3(khoi("VP").map((dv) => oCua.get(dv.id)!)), "is-khoi")}
                 {khoi("VP").map(hangDonVi)}

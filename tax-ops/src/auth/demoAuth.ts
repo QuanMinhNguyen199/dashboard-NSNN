@@ -39,10 +39,14 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
      không tên nào trong số đó xuất hiện trên màn. */
   { username: "cv.ql2", password: "demo123", name: "Đỗ Khánh Linh", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 2", phong: "QL2", vaiTro: "CV", vaiTroLabel: "Chuyên viên", permissions: ["TAX_OPS_VIEW"] },
   { username: "tp.ql2", password: "demo123", name: "Bùi Trọng Nghĩa", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 2", phong: "QL2", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
-  { username: "cv.ql3", password: "demo123", name: "Trần Quang Dương", unit: "Phòng nghiệp vụ QL3", phong: "QL3", vaiTro: "CV", vaiTroLabel: "Chuyên viên", permissions: ["TAX_OPS_VIEW"] },
-  { username: "tp.ql3", password: "demo123", name: "Phạm Thanh Vy", unit: "Phòng nghiệp vụ QL3", phong: "QL3", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
+  { username: "cv.ql3", password: "demo123", name: "Trần Quang Dương", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 3", phong: "QL3", vaiTro: "CV", vaiTroLabel: "Chuyên viên", permissions: ["TAX_OPS_VIEW"] },
+  { username: "tp.ql3", password: "demo123", name: "Phạm Thanh Vy", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 3", phong: "QL3", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
   { username: "cv.ql4", password: "demo123", name: "Hoàng Diệu Chi", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 4", phong: "QL4", vaiTro: "CV", vaiTroLabel: "Chuyên viên", permissions: ["TAX_OPS_VIEW"] },
   { username: "tp.ql4", password: "demo123", name: "Ngô Bảo Sơn", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 4", phong: "QL4", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
+  /* Phòng thứ năm: năm phòng QLDN làm cùng một việc (chốt 13/10/2026), nên QL5
+     không cần thiết kế riêng nào — chỉ cần tài khoản để xem số của phòng ấy. */
+  { username: "cv.ql5", password: "demo123", name: "Phan Hữu Thắng", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 5", phong: "QL5", vaiTro: "CV", vaiTroLabel: "Chuyên viên", permissions: ["TAX_OPS_VIEW"] },
+  { username: "tp.ql5", password: "demo123", name: "Mai Thanh Hương", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 5", phong: "QL5", vaiTro: "TP", vaiTroLabel: "Trưởng phòng", permissions: ["TAX_OPS_VIEW"] },
   /* Hai vai của khối QLDN (biên bản 09/10/2026 §3) đứng thành một cặp: phó
      phòng xem tổng quan của phòng, lãnh đạo Thuế TP xem toàn thành phố. */
   { username: "pp.ql1", password: "demo123", name: "Đặng Thu Trang", unit: "Phòng Quản lý, Hỗ trợ doanh nghiệp số 1", phong: "QL1", vaiTro: "PP", vaiTroLabel: "Phó phòng", permissions: ["TAX_OPS_VIEW"] },

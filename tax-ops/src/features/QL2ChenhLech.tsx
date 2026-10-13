@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
-import { theoDonVi, useBoLoc } from "@/components/BoLoc";
+import { theoDonVi, useBoLoc, useKhoaDonVi } from "@/components/BoLoc";
 import { useAction } from "@/state/ActionContext";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { ExportButton } from "@/components/ExportButton";
@@ -189,6 +189,8 @@ export function BangQL2_01({ ky, loaiTK, onMoDanhSach }: {
   }, [nhomDay, nhomMo]);
   const tatCa = useMemo(() => bangQL2_01(ky.hat, loaiTK), [ky.hat, loaiTK]);
   const hang = theoDonVi(tatCa, chon, (h) => h.dv.ten);
+  /* Khóa theo phòng: thêm dòng toàn thành phố để so (chốt 13/10/2026). */
+  const khoaPhong = useKhoaDonVi() !== null;
 
   const vp = hang.filter((h) => h.dv.nhom === "VP");
   const tcs = hang.filter((h) => h.dv.nhom === "TCS");
@@ -262,7 +264,8 @@ export function BangQL2_01({ ky, loaiTK, onMoDanhSach }: {
           </tr>
         </thead>
         <tbody>
-          {dongTong("A. Tổng cộng", hang, "is-tong")}
+          {dongTong(khoaPhong ? "A. Tổng cộng phòng" : "A. Tổng cộng", hang, "is-tong")}
+          {khoaPhong && dongTong("Toàn thành phố", tatCa, "is-so-sanh")}
           {vp.length > 0 && dongTong("I. Khối Văn phòng Thuế TP Hà Nội", vp, "is-khoi")}
           {vp.map((h) => <tr key={h.dv.id}>
             <th scope="row" className="dv-cot">

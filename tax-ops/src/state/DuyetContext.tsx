@@ -54,6 +54,15 @@ const Ngu = createContext<{
   duyet: (khoa: string) => boolean;
   traLai: (khoa: string, lyDo: string) => boolean;
   moDieuChinh: (khoa: string, lyDo: string) => boolean;
+  /**
+   * Khóa của bản báo cáo MỘT PHÒNG (chốt 13/10/2026): năm phòng QLDN làm cùng
+   * một việc, mỗi phòng một bản cho mỗi kỳ — chuyên viên phòng ấy gửi, trưởng
+   * phòng ấy duyệt. Phần đầu khóa là phòng của NGƯỜI XEM, nên phép kiểm phạm
+   * vi trong `canChangeApproval` (khóa phải bắt đầu bằng phòng của người dùng)
+   * giữ nguyên nghĩa. Vai không có phòng (lãnh đạo Thuế TP) nhận tiền tố
+   * "TOAN": xem được, không thao tác được bản nào.
+   */
+  khoaBaoCao: (...phan: string[]) => string;
 } | null>(null);
 
 const dauThoiGian = () => {
@@ -105,6 +114,7 @@ export function DuyetProvider({ children, user }: { children: ReactNode; user: D
     duyet: (khoa: string) => sua(khoa, "approve"),
     traLai: (khoa: string, lyDo: string) => sua(khoa, "return", lyDo),
     moDieuChinh: (khoa: string, lyDo: string) => sua(khoa, "amend", lyDo),
+    khoaBaoCao: (...phan: string[]) => `${user.phong ?? "TOAN"}|${phan.join("|")}`,
   }), [kho, sua, user]);
 
   return <Ngu.Provider value={gia}>{children}</Ngu.Provider>;

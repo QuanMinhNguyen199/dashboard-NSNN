@@ -180,9 +180,17 @@ export function DetailGrid({ items }: { items: { label: string; value: ReactNode
   sét bỏ rồi, nên nút nằm trong luồng nội dung ở MỌI khổ — đúng chỗ nó vẫn
   đứng ở khổ hẹp từ trước, nên người dùng không phải học lại.
 */
+/* Một phân hệ NHÚNG trong nhóm chỉ tiêu (Quản trị công việc) không dựng H1
+   thứ hai: trang đã có H1 của nhóm. Xem `BaoCaoPhanHe`. */
+const NhungNgu = createContext(false);
+export function NhungProvider({ children }: { children: ReactNode }) {
+  return <NhungNgu.Provider value={true}>{children}</NhungNgu.Provider>;
+}
+
 export function PageIntro({ title, actions }: { title: string; actions?: ReactNode }) {
+  const nhung = useContext(NhungNgu);
   return <>
-    <h1 className="sr-only">{title}</h1>
+    {!nhung && <h1 className="sr-only">{title}</h1>}
     {actions && <div className="page-actions">{actions}</div>}
   </>;
 }

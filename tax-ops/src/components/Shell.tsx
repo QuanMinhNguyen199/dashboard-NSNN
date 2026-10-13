@@ -26,7 +26,10 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
-  const duoc = navCho(user);
+  /* Tuyến ẩn (bốn phân hệ cũ) không đứng trên thanh bên; khi đang mở một tuyến
+     ấy thì mục nhóm chứa báo cáo của nó sáng lên. */
+  const duoc = navCho(user).filter((item) => !item.an);
+  const dangMo = NAV.find((item) => item.id === view)?.thuoc ?? view;
   useEffect(() => setMenuOpen(false), [view]);
   useEffect(() => {
     if (!menuOpen) return;
@@ -76,7 +79,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
             NÀO, còn báo cáo và mục của phòng là việc bên trong phòng ấy, nằm
             trên nội dung dưới dạng hai hàng tab — xem `ThanhMuc`.
           */}
-          {muc.map((item) => <NavItem key={item.id} item={item} active={view === item.id} onView={onView}/>)}
+          {muc.map((item) => <NavItem key={item.id} item={item} active={dangMo === item.id} onView={onView}/>)}
         </div>;
       })}
     </nav>
@@ -131,7 +134,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
         vai Quản trị dữ liệu không mở ba màn nghiệp vụ, cắt cứng sẽ cho họ năm nút
         dẫn tới bốn màn họ không vào được. Phần dư nằm trong "Thêm". */}
     <nav className="mobile-nav" aria-label="Điều hướng nhanh" {...chan} style={{ gridTemplateColumns: `repeat(${Math.min(duoc.length, 4) + 1}, 1fr)` }}>
-      {duoc.slice(0, 4).map((item) => <button key={item.id} type="button" className={view === item.id ? "is-active" : undefined} aria-label={item.label} aria-current={view === item.id ? "page" : undefined} onClick={() => onView(item.id)}><Icon name={item.icon}/><span>{item.short}</span></button>)}
+      {duoc.slice(0, 4).map((item) => <button key={item.id} type="button" className={dangMo === item.id ? "is-active" : undefined} aria-label={item.label} aria-current={dangMo === item.id ? "page" : undefined} onClick={() => onView(item.id)}><Icon name={item.icon}/><span>{item.short}</span></button>)}
       {/*
         Nút mở ngăn điều hướng LUÔN có mặt, không chỉ khi thừa đích đến.
 
@@ -140,7 +143,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
         màn — như chuyên viên QL3 — sẽ không còn cách nào mở ngăn, mà MỤC CỦA
         PHÂN HỆ (Tổng quan, Danh sách NNT, KPI đăng ký) chỉ nằm trong ngăn ấy.
       */}
-      <button type="button" aria-label="Mở điều hướng" className={`menu-button${duoc.slice(4).some((i) => i.id === view) ? " is-active" : ""}`} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>
+      <button type="button" aria-label="Mở điều hướng" className={`menu-button${duoc.slice(4).some((i) => i.id === dangMo) ? " is-active" : ""}`} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>
     </nav>
     {menuOpen && <div className="nav-scrim" onClick={() => setMenuOpen(false)}><aside ref={drawerRef} className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Điều hướng nghiệp vụ" onKeyDown={onDrawerKeyDown} onClick={(event) => event.stopPropagation()}><button ref={closeRef} type="button" className="drawer-close" onClick={() => setMenuOpen(false)} aria-label="Đóng điều hướng"><Icon name="close"/></button>{nav}</aside></div>}
   </div></MucPhanHeProvider>;

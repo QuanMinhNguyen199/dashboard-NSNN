@@ -141,6 +141,8 @@ export interface ChiTieuQ {
   /** Mẫu số ở quy mô 1, và khoảng tỷ lệ. */
   mau: [number, number];
   tyLe: [number, number];
+  /** Nhãn ngắn trên công tắc khi một nhóm nhỏ có hai chỉ tiêu. */
+  ngan?: string;
   /** Ghi chú trạng thái nghiệp vụ, nếu có. */
   ghiChu?: string;
 }
@@ -160,23 +162,39 @@ export const THE_Q: TheQ[] = [
   { id: "hoan", ten: "Hồ sơ hoàn thuế", ngan: "Hoàn thuế" },
 ];
 
+/*
+  Bốn NHÓM LỚN — đúng bốn cột "Tổng điểm trung bình" (màu xanh) của sheet
+  "II. Khối QLDN" trong file Bộ tiêu chí đánh giá. Mười một thẻ là nhóm nhỏ
+  bên trong; người dùng chọn nhóm lớn trước rồi lọc nhóm nhỏ, như cách file
+  Excel xếp cột.
+*/
+export type NhomId = "thu" | "no" | "tthc" | "qlht";
+export interface NhomQ { id: NhomId; ten: string; ngan: string; the: TheId[] }
+export const NHOM_Q: NhomQ[] = [
+  { id: "thu", ten: "Công tác thu NSNN", ngan: "Thu NSNN", the: ["thu"] },
+  { id: "no", ten: "Công tác quản lý nợ", ngan: "Quản lý nợ", the: ["no", "cc", "thxc"] },
+  { id: "tthc", ten: "Công tác thủ tục hành chính", ngan: "Thủ tục hành chính", the: ["tthc"] },
+  { id: "qlht", ten: "Công tác quản lý, hỗ trợ doanh nghiệp", ngan: "Quản lý, hỗ trợ DN", the: ["hd", "k", "xp", "gt", "kttb", "hoan"] },
+];
+export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
+
 export const CHI_TIEU_Q: ChiTieuQ[] = [
   { id: "thu", the: "thu", ten: "Thực thu NSNN so với số giao", kieu: "CAO", nhanTu: "Thực thu", nhanMau: "Số giao", dvt: "tỷ đồng", mau: [9000, 26000], tyLe: [0.72, 0.98] },
   { id: "no", the: "no", ten: "Tổng nợ so với đầu năm", kieu: "TANG", nhanTu: "Tổng nợ", nhanMau: "Nợ đầu năm", dvt: "tỷ đồng", mau: [420, 1250], tyLe: [-0.14, 0.3] },
-  { id: "cc-n", the: "cc", ten: "Cưỡng chế theo số NNT", kieu: "CAO", nhanTu: "NNT đã cưỡng chế", nhanMau: "NNT phải cưỡng chế", dvt: "NNT", mau: [160, 620], tyLe: [0.55, 0.94] },
-  { id: "cc-t", the: "cc", ten: "Cưỡng chế theo số tiền", kieu: "CAO", nhanTu: "Tiền đã cưỡng chế", nhanMau: "Tiền phải cưỡng chế", dvt: "tỷ đồng", mau: [180, 900], tyLe: [0.75, 0.99] },
-  { id: "thxc-n", the: "thxc", ten: "Tạm hoãn xuất cảnh theo số NNT", kieu: "CAO", nhanTu: "NNT đã THXC", nhanMau: "NNT phải THXC", dvt: "NNT", mau: [40, 210], tyLe: [0.3, 0.9] },
-  { id: "thxc-t", the: "thxc", ten: "Tạm hoãn xuất cảnh theo số tiền", kieu: "CAO", nhanTu: "Tiền đã THXC", nhanMau: "Tiền phải THXC", dvt: "tỷ đồng", mau: [60, 400], tyLe: [0.84, 1] },
+  { id: "cc-n", the: "cc", ngan: "Theo số NNT", ten: "Cưỡng chế theo số NNT", kieu: "CAO", nhanTu: "NNT đã cưỡng chế", nhanMau: "NNT phải cưỡng chế", dvt: "NNT", mau: [160, 620], tyLe: [0.55, 0.94] },
+  { id: "cc-t", the: "cc", ngan: "Theo số tiền", ten: "Cưỡng chế theo số tiền", kieu: "CAO", nhanTu: "Tiền đã cưỡng chế", nhanMau: "Tiền phải cưỡng chế", dvt: "tỷ đồng", mau: [180, 900], tyLe: [0.75, 0.99] },
+  { id: "thxc-n", the: "thxc", ngan: "Theo số NNT", ten: "Tạm hoãn xuất cảnh theo số NNT", kieu: "CAO", nhanTu: "NNT đã THXC", nhanMau: "NNT phải THXC", dvt: "NNT", mau: [40, 210], tyLe: [0.3, 0.9] },
+  { id: "thxc-t", the: "thxc", ngan: "Theo số tiền", ten: "Tạm hoãn xuất cảnh theo số tiền", kieu: "CAO", nhanTu: "Tiền đã THXC", nhanMau: "Tiền phải THXC", dvt: "tỷ đồng", mau: [60, 400], tyLe: [0.84, 1] },
   { id: "tthc", the: "tthc", ten: "Tồn quá hạn TTHC (đã loại hoàn GTGT, TNCN)", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ TTHC đã thực hiện", dvt: "hồ sơ", mau: [900, 3200], tyLe: [0, 0.07] },
-  { id: "tpr", the: "hd", ten: "Rà soát TPR", kieu: "CAO", nhanTu: "NNT đã rà soát", nhanMau: "NNT phải rà soát", dvt: "NNT", mau: [120, 460], tyLe: [0.88, 1] },
-  { id: "xmhd", the: "hd", ten: "Xác minh hóa đơn", kieu: "CAO", nhanTu: "Hóa đơn đã xác minh", nhanMau: "Hóa đơn phải xác minh", dvt: "hóa đơn", mau: [300, 1600], tyLe: [0.86, 1] },
+  { id: "tpr", the: "hd", ngan: "Rà soát TPR", ten: "Rà soát TPR", kieu: "CAO", nhanTu: "NNT đã rà soát", nhanMau: "NNT phải rà soát", dvt: "NNT", mau: [120, 460], tyLe: [0.88, 1] },
+  { id: "xmhd", the: "hd", ngan: "Xác minh hóa đơn", ten: "Xác minh hóa đơn", kieu: "CAO", nhanTu: "Hóa đơn đã xác minh", nhanMau: "Hóa đơn phải xác minh", dvt: "hóa đơn", mau: [300, 1600], tyLe: [0.86, 1] },
   { id: "k", the: "k", ten: "Rà soát hệ số K", kieu: "CAO", nhanTu: "NNT đã rà soát", nhanMau: "NNT phải rà soát", dvt: "NNT", mau: [90, 380], tyLe: [0.84, 1] },
   { id: "xp", the: "xp", ten: "Xử phạt vi phạm hành chính", kieu: "CAO", nhanTu: "Đã xử phạt", nhanMau: "Phải xử phạt", dvt: "quyết định", mau: [80, 320], tyLe: [0.45, 0.92] },
-  { id: "gt-goi", the: "gt", ten: "Đóng mã giải thể theo gói của Phòng QLDN3", kieu: "CAO", nhanTu: "Đã thực hiện", nhanMau: "Số lượng giao", dvt: "NNT", mau: [30, 160], tyLe: [0.3, 0.86] },
-  { id: "gt-moi", the: "gt", ten: "Đóng mã giải thể phát sinh mới — tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ phải xử lý", dvt: "hồ sơ", mau: [40, 180], tyLe: [0, 0.14] },
+  { id: "gt-goi", the: "gt", ngan: "Theo gói QLDN3", ten: "Đóng mã giải thể theo gói của Phòng QLDN3", kieu: "CAO", nhanTu: "Đã thực hiện", nhanMau: "Số lượng giao", dvt: "NNT", mau: [30, 160], tyLe: [0.3, 0.86] },
+  { id: "gt-moi", the: "gt", ngan: "Phát sinh mới", ten: "Đóng mã giải thể phát sinh mới: tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ phải xử lý", dvt: "hồ sơ", mau: [40, 180], tyLe: [0, 0.14] },
   { id: "kttb", the: "kttb", ten: "Hồ sơ kiểm tra tại bàn đã thực hiện", kieu: "CAO", nhanTu: "Hồ sơ đã kiểm tra", nhanMau: "Tổng hồ sơ", dvt: "hồ sơ", mau: [220, 820], tyLe: [0.4, 0.95], ghiChu: "KPI kiểm tra tại bàn chờ cơ quan thống nhất cách tính (biên bản demo 09/10, quyết định 5)" },
-  { id: "hoan-tncn", the: "hoan", ten: "Hoàn thuế TNCN — tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ tồn", dvt: "hồ sơ", mau: [60, 260], tyLe: [0, 0.1] },
-  { id: "hoan-gtgt", the: "hoan", ten: "Hoàn trước GTGT — tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ tồn", dvt: "hồ sơ", mau: [20, 120], tyLe: [0, 0.12] },
+  { id: "hoan-tncn", the: "hoan", ngan: "Hoàn TNCN", ten: "Hoàn thuế TNCN: tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ tồn", dvt: "hồ sơ", mau: [60, 260], tyLe: [0, 0.1] },
+  { id: "hoan-gtgt", the: "hoan", ngan: "Hoàn trước GTGT", ten: "Hoàn trước GTGT: tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ tồn", dvt: "hồ sơ", mau: [20, 120], tyLe: [0, 0.12] },
 ];
 export const chiTieuCuaThe = (the: TheId) => CHI_TIEU_Q.filter((c) => c.the === the);
 
@@ -356,7 +374,8 @@ export interface DoiTuongDonVi {
   thuNam: { nam: string; so: number }[];
   sacThue: number[];
   keKhai: { dungHan: number; muon: number; chua: number };
-  no: { soDN: number; tongNo: number; cuongChe: number; thxc: number };
+  /** `tongNoDauNam` cho mốc so sánh của khối nợ (biên bản §2.4: luôn có mốc). */
+  no: { soDN: number; tongNo: number; tongNoDauNam: number; cuongChe: number; thxc: number };
 }
 
 export function doiTuongCua(dvId: string, phan = 1): DoiTuongDonVi {
@@ -369,7 +388,8 @@ export function doiTuongCua(dvId: string, phan = 1): DoiTuongDonVi {
   const thu2025 = capCua(CHI_TIEU_Q[0], dvId, 9).mau * (0.92 + r() * 0.1) * phan;
   const keKhaiDung = 0.84 + r() * 0.1, keKhaiMuon = 0.03 + r() * 0.05;
   const hoatDong = trangThai.HD + trangThai.MOI;
-  const tongNo = capCua(CHI_TIEU_Q[1], dvId, 9).tu * phan;
+  const noCap = capCua(CHI_TIEU_Q[1], dvId, 9);
+  const tongNo = noCap.tu * phan;
   return {
     soDN,
     soCanBo: canBoCua(dvId).length,
@@ -392,6 +412,7 @@ export function doiTuongCua(dvId: string, phan = 1): DoiTuongDonVi {
     no: {
       soDN: Math.round(soDN * (0.11 + r() * 0.06)),
       tongNo: Math.round(tongNo * 10) / 10,
+      tongNoDauNam: Math.round(noCap.mau * phan * 10) / 10,
       cuongChe: capCua(CHI_TIEU_Q[2], dvId, 9).tu * (phan < 1 ? phan : 1) | 0,
       thxc: capCua(CHI_TIEU_Q[4], dvId, 9).tu * (phan < 1 ? phan : 1) | 0,
     },
@@ -413,7 +434,7 @@ export function doiTuongPhamVi(pv: PhamVi): DoiTuongDonVi {
     thuNam: s.thuNam.map((x, i) => ({ nam: x.nam, so: x.so + d.thuNam[i].so })),
     sacThue: cong2(s.sacThue, d.sacThue),
     keKhai: { dungHan: s.keKhai.dungHan + d.keKhai.dungHan, muon: s.keKhai.muon + d.keKhai.muon, chua: s.keKhai.chua + d.keKhai.chua },
-    no: { soDN: s.no.soDN + d.no.soDN, tongNo: Math.round((s.no.tongNo + d.no.tongNo) * 10) / 10, cuongChe: s.no.cuongChe + d.no.cuongChe, thxc: s.no.thxc + d.no.thxc },
+    no: { soDN: s.no.soDN + d.no.soDN, tongNo: Math.round((s.no.tongNo + d.no.tongNo) * 10) / 10, tongNoDauNam: Math.round((s.no.tongNoDauNam + d.no.tongNoDauNam) * 10) / 10, cuongChe: s.no.cuongChe + d.no.cuongChe, thxc: s.no.thxc + d.no.thxc },
   }));
   /* Cơ cấu sắc thuế là phần nghìn, nên phải chia lại theo số đơn vị gộp. */
   return { ...g, sacThue: g.sacThue.map((x) => x / ds.length) };

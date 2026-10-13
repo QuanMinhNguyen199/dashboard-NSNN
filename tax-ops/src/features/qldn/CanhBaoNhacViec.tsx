@@ -1,11 +1,12 @@
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { Badge, Button, FigureLine, PageIntro, Panel, SearchField, TableWrap, integer } from "@/components/ui";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { useThamSo } from "@/state/diaChi";
+import { Badge, Button, Icon, PageIntro, Pager, Panel, SearchField, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
-import type { Tone, ViewId } from "@/domain/types";
+import type { Tone } from "@/domain/types";
 import { exportExcel } from "@/domain/reportFiles";
 import {
-  DAU_VIEC, NHAN_MUC, mucCua, nhanPhamVi, soNgay, vaiQ, viecPhamVi,
+  DAU_VIEC, NHAN_MUC, mucCua, nhanPhamVi, soNgay, viecPhamVi,
   type DauViecId, type MucCanhBao, type PhamVi, type ViecQ,
 } from "@/data/qldn";
 import { NgoaiPhamVi, ThanhPhamVi, usePhamVi } from "@/features/qldn/PhamViQLDN";
@@ -50,11 +51,17 @@ const dem = (ds: CanhBao[]) => Object.fromEntries(MUC.map((m) => [m, ds.filter((
 export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
   const { pv } = usePhamVi(user);
   const [baoTruoc, datBaoTruocNoi] = useState(() => docBaoTruoc(user.username));
-  const [muc, datMuc] = useState<MucCanhBao | "">("");
-  const [dauViec, datDauViec] = useState<DauViecId | "">("");
-  const [donVi, datDonVi] = useState("");
-  const [tim, datTim] = useState("");
+  /* Bộ lọc nằm trên ĐỊA CHỈ: "quá hạn của Phòng QLHT DN 4, đầu việc hoàn
+     thuế" là một liên kết gửi được cho người khác, và ô "việc quá hạn" ở màn
+     Kết quả công tác mở thẳng vào đúng chỗ này. */
+  const [muc, datMuc] = useThamSo<MucCanhBao | "">("muc", "", ["", ...MUC]);
+  const [dauViec, datDauViec] = useThamSo<DauViecId | "">("nhom", "", ["", ...DAU_VIEC.map((d) => d.id)]);
+  const [donVi, datDonVi] = useThamSo<string>("donvi", "");
+  const [tim, datTim] = useThamSo<string>("loc", "");
   const [mo, datMo] = useState("");
+  const [trang, datTrang] = useState(1);
+  useEffect(() => { datTrang(1); datMo(""); }, [muc, dauViec, donVi, tim, baoTruoc, pv]);
+  useEffect(() => { if (donVi && !pv?.donVi.some((d) => d.id === donVi)) datDonVi(""); }, [pv, donVi]);
   const tatCa = useMemo(() => (pv ? canhBaoCua(pv, baoTruoc) : []), [pv, baoTruoc]);
   if (!pv) return <NgoaiPhamVi/>;
 
@@ -65,6 +72,19 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
   const so = dem(theoDV);
   const nhieuDV = pv.donVi.length > 1;
   const laCanBo = Boolean(pv.canBo);
+  const cot = 5 + (nhieuDV ? 1 : 0) + (laCanBo ? 0 : 1);
+  const coTrang = 12;
+  const soTrang = Math.max(1, Math.ceil(loc.length / coTrang));
+  const trangHien = Math.min(trang, soTrang);
+  const trongTrang = DAU_VIEC.flatMap((d) => loc.filter((v) => v.dauViec === d.id)).slice((trangHien - 1) * coTrang, trangHien * coTrang);
+  /* Lãnh đạo chưa chọn đơn vị VÀ chưa chọn đầu việc thì chỉ có hai bảng tổng
+     hợp; chọn một trong hai là mở danh sách — §7 "theo từng đơn vị, rồi theo
+     từng đầu việc", cả hai lối đều dẫn tới danh sách. */
+  const tongHop = pv.vai === "LD" && !donVi && !dauViec && nhieuDV;
+  const boLoc = Boolean(muc || dauViec || tim);
+  const xoaLoc = () => { datMuc(""); datDauViec(""); datTim(""); };
+  /* "Không phát sinh" là KHÔNG CÓ VIỆC trong phạm vi, không phải bị bộ lọc giấu. */
+  const khongPhatSinh = DAU_VIEC.filter((d) => (!dauViec || d.id === dauViec) && !theoDV.some((v) => v.dauViec === d.id));
 
   const xuat = () => exportExcel([{
     name: "Canh_bao", title: "DANH SÁCH CẢNH BÁO NHẮC VIỆC",
@@ -72,7 +92,7 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
     rows: loc.map((v) => [NHAN_MUC[v.muc], DAU_VIEC.find((d) => d.id === v.dauViec)!.ten, v.mst, v.nnt, v.noiDung, ngayVN(v.han), v.donVi, v.canBo, v.hoSo.join("; ") || "—"]),
   }], { period: `Ngày ${ngayVN(new Date())} · báo trước ${baoTruoc} ngày`, scope: nhanPhamVi(pv), actor: user.name, status: "DRAFT" }, "canh-bao-nhac-viec.xlsx");
 
-  return <div className="page-stack qd-page">
+  return <div className="page-stack qd-page qd-alert-page">
     <PageIntro title="Cảnh báo nhắc việc"/>
     <ThanhPhamVi pv={pv} coKy={false} them={<div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-bao-truoc">Báo trước</span>
@@ -81,27 +101,39 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
       </select>
     </div>}/>
 
-    <FigureLine items={[
-      { label: "Tổng cảnh báo", value: integer(theoDV.length), note: muc ? "Bấm để bỏ lọc mức" : `${laCanBo ? "Việc của tôi" : pv.vai === "LD" ? "Toàn bộ đơn vị đã chọn" : "Việc của phòng"}`, onSelect: () => datMuc("") },
-      ...MUC.map((m) => ({ label: NHAN_MUC[m], value: integer(so[m]), tone: TONE[m], note: m === "SAP_DEN" ? `trong ${baoTruoc} ngày tới` : m === "HOM_NAY" ? "xong trước khi hết ngày" : "phải xử lý ngay", onSelect: () => datMuc(muc === m ? "" : m) })),
-    ]}/>
+    {/*
+      Bốn thẻ LÀ bộ lọc mức (chốt 12/10/2026): bấm thẻ nào thì danh sách bên
+      dưới chỉ còn việc của mức ấy, và thẻ đang chọn được đánh dấu. Bộ nút
+      phân đoạn "Tất cả / quá hạn / hôm nay / sắp đến" trong khối danh sách đã
+      gỡ — hai điều khiển cho cùng một lựa chọn thì người dùng phải dừng lại
+      hỏi chúng có khác nhau không.
+    */}
+    <section className="qd-alert-summary" aria-label="Tình hình thời hạn">
+    {/* Tiêu đề nhìn thấy không phải heading: trang đã có H1 cùng tên, và một
+        H2 trùng chữ đọc ra hai lần cùng một tên cho trình đọc màn hình. */}
+    <div className="qd-alert-summary-head"><strong className="qd-alert-title" aria-hidden="true">Cảnh báo nhắc việc</strong><span>Theo dõi ngày {ngayVN(new Date())}</span></div>
+    <div className="qd-the-loc" role="group" aria-label="Lọc theo mức cảnh báo">
+      <TheLoc chon={muc === ""} onChon={() => datMuc("")} nhan="Tất cả" so={theoDV.length} ghi={laCanBo ? "Việc của tôi" : pv.vai === "LD" ? "Toàn bộ đơn vị đã chọn" : "Việc của phòng"}/>
+      {MUC.map((m) => <TheLoc key={m} tone={TONE[m]} chon={muc === m} onChon={() => datMuc(m)} nhan={NHAN_MUC[m]} so={so[m]}
+        ghi={m === "SAP_DEN" ? `trong ${baoTruoc} ngày tới` : m === "HOM_NAY" ? "xong trước khi hết ngày" : "phải xử lý ngay"}/>)}
+    </div>
+    </section>
 
-    {pv.vai === "LD" && <TheoDonVi ds={tatCa} chon={donVi} datChon={datDonVi}/>}
+    <div className={tongHop ? "qd-alert-overview" : "qd-alert-results"} data-motion="content" data-motion-key={`${muc}-${donVi}-${baoTruoc}-${dauViec}-${trangHien}`}>
+    {pv.vai === "LD" && <TheoDonVi ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} donVi={pv.donVi} chon={donVi} datChon={datDonVi}/>}
 
     {/* Lãnh đạo xem theo đơn vị rồi theo đầu việc (§7): chưa chọn đơn vị thì
         chỉ có bảng tổng hợp theo đầu việc — danh sách việc của 30 đơn vị là
         hàng nghìn dòng mà không ai đọc hết. */}
-    {pv.vai === "LD" && !donVi && pv.donVi.length > 1 ? <TheoDauViec ds={tatCa}/> : <Panel chinh title="Danh sách cảnh báo" subtitle={`${integer(loc.length)} việc${donVi ? ` · ${tatCa.find((v) => v.dvId === donVi)?.donVi}` : ""}${muc ? ` · ${NHAN_MUC[muc].toLowerCase()}` : ""} · bấm một việc để xem hồ sơ đi kèm`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    {tongHop ? <TheoDauViec ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} chon={datDauViec}/> : <Panel chinh title={muc ? `Danh sách cảnh báo · ${NHAN_MUC[muc].toLowerCase()}` : "Danh sách cảnh báo"} subtitle={`${integer(loc.length)} việc${donVi ? ` · ${tatCa.find((v) => v.dvId === donVi)?.donVi ?? "Đơn vị đã chọn"}` : ""} · chọn người nộp thuế để xem hồ sơ`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
       <div className="qd-loc-cb">
-      <div className="bo-loc-seg" role="group" aria-label="Mức cảnh báo">
-        <button type="button" aria-pressed={muc === ""} onClick={() => datMuc("")}>Tất cả</button>
-        {MUC.map((m) => <button key={m} type="button" aria-pressed={muc === m} onClick={() => datMuc(m)}>{NHAN_MUC[m]}</button>)}
-      </div>
       <select className="bo-loc-select" aria-label="Đầu việc" value={dauViec} onChange={(e) => datDauViec(e.target.value as DauViecId | "")}>
         <option value="">Tất cả 10 đầu việc</option>
         {DAU_VIEC.map((d) => <option key={d.id} value={d.id}>{d.ten}</option>)}
       </select>
       <SearchField value={tim} onChange={datTim} placeholder="Tìm NNT hoặc MST"/>
+      {boLoc && <Button kind="quiet" onClick={xoaLoc}>Xóa bộ lọc</Button>}
+      <span className="qd-alert-count" role="status">{integer(loc.length)} việc phù hợp</span>
       </div>
       <TableWrap label="danh sách cảnh báo">
         <table className="qd-bang qd-bang-cb">
@@ -115,56 +147,71 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
             <th scope="col" className="num">Hồ sơ</th>
           </tr></thead>
           <tbody>
-            {DAU_VIEC.filter((d) => !dauViec || d.id === dauViec).map((d) => {
-              const nhom = loc.filter((v) => v.dauViec === d.id);
-              const s = dem(theoDV.filter((v) => v.dauViec === d.id));
-              const cot = 5 + (nhieuDV ? 1 : 0) + (laCanBo ? 0 : 1);
+            {/*
+              Chỉ dựng nhóm CÓ việc khớp bộ lọc (chốt 12/10/2026). Đầu việc
+              không phát sinh gom trong phần có thể mở ở cuối danh sách;
+              vẫn giữ đủ tên đầu việc, không chen các hàng trống vào bảng.
+            */}
+            {DAU_VIEC.filter((d) => trongTrang.some((v) => v.dauViec === d.id)).map((d) => {
+              const nhom = trongTrang.filter((v) => v.dauViec === d.id);
               return <Fragment key={d.id}>
                 <tr className="is-khoi">
                   <th scope="rowgroup" colSpan={cot}>
                     <span className="qd-nhom-ten">{d.ten}</span>
-                    <span className="qd-nhom-dem">{MUC.filter((m) => s[m]).map((m) => <Badge key={m} tone={TONE[m]}>{s[m]} {NHAN_MUC[m].toLowerCase()}</Badge>)}</span>
+                    <span className="qd-alert-group-count">{loc.filter((v) => v.dauViec === d.id).length} việc</span>
                   </th>
                 </tr>
-                {nhom.length === 0
-                  ? <tr className="qd-trong"><td colSpan={cot}>{s.QUA_HAN + s.HOM_NAY + s.SAP_DEN ? "Không có việc khớp bộ lọc" : "Không phát sinh trong ngày"}</td></tr>
-                  : nhom.map((v) => <Fragment key={v.id}>
+                {nhom.map((v) => <Fragment key={v.id}>
                     <tr className={mo === v.id ? "is-selected qd-viec" : "qd-viec"} onClick={() => datMo(mo === v.id ? "" : v.id)}>
-                      <td><Badge tone={TONE[v.muc]}>{NHAN_MUC[v.muc]}</Badge></td>
-                      <td><button type="button" className="row-select" aria-expanded={mo === v.id}><strong>{v.nnt}</strong><small>{v.mst}</small></button></td>
-                      <td>{v.noiDung}</td>
-                      <td><strong>{ngayVN(v.han)}</strong><small>{conLai(v.han)}</small></td>
-                      {nhieuDV && <td>{v.donVi}</td>}
-                      {!laCanBo && <td>{v.canBo}</td>}
-                      <td className="num">{v.hoSo.length || <span className="cell-empty">0</span>}</td>
+                      <td className="qd-alert-level"><Badge tone={TONE[v.muc]}>{NHAN_MUC[v.muc]}</Badge></td>
+                      <td className="qd-alert-taxpayer"><button type="button" className="row-select" aria-expanded={mo === v.id} aria-controls={mo === v.id ? `hoso-${v.id}` : undefined}><strong>{v.nnt}</strong><small>MST {v.mst}</small></button></td>
+                      <td className="qd-alert-task">{v.noiDung}</td>
+                      <td className="qd-alert-deadline"><strong>{ngayVN(v.han)}</strong><small className={`tone-${TONE[v.muc]}`}>{conLai(v.han)}</small></td>
+                      {nhieuDV && <td className="qd-alert-assignee" data-label="Đơn vị">{v.donVi}</td>}
+                      {!laCanBo && <td className="qd-alert-assignee" data-label="Cán bộ">{v.canBo}</td>}
+                      <td className="num qd-alert-files"><span><Icon name="file" size={15}/>{v.hoSo.length} <span className="qd-alert-file-label">hồ sơ</span><Icon name={mo === v.id ? "chevronDown" : "arrow"} size={14}/></span></td>
                     </tr>
-                    {mo === v.id && <tr className="qd-ho-so"><td colSpan={cot}>
+                    {mo === v.id && <tr className="qd-ho-so" id={`hoso-${v.id}`}><td colSpan={cot} data-motion="detail">
                       <strong>Hồ sơ, văn bản đi kèm</strong>
                       {v.hoSo.length
-                        ? <ul>{v.hoSo.map((h) => <li key={h}>{h} — {v.nnt}</li>)}</ul>
+                        ? <ul>{v.hoSo.map((h) => <li key={h}>{h} · {v.nnt}</li>)}</ul>
                         : <p>Chưa có hồ sơ đi kèm cảnh báo này.</p>}
                       <p className="qd-ho-so-ghi">Điều kiện phát sinh và chấm dứt của cảnh báo do bộ phận nghiệp vụ phân tích. Hệ thống chỉ nhắc việc, chưa thao tác trên TMS.</p>
                     </td></tr>}
                   </Fragment>)}
               </Fragment>;
             })}
+            {loc.length === 0 && <tr className="qd-trong"><td colSpan={cot}><div className="qd-alert-empty"><Icon name="search" size={24}/><strong>{boLoc ? "Không có việc khớp bộ lọc" : "Không có cảnh báo trong phạm vi này"}</strong><span>{boLoc ? "Thử đổi đầu việc hoặc tìm theo mã số thuế." : `Đang theo dõi các việc quá hạn, hôm nay và ${baoTruoc} ngày tới.`}</span>{boLoc && <Button kind="quiet" onClick={xoaLoc}>Xóa bộ lọc</Button>}</div></td></tr>}
           </tbody>
         </table>
       </TableWrap>
+      <div className="table-footer"><span>{loc.length ? `${(trangHien - 1) * coTrang + 1}–${Math.min(trangHien * coTrang, loc.length)} / ${integer(loc.length)} việc` : "0 việc"} · nhóm theo đầu việc</span>{soTrang > 1 && <Pager trang={trangHien} soTrang={soTrang} onChange={(n) => { datTrang(n); datMo(""); }}/>}</div>
+      {khongPhatSinh.length > 0 && <details className="qd-alert-inactive"><summary><Icon name="check" size={16}/><span>{khongPhatSinh.length} đầu việc không phát sinh trong ngày</span><Icon name="chevronDown" size={16}/></summary><ul>{khongPhatSinh.map((d) => <li key={d.id}>{d.ten}</li>)}</ul></details>}
     </Panel>}
+    </div>
   </div>;
 }
 
-function TheoDauViec({ ds }: { ds: CanhBao[] }) {
-  return <Panel chinh title="Theo đầu việc" subtitle="Toàn bộ đơn vị đã chọn · chọn một đơn vị ở bảng trên để mở danh sách việc">
+/* Một thẻ lọc — cả thẻ là nút (The Whole Row Rule), `aria-pressed` nói thẻ
+   nào đang lọc. Màu của mức đi kèm nhãn chữ, không đứng một mình. */
+function TheLoc({ nhan, so, ghi, tone, chon, onChon }: { nhan: string; so: number; ghi: string; tone?: Tone; chon: boolean; onChon: () => void }) {
+  return <button type="button" className={`qd-the-loc-o${tone ? ` tone-${tone}` : ""}${chon ? " is-chon" : ""}`} aria-pressed={chon} onClick={onChon}>
+    <span className="qd-the-loc-nhan">{tone && <i aria-hidden="true"/>}{nhan}<span className="qd-alert-selected" aria-hidden="true"><Icon name="check" size={15}/></span></span>
+    <strong>{integer(so)}</strong>
+    <small>{ghi}</small>
+  </button>;
+}
+
+function TheoDauViec({ ds, chon }: { ds: CanhBao[]; chon: (id: DauViecId) => void }) {
+  return <Panel chinh title="Theo đầu việc" subtitle="Bấm một đầu việc để xem việc của mọi đơn vị đã chọn, hoặc chọn một đơn vị ở bảng trên">
     <TableWrap label="cảnh báo theo đầu việc">
       <table className="qd-bang">
         <thead><tr><th scope="col">Đầu việc</th>{MUC.map((m) => <th key={m} scope="col" className="num">{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th></tr></thead>
         <tbody>{DAU_VIEC.map((d) => {
           const s = dem(ds.filter((v) => v.dauViec === d.id));
           const tong = s.QUA_HAN + s.HOM_NAY + s.SAP_DEN;
-          return <tr key={d.id}>
-            <td>{d.ten}</td>
+          return <tr key={d.id} className={tong ? "qd-viec" : undefined} onClick={tong ? () => chon(d.id) : undefined}>
+            <td>{tong ? <button type="button" className="row-select">{d.ten}</button> : d.ten}</td>
             {MUC.map((m) => <td key={m} className="num">{s[m] ? <span className={`qd-so-muc tone-${TONE[m]}`}>{s[m]}</span> : <span className="cell-empty">0</span>}</td>)}
             <td className="num">{tong ? <strong>{tong}</strong> : <span className="qd-trong-chu">Không phát sinh trong ngày</span>}</td>
           </tr>;
@@ -175,15 +222,28 @@ function TheoDauViec({ ds }: { ds: CanhBao[] }) {
 }
 
 /* Lãnh đạo Thuế TP xem theo từng đơn vị rồi theo từng đầu việc (§7). */
-function TheoDonVi({ ds, chon, datChon }: { ds: CanhBao[]; chon: string; datChon: (id: string) => void }) {
-  const nhom = [...new Map(ds.map((v) => [v.dvId, v.donVi])).entries()]
-    .map(([id, ten]) => ({ id, ten, s: dem(ds.filter((v) => v.dvId === id)) }))
+function TheoDonVi({ ds, donVi, chon, datChon }: { ds: CanhBao[]; donVi: PhamVi["donVi"]; chon: string; datChon: (id: string) => void }) {
+  const nhom = donVi.map(({ id, ngan }) => ({ id, ten: ngan, s: dem(ds.filter((v) => v.dvId === id)) }))
     .sort((a, b) => b.s.QUA_HAN - a.s.QUA_HAN || b.s.HOM_NAY - a.s.HOM_NAY);
-  return <Panel title="Theo đơn vị" subtitle="Xếp theo số việc quá hạn · bấm một đơn vị để lọc danh sách bên dưới" actions={chon ? <Button kind="quiet" onClick={() => datChon("")}>Bỏ lọc đơn vị</Button> : undefined}>
+  /* Mười đơn vị nhiều việc quá hạn nhất là thứ lãnh đạo cần nhìn trước; đủ
+     30 dòng thì chỉ mở khi họ hỏi. Đơn vị đang chọn luôn có mặt. */
+  const [du, datDu] = useState(false);
+  const [doi, datDoi] = useState(false);
+  const GIOI_HAN = 10;
+  const hien = du ? nhom : nhom.filter((n, i) => i < GIOI_HAN || n.id === chon);
+  if (chon && !doi) return <div className="qd-alert-unit"><Icon name="users"/><div><span>Đơn vị đang xem</span><strong>{donVi.find((d) => d.id === chon)?.ngan}</strong></div><Button kind="quiet" onClick={() => datDoi(true)}>Đổi đơn vị</Button><Button kind="quiet" onClick={() => datChon("")}>Bỏ lọc đơn vị</Button></div>;
+  return <Panel title="Theo đơn vị" subtitle={`Xếp theo số việc quá hạn${du || nhom.length <= GIOI_HAN ? "" : ` · ${GIOI_HAN} đơn vị đầu`} · bấm một đơn vị để lọc danh sách bên dưới`} actions={<div className="inline-controls">
+    {chon && <Button kind="quiet" onClick={() => datChon("")}>Bỏ lọc đơn vị</Button>}
+    {/* Hai nhãn xếp chồng cùng một ô: nút rộng bằng nhãn dài nhất và không
+        co giãn khi đổi nhãn. Tập nhãn ĐÓNG — số đơn vị nằm ở dòng phụ. */}
+    {nhom.length > GIOI_HAN && <Button kind="quiet" aria-expanded={du} onClick={() => datDu(!du)}>
+      <span className="qd-nhan-on"><span aria-hidden={du}>Xem đủ danh sách</span><span aria-hidden={!du}>Thu gọn</span></span>
+    </Button>}
+  </div>}>
     <TableWrap label="cảnh báo theo đơn vị">
       <table className="qd-bang">
         <thead><tr><th scope="col">Đơn vị</th>{MUC.map((m) => <th key={m} scope="col" className="num">{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th></tr></thead>
-        <tbody>{nhom.map((n) => <tr key={n.id} className={n.id === chon ? "is-selected qd-viec" : "qd-viec"} onClick={() => datChon(n.id === chon ? "" : n.id)}>
+        <tbody>{hien.map((n) => <tr key={n.id} className={n.id === chon ? "is-selected qd-viec" : "qd-viec"} onClick={() => { datChon(n.id === chon ? "" : n.id); datDoi(false); }}>
           <td><button type="button" className="row-select" aria-pressed={n.id === chon}>{n.ten}</button></td>
           {MUC.map((m) => <td key={m} className="num">{n.s[m] ? <span className={`qd-so-muc tone-${TONE[m]}`}>{n.s[m]}</span> : <span className="cell-empty">0</span>}</td>)}
           <td className="num"><strong>{n.s.QUA_HAN + n.s.HOM_NAY + n.s.SAP_DEN}</strong></td>
@@ -191,46 +251,4 @@ function TheoDonVi({ ds, chon, datChon }: { ds: CanhBao[]; chon: string; datChon
       </table>
     </TableWrap>
   </Panel>;
-}
-
-/*
-  Pop-up "danh sách việc có thời hạn" của §3 mục 3: tự mở MỘT LẦN mỗi phiên
-  đăng nhập, ngay khi vào hệ. Mở mỗi lần đổi màn là làm phiền; không tự mở
-  thì nó không còn là nhắc việc.
-*/
-export function PopupCanhBao({ user, dangXem, onMo }: { user: DemoUser; dangXem: ViewId; onMo: () => void }) {
-  const { pv } = usePhamVi(user);
-  const hop = useRef<HTMLDialogElement>(null);
-  const khoa = `qldn-canh-bao-da-xem:${user.username}`;
-  const [daXem, datDaXem] = useState(() => { try { return sessionStorage.getItem(khoa) === "1"; } catch { return false; } });
-  const ds = useMemo(() => (pv ? canhBaoCua(pv, docBaoTruoc(user.username)) : []), [pv, user.username]);
-  /* Chỉ tự mở trong không gian khối QLDN. Bật một hộp modal đè lên phân hệ
-     của phòng — nơi người dùng đang làm một việc khác — là chặn tay họ giữa
-     chừng; phó phòng và lãnh đạo vào thẳng màn kết quả nên vẫn thấy ngay. */
-  const hien = Boolean(vaiQ(user.vaiTro)) && !daXem && (dangXem === "doituong" || dangXem === "dieuhanh") && ds.length > 0;
-
-  useEffect(() => {
-    const d = hop.current;
-    if (hien && d && !d.open) d.showModal();
-  }, [hien]);
-
-  const dong = () => {
-    try { sessionStorage.setItem(khoa, "1"); } catch { /* bỏ qua */ }
-    datDaXem(true);
-    hop.current?.close();
-  };
-  if (!hien) return null;
-  const s = dem(ds);
-  const theoViec = DAU_VIEC.map((d) => ({ d, n: ds.filter((v) => v.dauViec === d.id).length })).filter((x) => x.n > 0);
-
-  return <dialog ref={hop} className="qd-popup" aria-labelledby="qd-popup-tieu-de" onCancel={dong}>
-    <header><h2 id="qd-popup-tieu-de">Việc cần xử lý hôm nay</h2><button type="button" className="drawer-close" aria-label="Đóng" onClick={dong}>×</button></header>
-    <p className="qd-popup-pham-vi">{pv ? nhanPhamVi(pv) : ""} · {ngayVN(new Date())}</p>
-    <div className="qd-popup-muc">{MUC.map((m) => <div key={m} className={`tone-${TONE[m]}`}><strong>{s[m]}</strong><span>{NHAN_MUC[m]}</span></div>)}</div>
-    <ul className="qd-popup-ds">{theoViec.map(({ d, n }) => <li key={d.id}><span>{d.ten}</span><b>{n}</b></li>)}</ul>
-    <footer>
-      <Button kind="quiet" onClick={dong}>Để sau</Button>
-      <Button kind="primary" onClick={() => { dong(); onMo(); }}>Mở cảnh báo nhắc việc</Button>
-    </footer>
-  </dialog>;
 }

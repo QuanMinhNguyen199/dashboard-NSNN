@@ -3,7 +3,7 @@ import { Badge, Button, DetailGrid, Pager, PageIntro, Panel, SearchField, TableW
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
 import { ThanhMuc, baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
-import { BoLocChung, theoDonVi, useBoLoc } from "@/components/BoLoc";
+import { BoLocChung, theoDonVi, useBoLoc, useKhoaDonVi } from "@/components/BoLoc";
 import { ExportButton } from "@/components/ExportButton";
 import { XuatProvider } from "@/components/ui";
 import { useDuyet } from "@/state/DuyetContext";
@@ -330,8 +330,11 @@ function cong<O extends object>(bo: O[]): O {
 
 export function DebtQL1({ actor }: { actor: string }) {
   const notify = useAction();
-  const { layBanGhi } = useDuyet();
+  const { layBanGhi, khoaBaoCao } = useDuyet();
   const { chon, datDonVi } = useBoLoc();
+  /* Khóa theo phòng: bảng chỉ có số của phòng, nên thêm một dòng toàn thành
+     phố để phòng tự so với mặt bằng chung (chốt 13/10/2026). */
+  const khoaPhong = useKhoaDonVi() !== null;
   const { muc: tab } = useMucPhanHe();
   /* Bốn mẩu trạng thái dưới đây nằm trong địa chỉ chứ không trong bộ nhớ: mỗi
      cái là một câu trợ lý cần nói được khi dẫn người dùng tới đúng chỗ. */
@@ -456,14 +459,14 @@ export function DebtQL1({ actor }: { actor: string }) {
   const boSheet = useMemo(() => ql1Workbook(ky, chon.donVi, baoCao), [ky, chon.donVi, baoCao]);
   /* Hết lượt thì khối xem trước đóng lại VÀ địa chỉ sạch theo. Để lại `?xem=`
      là để lại một liên kết mở ra đúng thứ người nhận không được xem. */
-  const khoa = baoCao ? `QL1|${baoCao}|${ky.id}` : "";
+  const khoa = baoCao ? khoaBaoCao("QL1", baoCao, ky.id) : "";
   const choXem = useChoXemTruoc(khoa);
   useEffect(() => { if (!choXem && xem !== "") datXem(""); }, [choXem, xem, datXem]);
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(khoa).trangThai };
   const filename = `${baoCao ?? "QL1"}_${ky.id}_${reportMeta.status}_mo-phong`;
   return <XuatProvider nut={baoCao ? <><ExportButton onExport={() => exportExcel(boSheet, reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton onExport={() => exportWord(boSheet, reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></> : undefined}><div className="page-stack ql1-page">
-    <PageIntro title="Báo cáo công tác nợ · Phòng QL1"/>
+    <PageIntro title="Báo cáo công tác nợ"/>
     <ThanhMuc view="debt"/>
 
     {baoCao && <ThanhDuyet
@@ -478,7 +481,7 @@ export function DebtQL1({ actor }: { actor: string }) {
     {moMoXemTruoc && <KhoiXemTruoc
       sheets={boSheet}
       meta={reportMeta}
-      ten="Báo cáo đánh giá công tác nợ · Phòng QL1"
+      ten="Báo cáo đánh giá công tác nợ"
       sheet={xem}
       onChonSheet={datXem}
     />}
@@ -540,7 +543,8 @@ export function DebtQL1({ actor }: { actor: string }) {
               <tr>{nhomCot.flatMap((n) => n.cot.map((c) => <th key={`${n.nhan}-${c.nhan}`} scope="col" className="num">{c.nhan}</th>))}</tr>
             </thead>
             <tbody>
-              {hangGop("Tổng cộng", cong(trongPhamVi.map((dv) => oCua.get(dv.id)!)), "is-tong")}
+              {hangGop(khoaPhong ? "Tổng cộng phòng" : "Tổng cộng", cong(trongPhamVi.map((dv) => oCua.get(dv.id)!)), "is-tong")}
+              {khoaPhong && hangGop("Toàn thành phố", cong(dsDonVi.map((dv) => oCua.get(dv.id)!)), "is-so-sanh")}
               {khoi("VP").length > 0 && <>
                 {hangGop("I. Khối Văn phòng Thuế TP Hà Nội", oKhoi("VP"), "is-khoi")}
                 {khoi("VP").map(hangDonVi)}
