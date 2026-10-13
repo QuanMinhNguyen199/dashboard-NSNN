@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import { animate } from "motion/mini";
+import { installWebMotion } from "../../../shared/webMotion";
 import { INDICATORS, YEARS } from "@/domain/catalog";
 import type { DashboardFilters, TabId } from "@/domain/types";
 import { useHostContext } from "@/host/HostContext";
@@ -30,6 +32,7 @@ function ExternalLinkIcon() {
 
 
 export function App() {
+  useEffect(() => installWebMotion(document.getElementById("root")!, animate), []);
   const { tab, setTab, filters, setFilters } = useDashboardState();
   const narrow = useNarrow();
   const { host, embedded, commands, postToHost } = useHostContext();
@@ -327,6 +330,8 @@ export function App() {
         <main
           id="workspace"
           className="dworkspace"
+          data-motion="content"
+          data-motion-key={`${tab}-${JSON.stringify(filters)}`}
           role="tabpanel"
           aria-labelledby={`tab-${active.id}`}
           tabIndex={-1}

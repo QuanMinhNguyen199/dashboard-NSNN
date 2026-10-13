@@ -323,14 +323,16 @@ async function chanCheoVai(view, nhan) {
   if (ket.tieuDe === nhan) throw new Error(`${view}: deep link mở được màn của vai khác.`);
 }
 
-/* Và chiều ngược lại: màn của phòng khác thì PHẢI mở được. */
+/* Và chiều ngược lại: màn của phòng khác thì PHẢI mở được. Từ 13/10/2026 phân
+   hệ không còn đứng trên thanh bên (biên bản yêu cầu khối QLDN) — mở bằng
+   đường dẫn thì mục NHÓM chỉ tiêu chứa báo cáo ấy phải sáng lên. */
 async function moDuocPhongKhac(view, nhan) {
   await page.goto(`${base}/?view=${view}`, { waitUntil: "networkidle0" });
-  const ket = await page.evaluate((nhanMan) => ({
-    trongNav: [...document.querySelectorAll(".nav-item span, .mobile-nav button span")].some((el) => el.textContent?.trim() === nhanMan),
+  const ket = await page.evaluate(() => ({
+    trongNav: Boolean(document.querySelector(".nav-item.is-active, .mobile-nav button.is-active")),
     dungMan: new URLSearchParams(location.search).get("view"),
-  }), nhan);
-  if (!ket.trongNav) throw new Error(`${view}: thanh bên thiếu phòng "${nhan}" — mọi tài khoản nghiệp vụ phải thấy cả bốn phòng.`);
+  }));
+  if (!ket.trongNav) throw new Error(`${view}: mở "${nhan}" bằng đường dẫn nhưng không mục nhóm nào trên thanh bên sáng lên.`);
   if (ket.dungMan !== view) throw new Error(`${view}: tài khoản phòng khác không mở được màn này.`);
 }
 
@@ -573,12 +575,16 @@ const ql1 = await page.evaluate(() => {
   const goc = document.querySelector(".ql1-table th.dv-cot");
   return {
     mucNgoai: [...document.querySelectorAll(".thanh-muc .muc-tab")].map((c) => c.textContent.trim()),
-    /* Thanh bên: BỐN phòng, mỗi phòng đúng một nút, không còn cây mục. */
+    /* Thanh bên (13/10/2026): KHÔNG còn nhóm "Phân hệ"; bốn nhóm chỉ tiêu
+       của Quản trị công việc đứng ở đó. Phân hệ cũ mở bằng đường dẫn thì mục
+       nhóm chứa báo cáo của nó sáng lên. */
+    coCumPhanHe: [...document.querySelectorAll(".sidebar .nav-group")].some((g) => g.textContent?.trim() === "Phân hệ"),
     nutBen: (() => {
       const cum = [...document.querySelectorAll(".sidebar .nav-section")]
-        .find((x) => x.querySelector(".nav-group")?.textContent?.trim() === "Phân hệ");
+        .find((x) => x.querySelector(".nav-group")?.textContent?.trim() === "Quản trị công việc");
       return [...(cum?.children ?? [])].filter((c) => c.tagName === "BUTTON").map((c) => c.textContent.trim());
     })(),
+    nutSang: document.querySelector(".sidebar .nav-item.is-active")?.textContent?.trim() ?? null,
     soDongDau: dong.length,
     coNhomCot: document.querySelectorAll(".ql1-table th.nhom").length,
     gocDinh: goc ? getComputedStyle(goc).position === "sticky" : false,
@@ -593,14 +599,16 @@ if (JSON.stringify(ql1.mucNgoai) !== JSON.stringify(MUC_NGOAI_QL1)) {
   throw new Error(`Hàng báo cáo của QL1 phải là ${JSON.stringify(MUC_NGOAI_QL1)}, đang là ${JSON.stringify(ql1.mucNgoai)}`);
 }
 /*
-  Thanh bên mở CẢ BỐN PHÒNG cho một tài khoản nghiệp vụ, không cắt theo phòng
-  của người đăng nhập — quyết định 09/10/2026, ghi ở `components/nav.ts`.
-  QL5 chưa có mẫu nên chưa dựng.
+  Biên bản yêu cầu khối QLDN (09/10/2026), chốt 13/10/2026: không còn phân hệ
+  theo phòng trên thanh bên. Quản trị công việc mang bốn nhóm chỉ tiêu của file
+  chấm điểm; báo cáo QL1 nằm trong nhóm Quản lý nợ.
 */
-const PHONG_BEN = ["Báo cáo công tác nợ", "Rủi ro hóa đơn", "Kiểm tra tại bàn", "Hoàn thuế TNCN và tổng đài"];
-if (JSON.stringify(ql1.nutBen) !== JSON.stringify(PHONG_BEN)) {
-  throw new Error(`Cụm Phân hệ phải mở cả bốn phòng ${JSON.stringify(PHONG_BEN)}, đang là ${JSON.stringify(ql1.nutBen)}`);
+const NHOM_BEN = ["Tổng quan kết quả", "Thu NSNN", "Quản lý nợ", "Thủ tục hành chính", "Quản lý, hỗ trợ DN"];
+if (ql1.coCumPhanHe) throw new Error("Thanh bên vẫn còn nhóm \"Phân hệ\" — biên bản yêu cầu khối QLDN đã gỡ nó.");
+if (JSON.stringify(ql1.nutBen) !== JSON.stringify(NHOM_BEN)) {
+  throw new Error(`Nhóm Quản trị công việc phải là ${JSON.stringify(NHOM_BEN)}, đang là ${JSON.stringify(ql1.nutBen)}`);
 }
+if (ql1.nutSang !== "Quản lý nợ") throw new Error(`Mở báo cáo QL1 thì mục "Quản lý nợ" phải sáng, đang là ${ql1.nutSang}`);
 if (ql1.soDongDau !== 2 || !ql1.coNhomCot) throw new Error(`Bảng tổng hợp QL1 chưa có hai tầng tiêu đề: ${JSON.stringify(ql1)}`);
 if (!ql1.gocDinh) throw new Error("Cột đơn vị của bảng tổng hợp QL1 không cố định khi cuộn ngang.");
 if (!ql1.coTong || !ql1.coKhoi) throw new Error(`Bảng tổng hợp QL1 thiếu dòng tổng hoặc dòng khối: ${JSON.stringify(ql1)}`);
@@ -790,7 +798,10 @@ for (const view of ["hoan&muc=dsphieu"]) {
   vì gửi. Hai dòng dưới đây có thể đo được và từng sai cả hai.
 */
 {
-  for (const [ma, manDau] of [["tp.ql1", "debt"], ["tp.ql2", "hoadon"], ["tp.ql3", "risk"], ["tp.ql4", "hoan"], ["cv.ql4", "hoan"]]) {
+  /* Từ 13/10/2026 phân hệ theo phòng không còn là trang đích: trưởng phòng mọi
+     phòng vào Tổng quan kết quả; chuyên viên QL4 vẫn vào thẳng tổng đài, nay
+     ở Thủ tục hành chính › Báo cáo. */
+  for (const [ma, manDau] of [["tp.ql1", "dieuhanh"], ["tp.ql2", "dieuhanh"], ["tp.ql3", "dieuhanh"], ["tp.ql4", "dieuhanh"], ["cv.ql4", "canhbao"], ["cv.ql5", "canhbao"], ["tp.ql5", "dieuhanh"]]) {
     await dangXuat(page);
     await dangNhap(page, ma);
     const dau = await page.evaluate(() => new URLSearchParams(location.search).get("view"));

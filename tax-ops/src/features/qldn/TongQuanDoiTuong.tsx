@@ -1,14 +1,16 @@
-import { useMemo, useState } from "react";
-import { FigureLine, PageIntro, Pager, Panel, TableWrap, integer } from "@/components/ui";
+import { Fragment, useMemo, useState } from "react";
+import { FigureLine, Icon, PageIntro, Pager, Panel, SearchField, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
 import { useThamSo } from "@/state/diaChi";
 import {
-  NAM_THANH_LAP, QUY_MO_VON, SAC_THUE, TRANG_THAI_DN, doiTuongPhamVi, nhanPhamVi, trangDN,
-  type PhamVi, type TrangThaiDN,
+  NAM_THANH_LAP, NHOM_Q, QUY_MO_VON, SAC_THUE, THE_Q, TRANG_THAI_DN, doiTuongPhamVi, nhanPhamVi, nhomCuaThe, trangDN,
+  type NhomId, type PhamVi, type TheId, type TrangThaiDN,
 } from "@/data/qldn";
+import { BO_TIEU_CHI } from "@/data/boTieuChi";
 import { NgoaiPhamVi, ThanhPhamVi, usePhamVi } from "@/features/qldn/PhamViQLDN";
+import { HangTab } from "@/components/MucPhanHe";
 
 /*
   Mô-đun 1 — Tổng quan quản lý đối tượng (biên bản 09/10/2026 §5).
@@ -25,8 +27,10 @@ import { NgoaiPhamVi, ThanhPhamVi, usePhamVi } from "@/features/qldn/PhamViQLDN"
   như số thu, nên màn này không có ô Kỳ.
 */
 
-type Tab = "tongquan" | "danhsach";
-const TAB: { id: Tab; nhan: string }[] = [{ id: "tongquan", nhan: "Tổng quan" }, { id: "danhsach", nhan: "Danh sách doanh nghiệp" }];
+/* "Bộ tiêu chí đánh giá" (chốt 13/10/2026): các chỉ tiêu của file Excel trong
+   thư mục MOM, để người dùng tra chỉ tiêu nào đang được theo dõi ở đâu. */
+type Tab = "tongquan" | "danhsach" | "tieuchi";
+const TAB: { id: Tab; nhan: string }[] = [{ id: "tongquan", nhan: "Tổng quan" }, { id: "danhsach", nhan: "Danh sách doanh nghiệp" }, { id: "tieuchi", nhan: "Bộ tiêu chí đánh giá" }];
 const TRANG_THAI_ID = TRANG_THAI_DN.map((t) => t.id);
 
 /*
@@ -39,9 +43,9 @@ const MAU_SAC_THUE = ["#1657a8", "#e08a2c", "#2f9e8f", "#8a5cc2", "#d1495b"];
 const phanTram = (x: number, tong: number) => tong ? `${((x / tong) * 100).toLocaleString("vi-VN", { maximumFractionDigits: 1 })}%` : "—";
 const tyDong = (x: number) => x.toLocaleString("vi-VN", { maximumFractionDigits: 1 });
 
-export function TongQuanDoiTuong({ user }: { user: DemoUser }) {
+export function TongQuanDoiTuong({ user, moNhom }: { user: DemoUser; moNhom?: (nhom: NhomId, the: TheId) => void }) {
   const { pv } = usePhamVi(user);
-  const [tab, datTab] = useThamSo<Tab>("muc", "tongquan", ["tongquan", "danhsach"]);
+  const [tab, datTab] = useThamSo<Tab>("muc", "tongquan", ["tongquan", "danhsach", "tieuchi"]);
   const [loc, datLoc] = useThamSo<TrangThaiDN | "">("loc", "", ["", ...TRANG_THAI_ID]);
   if (!pv) return <NgoaiPhamVi/>;
 
@@ -50,10 +54,14 @@ export function TongQuanDoiTuong({ user }: { user: DemoUser }) {
   return <div className="page-stack qd-page">
     <PageIntro title="Tổng quan đối tượng"/>
     <nav className="thanh-muc" aria-label="Mục của tổng quan đối tượng">
-      <div className="thanh-muc-hang">{TAB.map((t) => <button key={t.id} type="button" className={`muc-tab${tab === t.id ? " is-active" : ""}`} aria-current={tab === t.id ? "page" : undefined} onClick={() => datTab(t.id)}><span>{t.nhan}</span></button>)}</div>
+      <HangTab lop="thanh-muc-hang" khoaMo={tab}>{TAB.map((t) => <button key={t.id} type="button" className={`muc-tab${tab === t.id ? " is-active" : ""}`} data-mo={tab === t.id ? "1" : undefined} aria-current={tab === t.id ? "page" : undefined} onClick={() => datTab(t.id)}><span>{t.nhan}</span></button>)}</HangTab>
     </nav>
-    <ThanhPhamVi pv={pv} coKy={false} them={<div className="bo-loc-muc"><span className="bo-loc-nhan">Số liệu</span><strong className="bo-loc-ky">Đến 30/09/2026</strong></div>}/>
-    {tab === "tongquan" ? <TongQuan pv={pv} moDanhSach={moDanhSach}/> : <DanhSach pv={pv} loc={loc} datLoc={datLoc} actor={user.name}/>}
+    {/* Bộ tiêu chí là định nghĩa của cơ quan, không đổi theo phạm vi — tab ấy
+        không có thanh phạm vi. */}
+    {tab !== "tieuchi" && <ThanhPhamVi pv={pv} coKy={false} them={<div className="bo-loc-muc"><span className="bo-loc-nhan">Số liệu</span><strong className="bo-loc-ky">Đến 30/09/2026</strong></div>}/>}
+    {tab === "tongquan" ? <TongQuan pv={pv} moDanhSach={moDanhSach}/>
+      : tab === "danhsach" ? <DanhSach pv={pv} loc={loc} datLoc={datLoc} actor={user.name}/>
+      : <BoTieuChi moNhom={moNhom} actor={user.name} pv={pv}/>}
   </div>;
 }
 
@@ -70,8 +78,15 @@ function TongQuan({ pv, moDanhSach }: { pv: PhamVi; moDanhSach: (tt: TrangThaiDN
     <FigureLine items={[
       { label: pv.canBo ? "Doanh nghiệp được phân công" : "Doanh nghiệp, tổ chức", value: integer(o.soDN), note: "Bấm để mở danh sách", onSelect: () => moDanhSach("") },
       { label: pv.canBo ? "Cán bộ quản lý" : "Cán bộ đang quản lý", value: pv.canBo ? "1" : integer(o.soCanBo), note: pv.canBo ? pv.canBo.ten : "theo phân công TMS 2.4.2" },
-      { label: "Hộ kinh doanh", value: ngoaiHKD ? "—" : integer(o.soHKD!), note: ngoaiHKD ? "Chỉ thuế cơ sở quản lý nhóm này" : "do thuế cơ sở quản lý" },
-      { label: "Cá nhân nhận tiền lương, tiền công", value: o.soCaNhan === null ? "—" : integer(o.soCaNhan), note: o.soCaNhan === null ? "Chỉ thuế cơ sở quản lý nhóm này" : "do thuế cơ sở quản lý" },
+      /* Phạm vi chỉ có phòng QLDN thì hộ kinh doanh và cá nhân không thuộc phạm
+         vi. Hai ô GIỮ VỊ TRÍ nhưng mang số của chính phạm vi ấy, thay vì nửa
+         dải số quan trọng nhất trang đứng trống bằng hai dấu "—". */
+      ngoaiHKD
+        ? { label: "Doanh nghiệp đang hoạt động", value: integer(o.trangThai.HD), note: `${phanTram(o.trangThai.HD, o.soDN)} số doanh nghiệp`, onSelect: () => moDanhSach("HD") }
+        : { label: "Hộ kinh doanh", value: integer(o.soHKD!), note: "do thuế cơ sở quản lý" },
+      o.soCaNhan === null
+        ? { label: "Doanh nghiệp mới thành lập", value: integer(o.trangThai.MOI), note: "dưới 12 tháng · hộ kinh doanh, cá nhân do thuế cơ sở quản lý", onSelect: () => moDanhSach("MOI") }
+        : { label: "Cá nhân nhận tiền lương, tiền công", value: integer(o.soCaNhan), note: "do thuế cơ sở quản lý" },
     ]}/>
 
     <div className="qd-luoi-2">
@@ -82,6 +97,7 @@ function TongQuan({ pv, moDanhSach }: { pv: PhamVi; moDanhSach: (tt: TrangThaiDN
               <span className="qd-thanh-ten">{t.ten}</span>
               <span className="qd-thanh-ray"><i style={{ width: `${(o.trangThai[t.id] / maxTT) * 100}%` }}/></span>
               <span className="qd-thanh-so"><b>{integer(o.trangThai[t.id])}</b><small>{phanTram(o.trangThai[t.id], tongTT)}</small></span>
+              <Icon name="arrow" size={14}/>
             </button>
           </li>)}
         </ul>
@@ -120,7 +136,7 @@ function TongQuan({ pv, moDanhSach }: { pv: PhamVi; moDanhSach: (tt: TrangThaiDN
     <Panel title="Tình hình nợ thuế" subtitle="Nợ tổng thể của nhóm đối tượng · chi tiết ở Kết quả công tác, tab Nợ thuế">
       <div className="qd-o-so">
         <div><span>Doanh nghiệp đang nợ thuế</span><strong>{integer(o.no.soDN)}</strong><small>{phanTram(o.no.soDN, o.soDN)} số DN</small></div>
-        <div><span>Tổng số nợ</span><strong>{tyDong(o.no.tongNo)}</strong><small>tỷ đồng</small></div>
+        <div><span>Tổng số nợ</span><strong>{tyDong(o.no.tongNo)}</strong><small>tỷ đồng · <span className={o.no.tongNo > o.no.tongNoDauNam ? "qd-chenh is-xau" : "qd-chenh is-tot"}>{o.no.tongNo > o.no.tongNoDauNam ? "tăng" : "giảm"} {phanTram(Math.abs(o.no.tongNo - o.no.tongNoDauNam), o.no.tongNoDauNam)}</span> so với đầu năm</small></div>
         <div><span>Đã cưỡng chế nợ thuế</span><strong>{integer(o.no.cuongChe)}</strong><small>người nộp thuế</small></div>
         <div><span>Đã tạm hoãn xuất cảnh</span><strong>{integer(o.no.thxc)}</strong><small>người nộp thuế</small></div>
       </div>
@@ -168,7 +184,7 @@ function DonutSacThue({ phan }: { phan: number[] }) {
       <text x="80" y="78" textAnchor="middle" className="qd-donut-so">{tro === null ? phanTram(phan[0], tong) : phanTram(phan[tro], tong)}</text>
       <text x="80" y="96" textAnchor="middle" className="qd-donut-phu">{tro === null ? SAC_THUE[0] : SAC_THUE[tro]}</text>
     </svg>
-    <ul className="qd-chu-giai">{SAC_THUE.map((s, i) => <li key={s} className={tro === i ? "is-tro" : undefined} onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)}>
+    <ul className="qd-chu-giai">{SAC_THUE.map((s, i) => <li key={s} className={tro === i ? "is-tro" : undefined} tabIndex={0} onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)} onFocus={() => datTro(i)} onBlur={() => datTro(null)}>
       <i style={{ background: MAU_SAC_THUE[i] }}/><span>{s}</span><b>{phanTram(phan[i], tong)}</b>
     </li>)}</ul>
   </div>;
@@ -177,34 +193,70 @@ function DonutSacThue({ phan }: { phan: number[] }) {
 /* ---------- Tầng chi tiết: danh sách doanh nghiệp ---------- */
 
 const CO_TRANG = 25;
+/* Tìm và sắp xếp cần dựng CẢ danh sách của bộ lọc. Phòng QLDN có vài nghìn
+   DN — dựng được; toàn thành phố hơn hai trăm nghìn — không dựng trên máy
+   trạm. Quá ngưỡng thì màn nói thẳng cần thu hẹp phạm vi. */
+const GIOI_HAN_TIM = 20000;
+
+type CotXep = "nam" | "von" | "thu2026" | "no";
+const COT_XEP: { id: CotXep; nhan: string }[] = [
+  { id: "nam", nhan: "Năm thành lập" }, { id: "von", nhan: "Vốn điều lệ" }, { id: "thu2026", nhan: "Thu 2026" }, { id: "no", nhan: "Nợ thuế" },
+];
 
 function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | ""; datLoc: (x: TrangThaiDN | "") => void; actor: string }) {
   const [trang, datTrang] = useState(1);
-  const { tong, dong } = useMemo(() => trangDN(pv, loc || null, trang, CO_TRANG), [pv, loc, trang]);
+  const [tim, datTim] = useState("");
+  const [xep, datXep] = useState<{ cot: CotXep; giam: boolean } | null>(null);
+  const tongLoc = useMemo(() => trangDN(pv, loc || null, 1, 0).tong, [pv, loc]);
+  const q = tim.trim().toLowerCase();
+  const canDung = Boolean(q || xep);
+  const vuot = canDung && tongLoc > GIOI_HAN_TIM;
+
+  const { tong, dong } = useMemo(() => {
+    if (!canDung || vuot) return trangDN(pv, loc || null, trang, CO_TRANG);
+    let tat = trangDN(pv, loc || null, 1, tongLoc).dong;
+    if (q) tat = tat.filter((d) => d.mst.includes(q) || d.ten.toLowerCase().includes(q));
+    if (xep) {
+      const lay = (d: (typeof tat)[number]) => xep.cot === "nam" ? d.namThanhLap : d[xep.cot];
+      tat = [...tat].sort((a, b) => (lay(a) - lay(b)) * (xep.giam ? -1 : 1));
+    }
+    return { tong: tat.length, dong: tat.slice((trang - 1) * CO_TRANG, trang * CO_TRANG) };
+  }, [pv, loc, trang, q, xep, canDung, vuot, tongLoc]);
   const soTrang = Math.max(1, Math.ceil(tong / CO_TRANG));
   const nhieuDV = pv.donVi.length > 1;
   const nhanTT = (id: TrangThaiDN) => TRANG_THAI_DN.find((t) => t.id === id)!.ten;
+  const doiXep = (cot: CotXep) => { datTrang(1); datXep((x) => !x || x.cot !== cot ? { cot, giam: true } : x.giam ? { cot, giam: false } : null); };
+  const thXep = (cot: CotXep) => {
+    const dang = xep?.cot === cot;
+    return <th key={cot} scope="col" className="num" aria-sort={dang ? (xep!.giam ? "descending" : "ascending") : "none"}>
+      <button type="button" className={`qd-th-xep${dang ? " is-dang" : ""}`} onClick={() => doiXep(cot)}>
+        {COT_XEP.find((c) => c.id === cot)!.nhan}<Icon name="chevronDown" size={13}/>
+      </button>
+    </th>;
+  };
 
   /* Xuất tối đa 2.000 dòng của bộ lọc đang chọn — bản demo không dựng cả
      danh bạ hàng chục nghìn dòng vào một tệp. */
   const xuat = async () => {
     const { dong: tat } = trangDN(pv, loc || null, 1, 2000);
     await exportExcel([{
-      name: "Danh_sach_DN", title: `DANH SÁCH DOANH NGHIỆP${loc ? ` — ${nhanTT(loc).toUpperCase()}` : ""}`,
+      name: "Danh_sach_DN", title: `DANH SÁCH DOANH NGHIỆP${loc ? `: ${nhanTT(loc).toUpperCase()}` : ""}`,
       headers: ["MST", "Tên người nộp thuế", "Đơn vị quản lý", "Cán bộ quản lý", "Trạng thái", "Năm thành lập", "Vốn điều lệ (tỷ đồng)", "Thu NSNN 2026 (tỷ đồng)", "Nợ thuế (tỷ đồng)"],
       rows: tat.map((d) => [d.mst, d.ten, d.donVi, d.canBo, nhanTT(d.trangThai), d.namThanhLap, d.von, d.thu2026, d.no]),
     }], { period: "Đến 30/09/2026", scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "danh-sach-doanh-nghiep.xlsx");
   };
 
-  return <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""}`} actions={<div className="inline-controls">
-    <label className="compact-field"><span className="bo-loc-nhan">Trạng thái</span>
-      <select className="bo-loc-select" value={loc} onChange={(e) => { datLoc(e.target.value as TrangThaiDN | ""); datTrang(1); }}>
-        <option value="">Tất cả trạng thái</option>
-        {TRANG_THAI_DN.map((t) => <option key={t.id} value={t.id}>{t.ten}</option>)}
-      </select>
-    </label>
-    <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
-  </div>}>
+  return <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · số tiền tính bằng tỷ đồng`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    <div className="qd-loc-cb">
+      <label className="compact-field qd-loc-tt"><span className="bo-loc-nhan">Trạng thái</span>
+        <select className="bo-loc-select" value={loc} onChange={(e) => { datLoc(e.target.value as TrangThaiDN | ""); datTrang(1); }}>
+          <option value="">Tất cả trạng thái</option>
+          {TRANG_THAI_DN.map((t) => <option key={t.id} value={t.id}>{t.ten}</option>)}
+        </select>
+      </label>
+      <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm theo MST hoặc tên"/>
+    </div>
+    {vuot && <div className="notice info qd-ghi"><strong>Phạm vi quá rộng để tìm và sắp xếp</strong><span>{integer(tongLoc)} doanh nghiệp. Chọn một trạng thái hoặc thu hẹp ô Phạm vi xuống dưới {integer(GIOI_HAN_TIM)} doanh nghiệp; danh sách bên dưới vẫn theo thứ tự gốc.</span></div>}
     <TableWrap label="danh sách doanh nghiệp">
       <table className="qd-bang">
         <thead><tr>
@@ -213,10 +265,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
           {nhieuDV && <th scope="col">Đơn vị</th>}
           {!pv.canBo && <th scope="col">Cán bộ quản lý</th>}
           <th scope="col">Trạng thái</th>
-          <th scope="col" className="num">Năm thành lập</th>
-          <th scope="col" className="num">Vốn điều lệ</th>
-          <th scope="col" className="num">Thu 2026</th>
-          <th scope="col" className="num">Nợ thuế</th>
+          {COT_XEP.map((c) => thXep(c.id))}
         </tr></thead>
         <tbody>{dong.map((d) => <tr key={d.mst}>
           <td><code>{d.mst}</code></td>
@@ -226,11 +275,84 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
           <td>{nhanTT(d.trangThai)}</td>
           <td className="num">{d.namThanhLap}</td>
           <td className="num">{tyDong(d.von)}</td>
-          <td className="num">{d.thu2026 ? tyDong(d.thu2026) : <span className="cell-empty">—</span>}</td>
-          <td className="num">{d.no ? tyDong(d.no) : <span className="cell-empty">—</span>}</td>
-        </tr>)}</tbody>
+          <td className="num">{d.thu2026 ? tyDong(d.thu2026) : <span className="cell-empty">0</span>}</td>
+          <td className="num">{d.no ? tyDong(d.no) : <span className="cell-empty">0</span>}</td>
+        </tr>)}
+        {dong.length === 0 && <tr><td colSpan={9} className="table-empty">Không có doanh nghiệp khớp “{tim}”. Thử tìm theo đủ 10 số MST hoặc một phần tên.</td></tr>}
+        </tbody>
       </table>
     </TableWrap>
-    <div className="table-footer"><span>Tỷ đồng · số liệu mô phỏng</span><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>
+    <div className="table-footer"><span>Số liệu mô phỏng</span><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>
+  </Panel>;
+}
+
+/* ---------- Bộ tiêu chí đánh giá ---------- */
+
+/*
+  Ba trạng thái theo dõi của một chỉ tiêu, nói bằng chữ (không chỉ bằng màu):
+  • Đang theo dõi — có trong Quản trị công việc; bấm để mở đúng nhóm nhỏ.
+  • Đã bỏ — chỉ tiêu đánh giá sự hài lòng, biên bản 09/10/2026 §4.
+  • Chưa có trong khối QLDN — chỉ tiêu của hộ kinh doanh, khối kiểm tra, gói
+    nhiều nguồn: đo đơn vị khác, không thuộc không gian này.
+  Cách tính điểm dài nhiều dòng nên nằm trong dòng mở rộng, không thành cột.
+*/
+function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId) => void; actor: string; pv: PhamVi }) {
+  const [mo, datMo] = useState<number | null>(null);
+  const [chiTheoDoi, datChiTheoDoi] = useState(false);
+  const ds = BO_TIEU_CHI.filter((t) => !chiTheoDoi || (t.the && !t.bo));
+  const linhVuc = [...new Set(ds.map((t) => t.linhVuc))];
+  const soTheoDoi = BO_TIEU_CHI.filter((t) => t.the && !t.bo).length;
+  const nhanNhom = (the: TheId) => `${NHOM_Q.find((n) => n.id === nhomCuaThe(the).id)!.ngan} › ${THE_Q.find((x) => x.id === the)!.ngan}`;
+
+  const xuat = () => exportExcel([{
+    name: "Bo_tieu_chi", title: "BỘ TIÊU CHÍ ĐÁNH GIÁ CÁC CHỈ TIÊU",
+    headers: ["STT", "Lĩnh vực", "Chỉ tiêu", "Phòng đánh giá", "Công thức", "Kỳ báo cáo", "Tính điểm", "Đơn vị được đánh giá", "Ghi chú", "Theo dõi trên hệ thống"],
+    rows: BO_TIEU_CHI.map((t) => [t.stt, t.linhVuc, t.ten, t.phong, t.congThuc, t.ky, t.tinhDiem, t.doiTuong, t.ghiChu, t.bo ? "Đã bỏ" : t.the ? nhanNhom(t.the) : "Chưa có trong khối QLDN"]),
+  }], { period: "Tháng 10/2026", scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "bo-tieu-chi-danh-gia.xlsx");
+
+  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" subtitle={`${BO_TIEU_CHI.length} chỉ tiêu theo file chấm điểm tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc · bấm một dòng để xem cách tính điểm`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    <div className="qd-loc-cb">
+      <div className="bo-loc-seg" role="group" aria-label="Lọc chỉ tiêu">
+        <button type="button" aria-pressed={!chiTheoDoi} onClick={() => datChiTheoDoi(false)}>Tất cả</button>
+        <button type="button" aria-pressed={chiTheoDoi} onClick={() => datChiTheoDoi(true)}>Đang theo dõi</button>
+      </div>
+    </div>
+    <TableWrap label="bộ tiêu chí đánh giá">
+      <table className="qd-bang qd-bang-tc">
+        <thead><tr>
+          <th scope="col" className="num">STT</th>
+          <th scope="col">Chỉ tiêu</th>
+          <th scope="col">Kỳ báo cáo</th>
+          <th scope="col">Phòng đánh giá</th>
+          <th scope="col">Theo dõi trên hệ thống</th>
+        </tr></thead>
+        <tbody>{linhVuc.map((lv) => <Fragment key={lv}>
+          <tr className="is-khoi"><th scope="rowgroup" colSpan={5}>{lv}</th></tr>
+          {ds.filter((t) => t.linhVuc === lv).map((t, i) => {
+            const khoa = t.stt ?? 1000 + i;
+            return <Fragment key={khoa}>
+              <tr className={`qd-viec${mo === khoa ? " is-selected" : ""}${t.bo ? " is-bo" : ""}`} onClick={() => datMo(mo === khoa ? null : khoa)}>
+                <td className="num">{t.stt ?? ""}</td>
+                <td className="qd-tc-ten"><button type="button" className="row-select" aria-expanded={mo === khoa}><strong>{t.ten}</strong>{t.congThuc && <small>{t.congThuc}</small>}</button></td>
+                <td>{t.ky}</td>
+                <td>{t.phong}</td>
+                <td onClick={(e) => e.stopPropagation()}>{t.bo
+                  ? <span className="qd-tc-trang is-bo">Đã bỏ · biên bản 09/10</span>
+                  : t.the && moNhom
+                    ? <button type="button" className="qd-lien-ket qd-tc-mo" onClick={() => moNhom(nhomCuaThe(t.the!).id, t.the!)}>{nhanNhom(t.the)}<Icon name="arrow" size={13}/></button>
+                    : <span className="qd-tc-trang">Chưa có trong khối QLDN</span>}</td>
+              </tr>
+              {mo === khoa && <tr className="qd-ho-so"><td colSpan={5}>
+                <dl className="qd-tc-chi-tiet">
+                  <div><dt>Cách tính điểm</dt><dd>{t.tinhDiem ?? "Chưa có"}</dd></div>
+                  <div><dt>Đơn vị được đánh giá</dt><dd>{t.doiTuong ?? "Chưa có"}</dd></div>
+                  {t.ghiChu && <div><dt>Ghi chú</dt><dd>{t.ghiChu}</dd></div>}
+                </dl>
+              </td></tr>}
+            </Fragment>;
+          })}
+        </Fragment>)}</tbody>
+      </table>
+    </TableWrap>
   </Panel>;
 }

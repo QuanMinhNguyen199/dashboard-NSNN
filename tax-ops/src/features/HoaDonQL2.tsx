@@ -51,7 +51,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   const { vuongMac } = useQL2();
   const { muc, datMuc } = useMucPhanHe();
   const { chon, datDonVi, datKy } = useBoLoc();
-  const { layBanGhi } = useDuyet();
+  const { layBanGhi, khoaBaoCao } = useDuyet();
   const [xem, datXem] = useThamSo<string>("xem", "");
 
   const baoCao = baoCaoCuaMuc("hoadon", muc);
@@ -70,7 +70,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   }, [baoCao, tuK, denK]);
   const ky: KyQL2 = (kyCo?.find((k) => k.id === chon.ky) ?? kyCo?.[0] ?? KY_QL2_01[0]);
 
-  const khoa = baoCao ? `QL2|${baoCao}|${ky.id}` : "";
+  const khoa = baoCao ? khoaBaoCao("QL2", baoCao, ky.id) : "";
   const banGhi = baoCao ? layBanGhi(khoa) : null;
   const choXem = useChoXemTruoc(khoa);
 
@@ -92,7 +92,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   };
 
   return <XuatProvider nut={baoCao && boSheet.length ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
-    <PageIntro title="Rủi ro hóa đơn · Phòng QL2"/>
+    <PageIntro title="Rủi ro hóa đơn"/>
     <ThanhMuc view="hoadon"/>
 
     {baoCao && <ThanhDuyet

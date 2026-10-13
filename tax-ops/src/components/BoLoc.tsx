@@ -54,6 +54,22 @@ export function BoLocProvider({ children }: { children: ReactNode }) {
   return <Ngu.Provider value={gia}>{children}</Ngu.Provider>;
 }
 
+/*
+  KHÓA ĐƠN VỊ theo phòng của người đăng nhập (chốt 13/10/2026).
+
+  Năm phòng QLDN làm cùng một việc, chỉ khác số liệu và người nộp thuế. Báo
+  cáo của một phòng vì thế mặc định và CỐ ĐỊNH là số của chính phòng ấy —
+  ma trận §4 ghi trưởng phòng không chọn đơn vị. Khóa theo MÃ đơn vị (P1…P5),
+  không theo tên: QL3 gọi cùng một phòng là "Phòng QLHTDN 3" trong khi ba
+  phân hệ kia dùng tên đầy đủ. Lãnh đạo Thuế TP không có phòng nên không khóa.
+*/
+const KhoaNgu = createContext<string | null>(null);
+export function KhoaDonVi({ id, children }: { id: string | null; children: ReactNode }) {
+  return <KhoaNgu.Provider value={id}>{children}</KhoaNgu.Provider>;
+}
+/** Mã đơn vị đang khóa, hoặc `null`. Bảng tổng hợp dùng nó để thêm dòng toàn thành phố. */
+export const useKhoaDonVi = () => useContext(KhoaNgu);
+
 export function useBoLoc() {
   const gia = useContext(Ngu);
   if (!gia) throw new Error("useBoLoc phải nằm trong BoLocProvider.");
@@ -83,6 +99,8 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
   kyTuyChon?: ReactNode;
 }) {
   const { chon, datDonVi, datKy } = useBoLoc();
+  const khoaId = useContext(KhoaNgu);
+  const khoaTen = khoaId ? donViCo.find((d) => d.id === khoaId)?.ten ?? null : null;
   const [mo, setMo] = useState(false);
   const hopChon = useRef<HTMLDivElement>(null);
 
@@ -119,8 +137,10 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
       const dung = hop ?? (kyCo.some((k) => k.id === chon.ky) ? chon.ky : kyCo[0].id);
       if (dung !== chon.ky) datKy(dung);
     }
+    /* Đang khóa thì địa chỉ không đổi được đơn vị: một liên kết `donvi=P2`
+       gửi cho người phòng 3 vẫn mở số của phòng 3. */
     const ma = (q.get("donvi") ?? "").split(",").filter(Boolean);
-    const tenTuMa = ma.map((m) => donViCo.find((d) => d.id === m)?.ten).filter((x): x is string => Boolean(x));
+    const tenTuMa = khoaTen ? [khoaTen] : ma.map((m) => donViCo.find((d) => d.id === m)?.ten).filter((x): x is string => Boolean(x));
     if (tenTuMa.join("|") !== chon.donVi.join("|")) datDonVi(tenTuMa);
     // Chỉ chạy lúc dựng màn: sau đó địa chỉ do chính thanh lọc ghi ra.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -171,7 +191,7 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
     ghiDiaChi(chon.ky, moi);
   };
 
-  const datLaiDuoc = dangChon.length > 0 || (kyCo ? chon.ky !== kyCo[0].id : false);
+  const datLaiDuoc = (!khoaTen && dangChon.length > 0) || (kyCo ? chon.ky !== kyCo[0].id : false);
 
   return <div className="bo-loc-chung">
     {kyCo
@@ -204,6 +224,7 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
           khổ hẹp cao bằng nửa màn và không cho biết đã chọn gì nếu không cuộn. */}
       {/* Escape là đường thoát bằng bàn phím; focus vẫn ở nút mở nên người
           dùng không bị ném về đầu trang. */}
+      {khoaTen ? <strong className="bo-loc-ky" aria-labelledby="bo-loc-donvi-nhan" title="Số liệu của phòng bạn — trưởng phòng và chuyên viên không chọn đơn vị khác (ma trận §4)">{rutGon(khoaTen)} · phòng của bạn</strong> :
       <div className="bo-loc-chon" ref={hopChon} onKeyDown={(e) => { if (e.key === "Escape") setMo(false); }}>
         <button type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" aria-labelledby="bo-loc-donvi-nhan" onClick={() => setMo((t) => !t)}>
           <span>{tomTat}</span><Icon name="chevronDown" size={16}/>
@@ -214,12 +235,12 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
             <span>{rutGon(dv)}</span>
           </label>)}
         </div>}
-      </div>
+      </div>}
     </div>
 
     {datLaiDuoc && <Button kind="quiet" onClick={() => {
       const kyGoc = kyCo?.[0]?.id ?? chon.ky;
-      datDonVi([]); if (kyCo) datKy(kyGoc);
+      datDonVi(khoaTen ? [khoaTen] : []); if (kyCo) datKy(kyGoc);
       ghiDiaChi(kyGoc, []);
     }}>Đặt lại</Button>}
     {phuChu && <span className="bo-loc-phu">{phuChu}</span>}

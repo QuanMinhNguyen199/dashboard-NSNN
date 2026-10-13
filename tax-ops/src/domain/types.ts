@@ -12,6 +12,7 @@
 */
 export type ViewId =
   | "doituong" | "dieuhanh" | "canhbao"
+  | "kq-thu" | "kq-no" | "kq-tthc" | "kq-qlht"
   | "debt" | "risk" | "hoadon" | "hoan"
   | "tinhtrang"
   | "giamsat";
@@ -25,7 +26,10 @@ export type ViewId =
 
   QL5 có dữ liệu nhưng chưa có thiết kế nên chưa có phòng tương ứng ở đây.
 */
-export type Phong = "QL1" | "QL2" | "QL3" | "QL4" | null;
+/* Năm phòng QLDN làm CÙNG một việc, chỉ khác số liệu và người nộp thuế
+   (chốt 13/10/2026). Phòng quyết định phạm vi dữ liệu và bản báo cáo của ai,
+   không quyết định thấy loại báo cáo nào. */
+export type Phong = "QL1" | "QL2" | "QL3" | "QL4" | "QL5" | null;
 
 /*
   `CV` chuyên viên làm số và gửi duyệt · `TP` trưởng phòng duyệt và chốt số ·

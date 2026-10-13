@@ -1,0 +1,112 @@
+
+> build:all
+> npm --prefix web run build && npm --prefix tax-ops run build
+
+
+> dashboard-nsnn-web@0.1.0 build
+> npm run check:tokens && npm run check:docs && npm run check:data && tsc -b && vite build
+
+
+> dashboard-nsnn-web@0.1.0 check:tokens
+> node scripts/check-tokens.mjs
+
+✓ 83 biến CSS đều có nơi đặt.
+
+> dashboard-nsnn-web@0.1.0 check:docs
+> node scripts/check-docs.mjs
+
+✓ 5 tab và 8 ô lọc đều khớp với tài liệu nghiệp vụ.
+
+> dashboard-nsnn-web@0.1.0 check:data
+> node scripts/check-data-integrity.mjs
+
+✓ 9801 có tên CCT Thương mại điện tử
+✓ 9901 vẫn là CCT Doanh nghiệp lớn
+✓ Danh mục có 28 thực thể cơ quan thuế
+✓ 33 mã nguồn quy về 28 cơ quan
+✓ 25 Thuế cơ sở
+✓ 3 đơn vị không phải Thuế cơ sở
+✓ Số hiệu cơ sở chạy đủ 1–25
+✓ Không có thực thể nào tên Chưa xác định
+✓ Bảng MAP gốc vẫn nguyên 32 mã
+✓ Bảng MAP gốc chưa có 9801
+✓ Hợp nhất không sinh bản ghi trùng
+✓ Mã bổ sung đã có trong gốc thì không thêm lần hai
+✓ 9801 không có danh sách địa bàn cố định
+✓ 9801 có câu trạng thái riêng, không phải câu báo mã sai
+✓ Đúng 25 Thuế cơ sở có phường/xã phụ trách
+✓ Danh bạ có 116 dòng mã 9801
+✓ Mọi mã CQT trong danh bạ đều tra được tên
+✓ Mọi mã CQT trên chứng từ đều tra được tên
+✓ Kỳ 2025-06: gộp mã giữ nguyên tổng
+✓ Kỳ 2025-07: gộp mã giữ nguyên tổng
+✓ Danh mục có 104 Chương
+✓ Danh mục có 37 Mục
+✓ Danh mục có 180 Tiểu mục
+✓ Mã Chương không trùng
+✓ Mã Tiểu mục không trùng
+✓ Mọi Tiểu mục đều trỏ về một Mục có trong danh mục
+✓ 293 mã tham chiếu trong điều kiện
+✓ 174 mã đối chiếu được danh mục
+✓ 119 mã chưa có dòng tên
+✓ Mã tham chiếu không trùng với mã Mục
+✓ 126 phường/xã hiện hành
+✓ Mã địa bàn không trùng
+✓ Chiều địa bàn = 126 phường/xã + 1 phạm vi thành phố
+✓ Không phường/xã nào mang mã của phạm vi thành phố
+✓ 113 dòng chỉ tiêu báo cáo
+✓ Mã chỉ tiêu không trùng
+✓ Số dòng chỉ tiêu khác số Tiểu mục
+✓ Chiều cơ quan thuế = danh mục CQT
+✓ Chiều địa bàn phủ đủ 126 phường/xã
+✓ Chiều location: "Chưa xác định" chỉ thêm ở lưới, không nằm trong danh mục
+✓ Chiều taxOffice: "Chưa xác định" chỉ thêm ở lưới, không nằm trong danh mục
+✓ Chiều industry: "Chưa xác định" chỉ thêm ở lưới, không nằm trong danh mục
+✓ Kỳ 3: NSTW + NSĐP = Tổng NSNN
+✓ Kỳ 8: NSTW + NSĐP = Tổng NSNN
+✓ Mọi Mục bằng tổng Tiểu mục của nó
+✓ Tổng các Mục bằng tổng của cấp
+✓ Chiều industry: tỷ trọng cộng lại bằng 100%
+✓ Chiều industry: tổng các nhóm bằng tổng chung
+✓ Chiều taxOffice: tỷ trọng cộng lại bằng 100%
+✓ Chiều taxOffice: tổng các nhóm bằng tổng chung
+✓ Chiều location: tỷ trọng cộng lại bằng 100%
+✓ Chiều location: tổng các nhóm bằng tổng chung
+
+Toàn vẹn danh mục và số đếm: mọi tiêu chí đạt.
+vite v5.4.21 building for production...
+transforming...
+✓ 502 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                     0.52 kB │ gzip:   0.34 kB
+dist/assets/index-BUYwKFEI.css                    117.44 kB │ gzip:  20.67 kB
+dist/assets/SortableHeader-MKInhBh4.js              4.62 kB │ gzip:   2.29 kB
+dist/assets/InspectionReportView-BJ6qsu2G.js        9.57 kB │ gzip:   2.87 kB
+dist/assets/EnterpriseManagementView-B-IMjiwE.js   12.53 kB │ gzip:   4.03 kB
+dist/assets/BudgetForecastView-B4F3qKpT.js         15.33 kB │ gzip:   4.95 kB
+dist/assets/index-DI7cIN7r.js                      71.70 kB │ gzip:  19.94 kB
+dist/assets/index-CiwQ2aMO.js                     714.18 kB │ gzip: 187.71 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.91s
+
+> tax-operations-web@0.1.0 build
+> tsc -b && vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 226 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                      0.58 kB │ gzip:   0.38 kB
+dist/assets/public-sans-vietnamese-CtlIRbEm.woff2    7.72 kB
+dist/assets/public-sans-latin-DdeTHZLK.woff2        26.83 kB
+dist/assets/index-acPoUZL2.css                      85.82 kB │ gzip:  15.75 kB
+dist/assets/index-DI7cIN7r.js                       71.70 kB │ gzip:  19.94 kB
+dist/assets/index-BQ17mhJ7.js                      375.29 kB │ gzip: 109.63 kB
+dist/assets/index-BwPHOynK.js                      462.67 kB │ gzip: 146.03 kB
+✓ built in 4.06s

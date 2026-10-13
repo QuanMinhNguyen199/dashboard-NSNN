@@ -1757,10 +1757,6 @@ button.dcontrib-row:hover { background: var(--blue-050); }
  * `cubic-bezier(0.16, 1, 0.3, 1)` giảm tốc mạnh ở cuối: tới nơi dứt khoát chứ
  * không trôi. 260ms là lớp phủ, không phải màn dàn cảnh.
  */
-@keyframes ddrawer-in {
-  from { transform: translateX(16px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
 @keyframes dscrim-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -1774,7 +1770,7 @@ button.dcontrib-row:hover { background: var(--blue-050); }
   width: min(600px, 42vw); overflow-y: auto;
   padding: var(--s5); background: var(--surface);
   border-left: 1px solid var(--hairline); box-shadow: var(--shadow-overlay);
-  animation: ddrawer-in 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Drawer entry is controlled by the shared Motion lifecycle. */
 }
 .ddrawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
 .ddrawer-eyebrow { color: var(--ink-2); font-size: var(--fs-label); font-weight: var(--fw-label); }

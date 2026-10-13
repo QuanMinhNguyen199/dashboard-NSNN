@@ -44,7 +44,7 @@ export const nhanBaoCaoQL4 = (ma: string) => ({
 export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const { muc, datMuc } = useMucPhanHe();
   const { chon } = useBoLoc();
-  const { layBanGhi } = useDuyet();
+  const { layBanGhi, khoaBaoCao } = useDuyet();
   const notify = useAction();
   const [xem, datXem] = useThamSo<string>("xem", "");
 
@@ -52,7 +52,7 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const kyCo = baoCao ? KY_CUA_BAO_CAO_QL4[baoCao] : undefined;
   const ky: KyQL4 = kyCo?.find((k) => k.id === chon.ky) ?? kyCo?.[0] ?? KY_QL4_02[0];
 
-  const khoa = baoCao ? `QL4|${baoCao}|${ky.id}` : "";
+  const khoa = baoCao ? khoaBaoCao("QL4", baoCao, ky.id) : "";
   const banGhi = baoCao ? layBanGhi(khoa) : null;
   const choXem = useChoXemTruoc(khoa);
 
@@ -74,7 +74,7 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   };
 
   return <XuatProvider nut={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
-    <PageIntro title="Hoàn thuế TNCN và tổng đài · Phòng QL4"/>
+    <PageIntro title="Hoàn thuế TNCN và tổng đài"/>
     <ThanhMuc view="hoan"/>
 
     {baoCao && <ThanhDuyet
