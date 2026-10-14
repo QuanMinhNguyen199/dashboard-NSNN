@@ -80,8 +80,32 @@ const gopTheoDonVi = (ds: HangCuocGoi[]): GopDonVi[] => {
   return lac ? [...ra, lac] : ra;
 };
 
+/*
+  Bảng gọn cộng ngăn trượt (chốt 14/10/2026), cùng cách dựng với Danh sách
+  phiếu — xem `components/ChonHang`. Bảng cũ dài ~2 màn và rộng 1.934px.
+
+  BẢNG giữ năm cột trả lời câu hỏi của người rà soát buổi sáng: gọi đến bao
+  nhiêu, nhỡ bao nhiêu, tỉ lệ nhỡ, gọi đi, thời gian trung bình — vừa khung,
+  không cuộn ngang. Dòng xếp theo SỐ cuộc gọi đến không trả lời: cuộc nhỡ là
+  người nộp thuế không gặp được ai, thứ duy nhất trong bảng cần làm gì đó.
+  Xếp theo số chứ không theo tỉ lệ — 1/2 cuộc nhỡ là 50% mà chẳng nói lên gì.
+  Mặc định mười đơn vị (mười hai tài khoản) đầu; "Xem đủ" mở cả danh sách.
+
+  NGĂN TRƯỢT mở khi bấm một dòng: đủ mười một cột số của mẫu (trả lời, không
+  trả lời, tổng, thời gian của cả gọi đi lẫn gọi đến, nội bộ), và với đơn vị
+  thì thêm các tài khoản của nó. Bản đủ cột theo đúng thứ tự mẫu nằm ở tệp
+  Xuất Excel.
+
+  Dòng Tổng cộng đứng đầu, dòng "Chưa xác định đơn vị" đứng cuối ở mọi trang.
+*/
+const GON_DONVI = 10;
+
 export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
-  const [mo, datMo] = useThamSo<"donvi" | "taikhoan">("gop", "donvi", ["donvi", "taikhoan"]);
+  const [mo, datMoGoc] = useThamSo<"donvi" | "taikhoan">("gop", "donvi", ["donvi", "taikhoan"]);
+  const [du, datDu] = useState(false);
+  const [trang, datTrang] = useState(1);
+  const { dangMo, datDangMo, dong, hang } = useChonHang();
+  const datMo = (v: "donvi" | "taikhoan") => { datMoGoc(v); datTrang(1); datDu(false); datDangMo(""); };
   const ds = useMemo(() => danhSachCuocGoi(ky.hat), [ky.hat]);
   const gop = useMemo(() => gopTheoDonVi(ds), [ds]);
 
@@ -93,80 +117,153 @@ export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
   }), { donVi: "Tổng cộng", soTaiKhoan: ds.length, diTraLoi: 0, diKhongTraLoi: 0, diThoiGian: 0, denTraLoi: 0, denKhongTraLoi: 0, denThoiGian: 0, noiBo: 0 });
 
   const o = (g: GopDonVi | HangCuocGoi) => <>
-    <td className="num">{money(g.diTraLoi)}</td>
-    <td className="num">{money(g.diKhongTraLoi)}</td>
-    <td className="num">{money(tongDi(g as HangCuocGoi))}</td>
-    <td className="num">{money(g.diThoiGian)}</td>
-    <td className="num">{money(g.denTraLoi)}</td>
-    <td className="num">{money(g.denKhongTraLoi)}</td>
     <td className="num">{money(tongDen(g as HangCuocGoi))}</td>
-    <td className="num">{money(g.denThoiGian)}</td>
+    <td className="num">{money(g.denKhongTraLoi)}</td>
     <td className="num">{hienTyLe(tyLeNho(g as HangCuocGoi))}</td>
+    <td className="num">{money(tongDi(g as HangCuocGoi))}</td>
     <td className="num">{giay(thoiGianTB(g as HangCuocGoi))}</td>
-    <td className="num">{money(g.noiBo)}</td>
   </>;
 
-  const rong = [260, 130, 140, 150, 110, 150, 140, 150, 110, 160, 124, 190, 120];
+  const theoNho = <T extends GopDonVi | HangCuocGoi>(x: T[]) => [...x].sort((a, b) => b.denKhongTraLoi - a.denKhongTraLoi);
+  const donViThuong = theoNho(gop.filter((g) => g.donVi !== CHUA_XAC_DINH));
+  const donViLac = gop.find((g) => g.donVi === CHUA_XAC_DINH);
+  const tkThuong = theoNho(ds.filter((h) => h.donVi !== CHUA_XAC_DINH));
+  const tkLac = ds.filter((h) => h.donVi === CHUA_XAC_DINH);
+  const soTrangTK = du ? Math.max(1, Math.ceil(tkThuong.length / MOI_TRANG)) : 1;
+  const hangDonVi = du ? donViThuong : donViThuong.slice(0, GON_DONVI);
+  const hangTK = du ? tkThuong.slice((trang - 1) * MOI_TRANG, trang * MOI_TRANG) : tkThuong.slice(0, MOI_TRANG);
+  const tongHang = mo === "donvi" ? donViThuong.length : tkThuong.length;
+  const dangHien = mo === "donvi" ? hangDonVi.length : (du ? tkThuong.length : hangTK.length);
+  const nhanHang = mo === "donvi" ? "đơn vị" : "tài khoản";
 
-  return <Panel chinh
-    title="Báo cáo sản lượng cuộc gọi"
-    subtitle={`${ky.nhan} · nguồn: Viettel, kéo 18:00 · gộp theo đơn vị qua danh mục tài khoản`}
-    actions={<Segmented
-      label="Mức gộp"
-      value={mo}
-      onChange={datMo}
-      options={[{ value: "donvi" as const, label: "Theo đơn vị" }, { value: "taikhoan" as const, label: "Theo tài khoản" }]}
-    />}
+  const dvMo = dangMo.startsWith("dv:") ? gop.find((g) => g.donVi === dangMo.slice(3)) ?? null : null;
+  const tkMo = dangMo.startsWith("tk:") ? ds.find((h) => h.user === dangMo.slice(3)) ?? null : null;
+  const tenDV = (d: string) => (d === CHUA_XAC_DINH ? d : rutGonTenDonVi(d));
+  const lop = (lac: boolean, id: string) => [lac ? "is-chua-gan" : "", id === dangMo ? "is-selected" : ""].join(" ").trim() || undefined;
+
+  const dongDonVi = (g: GopDonVi) => {
+    const id = `dv:${g.donVi}`;
+    return <tr key={g.donVi} {...hang(id)} className={lop(g.donVi === CHUA_XAC_DINH, id)}>
+      <th scope="row" className="dv-cot" title={g.donVi}>
+        {g.donVi === CHUA_XAC_DINH
+          ? <span className="chua-gan-ten"><button type="button" className="row-select" aria-expanded={id === dangMo}>{g.donVi}</button><Button kind="quiet" onClick={onGan}>Gán đơn vị</Button></span>
+          : <button type="button" className="row-select" aria-expanded={id === dangMo}>{rutGonTenDonVi(g.donVi)}</button>}
+      </th>
+      <td className="num">{money(g.soTaiKhoan)}</td>
+      {o(g)}
+    </tr>;
+  };
+  const dongTK = (h: HangCuocGoi) => {
+    const id = `tk:${h.user}`;
+    return <tr key={h.user} {...hang(id)} className={lop(h.donVi === CHUA_XAC_DINH, id)}>
+      <th scope="row" className="dv-cot"><button type="button" className="row-select" aria-expanded={id === dangMo}>{h.nhanVien} <small>{h.user}</small></button></th>
+      <td className="num">1</td>
+      {o(h)}
+    </tr>;
+  };
+
+  return <CaseLayout
+    presentation="drawer"
+    label={dvMo ? "Chi tiết cuộc gọi · đơn vị" : tkMo ? "Chi tiết cuộc gọi · tài khoản" : "Chi tiết cuộc gọi"}
+    mobileOpen={Boolean(dvMo || tkMo)}
+    onClose={dong}
+    detail={dvMo ? <ChiTietCuocGoi g={dvMo} ten={tenDV(dvMo.donVi)} phu={`${money(dvMo.soTaiKhoan)} tài khoản tổng đài`} taiKhoan={theoNho(ds.filter((h) => h.donVi === dvMo.donVi))} moTK={(u) => datDangMo(`tk:${u}`)}/>
+      : tkMo ? <ChiTietCuocGoi g={tkMo} ten={tkMo.nhanVien} phu={`${tkMo.user} · ${tenDV(tkMo.donVi)}`}/>
+      : null}
   >
-    <TableWrap label="sản lượng cuộc gọi">
-      <table className="ql1-table" style={{ minWidth: rong.reduce((a, b) => a + b, 0) }}>
-        <colgroup>{rong.map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
-        <thead>
-          <tr>
-            <th scope="col" className="dv-cot" rowSpan={2}>{mo === "donvi" ? "Đơn vị" : "Nhân viên"}</th>
-            <th scope="col" rowSpan={2} className="num">Số tài khoản</th>
-            <th scope="colgroup" className="nhom" colSpan={4}>Gọi đi</th>
-            <th scope="colgroup" className="nhom" colSpan={4}>Gọi đến</th>
-            <th scope="col" rowSpan={2} className="num">Tỉ lệ nhỡ</th>
-            <th scope="col" rowSpan={2} className="num">Thời gian gọi trung bình</th>
-            <th scope="col" rowSpan={2} className="num">Gọi nội bộ</th>
-          </tr>
-          <tr>
-            <th scope="col" className="num">Trả lời</th>
-            <th scope="col" className="num">Không trả lời</th>
-            <th scope="col" className="num">Tổng</th>
-            <th scope="col" className="num">Thời gian (giây)</th>
-            <th scope="col" className="num">Trả lời</th>
-            <th scope="col" className="num">Không trả lời</th>
-            <th scope="col" className="num">Tổng</th>
-            <th scope="col" className="num">Thời gian (giây)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="is-tong">
-            <th scope="row" className="dv-cot">Tổng cộng</th>
-            <td className="num">{money(ds.length)}</td>
-            {o(cong)}
-          </tr>
-          {mo === "donvi"
-            ? gop.map((g) => <tr key={g.donVi} className={g.donVi === CHUA_XAC_DINH ? "is-chua-gan" : undefined}>
-                <th scope="row" className="dv-cot" title={g.donVi}>
-                  {g.donVi === CHUA_XAC_DINH
-                    ? <span className="chua-gan-ten">{g.donVi}<Button kind="quiet" onClick={onGan}>Gán đơn vị</Button></span>
-                    : rutGonTenDonVi(g.donVi)}
-                </th>
-                <td className="num">{money(g.soTaiKhoan)}</td>
-                {o(g)}
-              </tr>)
-            : ds.map((h) => <tr key={h.user} className={h.donVi === CHUA_XAC_DINH ? "is-chua-gan" : undefined}>
-                <th scope="row" className="dv-cot">{h.nhanVien} <small>{h.user}</small></th>
-                <td className="num">1</td>
-                {o(h)}
-              </tr>)}
-        </tbody>
+    <Panel chinh
+      title="Báo cáo sản lượng cuộc gọi"
+      subtitle={`${ky.nhan} · nguồn: Viettel, kéo 18:00 · bấm một dòng để xem đủ số theo mẫu`}
+      actions={<Segmented
+        label="Mức gộp"
+        value={mo}
+        onChange={datMo}
+        options={[{ value: "donvi" as const, label: "Theo đơn vị" }, { value: "taikhoan" as const, label: "Theo tài khoản" }]}
+      />}
+    >
+      <TableWrap label="sản lượng cuộc gọi">
+        <table className="ql1-table" style={{ minWidth: 950 }}>
+          <colgroup>{[280, 110, 120, 140, 120, 110, 150].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
+          <thead>
+            <tr>
+              <th scope="col" className="dv-cot" rowSpan={2}>{mo === "donvi" ? "Đơn vị" : "Nhân viên"}</th>
+              <th scope="col" rowSpan={2} className="num">Số tài khoản</th>
+              <th scope="colgroup" className="nhom" colSpan={3}>Gọi đến</th>
+              <th scope="col" rowSpan={2} className="num">Gọi đi</th>
+              <th scope="col" rowSpan={2} className="num">Thời gian gọi trung bình</th>
+            </tr>
+            <tr>
+              <th scope="col" className="num">Tổng</th>
+              <th scope="col" className="num">Không trả lời</th>
+              <th scope="col" className="num">Tỉ lệ nhỡ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="is-tong">
+              <th scope="row" className="dv-cot">Tổng cộng</th>
+              <td className="num">{money(ds.length)}</td>
+              {o(cong)}
+            </tr>
+            {mo === "donvi"
+              ? <>{hangDonVi.map(dongDonVi)}{donViLac && dongDonVi(donViLac)}</>
+              : <>{hangTK.map(dongTK)}{tkLac.map(dongTK)}</>}
+          </tbody>
+        </table>
+      </TableWrap>
+      <div className="table-footer">
+        <span>
+          {dangHien < tongHang ? `${dangHien}/${tongHang} ${nhanHang} nhiều cuộc gọi đến không trả lời nhất` : `${tongHang} ${nhanHang} · xếp theo số cuộc gọi đến không trả lời`}
+          {tongHang > (mo === "donvi" ? GON_DONVI : MOI_TRANG) && <>{" · "}<button type="button" className="qd-lien-ket" aria-expanded={du} onClick={() => { datDu(!du); datTrang(1); }}>{du ? "Thu gọn" : `Xem đủ ${tongHang} ${nhanHang}`}</button></>}
+        </span>
+        {du && mo === "taikhoan" && <Pager trang={trang} soTrang={soTrangTK} onChange={datTrang}/>}
+      </div>
+    </Panel>
+  </CaseLayout>;
+}
+
+/* Ngăn trượt: đủ mười một cột số của mẫu cho một đơn vị hoặc một tài khoản. */
+function ChiTietCuocGoi({ g, ten, phu, taiKhoan, moTK }: {
+  g: GopDonVi | HangCuocGoi;
+  ten: string;
+  phu: string;
+  taiKhoan?: HangCuocGoi[];
+  moTK?: (user: string) => void;
+}) {
+  const h = g as HangCuocGoi;
+  return <div className="ql3-chitiet">
+    <p className="ql3-chitiet-ten"><strong>{ten}</strong><span>{phu}</span></p>
+    <DetailGrid items={[
+      { label: "Tỉ lệ nhỡ", value: hienTyLe(tyLeNho(h)) },
+      { label: "Thời gian gọi trung bình", value: giay(thoiGianTB(h)) },
+      { label: "Gọi nội bộ", value: money(g.noiBo) },
+    ]}/>
+    <h3 className="ql3-chitiet-de">Gọi đến</h3>
+    <DetailGrid items={[
+      { label: "Trả lời", value: money(g.denTraLoi) },
+      { label: "Không trả lời", value: money(g.denKhongTraLoi) },
+      { label: "Tổng", value: money(tongDen(h)) },
+      { label: "Thời gian (giây)", value: money(g.denThoiGian) },
+    ]}/>
+    <h3 className="ql3-chitiet-de">Gọi đi</h3>
+    <DetailGrid items={[
+      { label: "Trả lời", value: money(g.diTraLoi) },
+      { label: "Không trả lời", value: money(g.diKhongTraLoi) },
+      { label: "Tổng", value: money(tongDi(h)) },
+      { label: "Thời gian (giây)", value: money(g.diThoiGian) },
+    ]}/>
+    {taiKhoan && taiKhoan.length > 0 && <>
+      <h3 className="ql3-chitiet-de">Tài khoản tổng đài · {taiKhoan.length}</h3>
+      <table className="ql1-ds-table td-tk-bang">
+        <thead><tr><th scope="col">Nhân viên</th><th scope="col" className="num">Gọi đến</th><th scope="col" className="num">Nhỡ</th><th scope="col" className="num">Gọi đi</th></tr></thead>
+        <tbody>{taiKhoan.map((t) => <tr key={t.user}>
+          <td>{moTK ? <button type="button" className="qd-lien-ket" onClick={() => moTK(t.user)}>{t.nhanVien}</button> : t.nhanVien} <small>{t.user}</small></td>
+          <td className="num">{money(tongDen(t))}</td>
+          <td className="num">{money(t.denKhongTraLoi)}</td>
+          <td className="num">{money(tongDi(t))}</td>
+        </tr>)}</tbody>
       </table>
-    </TableWrap>
-  </Panel>;
+    </>}
+  </div>;
 }
 
 /* ── Tab 7 · Phiếu ghi ───────────────────────────────────────────────────── */

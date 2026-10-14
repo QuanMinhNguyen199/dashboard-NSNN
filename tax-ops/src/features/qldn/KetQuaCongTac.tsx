@@ -6,9 +6,9 @@ import { exportExcel } from "@/domain/reportFiles";
 import type { ReportSheet, ReportValue } from "@/domain/reportExport";
 import { useThamSo } from "@/state/diaChi";
 import {
-  CHI_TIEU_Q, DON_VI_Q, KY_Q, NHAN_NHIP, NHOM_Q, THE_Q, capCua, chiTieuCuaThe, duocXem, ketQuaChiTieu,
+  CHI_TIEU_Q, DON_VI_Q, KY_Q, NHAN_KHOI, NHAN_NHIP, NHOM_Q, THE_Q, capCua, chiTieuCuaThe, duocXem, ketQuaChiTieu,
   nhanPhamVi, nhomCuaThe, theoCanBo, theoDonVi, tyLeCua, uocThu, xepHang,
-  type Cap, type ChiTieuQ, type KetQuaChiTieu, type KyQ, type NhipUoc, type NhomId, type PhamVi, type TheId,
+  type Cap, type ChiTieuQ, type KetQuaChiTieu, type Khoi, type KyQ, type NhipUoc, type NhomId, type PhamVi, type TheId,
 } from "@/data/qldn";
 import { NgoaiPhamVi, ThanhPhamVi, usePhamVi } from "@/features/qldn/PhamViQLDN";
 import { HangTab } from "@/components/MucPhanHe";
@@ -146,7 +146,10 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
   const nhom = nhomId ? NHOM_Q.find((n) => n.id === nhomId)! : null;
   /* Nhóm nhỏ trong địa chỉ chỉ có nghĩa khi nó thuộc nhóm lớn đang mở. */
   const the = nhom ? (theURL && nhom.the.includes(theURL) ? theURL : nhom.the[0]) : null;
-  const bc = the && coBaoCao(user) ? BAO_CAO_CUA_THE[the] ?? null : null;
+  /* Báo cáo là bản của PHÒNG (phòng gửi, phòng duyệt): đang xem khối thuế cơ
+     sở thì không có công tắc Báo cáo, tránh mở nhầm bản của phòng mình dưới
+     tiêu đề thuế cơ sở. */
+  const bc = the && coBaoCao(user) && !pv.phongGoc ? BAO_CAO_CUA_THE[the] ?? null : null;
   const moBaoCao = Boolean(bc && xem === "baocao");
   const moThe = (t: TheId) => moNhom?.(nhomCuaThe(t).id, t);
 
@@ -342,18 +345,32 @@ function TomTatMoc({ ct, pv, ky }: { ct: ChiTieuQ; pv: PhamVi; ky: KyQ }) {
   </div>;
 }
 
+/** Đơn vị được xếp hạng cùng nhau: lãnh đạo — phần của khối đang chọn trong phạm vi; các vai khác — cả khối của đơn vị mình. */
+function khoiXepHang(pv: PhamVi, khoi: Khoi) {
+  if (pv.vai !== "LD") return DON_VI_Q.filter((d) => d.khoi === pv.donVi[0].khoi);
+  const cua = pv.donVi.filter((d) => d.khoi === khoi);
+  return cua.length ? cua : pv.donVi;
+}
+
 /* Bảng đơn vị hoặc cán bộ, xếp theo tỷ lệ. Cột hiện theo ma trận quyền. */
 function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi; ky: KyQ; theo: Theo; moCanhBao?: (dvId: string) => void }) {
   const coHang = duocXem(pv.vai, "thuHang");
   const coGiao = duocXem(pv.vai, "soGiao");
   const coTyLe = duocXem(pv.vai, "tyLe");
   const coBQ = duocXem(pv.vai, "binhQuan");
-  const cuaToi = pv.vai === "LD" ? null : pv.donVi[0].id;
+  /* Đang xem khối thuế cơ sở thì không có dòng nào là "đơn vị của tôi". */
+  const cuaToi = pv.vai === "LD" || pv.phongGoc ? null : pv.donVi[0].id;
 
   /* Trưởng phòng "thấy phòng mình đứng ở đâu so với các phòng khác" (§3):
      bảng đơn vị của trưởng/phó phòng là cả khối của phòng, chứ không chỉ
      một dòng của chính phòng. */
-  const dsDonVi = pv.vai === "LD" ? pv.donVi : DON_VI_Q.filter((d) => d.khoi === pv.donVi[0].khoi);
+  /* Xếp hạng TRONG TỪNG KHỐI, như file chấm điểm: sheet "I. Khối TCS" xếp
+     1–25, sheet "II. Khối QLDN" xếp 1–5. Phòng QLDN quản lý ít DN nhưng DN
+     lớn, nên trộn 30 đơn vị vào một bảng hạng là so hai loại đơn vị khác quy
+     mô. Bình quân thì vẫn chung 30 đơn vị — hai sheet ghi cùng một số. */
+  const [khoiXem, datKhoiXem] = useThamSo<Khoi>("khoi", "VP", ["VP", "TCS"]);
+  const haiKhoi = pv.vai === "LD" && pv.donVi.some((d) => d.khoi === "VP") && pv.donVi.some((d) => d.khoi === "TCS");
+  const dsDonVi = khoiXepHang(pv, khoiXem);
   const dong = theo === "CANBO" ? theoCanBo(ct, pv.donVi[0].id, ky.thang) : theoDonVi(ct, dsDonVi, ky.thang);
   /* "Kém nhất trước": lãnh đạo chuẩn bị họp cần đơn vị kéo tụt trước tiên,
      không phải sang trang 3. Hạng giữ nguyên — chỉ đổi chiều đọc. */
@@ -378,6 +395,14 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
   const trongTrang = hang.slice((trang - 1) * CO, trang * CO);
 
   return <>
+  {haiKhoi && theo === "DONVI" && <div className="qd-khoi-xep">
+    <span className="bo-loc-nhan">Xếp hạng trong</span>
+    <div className="bo-loc-seg" role="group" aria-label="Khối xếp hạng">
+      {(["VP", "TCS"] as Khoi[]).map((k) => <button key={k} type="button" aria-pressed={khoiXem === k} onClick={() => { datKhoiXem(k); datTrang(1); }}>
+        {NHAN_KHOI[k]} · {pv.donVi.filter((d) => d.khoi === k).length}
+      </button>)}
+    </div>
+  </div>}
   <TableWrap label={`${ct.ten} theo ${theo === "CANBO" ? "cán bộ" : "đơn vị"}`}>
     <table className="qd-bang">
       <thead><tr>
@@ -512,10 +537,14 @@ function sheetChiTiet(ct: ChiTieuQ, pv: PhamVi, ky: KyQ, theo: Theo): ReportShee
   }
   const coHang = duocXem(pv.vai, "thuHang"), coGiao = duocXem(pv.vai, "soGiao"), coTyLe = duocXem(pv.vai, "tyLe");
   const motDonVi = pv.donVi.length === 1;
-  const ds = pv.vai === "LD" ? pv.donVi : DON_VI_Q.filter((d) => d.khoi === pv.donVi[0].khoi);
-  const dong = theo === "CANBO" && motDonVi ? theoCanBo(ct, pv.donVi[0].id, ky.thang) : theoDonVi(ct, ds, ky.thang);
-  const headers = [...(coHang ? ["Hạng"] : []), "Đơn vị / cán bộ", `${ct.nhanTu} (${ct.dvt})`, ...(coGiao ? [`${ct.nhanMau} (${ct.dvt})`] : []), ...(coTyLe ? ["Tỷ lệ"] : []), "Việc quá hạn"];
-  const rows: ReportValue[][] = xepHang(ct, dong).map((h) => [...(coHang ? [h.hang] : []), h.ten, h.cap.tu, ...(coGiao ? [h.cap.mau] : []), ...(coTyLe ? [h.tyLe] : []), h.cap.quaHan]);
+  /* Tệp xuất xếp hạng riêng từng khối, như hai sheet của file chấm điểm. */
+  const khoiCo = (["VP", "TCS"] as Khoi[]).filter((k) => pv.vai === "LD" ? pv.donVi.some((d) => d.khoi === k) : k === pv.donVi[0].khoi);
+  const hai = theo !== "CANBO" && khoiCo.length > 1;
+  const xep = theo === "CANBO" && motDonVi
+    ? xepHang(ct, theoCanBo(ct, pv.donVi[0].id, ky.thang)).map((h) => ({ h, khoi: "" }))
+    : khoiCo.flatMap((k) => xepHang(ct, theoDonVi(ct, khoiXepHang(pv, k), ky.thang)).map((h) => ({ h, khoi: NHAN_KHOI[k] })));
+  const headers = [...(coHang ? ["Hạng"] : []), ...(hai ? ["Khối"] : []), "Đơn vị / cán bộ", `${ct.nhanTu} (${ct.dvt})`, ...(coGiao ? [`${ct.nhanMau} (${ct.dvt})`] : []), ...(coTyLe ? ["Tỷ lệ"] : []), "Việc quá hạn"];
+  const rows: ReportValue[][] = xep.map(({ h, khoi }) => [...(coHang ? [h.hang] : []), ...(hai ? [khoi] : []), h.ten, h.cap.tu, ...(coGiao ? [h.cap.mau] : []), ...(coTyLe ? [h.tyLe] : []), h.cap.quaHan]);
   const percent = coTyLe ? [headers.indexOf("Tỷ lệ")] : [];
   return { name: ten, title: ct.ten.toUpperCase(), headers, rows, percent };
 }

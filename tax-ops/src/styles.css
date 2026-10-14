@@ -2354,3 +2354,14 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
 /* Dòng mở rộng (hồ sơ, cách tính điểm) là ô gộp đầu hàng: được xuống dòng, không kế thừa luật nowrap của ô đầu bảng. */
 .qd-bang tr.qd-ho-so td { white-space: normal; }
 .qd-tc-mo { display: inline-flex; flex-wrap: nowrap; }
+
+/* Công tắc khối của bảng xếp hạng (chốt 14/10/2026): file chấm điểm xếp hạng
+   riêng khối phòng QLDN và khối thuế cơ sở, nên lãnh đạo chọn khối trước khi
+   đọc hạng. Đứng TRÊN bảng vì nó đổi tập dữ liệu, không chỉ đổi thứ tự. */
+.qd-khoi-xep { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+
+/* Bảng tài khoản trong ngăn chi tiết tổng đài: vừa khung ngăn, không cuộn
+   ngang — tên chiếm nửa, ba cột số chia phần còn lại. */
+.td-tk-bang { width: 100%; min-width: 0; table-layout: fixed; }
+.td-tk-bang th:first-child, .td-tk-bang td:first-child { width: 46%; }
+.td-tk-bang td small { display: block; }

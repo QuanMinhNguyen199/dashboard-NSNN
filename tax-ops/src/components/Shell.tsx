@@ -23,6 +23,7 @@ export const NSNN_LINK = (() => {
 
 export function Shell({ view, user, onView, onLogout, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId, muc?: string) => void; onLogout: () => void; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const maPhong = user.phong ? ` ${user.phong}` : "";
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastTrigger = useRef<HTMLButtonElement | null>(null);
@@ -84,7 +85,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
       })}
     </nav>
     <div className="sidebar-user">
-      <strong>{user.name}</strong><small title={`${NHAN_VAI[user.vaiTro]}${user.phong ? ` ${user.phong}` : ""} – ${user.unit}`}>{NHAN_VAI[user.vaiTro]}{user.phong ? ` ${user.phong}` : ""} · {rutGonTenDonVi(user.unit)}</small>
+      <strong>{user.name}</strong><small title={`${NHAN_VAI[user.vaiTro]}${maPhong} – ${user.unit}`}>{NHAN_VAI[user.vaiTro]}{maPhong} · {rutGonTenDonVi(user.unit)}</small>
       <button className="logout-button" type="button" onClick={onLogout}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
     </div>
   </>;
