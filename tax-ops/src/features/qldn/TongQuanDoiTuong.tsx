@@ -5,7 +5,7 @@ import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
 import { useThamSo } from "@/state/diaChi";
 import {
-  NAM_THANH_LAP, NHOM_Q, QUY_MO_VON, SAC_THUE, THE_Q, TRANG_THAI_DN, doiTuongPhamVi, nhanPhamVi, nhomCuaThe, trangDN,
+  CHI_TIEU_Q, KY_Q, NAM_THANH_LAP, NHOM_Q, QUY_MO_VON, SAC_THUE, THE_Q, TRANG_THAI_DN, duocXem, doiTuongPhamVi, ketQuaChiTieu, nhanPhamVi, nhomCuaThe, trangDN,
   type NhomId, type PhamVi, type TheId, type TrangThaiDN,
 } from "@/data/qldn";
 import { BO_TIEU_CHI } from "@/data/boTieuChi";
@@ -59,34 +59,36 @@ export function TongQuanDoiTuong({ user, moNhom }: { user: DemoUser; moNhom?: (n
     {/* Bộ tiêu chí là định nghĩa của cơ quan, không đổi theo phạm vi — tab ấy
         không có thanh phạm vi. */}
     {tab !== "tieuchi" && <ThanhPhamVi pv={pv} coKy={false} them={<div className="bo-loc-muc"><span className="bo-loc-nhan">Số liệu</span><strong className="bo-loc-ky">Đến 30/09/2026</strong></div>}/>}
-    {tab === "tongquan" ? <TongQuan pv={pv} moDanhSach={moDanhSach}/>
+    {tab === "tongquan" ? <TongQuan pv={pv} moDanhSach={moDanhSach} moNhom={moNhom}/>
       : tab === "danhsach" ? <DanhSach pv={pv} loc={loc} datLoc={datLoc} actor={user.name}/>
       : <BoTieuChi moNhom={moNhom} actor={user.name} pv={pv}/>}
   </div>;
 }
 
-function TongQuan({ pv, moDanhSach }: { pv: PhamVi; moDanhSach: (tt: TrangThaiDN | "") => void }) {
+function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: TrangThaiDN | "") => void; moNhom?: (nhom: NhomId, the: TheId) => void }) {
   const o = useMemo(() => doiTuongPhamVi(pv), [pv]);
+  /* Thu NSNN lũy kế của tháng gần nhất, cùng nguồn với thẻ Thu NSNN ở Quản trị
+     công việc — hai chỗ không được ra hai con số. */
+  const thu = useMemo(() => ketQuaChiTieu(CHI_TIEU_Q[0], pv, KY_Q[0]).nay, [pv]);
   const tongTT = o.soDN;
   const maxTT = Math.max(...TRANG_THAI_DN.map((t) => o.trangThai[t.id]));
   const tongKK = o.keKhai.dungHan + o.keKhai.muon + o.keKhai.chua;
   const ngoaiHKD = o.soHKD === null;
 
   return <>
-    {/* Bốn ô cố định ở mọi vai. Phạm vi chỉ có phòng QLDN thì hộ kinh doanh
-        và cá nhân không thuộc phạm vi — ô vẫn đứng đó và nói điều ấy. */}
+    {/* Bốn ô cố định ở mọi vai và mọi đơn vị: năm phòng QLDN và 25 thuế cơ sở
+        đọc cùng một dải, chỉ khác số (chốt 14/10/2026). */}
     <FigureLine items={[
       { label: pv.canBo ? "Doanh nghiệp được phân công" : "Doanh nghiệp, tổ chức", value: integer(o.soDN), note: "Bấm để mở danh sách", onSelect: () => moDanhSach("") },
       { label: pv.canBo ? "Cán bộ quản lý" : "Cán bộ đang quản lý", value: pv.canBo ? "1" : integer(o.soCanBo), note: pv.canBo ? pv.canBo.ten : "theo phân công TMS 2.4.2" },
-      /* Phạm vi chỉ có phòng QLDN thì hộ kinh doanh và cá nhân không thuộc phạm
-         vi. Hai ô GIỮ VỊ TRÍ nhưng mang số của chính phạm vi ấy, thay vì nửa
-         dải số quan trọng nhất trang đứng trống bằng hai dấu "—". */
+      /* Ô 3: phòng QLDN không quản lý hộ kinh doanh (đã có phòng HKD riêng),
+         nên ô ấy mang số thu NSNN của phòng. "DN đang hoạt động" và "DN mới
+         thành lập" từng đứng đây — gỡ 14/10/2026 vì khối Trạng thái doanh
+         nghiệp ngay dưới đã nói đúng hai số ấy. */
       ngoaiHKD
-        ? { label: "Doanh nghiệp đang hoạt động", value: integer(o.trangThai.HD), note: `${phanTram(o.trangThai.HD, o.soDN)} số doanh nghiệp`, onSelect: () => moDanhSach("HD") }
+        ? { label: "Thu NSNN 9 tháng", value: `${integer(thu.tu)} tỷ`, note: duocXem(pv.vai, "tyLe") ? `đạt ${phanTram(thu.tu, thu.mau)} số giao · lũy kế đến 30/09` : "lũy kế đến 30/09/2026", onSelect: moNhom ? () => moNhom("thu", "thu") : undefined }
         : { label: "Hộ kinh doanh", value: integer(o.soHKD!), note: "do thuế cơ sở quản lý" },
-      o.soCaNhan === null
-        ? { label: "Doanh nghiệp mới thành lập", value: integer(o.trangThai.MOI), note: "dưới 12 tháng · hộ kinh doanh, cá nhân do thuế cơ sở quản lý", onSelect: () => moDanhSach("MOI") }
-        : { label: "Cá nhân nhận tiền lương, tiền công", value: integer(o.soCaNhan), note: "do thuế cơ sở quản lý" },
+      { label: "Cá nhân nhận tiền lương, tiền công", value: integer(o.soCaNhan ?? 0), note: ngoaiHKD ? "làm công tại các DN đang quản lý" : "theo danh bạ người nộp thuế" },
     ]}/>
 
     <div className="qd-luoi-2">

@@ -79,6 +79,8 @@ export interface PhamVi {
   donVi: DonViQ[];
   /** Có khi vai là cán bộ: mã cán bộ và phần DN được giao. */
   canBo: { id: string; ten: string; phan: number } | null;
+  /** Phòng của người xem khi công tắc đang ở khối thuế cơ sở — để nút quay về còn mang tên phòng. */
+  phongGoc?: DonViQ;
 }
 
 export const donViCuaPhong = (phong: Phong): DonViQ | null => {
@@ -365,8 +367,11 @@ function chia(tong: number, trongSo: number[]) {
 export interface DoiTuongDonVi {
   soDN: number;
   soCanBo: number;
-  /** Hộ kinh doanh và cá nhân làm công ăn lương — chỉ thuế cơ sở quản lý. */
+  /** Hộ kinh doanh — chỉ thuế cơ sở quản lý (phòng QLDN không có HKD). */
   soHKD: number | null;
+  /** Cá nhân nhận tiền lương, tiền công: phòng QLDN cũng có — người làm công
+      tại các DN phòng quản lý (biên bản: "trưởng phòng QLDN 1 vào sẽ thấy phòng
+      đang quản lý bao nhiêu DN, bao nhiêu cá nhân"). */
   soCaNhan: number | null;
   trangThai: Record<TrangThaiDN, number>;
   namThanhLap: number[];
@@ -394,7 +399,9 @@ export function doiTuongCua(dvId: string, phan = 1): DoiTuongDonVi {
     soDN,
     soCanBo: canBoCua(dvId).length,
     soHKD: vp ? null : Math.round(nguyen(r, 7000, 21000) * phan),
-    soCaNhan: vp ? null : Math.round(nguyen(r, 18000, 64000) * phan),
+    /* Phòng QLDN lấy dãy số riêng: chen thêm một lượt `r()` vào dãy chung sẽ
+       làm đổi mọi số đứng sau của phòng — số đã đưa đi trình diễn. */
+    soCaNhan: vp ? Math.round(nguyen(prng(hatCua(37, "canhan", dvId)), 42000, 96000) * phan) : Math.round(nguyen(r, 18000, 64000) * phan),
     trangThai,
     namThanhLap: chia(soDN, [0.08 + r() * 0.04, 0.18 + r() * 0.06, 0.16 + r() * 0.05, 0.26 + r() * 0.06, 0.24 + r() * 0.08]),
     quyMoVon: chia(soDN, vp ? [0.3, 0.2, 0.28, 0.1, 0.12] : [0.62, 0.18, 0.14, 0.04, 0.02]),
@@ -579,7 +586,7 @@ export function phamViCua(user: { phong: Phong; vaiTro: VaiTro; name: string }, 
 
 export const nhanPhamVi = (pv: PhamVi) => {
   if (pv.canBo) return `DN được phân công · ${pv.donVi[0].ngan}`;
-  if (pv.vai !== "LD") return pv.donVi[0].ngan;
+  if (pv.vai !== "LD") return pv.donVi.length > 1 ? NHAN_KHOI[pv.donVi[0].khoi] : pv.donVi[0].ngan;
   if (pv.donVi.length === DON_VI_Q.length) return "Toàn thành phố";
   const khoi = (["VP", "TCS"] as Khoi[]).find((k) => {
     const cua = DON_VI_Q.filter((d) => d.khoi === k);

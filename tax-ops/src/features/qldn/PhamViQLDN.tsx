@@ -14,20 +14,47 @@ import {
   từng màn: lãnh đạo chọn năm thuế cơ sở mình phụ trách một lần rồi đi qua cả
   ba mô-đun, chọn lại ở mỗi màn là bắt họ làm một việc ba lần.
 */
-const Ngu = createContext<{ chon: string[]; datChon: (ds: string[]) => void; kyId: string; datKyId: (id: string) => void } | null>(null);
+const Ngu = createContext<{ chon: string[]; datChon: (ds: string[]) => void; kyId: string; datKyId: (id: string) => void; khoi: Khoi; datKhoi: (k: Khoi) => void } | null>(null);
 
 export function PhamViProvider({ children }: { children: ReactNode }) {
   const [chon, datChon] = useState<string[]>([]);
   const [kyId, datKyId] = useState(KY_Q[0].id);
-  const gia = useMemo(() => ({ chon, datChon, kyId, datKyId }), [chon, kyId]);
+  const [khoi, datKhoi] = useState<Khoi>("VP");
+  const gia = useMemo(() => ({ chon, datChon, kyId, datKyId, khoi, datKhoi }), [chon, kyId, khoi]);
   return <Ngu.Provider value={gia}>{children}</Ngu.Provider>;
 }
+
+/*
+  Công tắc "Phòng | Thuế cơ sở" của phòng QLDN (chốt 14/10/2026). Thuế cơ sở
+  làm đúng những việc của phòng QLDN — file chấm điểm chỉ tách hai sheet và
+  xếp hạng riêng — nên mỗi phòng xem được khối 25 thuế cơ sở trên cùng giao
+  diện thay vì cần tài khoản riêng. Công tắc sống ở provider như lựa chọn đơn
+  vị của lãnh đạo: bật một lần, cả ba mô-đun đi theo.
+
+  Cán bộ KHÔNG có công tắc: biên bản §3 "chuyên viên xem số của mình" — 25
+  thuế cơ sở là số của người khác.
+*/
+export const coCongTacKhoi = (pv: PhamVi | null) => Boolean(pv) && (pv!.vai === "TP" || pv!.vai === "PP");
 
 export function usePhamVi(user: DemoUser): { pv: PhamVi | null; ky: KyQ; datKy: (id: string) => void } {
   const ngu = useContext(Ngu);
   if (!ngu) throw new Error("usePhamVi phải nằm trong PhamViProvider.");
-  const pv = useMemo(() => phamViCua(user, ngu.chon), [user, ngu.chon]);
+  const pv = useMemo(() => {
+    const goc = phamViCua(user, ngu.chon);
+    if (!goc || !coCongTacKhoi(goc) || ngu.khoi === "VP") return goc;
+    return { ...goc, donVi: DON_VI_Q.filter((d) => d.khoi === "TCS"), phongGoc: goc.donVi[0] };
+  }, [user, ngu.chon, ngu.khoi]);
   return { pv, ky: KY_Q.find((k) => k.id === ngu.kyId) ?? KY_Q[0], datKy: ngu.datKyId };
+}
+
+/** Tên phòng gốc của người xem, kể cả khi công tắc đang ở thuế cơ sở. */
+function CongTacKhoi({ pv }: { pv: PhamVi }) {
+  const ngu = useContext(Ngu)!;
+  const phong = (pv.phongGoc ?? pv.donVi[0]).ngan;
+  return <div className="bo-loc-seg" role="group" aria-label="Xem phòng hoặc khối thuế cơ sở">
+    <button type="button" aria-pressed={ngu.khoi === "VP"} onClick={() => ngu.datKhoi("VP")}>{phong}</button>
+    <button type="button" aria-pressed={ngu.khoi === "TCS"} onClick={() => ngu.datKhoi("TCS")}>Thuế cơ sở · {DON_VI_Q.filter((d) => d.khoi === "TCS").length}</button>
+  </div>;
 }
 
 /*
@@ -48,7 +75,9 @@ export function ThanhPhamVi({ pv, ky, datKy, coKy = true, them }: { pv: PhamVi; 
     </div>}
     <div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-pham-vi-nhan">Phạm vi</span>
-      {pv.vai === "LD" ? <ChonDonVi/> : <strong className="bo-loc-ky" aria-labelledby="qd-pham-vi-nhan">{nhanPhamVi(pv)}</strong>}
+      {pv.vai === "LD" ? <ChonDonVi/>
+        : coCongTacKhoi(pv) ? <CongTacKhoi pv={pv}/>
+        : <strong className="bo-loc-ky" aria-labelledby="qd-pham-vi-nhan">{nhanPhamVi(pv)}</strong>}
     </div>
     {them}
     {/* Thời điểm cập nhật đứng cạnh nhãn mô phỏng: người đọc số cần biết số
