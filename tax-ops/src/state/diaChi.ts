@@ -46,7 +46,7 @@ export function datThamSo(cap: Record<string, string | null>) {
 */
 /* `nhom` là nhóm chỉ tiêu đang mở của bảng rộng — cùng loại với `moc` (mốc
    so sánh của QL1): một lựa chọn hiển thị mà người ta cần dẫn nhau tới. */
-export const THAM_SO_MAN = ["ky", "donvi", "muc", "moc", "nhom", "co", "loc", "loaitk", "ketqua", "nhomk", "ktu", "kden", "khoi", "so", "nnt", "trang", "xem", "bc", "gop"] as const;
+export const THAM_SO_MAN = ["ky", "donvi", "muc", "moc", "nhom", "co", "loc", "loaitk", "ketqua", "nhomk", "ktu", "kden", "khoi", "so", "nnt", "trang", "xem", "bc", "gop", "tc"] as const;
 
 export const xoaThamSoMan = () =>
   datThamSo(Object.fromEntries(THAM_SO_MAN.map((t) => [t, null])));

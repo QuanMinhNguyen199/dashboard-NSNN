@@ -171,13 +171,13 @@ export function App() {
 
   return <ActionProvider><BoLocProvider><PhamViProvider><DuyetProvider user={user}><PhieuProvider nguoiDung={user.name}><KpiProvider>
     <Shell view={moDuoc} user={user} onView={setView} onLogout={logout}>
-    {moDuoc === "doituong" && <TongQuanDoiTuong user={user} moNhom={(nhom, the) => { setView(VIEW_CUA_NHOM[nhom]); datThamSo({ nhom: the }); }}/>}
+    {moDuoc === "doituong" && <TongQuanDoiTuong user={user} moNhom={(nhom, the, stt) => { setView(VIEW_CUA_NHOM[nhom]); datThamSo({ nhom: the, tc: stt ? String(stt) : null }); }}/>}
     {/* "Việc quá hạn" ở bảng kết quả mở thẳng cảnh báo quá hạn của đơn vị ấy. */}
     {(moDuoc === "dieuhanh" || NHOM_CUA_VIEW[moDuoc]) && <KetQuaCongTac
       key={moDuoc}
       user={user}
       nhom={NHOM_CUA_VIEW[moDuoc]}
-      moNhom={(nhom, the) => { setView(VIEW_CUA_NHOM[nhom]); datThamSo({ nhom: the }); }}
+      moNhom={(nhom, the, stt) => { setView(VIEW_CUA_NHOM[nhom]); datThamSo({ nhom: the, tc: stt ? String(stt) : null }); }}
       moCanhBao={(dvId) => { setView("canhbao"); datThamSo({ donvi: dvId, muc: "QUA_HAN" }); }}
     />}
     {moDuoc === "canhbao" && <CanhBaoNhacViec user={user}/>}

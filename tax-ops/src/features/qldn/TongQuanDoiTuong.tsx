@@ -43,7 +43,7 @@ const MAU_SAC_THUE = ["#1657a8", "#e08a2c", "#2f9e8f", "#8a5cc2", "#d1495b"];
 const phanTram = (x: number, tong: number) => tong ? `${((x / tong) * 100).toLocaleString("vi-VN", { maximumFractionDigits: 1 })}%` : "—";
 const tyDong = (x: number) => x.toLocaleString("vi-VN", { maximumFractionDigits: 1 });
 
-export function TongQuanDoiTuong({ user, moNhom }: { user: DemoUser; moNhom?: (nhom: NhomId, the: TheId) => void }) {
+export function TongQuanDoiTuong({ user, moNhom }: { user: DemoUser; moNhom?: (nhom: NhomId, the: TheId, stt?: number) => void }) {
   const { pv } = usePhamVi(user);
   const [tab, datTab] = useThamSo<Tab>("muc", "tongquan", ["tongquan", "danhsach", "tieuchi"]);
   const [loc, datLoc] = useThamSo<TrangThaiDN | "">("loc", "", ["", ...TRANG_THAI_ID]);
@@ -86,7 +86,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
          thành lập" từng đứng đây — gỡ 14/10/2026 vì khối Trạng thái doanh
          nghiệp ngay dưới đã nói đúng hai số ấy. */
       ngoaiHKD
-        ? { label: "Thu NSNN 9 tháng", value: `${integer(thu.tu)} tỷ`, note: duocXem(pv.vai, "tyLe") ? `đạt ${phanTram(thu.tu, thu.mau)} số giao · lũy kế đến 30/09` : "lũy kế đến 30/09/2026", onSelect: moNhom ? () => moNhom("thu", "thu") : undefined }
+        ? { label: "Thu NSNN 9 tháng", value: `${integer(thu.tu)} tỷ`, note: duocXem(pv.vai, "tyLe") ? `đạt ${phanTram(thu.tu, thu.mau)} ${CHI_TIEU_Q[0].nhanMau} · lũy kế đến 30/09` : "lũy kế đến 30/09/2026", onSelect: moNhom ? () => moNhom("thu", "thu") : undefined }
         : { label: "Hộ kinh doanh", value: integer(o.soHKD!), note: "do thuế cơ sở quản lý" },
       { label: "Cá nhân nhận tiền lương, tiền công", value: integer(o.soCaNhan ?? 0), note: ngoaiHKD ? "làm công tại các DN đang quản lý" : "theo danh bạ người nộp thuế" },
     ]}/>
@@ -298,7 +298,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
     nhiều nguồn: đo đơn vị khác, không thuộc không gian này.
   Cách tính điểm dài nhiều dòng nên nằm trong dòng mở rộng, không thành cột.
 */
-function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId) => void; actor: string; pv: PhamVi }) {
+function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId, stt?: number) => void; actor: string; pv: PhamVi }) {
   const [mo, datMo] = useState<number | null>(null);
   const [chiTheoDoi, datChiTheoDoi] = useState(false);
   const ds = BO_TIEU_CHI.filter((t) => !chiTheoDoi || (t.the && !t.bo));
@@ -341,7 +341,7 @@ function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId) 
                 <td onClick={(e) => e.stopPropagation()}>{t.bo
                   ? <span className="qd-tc-trang is-bo">Đã bỏ · biên bản 09/10</span>
                   : t.the && moNhom
-                    ? <button type="button" className="qd-lien-ket qd-tc-mo" onClick={() => moNhom(nhomCuaThe(t.the!).id, t.the!)}>{nhanNhom(t.the)}<Icon name="arrow" size={13}/></button>
+                    ? <button type="button" className="qd-lien-ket qd-tc-mo" onClick={() => moNhom(nhomCuaThe(t.the!).id, t.the!, t.stt ?? undefined)}>{nhanNhom(t.the)}<Icon name="arrow" size={13}/></button>
                     : <span className="qd-tc-trang">Chưa có trong khối QLDN</span>}</td>
               </tr>
               {mo === khoa && <tr className="qd-ho-so"><td colSpan={5}>
