@@ -71,7 +71,7 @@ const nhomCot = (loaiTK: LoaiTK): NhomCot[] => {
 
   return [
     {
-      nhan: "Số đầu năm · NNT có chênh lệch chưa có kết quả mang sang",
+      nhan: "Số đầu năm · NNT chưa có kết quả mang sang (tính bằng 0 từ kỳ này)",
       cot: [
         n(5, "Số NNT khai thiếu", (h) => h.ra.dauNam_NNT),
         n(6, raThue, (h) => h.ra.dauNam_Thue, true),
@@ -321,7 +321,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
       .filter((r) => !ketqua || (!thieuR31.includes(r.dv.id) && r.ketQua === ketqua))
       .filter((r) => !loai || (loai === "01" ? ["ra", "vao"].includes(r.chieu) : ["t03", "t04"].includes(r.chieu)))
       .filter((r) => !co || (CO_CHENH.find((c) => c.id === co)?.hop(r) ?? true))
-      .filter((r) => !q || r.mst.includes(q) || r.ten.toLowerCase().includes(q));
+      .filter((r) => !q || r.mst.includes(q) || r.ten.toLowerCase().includes(q) || r.canBo.toLowerCase().includes(q));
   }, [tatCa, chon, chuaCo, co, tim, loai, ketqua, thieuR31]);
 
   // Đổi phạm vi lọc thì bỏ lựa chọn cũ; chuyển trang vẫn giữ lựa chọn.
@@ -343,8 +343,8 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
     actions={<div className="inline-controls">
       <ExportButton onExport={() => exportExcel([{
         name: "DS NNT chenh lech", title: "Danh sách NNT có chênh lệch", unit: "triệu đồng",
-        headers: ["MST", "Tên NNT", "Đơn vị", "Loại tờ khai", "Chênh lệch", "Kết quả rà soát", "Nguồn kết quả"],
-        rows: loc.map((r) => [r.mst, r.ten, r.dv.ten, CHIEU_CHENH.find((c) => c.id === r.chieu)!.nhan, r.chenhLech,
+        headers: ["MST", "Tên NNT", "Đơn vị", "Cán bộ quản lý", "Loại tờ khai", "Chênh lệch", "Kết quả rà soát", "Nguồn kết quả"],
+        rows: loc.map((r) => [r.mst, r.ten, r.dv.ten, r.canBo, CHIEU_CHENH.find((c) => c.id === r.chieu)!.nhan, r.chenhLech,
           thieuR31.includes(r.dv.id) ? "Thiếu dữ liệu r31" : r.ketQua, thieuR31.includes(r.dv.id) ? "Chưa nhận r31" : "hddtbaocao r31 (mô phỏng)"]),
       }], meta, `QL2_DS_chenhlech_${ky.id}.xlsx`)}>Xuất Excel</ExportButton>
       <Segmented
@@ -363,7 +363,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
         <option value="">Tất cả</option><option value="01">01/GTGT</option><option value="0304">03, 04/GTGT</option>
       </select></label>
       {ketqua && <Button kind="quiet" onClick={() => datKetQua("")}>Bỏ lọc: {ketqua}</Button>}
-      <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm MST hoặc tên NNT"/>
+      <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm MST, tên NNT hoặc cán bộ"/>
     </div>}
   >
     {/*
@@ -374,7 +374,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
       Giao phiếu PRS-03 đứng ngay trên bảng vì nó thao tác trên chính những
       dòng đã chọn, chưa có kết quả và chưa được giao phiếu.
     */}
-    <div className="prs-thanh"><span>Kết quả rà soát: hddtbaocao r31 · dữ liệu mô phỏng.
+    <div className="prs-thanh"><span>Chỉ gồm chênh lệch âm (kê khai thấp hơn hóa đơn) từ 1 triệu đồng trở lên; tồn đầu kỳ tính bằng 0 từ kỳ này. Kết quả rà soát: hddtbaocao r31 · dữ liệu mô phỏng.
       {duPhong && ` Thiếu r31 kỳ ${ky.nhan} tại ${donViThieu.map((d) => rutGonTenDonVi(d.ten)).join(", ")}. Phiếu PRS-03 chỉ dùng dự phòng cho phần thiếu.`}
     </span>{choGiao && <Button kind="quiet" onClick={() => datMoDuPhong(!moDuPhong)}>{moDuPhong ? "Đóng xử lý dự phòng" : "Theo dõi phiếu dự phòng"}</Button>}</div>
     {choGiao && <div className="prs-thanh">
@@ -394,18 +394,20 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
     </div>}
 
     <TableWrap label="danh sách NNT chênh lệch">
-      {/* Tổng 1.145px: vừa khung 1.146px ở khổ 1440. Bản trước 1.254px nên
-          tràn 108px — phải cuộn ngang cho một bảng chỉ tám cột, trong khi chỗ
-          dư nằm ở hai cột tên vốn chứa chuỗi ngắn hơn nhiều. */}
-      <table className="ql1-ds-table" style={{ minWidth: duPhong ? 1145 : 959 }}>
+      {/* 1.119px khi đủ r31: vừa khung 1.146px ở khổ 1440. Cột cán bộ quản
+          lý thêm theo MoM 15/10 (lập danh sách theo từng cán bộ). Khi có dòng
+          dự phòng PRS-03, hai cột chọn và phiếu đẩy bảng lên 1.305px và cuộn
+          ngang — chấp nhận, vì đó là chế độ xử lý ngoại lệ, không phải mặc định. */}
+      <table className="ql1-ds-table" style={{ minWidth: duPhong ? 1305 : 1119 }}>
         <colgroup>
-          {[...(choGiao ? [56] : []), 136, 188, 180, 150, 130, 175, ...(duPhong ? [130] : [])].map((w, i) => <col key={i} style={{ width: w }}/>)}
+          {[...(choGiao ? [56] : []), 136, 188, 180, 160, 150, 130, 175, ...(duPhong ? [130] : [])].map((w, i) => <col key={i} style={{ width: w }}/>)}
         </colgroup>
         <thead><tr>
           {choGiao && <th scope="col" className="center">Chọn</th>}
           <th scope="col">MST</th>
           <th scope="col">Tên người nộp thuế</th>
           <th scope="col">Đơn vị quản lý</th>
+          <th scope="col">Cán bộ quản lý</th>
           <th scope="col">Loại tờ khai</th>
           <th scope="col" className="num">Chênh lệch (trđ)</th>
           <th scope="col">Kết quả rà soát</th>
@@ -443,6 +445,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
             <td>{r.mst}</td>
             <td>{r.ten}{r.khongNopTK && <> <Badge tone="warning">Không nộp TK</Badge></>}</td>
             <td title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</td>
+            <td>{r.canBo}</td>
             <td>{CHIEU_CHENH.find((c) => c.id === r.chieu)?.nhan}</td>
             <td className="num">{money(r.chenhLech)}</td>
             <td>
@@ -453,7 +456,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
             {duPhong && <td>{thieuR31.includes(r.dv.id) ? r.phieu || <span className="cell-empty">chưa giao</span> : "—"}</td>}
           </tr>;
           })}
-          {hien.length === 0 && <tr><td className="table-empty" colSpan={6 + Number(choGiao) + Number(duPhong)}>Không có dòng nào khớp bộ lọc.</td></tr>}
+          {hien.length === 0 && <tr><td className="table-empty" colSpan={7 + Number(choGiao) + Number(duPhong)}>Không có dòng nào khớp bộ lọc.</td></tr>}
         </tbody>
       </table>
     </TableWrap>

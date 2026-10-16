@@ -7,7 +7,7 @@ import { ONhan, useChonHang } from "@/components/ChonHang";
 import { theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { rutGonTenDonVi } from "@/data/danhMuc";
-import { bangHeSoK, ngayTonDauK, coCoK, danhSachK, kTinhLai, type HangHeSoK, type KyQL2, type LuotK } from "@/data/ql2";
+import { MOC_TON_K, bangHeSoK, conTonK, ngayTonDauK, coCoK, danhSachK, kTinhLai, type HangHeSoK, type KyQL2, type LuotK } from "@/data/ql2";
 
 /*
   QL2-02 — Cảnh báo hệ số K (§4.5).
@@ -59,7 +59,7 @@ export function BangHeSoK({ ky }: { ky: KyQL2 }) {
     actions={<Segmented label="Mẫu báo cáo K" value={mau} onChange={datMau} options={[{ value: "noibo", label: "Báo cáo nội bộ" }, { value: "qltt3", label: "Mẫu Cục Thuế QLTT3" }]}/>}
   >
     {mau === "qltt3" ? <p className="ql2-note">Mẫu QLTT3 có 35 cột, gồm sheet tháng, 6 tháng, lũy kế và tỷ lệ. Chưa có tệp “2.3. BC_QLTT3…(he so k).xlsx” để đối chiếu tên cột. Ánh xạ cột (15)–(20), (25)–(29) còn chờ Q-102; chưa xuất số theo mẫu này.</p> : <>
-    <p className="ql2-note">Ngày giám sát phát sinh lệch 1 ngày so với ngày chốt. “Chờ phê duyệt”, “Lưu tạm” còn chờ Q-98; dữ liệu mô phỏng chỉ dùng hai nhóm đã xác định.</p>
+    <p className="ql2-note">Tồn tính trên các cảnh báo chưa xử lý từ {MOC_TON_K} (ngày sáp nhập) đến ngày chốt, gồm cả cảnh báo đang “Lưu tạm”. Ngày giám sát phát sinh lệch 1 ngày so với ngày chốt, nên báo cáo tuần chốt thứ Năm và tải sáng thứ Sáu.</p>
     <TableWrap label="hệ số K theo đơn vị">
       <table className="ql1-table" style={{ minWidth: 1136 }}>
         <colgroup>
@@ -111,7 +111,7 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
   const loc = useMemo(() => {
     const q = tim.trim().toLowerCase();
     return theoDonVi(tatCa, chon, (r) => r.dv.ten)
-      .filter((r) => r.trangThai === "Chưa xử lý")
+      .filter(conTonK)
       .filter((r) => nhom === "vuong" ? (vuongMac[ky.id] ?? []).includes(r.mst) : !(vuongMac[ky.id] ?? []).includes(r.mst))
       .filter((r) => (chiCo === "tatca" ? true : coCoK(r)))
       .filter((r) => !q || r.mst.includes(q) || r.ten.toLowerCase().includes(q))
@@ -192,7 +192,10 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
               className={`${coCoK(r) ? "is-co" : ""}${r.mst === dangMo ? " is-selected" : ""}`.trim() || undefined}
             >
               <ONhan id={r.mst} dangMo={dangMo}>{r.mst}</ONhan>
-              <td title={r.ten}>{r.ten}</td>
+              {/* Trạng thái MST chỉ hiện khi KHÁC "đang hoạt động": đó là lượt
+                  không xử lý theo đường thường được (MoM 15/10), cùng cách
+                  danh sách chênh lệch gắn "Không nộp TK" cạnh tên. */}
+              <td title={`${r.ten} · ${r.trangThaiMST}`}>{r.ten}{!r.trangThaiMST.startsWith("00") && <> <Badge tone="warning">MST {r.trangThaiMST.slice(0, 2)}</Badge></>}</td>
               <td>{r.canBo}</td>
               <td>{r.trangThai}</td>
               <td className="num">{money(r.soNgayTon)}</td>
@@ -249,6 +252,7 @@ function ChiTietK({ r, ky, vaiTro, nhom, onDanhDau }: {
       { label: "Tên ngành nghề chính", value: r.nganhNghe },
       { label: "Tên cán bộ quản lý", value: r.canBo },
       { label: "Trạng thái xử lý", value: r.trangThai },
+      { label: "Trạng thái MST (TMS)", value: r.trangThaiMST },
       { label: "Số ngày tồn", value: money(r.soNgayTon) },
       { label: "Ngày giám sát", value: ngayTonDauK(ky) },
     ]}/>

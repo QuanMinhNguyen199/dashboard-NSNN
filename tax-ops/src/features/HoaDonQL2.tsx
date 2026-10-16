@@ -1,7 +1,7 @@
 import { KhoangNgayK, ngayHopLe } from "@/features/KhoangNgayK";
 import { CongAnQL2, TPRQL2 } from "@/features/QL2BoSung";
 import { QL2Provider, useQL2 } from "@/state/QL2Context";
-import { useMemo } from "react";
+import { useMemo, type CSSProperties } from "react";
 import { BoLocChung, useBoLoc, theoDonVi, type MucDonVi } from "@/components/BoLoc";
 import { Khung } from "@/components/Khung";
 import { ThanhMuc, baoCaoCuaMuc, nhomCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
@@ -16,7 +16,7 @@ import { BangXacMinh, TonQuaHanXM } from "@/features/QL2XacMinh";
 import { rutGonTenDonVi } from "@/data/danhMuc";
 import type { VaiTro } from "@/domain/types";
 import {
-  DON_VI_QL2, KY_CUA_BAO_CAO, KY_QL2_01, KY_QL2_02, KY_QL2_04,
+  DON_VI_QL2, KY_CUA_BAO_CAO, KY_QL2_01, KY_QL2_02, KY_QL2_03, KY_QL2_04, tyLeTPRTheoDonVi,
   bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua, danhSachChenhLech, daTraXM,
   tonCuoiK, tongXM, type KyQL2,
 } from "@/data/ql2";
@@ -55,7 +55,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   const [xem, datXem] = useThamSo<string>("xem", "");
 
   const baoCao = baoCaoCuaMuc("hoadon", muc);
-  // QL2-05 còn chờ mẫu; TPR/Công an đã có mẫu theo tài liệu nhưng chưa có tệp đối chiếu trong workspace.
+  // QL2-05 còn chờ mẫu; TPR và Công an dựng theo mẫu đính kèm MoM 15/10.
   const nhom = nhomCuaMuc("hoadon", muc);
   const [tuK, datTuK] = useThamSo<string>("ktu", "");
   const [denK, datDenK] = useThamSo<string>("kden", "");
@@ -97,8 +97,9 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
 
     {baoCao && <ThanhDuyet
       khoa={khoa}
-      nhanKy={`${baoCao} · ${ky.nhan.toLowerCase()}`}
-      chan={baoCao === "QL2-03" || baoCao === "QL2-06" ? "Chưa nạp tệp mẫu để đối chiếu đầy đủ các cột; chưa phát hành báo cáo." : nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
+      /* Chỉ hạ chữ đầu: hạ cả nhãn thì số La Mã của quý thành "quý iii". */
+      nhanKy={`${baoCao} · ${ky.nhan.charAt(0).toLowerCase()}${ky.nhan.slice(1)}`}
+      chan={baoCao === "QL2-03" || baoCao === "QL2-06" ? "Bảng đã dựng theo mẫu đính kèm biên bản 15/10 nhưng chưa nối vào luồng xem trước và phát hành, nên chưa gửi duyệt được. Dùng Xuất Excel trên bảng." : nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
       xemTruoc={boSheet.length > 0 && <NutXemTruoc mo={moXemTruoc} onToggle={() => datXem(moXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
       tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", meta.scope]]}
     />}
@@ -140,7 +141,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
     {muc === "xm" && <BangXacMinh ky={ky}/>}
     {muc === "xmqh" && <TonQuaHanXM ky={ky}/>}
 
-    {muc === "tpr" && <TPRQL2 key={ky.id} ky={ky}/>}
+    {muc === "tpr" && <TPRQL2 key={ky.id} ky={ky} meta={meta}/>}
 
     {muc === "cbrr" && <Khung
       tieuDe="QL2-05 · Ứng dụng cảnh báo rủi ro"
@@ -205,11 +206,13 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
 
   const pct = (tu: number, mau: number) => (mau <= 0 ? "—" : `${((tu / mau) * 100).toFixed(2).replace(".", ",")}%`);
 
-  /* Hai chỉ tiêu dùng để CHẤM ĐIỂM đơn vị (sheet CHẤM ĐIỂM mục 18, 19) [F],
-     nên chúng được xếp cạnh nhau và có vạch bình quân — đơn vị cần biết mình
-     đứng đâu so với mức chung, không chỉ biết con số của mình. */
+  /* Ba chỉ tiêu QLDN2 chấm điểm đơn vị (bộ tiêu chí mục 17, 18, 19; MoM
+     15/10), nên chúng được xếp cạnh nhau và có vạch bình quân — đơn vị cần
+     biết mình đứng đâu so với mức chung, không chỉ biết con số của mình.
+     TPR lấy lũy kế từ tháng 01 đến tháng của kỳ mới nhất. */
   const binhQuanK = mauK <= 0 ? 0 : daXuLyK / mauK;
   const binhQuanXM = tongXm <= 0 ? 0 : daTra / tongXm;
+  const tpr = tyLeTPRTheoDonVi(Number(KY_QL2_03[0].ngayChot.slice(3, 5)));
 
   return <>
     {/*
@@ -245,22 +248,23 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
     </div>
 
     <Panel
-      title="Hai chỉ tiêu chấm điểm, theo đơn vị"
-      subtitle="Vạch là bình quân toàn ngành"
+      title="Ba chỉ tiêu chấm điểm, theo đơn vị"
+      subtitle="Vạch là bình quân toàn ngành · chênh trên 5 đpt so với bình quân được ±1 điểm"
     >
-      <SoSanhHaiChiTieu
+      <SoSanhChiTieu
+        cot={["Rà soát TPR · tỷ lệ đã rà soát", "Hệ số K · tỷ lệ đã xử lý", "Xác minh hóa đơn · tỷ lệ hoàn thành"]}
+        binhQuan={[tpr.binhQuan, binhQuanK, binhQuanXM]}
         don={DON_VI_QL2.filter((d) => chon.donVi.length === 0 || chon.donVi.includes(d.ten))}
         lay={(id) => {
           const hk = k.find((h) => h.dv.id === id);
           const hx = xm.find((h) => h.dv.id === id);
           const mau = hk ? hk.tonDau + hk.phatSinh : 0;
-          return {
-            a: mau <= 0 ? null : (hk?.daXuLy ?? 0) / mau,
-            b: hx && tongXM(hx) > 0 ? daTraXM(hx) / tongXM(hx) : null,
-          };
+          return [
+            tpr.theo.get(id) ?? null,
+            mau <= 0 ? null : (hk?.daXuLy ?? 0) / mau,
+            hx && tongXM(hx) > 0 ? daTraXM(hx) / tongXM(hx) : null,
+          ];
         }}
-        binhQuanA={binhQuanK}
-        binhQuanB={binhQuanXM}
       />
     </Panel>
 
@@ -286,30 +290,28 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
 }
 
 /*
-  Hai thanh cho mỗi đơn vị, cùng một trục 0–100%, cộng một vạch bình quân.
+  Mỗi chỉ tiêu một thanh trên cùng trục 0–100%, cộng một vạch bình quân.
 
-  Vẽ hai biểu đồ rời thì mắt phải nhớ thứ hạng của biểu đồ thứ nhất khi đọc
-  biểu đồ thứ hai. Đây đúng là câu hỏi "đơn vị nào kém cả hai mặt", nên hai
-  thanh phải nằm trên cùng một dòng.
+  Vẽ các biểu đồ rời thì mắt phải nhớ thứ hạng của biểu đồ trước khi đọc biểu
+  đồ sau. Đây đúng là câu hỏi "đơn vị nào kém ở nhiều mặt", nên các thanh của
+  một đơn vị phải nằm trên cùng một dòng.
 */
-function SoSanhHaiChiTieu({ don, lay, binhQuanA, binhQuanB }: {
+function SoSanhChiTieu({ don, lay, cot, binhQuan }: {
   don: { id: string; ten: string }[];
-  lay: (id: string) => { a: number | null; b: number | null };
-  binhQuanA: number;
-  binhQuanB: number;
+  lay: (id: string) => (number | null)[];
+  cot: string[];
+  binhQuan: number[];
 }) {
-  return <div className="so-sanh">
+  return <div className="so-sanh" style={{ "--so-cot": cot.length } as CSSProperties}>
     <div className="so-sanh-dau">
       <span/>
-      <span>Hệ số K · tỷ lệ đã xử lý</span>
-      <span>Xác minh hóa đơn · tỷ lệ hoàn thành</span>
+      {cot.map((c) => <span key={c}>{c}</span>)}
     </div>
     {don.map((d) => {
-      const { a, b } = lay(d.id);
+      const gia = lay(d.id);
       return <div className="so-sanh-dong" key={d.id}>
         <span className="so-sanh-ten" title={d.ten}>{rutGonTenDonVi(d.ten)}</span>
-        <ThanhBQ x={a} bq={binhQuanA}/>
-        <ThanhBQ x={b} bq={binhQuanB}/>
+        {cot.map((c, i) => <ThanhBQ key={c} x={gia[i]} bq={binhQuan[i]}/>)}
       </div>;
     })}
   </div>;
