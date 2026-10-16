@@ -109,11 +109,29 @@ export const KY_QL2_04: KyQL2[] = [
   })),
 ];
 
+/*
+  QL2-03 · TPR — MoM 15/10: QLDN2 mô tả đủ kỳ tháng, quý, 6 tháng. Số TPR là
+  lũy kế nên mỗi kỳ là một KHOẢNG THÁNG: tháng thì cộng từ tháng chọn ở màn đến
+  tháng báo cáo, quý và 6 tháng thì có sẵn khoảng của chính nó.
+*/
+export const KY_QL2_03: KyQL2[] = [
+  ...[9, 8, 7, 6, 5].map((m) => ({
+    id: `q203-m${String(m).padStart(2, "0")}`,
+    loai: "THANG" as const,
+    ngayChot: `${new Date(2026, m, 0).getDate()}/${String(m).padStart(2, "0")}/2026`,
+    nhan: `Tháng ${String(m).padStart(2, "0")}/2026`,
+    hat: 2100 + m,
+  })),
+  { id: "q203-q3", loai: "QUY" as const, ngayDau: "01/07/2026", ngayChot: "30/09/2026", nhan: "Quý III/2026", hat: 2393 },
+  { id: "q203-q2", loai: "QUY" as const, ngayDau: "01/04/2026", ngayChot: "30/06/2026", nhan: "Quý II/2026", hat: 2392 },
+  { id: "q203-h1", loai: "SAUTHANG" as const, ngayDau: "01/01/2026", ngayChot: "30/06/2026", nhan: "6 tháng đầu năm 2026", hat: 2396 },
+];
+
 export const KY_CUA_BAO_CAO: Record<string, KyQL2[]> = {
   "QL2-01": KY_QL2_01,
   "QL2-02": KY_QL2_02,
   "QL2-04": KY_QL2_04,
-  "QL2-03": KY_QL2_01.map((k) => ({ ...k, id: k.id.replace("q201", "q203"), nhan: k.nhan.split(" · ")[0] })),
+  "QL2-03": KY_QL2_03,
   "QL2-06": KY_QL2_01.map((k) => ({ ...k, id: k.id.replace("q201", "q206"), nhan: k.nhan.split(" · ")[0] })),
 };
 
@@ -170,7 +188,10 @@ export interface HangQL2_01 {
 
 const chieu = (hat: number, heSo: number, thueMoiNNT: number): ChieuQL2_01 => {
   const r = prng(hat);
-  const dauNam_NNT = nguyen(r, 0, Math.round(14 * heSo));
+  /* MoM 15/10: "Từ kỳ này, tồn đầu kỳ tính bằng 0". Cột (5)–(8) vẫn giữ trên
+     mẫu nhưng mang số 0. Vẫn rút số ngẫu nhiên để các cột sau không đổi hạt. */
+  nguyen(r, 0, Math.round(14 * heSo));
+  const dauNam_NNT = 0;
   const ungDung_NNT = nguyen(r, 2, Math.round(60 * heSo));
   const can = dauNam_NNT + ungDung_NNT;
   /* "Đã có kết quả" không bao giờ vượt số cần rà soát — vượt thì cột (28)–(31)
@@ -183,7 +204,7 @@ const chieu = (hat: number, heSo: number, thueMoiNNT: number): ChieuQL2_01 => {
   for (let i = 0; i < conLai; i++) khac[nguyen(r, 0, khac.length - 1)]++;
   return {
     dauNam_NNT,
-    dauNam_Thue: Math.round(dauNam_NNT * thueMoiNNT * (0.6 + r() * 0.8) * 10) / 10,
+    dauNam_Thue: (r(), 0),
     ungDung_NNT,
     ungDung_Thue: Math.round(ungDung_NNT * thueMoiNNT * (0.6 + r() * 0.8) * 10) / 10,
     dieuChinh_NNT,
@@ -244,8 +265,10 @@ export interface NNTChenhLech {
   mst: string;
   ten: string;
   dv: DonViQL2;
+  /** Cán bộ quản lý theo danh bạ phân công TMS 2.4.2 — MoM 15/10 yêu cầu lập danh sách theo cán bộ. */
+  canBo: string;
   chieu: ChieuChenh;
-  /** Triệu đồng. */
+  /** Triệu đồng; luôn ≥ 1 vì danh sách chỉ lấy chênh lệch từ 1 triệu đồng trở lên (MoM 15/10). */
   chenhLech: number;
   khongNopTK: boolean;
   ketQua: KetQuaPRS03;
@@ -294,8 +317,11 @@ export const danhSachChenhLech = (hatKy: number, soDong = 240): NNTChenhLech[] =
         mst: mstGia(i),
         ten: tenNNTGia(i),
         dv,
+        /* Cán bộ gắn theo MST, không rút ngẫu nhiên: cùng một NNT ở mọi dòng
+           và mọi kỳ phải về đúng một người quản lý. */
+        canBo: tenCanBoGia((i * 7 + DON_VI_QL2.indexOf(dv)) % 41),
         chieu,
-        chenhLech: Math.round(nguyen(r, 4, 1800) / 10) / 10,
+        chenhLech: Math.round(nguyen(r, 100, 1800) / 10) / 10,
         khongNopTK,
         ketQua,
         /* Mã phiếu theo ĐƠN VỊ, không theo số thứ tự dòng: §6 ghi phiếu "tự
@@ -332,18 +358,32 @@ export const bangHeSoK = (hatKy: number, vuongMac: readonly string[] = []): Hang
     const ds = rows.filter((r) => r.dv.id === dv.id);
     const tonDau = ds.filter((r) => !r.phatSinhTrongKy).length;
     const phatSinh = ds.filter((r) => r.phatSinhTrongKy).length;
-    const tonCuoi = ds.filter((r) => r.trangThai === "Chưa xử lý" && !vuongMac.includes(r.mst)).length;
+    const tonCuoi = ds.filter((r) => conTonK(r) && !vuongMac.includes(r.mst)).length;
     return { dv, tonDau, phatSinh, daXuLy: tonDau + phatSinh - tonCuoi };
   });
 };
 
 export const tonCuoiK = (h: HangHeSoK) => h.tonDau + h.phatSinh - h.daXuLy;
 
-export const TRANG_THAI_K = ["Chưa xử lý", "Đã xử lý"] as const;
+/* "Lưu tạm" đứng giữa vì nó vẫn là việc chưa xong — MoM 15/10 trả lời Q-98:
+   cảnh báo đang lưu tạm tính vào tồn. "Chờ phê duyệt" chưa được nhắc nên
+   chưa đưa vào dữ liệu mô phỏng. */
+export const TRANG_THAI_K = ["Chưa xử lý", "Lưu tạm", "Đã xử lý"] as const;
 export type TrangThaiK = (typeof TRANG_THAI_K)[number];
 
-/** Fixture chỉ dùng hai nhóm đã xác định; không tự phân loại Chờ phê duyệt/Lưu tạm (Q-98). */
 export const NHOM_DA_XU_LY: readonly TrangThaiK[] = ["Đã xử lý"];
+export const conTonK = (l: { trangThai: TrangThaiK }) => !NHOM_DA_XU_LY.includes(l.trangThai);
+
+/** Mốc tồn hệ số K: ngày sáp nhập ngành thuế (MoM 15/10). */
+export const MOC_TON_K = "17/03/2025";
+
+/** Trạng thái mã số thuế lấy từ TMS — MoM 15/10 yêu cầu thêm vào danh sách K. */
+export const TRANG_THAI_MST = [
+  "00 · Đang hoạt động",
+  "05 · Tạm ngừng kinh doanh",
+  "06 · Không hoạt động tại địa chỉ đăng ký",
+  "03 · Ngừng hoạt động, chưa hoàn thành thủ tục",
+] as const;
 
 export interface LuotK {
   mst: string;
@@ -351,6 +391,7 @@ export interface LuotK {
   nganhNghe: string;
   canBo: string;
   dv: DonViQL2;
+  trangThaiMST: (typeof TRANG_THAI_MST)[number];
   muaVao: number;
   banRa: number;
   tonKho: number;
@@ -401,6 +442,12 @@ export const danhSachK = (hatKy: number, soDong = 180): LuotK[] => {
       nganhNghe: NGANH_NGHE[nguyen(r, 0, NGANH_NGHE.length - 1)],
       canBo: tenCanBoGia(nguyen(r, 0, 40)),
       dv,
+      /* Hạt riêng theo MST: trạng thái là thuộc tính của doanh nghiệp, giống
+         nhau ở mọi kỳ, và không làm xê dịch các trường rút từ `r`. */
+      trangThaiMST: (() => {
+        const x = prng(hatCua(500 + i, "tt-mst"))();
+        return TRANG_THAI_MST[x < 0.82 ? 0 : x < 0.9 ? 1 : x < 0.96 ? 2 : 3];
+      })(),
       muaVao,
       banRa,
       tonKho,
@@ -417,14 +464,22 @@ export const danhSachK = (hatKy: number, soDong = 180): LuotK[] => {
 
 /* ── QL2-04 · Xác minh hóa đơn ───────────────────────────────────────────── */
 
-/** §4.6, cập nhật 06/10: mẫu gồm 10, 14, 6, 7, 8; 10 thuộc tồn. Không có cột 9. */
+/*
+  Mẫu XMHD_BC TUAN có 10, 14, 6, 7, 8. MoM 15/10 bổ sung trạng thái 9 (đã
+  duyệt, đang chờ cấp số) và chốt 9 tính là ĐÃ TRẢ KẾT QUẢ cùng 14; 6 và 8 là
+  tồn. 7 và 10 MoM không nhắc, giữ trong tồn như mẫu.
+*/
 export const TRANG_THAI_XM = [
   { ma: 10, nhan: "Từ chối" },
   { ma: 14, nhan: "Đã trả kết quả" },
+  { ma: 9, nhan: "Đã duyệt, chờ cấp số" },
   { ma: 6, nhan: "Nhận" },
   { ma: 7, nhan: "Phân công" },
   { ma: 8, nhan: "Gửi lãnh đạo" },
 ] as const;
+
+export const MA_DA_TRA_XM: readonly number[] = [9, 14];
+export const daTraMaXM = (ma: number) => MA_DA_TRA_XM.includes(ma);
 
 export interface HangXM {
   dv: DonViQL2;
@@ -438,13 +493,14 @@ export const bangXM = (hatKy: number): HangXM[] => {
   const rows = danhSachXM(hatKy);
   return DON_VI_QL2.map((dv) => {
     const ds = rows.filter((r) => r.dv.id === dv.id);
-    return { dv, theoTrangThai: TRANG_THAI_XM.map((t) => ds.filter((r) => r.trangThai === t.ma).length), quaHan: ds.filter((r) => r.trangThai !== 14 && r.soNgayQuaHan > 0).length };
+    return { dv, theoTrangThai: TRANG_THAI_XM.map((t) => ds.filter((r) => r.trangThai === t.ma).length), quaHan: ds.filter((r) => !daTraMaXM(r.trangThai) && r.soNgayQuaHan > 0).length };
   });
 };
 
-export const I_DA_TRA = TRANG_THAI_XM.findIndex((t) => t.ma === 14);
+/** Cộng số theo các mã đã trả (9 + 14) từ một mảng đếm cùng thứ tự `TRANG_THAI_XM`. */
+export const daTraTheo = (theo: readonly number[]) => TRANG_THAI_XM.reduce((t, s, i) => t + (daTraMaXM(s.ma) ? theo[i] : 0), 0);
 export const tongXM = (h: HangXM) => h.theoTrangThai.reduce((t, x) => t + x, 0);
-export const daTraXM = (h: HangXM) => h.theoTrangThai[I_DA_TRA];
+export const daTraXM = (h: HangXM) => daTraTheo(h.theoTrangThai);
 export const tonXM = (h: HangXM) => tongXM(h) - daTraXM(h);
 
 export interface YeuCauXM {
@@ -485,4 +541,110 @@ export const danhSachXM = (hatKy: number, soDong = 150): YeuCauXM[] => {
       soNgayQuaHan,
     };
   });
+};
+
+/* ── QL2-03 · Rủi ro hóa đơn TPR ─────────────────────────────────────────── */
+
+/*
+  Mười chỉ tiêu đếm của "Mẫu 1 kỳ" và "TH" [F]. `so` là số cột in trên mẫu,
+  giữ để đối chiếu với tệp; (6) và (16) là tỷ lệ, tính ra chứ không lưu.
+
+  Bảng mã kqrr (MoM 15/10) quy về các cột này: 1 → (15), 2 → (7), 3 → (13),
+  4 và 5 → (12), 6 → (11), 7 → (8), 8 → (9) và (10), 9 → (14).
+*/
+export interface SoTPR {
+  phai: number;
+  ktBan: number;
+  boSung: number;
+  saiPham: number;
+  tienXuLy: number;
+  congAn: number;
+  tt0609: number;
+  tt05: number;
+  giaiThe: number;
+  khongRR: number;
+}
+
+export const COT_KQ_TPR: readonly { id: keyof SoTPR; so: number; nhan: string; maKq: string }[] = [
+  { id: "ktBan", so: 7, nhan: "Kiểm tra tại bàn", maKq: "Mã 2" },
+  { id: "boSung", so: 8, nhan: "Bổ sung vào KT tại trụ sở NNT", maKq: "Mã 7" },
+  { id: "saiPham", so: 9, nhan: "Phát hiện sai phạm", maKq: "Mã 8" },
+  { id: "tienXuLy", so: 10, nhan: "Tổng số tiền xử lý vi phạm", maKq: "Mã 8" },
+  { id: "congAn", so: 11, nhan: "Chuyển hồ sơ CA", maKq: "Mã 6" },
+  { id: "tt0609", so: 12, nhan: "Chuyển trạng thái 06 + 09", maKq: "Mã 4, 5" },
+  { id: "tt05", so: 13, nhan: "Tạm dừng hoạt động (05)", maKq: "Mã 3" },
+  { id: "giaiThe", so: 14, nhan: "Giải thể (hoàn thành + đang làm thủ tục)", maKq: "Mã 9" },
+  { id: "khongRR", so: 15, nhan: "Không có rủi ro", maKq: "Mã 1" },
+];
+
+/** Công thức của mẫu: đã rà soát = (7) + (8) + (14). */
+export const daRaSoatTPR = (s: SoTPR) => s.ktBan + s.boSung + s.giaiThe;
+
+const RONG_TPR: SoTPR = { phai: 0, ktBan: 0, boSung: 0, saiPham: 0, tienXuLy: 0, congAn: 0, tt0609: 0, tt05: 0, giaiThe: 0, khongRR: 0 };
+
+export const congTPR = (ds: SoTPR[]): SoTPR => ds.reduce((t, s) => {
+  const ra = { ...t };
+  (Object.keys(ra) as (keyof SoTPR)[]).forEach((k) => { ra[k] = Math.round((ra[k] + s[k]) * 10) / 10; });
+  return ra;
+}, RONG_TPR);
+
+/*
+  Một tháng đánh giá của một đơn vị. Hạt theo THÁNG + ĐƠN VỊ, không theo kỳ
+  lọc: số lũy kế quý III phải đúng bằng tổng ba tháng 7, 8, 9 đọc riêng.
+*/
+const thangTPR = (id: string, thang: number, heSo: number): SoTPR => {
+  const r = prng(hatCua(2300 + thang, id, "tpr"));
+  const phai = nguyen(r, 1, Math.max(2, Math.round(9 * heSo)));
+  const da = Math.min(phai, Math.round(phai * (0.55 + r() * 0.45)));
+  const giaiThe = Math.min(da, r() < 0.15 ? 1 : 0);
+  const boSung = Math.min(da - giaiThe, r() < 0.18 ? 1 : 0);
+  const ktBan = da - giaiThe - boSung;
+  const saiPham = Math.min(ktBan, r() < 0.25 ? nguyen(r, 1, 2) : 0);
+  return {
+    phai, ktBan, boSung, giaiThe, saiPham,
+    tienXuLy: saiPham ? Math.round(saiPham * (4 + r() * 30) * 10) / 10 : 0,
+    congAn: Math.min(ktBan, r() < 0.2 ? 1 : 0),
+    tt0609: Math.min(ktBan, r() < 0.3 ? nguyen(r, 1, 2) : 0),
+    tt05: Math.min(ktBan, r() < 0.12 ? 1 : 0),
+    khongRR: Math.round(ktBan * (0.2 + r() * 0.5)),
+  };
+};
+
+const luyKeTPR = (id: string, heSo: number, tu: number, den: number) =>
+  congTPR(Array.from({ length: Math.max(0, den - tu + 1) }, (_, i) => thangTPR(id, tu + i, heSo)));
+
+const nntQuanLy = (id: string, min: number, max: number) => nguyen(prng(hatCua(1, id, "nnt-ql")), min, max);
+
+export interface DongTPR { id: string; ma: string; ten: string; so: SoTPR; nntQL: number }
+
+/** Phòng HKD/Cá nhân KD đứng trong khối Văn phòng của mẫu, sau năm phòng QLHTDN. */
+const PHONG_HKD = { id: "HKD", ten: "Phòng HKD/Cá nhân KD" };
+
+export const thangCuaKy = (ky: KyQL2) => ({
+  tu: ky.ngayDau ? Number(ky.ngayDau.slice(3, 5)) : 1,
+  den: Number(ky.ngayChot.slice(3, 5)),
+});
+
+/*
+  Dòng 8501 là CỘNG của các dòng "Trong đó" — mẫu tính ngược lại (tải 8501
+  rồi tách tay), nhưng hướng nào thì hai bên cũng phải khớp, và dựng từ phần
+  tách thì không thể lệch.
+*/
+export const bangTPR = (tu: number, den: number) => {
+  const phong: DongTPR[] = [...VP.map((p) => ({ id: p.id, ten: p.ten })), PHONG_HKD].map((p) => ({
+    id: p.id, ma: "", ten: p.ten, so: luyKeTPR(p.id, 0.35, tu, den), nntQL: nntQuanLy(p.id, 1500, 4200),
+  }));
+  const vp: DongTPR = { id: "8501", ma: "8501", ten: "Văn phòng Thuế TP Hà Nội", so: congTPR(phong.map((p) => p.so)), nntQL: phong.reduce((t, p) => t + p.nntQL, 0) };
+  const tcs: DongTPR[] = DON_VI_QL2.filter((d) => d.nhom === "TCS").map((d) => ({
+    id: d.id, ma: d.ma, ten: d.ten, so: luyKeTPR(d.id, 1, tu, den), nntQL: nntQuanLy(d.id, 1300, 15000),
+  }));
+  return { vp, phong, tcs, tong: { ...vp, id: "tong", ma: "", ten: "Tổng cộng", so: congTPR([vp.so, ...tcs.map((t) => t.so)]), nntQL: vp.nntQL + tcs.reduce((t, x) => t + x.nntQL, 0) } };
+};
+
+/** Tỷ lệ chấm điểm TPR theo đơn vị QL2 (lũy kế từ tháng 1 đến tháng của kỳ). */
+export const tyLeTPRTheoDonVi = (den: number) => {
+  const b = bangTPR(1, den);
+  const ds = [...b.phong, ...b.tcs];
+  const ra = new Map<string, number | null>(ds.map((d) => [d.id, d.so.phai ? daRaSoatTPR(d.so) / d.so.phai : null]));
+  return { theo: ra, binhQuan: b.tong.so.phai ? daRaSoatTPR(b.tong.so) / b.tong.so.phai : 0 };
 };

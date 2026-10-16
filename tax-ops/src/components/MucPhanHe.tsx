@@ -22,10 +22,10 @@ import type { ViewId } from "@/domain/types";
   còn dữ liệu gốc là đường vào nguồn chung.
 */
 
-export type LoaiKy = "NGAY" | "TUAN" | "THANG" | "NAM" | "LUYKE" | "TUYCHON";
+export type LoaiKy = "NGAY" | "TUAN" | "THANG" | "QUY" | "SAUTHANG" | "NAM" | "LUYKE" | "TUYCHON";
 
 export const NHAN_LOAI_KY: Record<LoaiKy, string> = {
-  TUYCHON: "Tùy chọn", NGAY: "Ngày", TUAN: "Tuần", THANG: "Tháng", NAM: "Năm", LUYKE: "Lũy kế từ 01/01",
+  TUYCHON: "Tùy chọn", NGAY: "Ngày", TUAN: "Tuần", THANG: "Tháng", QUY: "Quý", SAUTHANG: "6 tháng", NAM: "Năm", LUYKE: "Lũy kế từ 01/01",
 };
 
 export interface MucPhanHe {

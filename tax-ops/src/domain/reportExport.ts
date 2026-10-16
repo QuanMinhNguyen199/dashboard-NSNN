@@ -7,7 +7,7 @@ import {
   thoiGianTB, tongDen, tongDi, tongTiepNhan, tyLeNho, tyLeQuaHan, tyLeTuDong, type KyQL4,
 } from "@/data/ql4";
 import {
-  ngayTonDauK, I_DA_TRA, KHAC_QL2_01, TRANG_THAI_XM, bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua,
+  ngayTonDauK, daTraTheo, KHAC_QL2_01, TRANG_THAI_XM, bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua,
   daTraXM, tonCuoiK, tonXM, tongXM, type KyQL2,
 } from "@/data/ql2";
 import type { ReportStatus } from "@/domain/types";
@@ -247,7 +247,7 @@ export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[], vuongMac
   const congGia = (ds: typeof rows): ReportValue[] => {
     const theo = TRANG_THAI_XM.map((_, i) => ds.reduce((t, r) => t + r.theoTrangThai[i], 0));
     const tong = theo.reduce((t, x) => t + x, 0);
-    const daTra = theo[I_DA_TRA];
+    const daTra = daTraTheo(theo);
     return [...theo, tong, tong - daTra, ratio(daTra, tong)];
   };
   const { rows: r2, bold } = dongQL2(rows, gia, congGia);

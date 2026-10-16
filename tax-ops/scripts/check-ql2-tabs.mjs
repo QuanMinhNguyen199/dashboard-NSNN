@@ -31,16 +31,16 @@ try {
     const sheet = ql2Workbook("QL2-04", xk, [])[0];
     return {
       ky, states: d.TRANG_THAI_XM.map((t) => t.ma), before, after,
-      unresolved: ds.filter((r) => r.trangThai === "Chưa xử lý").length,
+      unresolved: ds.filter((r) => r.trangThai !== "Đã xử lý").length,
       firstOfMonth: d.ngayTonDauK(d.KY_QL2_02.find((k) => k.id === "q202-m09")),
       sourceCount: source.length, total: xm.reduce((t, r) => t + d.tongXM(r), 0),
-      expectedPending: source.filter((r) => r.trangThai !== 14).length,
+      expectedPending: source.filter((r) => ![9, 14].includes(r.trangThai)).length,
       actualPending: xm.reduce((t, r) => t + d.tonXM(r), 0),
       widths: sheet.rows.map((r) => r.length), headers: sheet.headers, percentages: sheet.percent,
       unsupported: ["QL2-03", "QL2-05", "QL2-06"].map((ma) => ql2Workbook(ma, xk, []).length),
     };
   });
-  assert.deepEqual(report.states, [10, 14, 6, 7, 8]);
+  assert.deepEqual(report.states, [10, 14, 9, 6, 7, 8]);
   assert.equal(report.ky.loai, "TUAN");
   assert.equal(report.ky.ngayChot, "24/09/2026");
   assert.equal(report.firstOfMonth, "31/08/2026");
@@ -50,11 +50,12 @@ try {
   assert.equal(report.actualPending, report.expectedPending);
   assert(report.widths.every((w) => w === report.headers.length));
   assert.equal(report.percentages[0], report.headers.indexOf("Tỷ lệ hoàn thành"));
-  assert(!report.headers.some((h) => /trong hạn|quá hạn|Trạng thái 9/.test(h)));
+  assert(!report.headers.some((h) => /trong hạn|quá hạn/.test(h)));
+  assert(report.headers.some((h) => /Trạng thái 9/.test(h)));
   assert.deepEqual(report.unsupported, [0, 0, 0]);
 
   await go("muc=kton");
-  assert((await p.$$eval(".ql1-ds-table tbody tr", (rows) => rows.map((r) => r.textContent))).every((r) => r.includes("Chưa xử lý")));
+  assert((await p.$$eval(".ql1-ds-table tbody tr", (rows) => rows.map((r) => r.textContent))).every((r) => r.includes("Chưa xử lý") || r.includes("Lưu tạm")));
   const mst = await p.$eval('.ql1-ds-table tbody tr td', (e) => e.textContent);
   await click("Đánh dấu gửi QLRR");
   await click("Vướng mắc gửi QLRR");
@@ -100,9 +101,9 @@ try {
 
   await go("muc=congan");
   const inputs = await p.$$('.ql2-manual');
-  for (const [i, value] of ["10", "30", "4", "12", "Công văn demo 01"].entries()) await inputs[i].type(value);
+  for (const [i, value] of ["10", "30", "4", "12", "0", "0", "0", "0", "0", "0", "Công văn demo 01"].entries()) await inputs[i].type(value);
   await click("Lưu dòng");
-  assert((await p.$eval('.ql1-ds-table tbody tr', (e) => e.textContent)).includes("40,00%"));
+  assert((await p.$eval('.ql1-table tbody tr', (e) => e.textContent)).includes("40,00%"));
   await p.reload({ waitUntil: "networkidle0" });
   assert.equal(await p.$eval('.ql2-manual', (e) => e.value), "10");
   const done = (await p.$$('.ql2-manual'))[2];

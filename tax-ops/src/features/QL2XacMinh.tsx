@@ -6,10 +6,10 @@ import { theoDonVi, useBoLoc } from "@/components/BoLoc";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { rutGonTenDonVi } from "@/data/danhMuc";
 import {
-  TRANG_THAI_XM, bangXM, daTraXM, danhSachXM, tonXM, tongXM, type HangXM, type KyQL2, type YeuCauXM,
+  TRANG_THAI_XM, bangXM, daTraMaXM, daTraXM, danhSachXM, tonXM, tongXM, type HangXM, type KyQL2, type YeuCauXM,
 } from "@/data/ql2";
 
-/* §4.6: đếm dòng hóa đơn; trạng thái 10 thuộc tồn, không có trạng thái 9 trên mẫu. */
+/* §4.6: đếm dòng hóa đơn. MoM 15/10: 9 và 14 là đã trả kết quả; 6, 7, 8, 10 là tồn. */
 
 const MOI_TRANG = 12;
 const hienTyLe = (x: number | null) => (x === null ? "—" : `${(x * 100).toFixed(2).replace(".", ",")}%`);
@@ -29,7 +29,6 @@ const tenTrangThai = (ma: number) => TRANG_THAI_XM.find((t) => t.ma === ma)?.nha
   người đọc cần thấy trên mỗi tiêu đề cột.
 */
 const CON_TON = [6, 7, 8, 10] as const;
-const DA_TRA = 14;
 
 /*
   Lọc theo KHỐI — Văn phòng Thuế TP Hà Nội và Thuế cơ sở.
@@ -86,7 +85,7 @@ export function BangXacMinh({ ky }: { ky: KyQL2 }) {
     subtitle={`${ky.nhan} · nguồn: csdlnnt, kéo thứ Năm · lũy kế từ 2022 · đếm theo dòng hóa đơn`}
     actions={<div className="inline-controls"><OChonKhoi khoi={khoi} datKhoi={datKhoi}/></div>}
   >
-    <p className="ql2-note">Mỗi con số là một dòng hóa đơn, đếm theo trạng thái đang đứng trên csdlnnt. Tỷ lệ hoàn thành là phần đã trả kết quả trên tổng cộng. Dữ liệu mô phỏng; nguồn chi tiết TCS và khóa loại trùng còn chờ Q-104, Q-17.</p>
+    <p className="ql2-note">Mỗi con số là một dòng hóa đơn, đếm theo trạng thái đang đứng trên csdlnnt. Tỷ lệ hoàn thành là phần đã trả kết quả trên tổng cộng; hóa đơn đã duyệt đang chờ cấp số (trạng thái 9) tính là đã trả, theo biên bản 15/10. Dữ liệu mô phỏng; nguồn chi tiết TCS và khóa loại trùng còn chờ Q-104, Q-17.</p>
     <TableWrap label="xác minh hóa đơn theo đơn vị">
       <table className="ql1-table" style={{ minWidth: 1140 }}>
         <colgroup>
@@ -96,7 +95,7 @@ export function BangXacMinh({ ky }: { ky: KyQL2 }) {
           <tr>
             <th scope="col" className="dv-cot" rowSpan={2}>Tên cơ quan thuế</th>
             <th scope="colgroup" className="nhom" colSpan={5}>Còn tồn</th>
-            <th scope="col" className="num" rowSpan={2} title="Trạng thái 14 trên mẫu">Đã trả kết quả</th>
+            <th scope="col" className="num" rowSpan={2} title="Trạng thái 9 (đã duyệt, chờ cấp số) và 14 (đã trả KQXM)">Đã trả kết quả<small>Trạng thái 9 + 14</small></th>
             <th scope="col" className="num" rowSpan={2}>Tổng cộng</th>
             <th scope="col" className="num" rowSpan={2}>Tỷ lệ hoàn thành</th>
           </tr>
@@ -131,7 +130,7 @@ export function TonQuaHanXM({ ky }: { ky: KyQL2 }) {
     const q = tim.trim().toLowerCase();
     return theoDonVi(tatCa, chon, (r) => r.dv.ten)
       .filter((r) => !khoi || r.dv.nhom === khoi)
-      .filter((r) => r.trangThai !== DA_TRA)
+      .filter((r) => !daTraMaXM(r.trangThai))
       /* "Sắp đến hạn" là bộ lọc tiện ích ≤ 2 ngày lịch, không phải quy tắc nghiệp vụ đã chốt — tức số ngày quá hạn
          còn âm nhưng không quá hai. */
       .filter((r) => (pham === "tatca" ? true : pham === "quahan" ? r.soNgayQuaHan > 0 : r.soNgayQuaHan <= 0 && r.soNgayQuaHan >= -2))
