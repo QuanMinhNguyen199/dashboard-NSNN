@@ -80,7 +80,7 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
   /* Lãnh đạo chưa chọn đơn vị VÀ chưa chọn đầu việc thì chỉ có hai bảng tổng
      hợp; chọn một trong hai là mở danh sách — §7 "theo từng đơn vị, rồi theo
      từng đầu việc", cả hai lối đều dẫn tới danh sách. */
-  const tongHop = (pv.vai === "LD" || Boolean(pv.phongGoc)) && !donVi && !dauViec && nhieuDV;
+  const tongHop = (pv.vai === "LD" || nhieuDV) && !donVi && !dauViec && nhieuDV;
   const boLoc = Boolean(muc || dauViec || tim);
   const xoaLoc = () => { datMuc(""); datDauViec(""); datTim(""); };
   /* "Không phát sinh" là KHÔNG CÓ VIỆC trong phạm vi, không phải bị bộ lọc giấu. */
@@ -113,14 +113,14 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
         H2 trùng chữ đọc ra hai lần cùng một tên cho trình đọc màn hình. */}
     <div className="qd-alert-summary-head"><strong className="qd-alert-title" aria-hidden="true">Cảnh báo nhắc việc</strong><span>Theo dõi ngày {ngayVN(new Date())}</span></div>
     <div className="qd-the-loc" role="group" aria-label="Lọc theo mức cảnh báo">
-      <TheLoc chon={muc === ""} onChon={() => datMuc("")} nhan="Tất cả" so={theoDV.length} ghi={laCanBo ? "Việc của tôi" : pv.vai === "LD" ? "Toàn bộ đơn vị đã chọn" : pv.phongGoc ? "Khối thuế cơ sở" : "Việc của phòng"}/>
+      <TheLoc chon={muc === ""} onChon={() => datMuc("")} nhan="Tất cả" so={theoDV.length} ghi={laCanBo ? "Việc của tôi" : pv.vai === "LD" ? "Toàn bộ đơn vị đã chọn" : nhieuDV ? "Khối thuế cơ sở" : pv.phongGoc ? `Việc của ${pv.donVi[0].ngan}` : "Việc của phòng"}/>
       {MUC.map((m) => <TheLoc key={m} tone={TONE[m]} chon={muc === m} onChon={() => datMuc(m)} nhan={NHAN_MUC[m]} so={so[m]}
         ghi={m === "SAP_DEN" ? `trong ${baoTruoc} ngày tới` : m === "HOM_NAY" ? "xong trước khi hết ngày" : "phải xử lý ngay"}/>)}
     </div>
     </section>
 
     <div className={tongHop ? "qd-alert-overview" : "qd-alert-results"} data-motion="content" data-motion-key={`${muc}-${donVi}-${baoTruoc}-${dauViec}-${trangHien}`}>
-    {(pv.vai === "LD" || pv.phongGoc) && <TheoDonVi ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} donVi={pv.donVi} chon={donVi} datChon={datDonVi}/>}
+    {(pv.vai === "LD" || nhieuDV) && <TheoDonVi ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} donVi={pv.donVi} chon={donVi} datChon={datDonVi}/>}
 
     {/* Lãnh đạo xem theo đơn vị rồi theo đầu việc (§7): chưa chọn đơn vị thì
         chỉ có bảng tổng hợp theo đầu việc — danh sách việc của 30 đơn vị là

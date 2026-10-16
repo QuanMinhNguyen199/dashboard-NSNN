@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { DemoUser } from "@/auth/demoAuth";
 import { buocDen, canChangeApproval, type ApprovalAction } from "@/domain/approval";
-import type { ReportStatus } from "@/domain/types";
+import type { Phong, ReportStatus } from "@/domain/types";
 
 /*
   Trạng thái duyệt của MỘT KỲ trên MỘT PHÂN HỆ.
@@ -120,8 +120,24 @@ export function DuyetProvider({ children, user }: { children: ReactNode; user: D
   return <Ngu.Provider value={gia}>{children}</Ngu.Provider>;
 }
 
+/*
+  Phòng của BẢN báo cáo đang mở (chốt 15/10/2026). Trưởng phòng xem được báo
+  cáo của phòng khác, nên khóa duyệt phải theo phòng của bản báo cáo, không
+  theo phòng người xem — nếu không, mở báo cáo phòng 2 lại hiện trạng thái
+  duyệt của phòng 1. Người không thuộc phòng ấy thì `canChangeApproval` từ
+  chối mọi thao tác: xem được, không gửi, không duyệt.
+*/
+const PhongBan = createContext<Phong | undefined>(undefined);
+export function PhongBaoCaoProvider({ phong, children }: { phong: Phong; children: ReactNode }) {
+  return <PhongBan.Provider value={phong}>{children}</PhongBan.Provider>;
+}
+
 export function useDuyet() {
   const gia = useContext(Ngu);
+  const phong = useContext(PhongBan);
   if (!gia) throw new Error("useDuyet phải nằm trong DuyetProvider.");
-  return gia;
+  return useMemo(
+    () => (phong === undefined ? gia : { ...gia, khoaBaoCao: (...phan: string[]) => `${phong ?? "TOAN"}|${phan.join("|")}` }),
+    [gia, phong],
+  );
 }

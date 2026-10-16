@@ -58,14 +58,17 @@ export function BoLocProvider({ children }: { children: ReactNode }) {
   KHÓA ĐƠN VỊ theo phòng của người đăng nhập (chốt 13/10/2026).
 
   Năm phòng QLDN làm cùng một việc, chỉ khác số liệu và người nộp thuế. Báo
-  cáo của một phòng vì thế mặc định và CỐ ĐỊNH là số của chính phòng ấy —
-  ma trận §4 ghi trưởng phòng không chọn đơn vị. Khóa theo MÃ đơn vị (P1…P5),
+  cáo của một phòng vì thế CỐ ĐỊNH là số của một phòng — phòng của người xem,
+  hoặc phòng trưởng phòng chọn ở ô Phạm vi (15/10/2026: trưởng phòng xem được
+  phòng của nhau; chọn phòng ở đó, không ở đây, để ba mô-đun đi cùng nhau). Khóa theo MÃ đơn vị (P1…P5),
   không theo tên: QL3 gọi cùng một phòng là "Phòng QLHTDN 3" trong khi ba
   phân hệ kia dùng tên đầy đủ. Lãnh đạo Thuế TP không có phòng nên không khóa.
 */
 const KhoaNgu = createContext<string | null>(null);
-export function KhoaDonVi({ id, children }: { id: string | null; children: ReactNode }) {
-  return <KhoaNgu.Provider value={id}>{children}</KhoaNgu.Provider>;
+const KhoaCuaToi = createContext(true);
+/** `cuaToi` = false khi trưởng phòng đang xem báo cáo của phòng khác. */
+export function KhoaDonVi({ id, cuaToi = true, children }: { id: string | null; cuaToi?: boolean; children: ReactNode }) {
+  return <KhoaNgu.Provider value={id}><KhoaCuaToi.Provider value={cuaToi}>{children}</KhoaCuaToi.Provider></KhoaNgu.Provider>;
 }
 /** Mã đơn vị đang khóa, hoặc `null`. Bảng tổng hợp dùng nó để thêm dòng toàn thành phố. */
 export const useKhoaDonVi = () => useContext(KhoaNgu);
@@ -100,6 +103,7 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
 }) {
   const { chon, datDonVi, datKy } = useBoLoc();
   const khoaId = useContext(KhoaNgu);
+  const khoaCuaToi = useContext(KhoaCuaToi);
   const khoaTen = khoaId ? donViCo.find((d) => d.id === khoaId)?.ten ?? null : null;
   const [mo, setMo] = useState(false);
   const hopChon = useRef<HTMLDivElement>(null);
@@ -224,7 +228,7 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
           khổ hẹp cao bằng nửa màn và không cho biết đã chọn gì nếu không cuộn. */}
       {/* Escape là đường thoát bằng bàn phím; focus vẫn ở nút mở nên người
           dùng không bị ném về đầu trang. */}
-      {khoaTen ? <strong className="bo-loc-ky" aria-labelledby="bo-loc-donvi-nhan" title="Số liệu của phòng bạn — trưởng phòng và chuyên viên không chọn đơn vị khác (ma trận §4)">{rutGon(khoaTen)} · phòng của bạn</strong> :
+      {khoaTen ? <strong className="bo-loc-ky" aria-labelledby="bo-loc-donvi-nhan" title="Đổi phòng: về Kết quả và chọn ở ô Phạm vi">{rutGon(khoaTen)}{khoaCuaToi ? " · phòng của bạn" : " · chỉ xem"}</strong> :
       <div className="bo-loc-chon" ref={hopChon} onKeyDown={(e) => { if (e.key === "Escape") setMo(false); }}>
         <button type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" aria-labelledby="bo-loc-donvi-nhan" onClick={() => setMo((t) => !t)}>
           <span>{tomTat}</span><Icon name="chevronDown" size={16}/>

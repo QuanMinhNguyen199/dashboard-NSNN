@@ -2365,3 +2365,33 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
 .td-tk-bang { width: 100%; min-width: 0; table-layout: fixed; }
 .td-tk-bang th:first-child, .td-tk-bang td:first-child { width: 46%; }
 .td-tk-bang td small { display: block; }
+
+/* Tiêu đề cột mang công thức viết bằng chữ (chốt 15/10/2026): tên cột ở
+   trên, cách tính ở dòng nhỏ dưới. Công thức xuống dòng trong một bề rộng
+   cố định để tiêu đề không kéo giãn bảng; cột tỷ lệ rộng hơn vì công thức của
+   bộ tiêu chí dài nhất. */
+.qd-bang thead th > span { display: block; white-space: normal; }
+.qd-bang thead th > small.qd-ct { display: block; margin-top: 2px; color: var(--ink-3); font-size: 11px; font-weight: 500; line-height: 1.35; letter-spacing: 0; text-transform: none; white-space: normal; max-width: 15ch; margin-left: auto; text-wrap: balance; }
+.qd-bang thead th.qd-th-rong > small.qd-ct { max-width: 30ch; }
+/* Tỷ lệ tháng trước là số nguồn của một phép trừ, không phải kết quả: nhạt hơn. */
+.qd-bang td.qd-o-phu { color: var(--ink-2); }
+
+/* Bảng chấm theo bộ tiêu chí (sheet II. Khối QLDN, chốt 15/10/2026). Bảng rộng
+   theo số tiêu chí của nhóm (nhóm nợ có 5 cụm), nên cuộn ngang trong khung và
+   cột đơn vị dính trái — mục G5: không có tên đơn vị trong tầm mắt là đọc một
+   hàng số vô danh. Vạch đậm mở đầu mỗi cụm để mắt tách được hai phép tính. */
+.qd-bang-goc { width: max-content; min-width: 100%; }
+.qd-bang-goc :is(th, td).num { min-width: 96px; }
+.qd-bang-goc .qd-goc-dv { position: sticky; left: 0; z-index: 1; min-width: 190px; text-align: left; background: var(--surface); box-shadow: inset -1px 0 0 var(--line); }
+.qd-bang-goc thead .qd-goc-dv { background: var(--surface-soft); z-index: 4; }
+.qd-bang-goc tr.is-tong .qd-goc-dv { background: var(--surface-tint); }
+.qd-bang-goc tr.is-selected .qd-goc-dv { background: var(--selected-surface); }
+.qd-bang-goc .qd-goc-nhom { text-align: left; white-space: normal; color: var(--ink); }
+.qd-bang-goc .qd-goc-dau { border-left: 2px solid var(--line-strong, var(--ink-3)); }
+.qd-bang-goc .qd-goc-kq { background: var(--surface-soft); }
+/* Cụm cột của tiêu chí vừa bấm ở Bộ tiêu chí: nền nhạt, không đổi bố cục. */
+.qd-bang-goc :is(th, td).is-mo { background: var(--surface-tint); }
+.qd-bang-goc thead th.is-mo { box-shadow: inset 0 3px 0 var(--brand); }
+@media (prefers-reduced-motion: no-preference) {
+  .qd-bang-goc :is(th, td).is-mo { transition: background-color 240ms var(--ease-out); }
+}

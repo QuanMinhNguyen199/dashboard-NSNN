@@ -7,6 +7,7 @@ import { RiskQL3 } from "@/features/RiskQL3";
 import { HoanQL4 } from "@/features/HoanQL4";
 import type { ViewId } from "@/domain/types";
 import { donViCuaPhong, type TheId } from "@/data/qldn";
+import { PhongBaoCaoProvider } from "@/state/DuyetContext";
 import { KhoaDonVi } from "@/components/BoLoc";
 
 /*
@@ -39,16 +40,19 @@ export const BAO_CAO_CUA_THE: Partial<Record<TheId, BaoCaoNhung>> = {
 /** Vai được mở báo cáo nhúng: báo cáo phân hệ chỉ có luồng cho chuyên viên và trưởng phòng. */
 export const coBaoCao = (user: DemoUser) => user.vaiTro === "CV" || user.vaiTro === "TP";
 
-export function BaoCaoPhanHe({ bc, user }: { bc: BaoCaoNhung; user: DemoUser }) {
+export function BaoCaoPhanHe({ bc, user, donViId }: { bc: BaoCaoNhung; user: DemoUser; donViId?: string }) {
   /* Năm phòng làm cùng việc, khác số liệu: báo cáo nhúng khóa đơn vị theo
-     phòng của người xem (mã P1…P5), và khóa duyệt theo phòng — xem `KhoaDonVi`
-     và `khoaBaoCao`. Lãnh đạo Thuế TP không có phòng nên chọn đơn vị tự do. */
-  return <NhungProvider><KhoaDonVi id={donViCuaPhong(user.phong)?.id ?? null}>
+     phòng đang xem (mã P1…P5) — mặc định phòng của người xem, hoặc phòng
+     trưởng phòng chọn ở ô Phạm vi — và khóa duyệt theo phòng CỦA BẢN báo cáo:
+     phòng khác thì chỉ xem. Xem `KhoaDonVi`, `PhongBaoCaoProvider`. */
+  const cuaToi = donViCuaPhong(user.phong)?.id ?? null;
+  const id = donViId ?? cuaToi;
+  return <NhungProvider><PhongBaoCaoProvider phong={id ? (`QL${id.slice(1)}` as DemoUser["phong"]) : user.phong}><KhoaDonVi id={id} cuaToi={id === cuaToi}>
     <MucPhanHeProvider key={`${bc.phanHe}-${bc.muc.join(",")}`} view={bc.phanHe} choPhep={bc.muc}>
       {bc.phanHe === "debt" && <DebtQL1 actor={user.name}/>}
       {bc.phanHe === "hoadon" && <HoaDonQL2 actor={user.name} vaiTro={user.vaiTro}/>}
       {bc.phanHe === "risk" && <RiskQL3 actor={user.name} vaiTro={user.vaiTro}/>}
       {bc.phanHe === "hoan" && <HoanQL4 actor={user.name} vaiTro={user.vaiTro}/>}
     </MucPhanHeProvider>
-  </KhoaDonVi></NhungProvider>;
+  </KhoaDonVi></PhongBaoCaoProvider></NhungProvider>;
 }

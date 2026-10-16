@@ -14,25 +14,28 @@ import {
   từng màn: lãnh đạo chọn năm thuế cơ sở mình phụ trách một lần rồi đi qua cả
   ba mô-đun, chọn lại ở mỗi màn là bắt họ làm một việc ba lần.
 */
-const Ngu = createContext<{ chon: string[]; datChon: (ds: string[]) => void; kyId: string; datKyId: (id: string) => void; khoi: Khoi; datKhoi: (k: Khoi) => void } | null>(null);
+const Ngu = createContext<{ chon: string[]; datChon: (ds: string[]) => void; kyId: string; datKyId: (id: string) => void; xem: string; datXem: (id: string) => void } | null>(null);
 
 export function PhamViProvider({ children }: { children: ReactNode }) {
   const [chon, datChon] = useState<string[]>([]);
   const [kyId, datKyId] = useState(KY_Q[0].id);
-  const [khoi, datKhoi] = useState<Khoi>("VP");
-  const gia = useMemo(() => ({ chon, datChon, kyId, datKyId, khoi, datKhoi }), [chon, kyId, khoi]);
+  /* Phòng trưởng phòng đang xem: "" = phòng của mình, "P1"…"P5", hoặc "TCS". */
+  const [xem, datXem] = useState("");
+  const gia = useMemo(() => ({ chon, datChon, kyId, datKyId, xem, datXem }), [chon, kyId, xem]);
   return <Ngu.Provider value={gia}>{children}</Ngu.Provider>;
 }
 
 /*
-  Công tắc "Phòng | Thuế cơ sở" của phòng QLDN (chốt 14/10/2026). Thuế cơ sở
-  làm đúng những việc của phòng QLDN — file chấm điểm chỉ tách hai sheet và
-  xếp hạng riêng — nên mỗi phòng xem được khối 25 thuế cơ sở trên cùng giao
-  diện thay vì cần tài khoản riêng. Công tắc sống ở provider như lựa chọn đơn
-  vị của lãnh đạo: bật một lần, cả ba mô-đun đi theo.
+  Ô chọn phòng của trưởng phòng, phó phòng (chốt 15/10/2026). Năm phòng QLDN
+  làm cùng một việc; chia phòng chỉ để chia nhau số doanh nghiệp quản lý, nên
+  trưởng phòng xem được số của phòng khác — và cả khối 25 thuế cơ sở, vốn
+  cũng làm đúng những việc ấy (14/10/2026). Mặc định là phòng của mình.
+  Lựa chọn sống ở provider như của lãnh đạo: chọn một lần, ba mô-đun đi theo.
 
-  Cán bộ KHÔNG có công tắc: biên bản §3 "chuyên viên xem số của mình" — 25
-  thuế cơ sở là số của người khác.
+  Xem được KHÔNG có nghĩa là duyệt được: báo cáo của phòng khác chỉ đọc —
+  `canChangeApproval` chỉ cho người của đúng phòng ấy gửi và duyệt.
+
+  Cán bộ không có ô chọn: biên bản §3 "chuyên viên xem số của mình".
 */
 export const coCongTacKhoi = (pv: PhamVi | null) => Boolean(pv) && (pv!.vai === "TP" || pv!.vai === "PP");
 
@@ -41,20 +44,26 @@ export function usePhamVi(user: DemoUser): { pv: PhamVi | null; ky: KyQ; datKy: 
   if (!ngu) throw new Error("usePhamVi phải nằm trong PhamViProvider.");
   const pv = useMemo(() => {
     const goc = phamViCua(user, ngu.chon);
-    if (!goc || !coCongTacKhoi(goc) || ngu.khoi === "VP") return goc;
-    return { ...goc, donVi: DON_VI_Q.filter((d) => d.khoi === "TCS"), phongGoc: goc.donVi[0] };
-  }, [user, ngu.chon, ngu.khoi]);
+    if (!goc || !coCongTacKhoi(goc) || !ngu.xem || ngu.xem === goc.donVi[0].id) return goc;
+    const donVi = ngu.xem === "TCS" ? DON_VI_Q.filter((d) => d.khoi === "TCS") : DON_VI_Q.filter((d) => d.id === ngu.xem);
+    return donVi.length ? { ...goc, donVi, phongGoc: goc.donVi[0] } : goc;
+  }, [user, ngu.chon, ngu.xem]);
   return { pv, ky: KY_Q.find((k) => k.id === ngu.kyId) ?? KY_Q[0], datKy: ngu.datKyId };
 }
 
-/** Tên phòng gốc của người xem, kể cả khi công tắc đang ở thuế cơ sở. */
-function CongTacKhoi({ pv }: { pv: PhamVi }) {
+/* Ô chọn gốc của trình duyệt: bảy lựa chọn chia hai nhóm theo khối, đọc
+   được bằng bàn phím và trình đọc màn hình, không cần dựng hộp riêng. */
+function ChonPhong({ pv }: { pv: PhamVi }) {
   const ngu = useContext(Ngu)!;
-  const phong = (pv.phongGoc ?? pv.donVi[0]).ngan;
-  return <div className="bo-loc-seg" role="group" aria-label="Xem phòng hoặc khối thuế cơ sở">
-    <button type="button" aria-pressed={ngu.khoi === "VP"} onClick={() => ngu.datKhoi("VP")}>{phong}</button>
-    <button type="button" aria-pressed={ngu.khoi === "TCS"} onClick={() => ngu.datKhoi("TCS")}>Thuế cơ sở · {DON_VI_Q.filter((d) => d.khoi === "TCS").length}</button>
-  </div>;
+  const cuaToi = pv.phongGoc ?? pv.donVi[0];
+  return <select className="bo-loc-select" aria-labelledby="qd-pham-vi-nhan" value={ngu.xem || cuaToi.id} onChange={(e) => ngu.datXem(e.target.value === cuaToi.id ? "" : e.target.value)}>
+    <optgroup label={NHAN_KHOI.VP}>
+      {DON_VI_Q.filter((d) => d.khoi === "VP").map((d) => <option key={d.id} value={d.id}>{d.ngan}{d.id === cuaToi.id ? " · phòng của tôi" : ""}</option>)}
+    </optgroup>
+    <optgroup label={NHAN_KHOI.TCS}>
+      <option value="TCS">Cả khối thuế cơ sở · {DON_VI_Q.filter((d) => d.khoi === "TCS").length} đơn vị</option>
+    </optgroup>
+  </select>;
 }
 
 /*
@@ -76,7 +85,7 @@ export function ThanhPhamVi({ pv, ky, datKy, coKy = true, them }: { pv: PhamVi; 
     <div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-pham-vi-nhan">Phạm vi</span>
       {pv.vai === "LD" ? <ChonDonVi/>
-        : coCongTacKhoi(pv) ? <CongTacKhoi pv={pv}/>
+        : coCongTacKhoi(pv) ? <ChonPhong pv={pv}/>
         : <strong className="bo-loc-ky" aria-labelledby="qd-pham-vi-nhan">{nhanPhamVi(pv)}</strong>}
     </div>
     {them}

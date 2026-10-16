@@ -1,4 +1,5 @@
 import { DAY_TCS, PHONG_VP, maCuaTCS, rutGonTenDonVi } from "@/data/danhMuc";
+import { BO_TIEU_CHI } from "@/data/boTieuChi";
 import { hatCua, mstGia, nguyen, prng, tenCanBoGia, tenNNTGia } from "@/data/ngauNhien";
 import type { Phong, VaiTro } from "@/domain/types";
 
@@ -52,14 +53,20 @@ export const NHAN_VAI_Q: Record<VaiQ, string> = { CB: "Cán bộ", PP: "Phó ph�
 export type Quyen = boolean | "CHO";
 export type ChiSo = "soGiao" | "tyLe" | "binhQuan" | "noTrenThu" | "thuHang" | "uocThu" | "chonDonVi";
 export const MA_TRAN: Record<ChiSo, Record<VaiQ, Quyen>> = {
-  soGiao: { CB: false, PP: "CHO", TP: true, LD: true },
-  tyLe: { CB: false, PP: "CHO", TP: true, LD: true },
+  /* 15/10/2026: cán bộ được xem số giao và tỷ lệ CỦA DN MÌNH được phân công —
+     bộ tiêu chí đánh giá bằng tỷ lệ, cán bộ cần thấy đúng con số mình được
+     chấm. LỆCH biên bản 09/10 §4 ("cán bộ chỉ số tuyệt đối"); bình quân và
+     thứ hạng — phần so với người khác — vẫn ẩn. */
+  soGiao: { CB: true, PP: "CHO", TP: true, LD: true },
+  tyLe: { CB: true, PP: "CHO", TP: true, LD: true },
   binhQuan: { CB: false, PP: "CHO", TP: true, LD: true },
   /* "Không được xem cột R đến Z" của file Excel = ba chỉ tiêu nợ/thu NSNN. */
   noTrenThu: { CB: false, PP: false, TP: true, LD: true },
   thuHang: { CB: false, PP: "CHO", TP: true, LD: true },
   uocThu: { CB: "CHO", PP: true, TP: true, LD: true },
-  chonDonVi: { CB: false, PP: false, TP: false, LD: true },
+  /* 15/10/2026: trưởng phòng (và phó phòng) xem được phòng QLDN khác và khối
+     thuế cơ sở — chia phòng chỉ là chia số DN quản lý. Lãnh đạo chọn tự do. */
+  chonDonVi: { CB: false, PP: true, TP: true, LD: true },
 };
 export const duocXem = (vai: VaiQ, cs: ChiSo) => MA_TRAN[cs][vai] !== false;
 export const NHAN_CHI_SO: Record<ChiSo, string> = {
@@ -147,6 +154,8 @@ export interface ChiTieuQ {
   ngan?: string;
   /** Ghi chú trạng thái nghiệp vụ, nếu có. */
   ghiChu?: string;
+  /** STT của chỉ tiêu trong sheet "0.Bộ tiêu chí đánh giá" — nguồn của công thức hiện trên tiêu đề cột. */
+  stt: number;
 }
 
 export interface TheQ { id: TheId; ten: string; ngan: string }
@@ -180,23 +189,41 @@ export const NHOM_Q: NhomQ[] = [
 ];
 export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
 
+/*
+  Công thức của chỉ tiêu, lấy NGUYÊN VĂN cột "Cách tính" của bộ tiêu chí
+  (sheet "0.Bộ tiêu chí đánh giá") qua STT — không gõ lại tay, để chữ trên màn
+  luôn khớp với file cơ quan ban hành (chốt 15/10/2026). Chỉ bỏ tiền tố "Tỷ lệ
+  (%)" thừa và giãn dấu chia cho dễ đọc.
+*/
+export function congThucCua(ct: ChiTieuQ): string {
+  const goc = BO_TIEU_CHI.find((t) => t.stt === ct.stt)?.congThuc ?? `${ct.nhanTu}/${ct.nhanMau}`;
+  const gon = goc.replace(/^Tỷ lệ (\(%\) )?/, "").replace(/\s*\/\s*/g, " / ").replace(/ - /g, " − ");
+  return gon.charAt(0).toUpperCase() + gon.slice(1);
+}
+
+/*
+  Tên chỉ tiêu, tử số và mẫu số BÁM NGUYÊN VĂN bộ tiêu chí (chốt 15/10/2026,
+  người dùng: "cần bám sát tài liệu cho dễ kiểm soát"): `ten` là cột "Tên chỉ
+  tiêu" theo STT, `nhanTu`/`nhanMau` là chữ trong cột "Cách tính". Không dùng
+  từ tự đặt như "số giao" — file Excel gọi mẫu số thu là "Số DTPL".
+*/
 export const CHI_TIEU_Q: ChiTieuQ[] = [
-  { id: "thu", the: "thu", ten: "Thực thu NSNN so với số giao", kieu: "CAO", nhanTu: "Thực thu", nhanMau: "Số giao", dvt: "tỷ đồng", mau: [9000, 26000], tyLe: [0.72, 0.98] },
-  { id: "no", the: "no", ten: "Tổng nợ so với đầu năm", kieu: "TANG", nhanTu: "Tổng nợ", nhanMau: "Nợ đầu năm", dvt: "tỷ đồng", mau: [420, 1250], tyLe: [-0.14, 0.3] },
-  { id: "cc-n", the: "cc", ngan: "Theo số NNT", ten: "Cưỡng chế theo số NNT", kieu: "CAO", nhanTu: "NNT đã cưỡng chế", nhanMau: "NNT phải cưỡng chế", dvt: "NNT", mau: [160, 620], tyLe: [0.55, 0.94] },
-  { id: "cc-t", the: "cc", ngan: "Theo số tiền", ten: "Cưỡng chế theo số tiền", kieu: "CAO", nhanTu: "Tiền đã cưỡng chế", nhanMau: "Tiền phải cưỡng chế", dvt: "tỷ đồng", mau: [180, 900], tyLe: [0.75, 0.99] },
-  { id: "thxc-n", the: "thxc", ngan: "Theo số NNT", ten: "Tạm hoãn xuất cảnh theo số NNT", kieu: "CAO", nhanTu: "NNT đã THXC", nhanMau: "NNT phải THXC", dvt: "NNT", mau: [40, 210], tyLe: [0.3, 0.9] },
-  { id: "thxc-t", the: "thxc", ngan: "Theo số tiền", ten: "Tạm hoãn xuất cảnh theo số tiền", kieu: "CAO", nhanTu: "Tiền đã THXC", nhanMau: "Tiền phải THXC", dvt: "tỷ đồng", mau: [60, 400], tyLe: [0.84, 1] },
-  { id: "tthc", the: "tthc", ten: "Tồn quá hạn TTHC (đã loại hoàn GTGT, TNCN)", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ TTHC đã thực hiện", dvt: "hồ sơ", mau: [900, 3200], tyLe: [0, 0.07] },
-  { id: "tpr", the: "hd", ngan: "Rà soát TPR", ten: "Rà soát TPR", kieu: "CAO", nhanTu: "NNT đã rà soát", nhanMau: "NNT phải rà soát", dvt: "NNT", mau: [120, 460], tyLe: [0.88, 1] },
-  { id: "xmhd", the: "hd", ngan: "Xác minh hóa đơn", ten: "Xác minh hóa đơn", kieu: "CAO", nhanTu: "Hóa đơn đã xác minh", nhanMau: "Hóa đơn phải xác minh", dvt: "hóa đơn", mau: [300, 1600], tyLe: [0.86, 1] },
-  { id: "k", the: "k", ten: "Rà soát hệ số K", kieu: "CAO", nhanTu: "NNT đã rà soát", nhanMau: "NNT phải rà soát", dvt: "NNT", mau: [90, 380], tyLe: [0.84, 1] },
-  { id: "xp", the: "xp", ten: "Xử phạt vi phạm hành chính", kieu: "CAO", nhanTu: "Đã xử phạt", nhanMau: "Phải xử phạt", dvt: "quyết định", mau: [80, 320], tyLe: [0.45, 0.92] },
-  { id: "gt-goi", the: "gt", ngan: "Theo gói QLDN3", ten: "Đóng mã giải thể theo gói của Phòng QLDN3", kieu: "CAO", nhanTu: "Đã thực hiện", nhanMau: "Số lượng giao", dvt: "NNT", mau: [30, 160], tyLe: [0.3, 0.86] },
-  { id: "gt-moi", the: "gt", ngan: "Phát sinh mới", ten: "Đóng mã giải thể phát sinh mới: tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ phải xử lý", dvt: "hồ sơ", mau: [40, 180], tyLe: [0, 0.14] },
-  { id: "kttb", the: "kttb", ten: "Hồ sơ kiểm tra tại bàn đã thực hiện", kieu: "CAO", nhanTu: "Hồ sơ đã kiểm tra", nhanMau: "Tổng hồ sơ", dvt: "hồ sơ", mau: [220, 820], tyLe: [0.4, 0.95], ghiChu: "KPI kiểm tra tại bàn chờ cơ quan thống nhất cách tính (biên bản demo 09/10, quyết định 5)" },
-  { id: "hoan-tncn", the: "hoan", ngan: "Hoàn TNCN", ten: "Hoàn thuế TNCN: tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ tồn", dvt: "hồ sơ", mau: [60, 260], tyLe: [0, 0.1] },
-  { id: "hoan-gtgt", the: "hoan", ngan: "Hoàn trước GTGT", ten: "Hoàn trước GTGT: tồn quá hạn", kieu: "THAP", nhanTu: "Hồ sơ tồn quá hạn", nhanMau: "Hồ sơ tồn", dvt: "hồ sơ", mau: [20, 120], tyLe: [0, 0.12] },
+  { id: "thu", stt: 1, the: "thu", ten: "Tỷ lệ số thực thu NSNN", kieu: "CAO", nhanTu: "Số thực thu lũy kế", nhanMau: "Số DTPL", dvt: "tỷ đồng", mau: [9000, 26000], tyLe: [0.72, 0.98] },
+  { id: "no", stt: 4, the: "no", ten: "Tỷ lệ nợ tăng/giảm so với đầu năm", kieu: "TANG", nhanTu: "Tổng nợ kỳ báo cáo", nhanMau: "Tổng nợ đầu năm", dvt: "tỷ đồng", mau: [420, 1250], tyLe: [-0.14, 0.3] },
+  { id: "cc-n", stt: 9, the: "cc", ngan: "Theo số NNT", ten: "Tỷ lệ số lượng NNT đã thực hiện cưỡng chế/Số lượng phải thực hiện cưỡng chế", kieu: "CAO", nhanTu: "Số lượng NNT đã cưỡng chế + nộp dần + đã đôn đốc nộp", nhanMau: "Số lượng NNT phải thực hiện cưỡng chế", dvt: "NNT", mau: [160, 620], tyLe: [0.55, 0.94] },
+  { id: "cc-t", stt: 10, the: "cc", ngan: "Theo số tiền", ten: "Tỷ lệ số tiền đã thực hiện cưỡng chế/Số tiền phải thực hiện cưỡng chế", kieu: "CAO", nhanTu: "Số tiền thuế nợ quá 90N đã cưỡng chế + nộp dần + đã đôn đốc nộp", nhanMau: "Số tiền thuế nợ quá 90N phải thực hiện cưỡng chế", dvt: "tỷ đồng", mau: [180, 900], tyLe: [0.75, 0.99] },
+  { id: "thxc-n", stt: 11, the: "thxc", ngan: "Theo số NNT", ten: "Tỷ lệ số lượng NNT đã thực hiện tạm hoãn xuất cảnh/Số lượng phải thực hiện THXC", kieu: "CAO", nhanTu: "Số lượng NNT đã THXC + đã đôn đốc nộp", nhanMau: "Số lượng NNT phải thực hiện THXC", dvt: "NNT", mau: [40, 210], tyLe: [0.3, 0.9] },
+  { id: "thxc-t", stt: 12, the: "thxc", ngan: "Theo số tiền", ten: "Tỷ lệ số tiền đã thực hiện tạm hoãn xuất cảnh/Số tiền phải thực hiện THXC", kieu: "CAO", nhanTu: "Số tiền nợ đã THXC + đã đôn đốc nộp", nhanMau: "Số tiền phải thực hiện THXC", dvt: "tỷ đồng", mau: [60, 400], tyLe: [0.84, 1] },
+  { id: "tthc", stt: 14, the: "tthc", ten: "Tỷ lệ tồn quá hạn thực hiện TTHC (Đã loại trừ hoàn GTGT và TNCN) theo tháng", kieu: "THAP", nhanTu: "Số TTHC tồn quá hạn", nhanMau: "Số TTHC đã thực hiện", dvt: "hồ sơ", mau: [900, 3200], tyLe: [0, 0.07] },
+  { id: "tpr", stt: 17, the: "hd", ngan: "Rà soát TPR", ten: "Rà soát TPR", kieu: "CAO", nhanTu: "NNT đã thực hiện rà soát", nhanMau: "Tổng số NNT phải thực hiện rà soát", dvt: "NNT", mau: [120, 460], tyLe: [0.88, 1] },
+  { id: "xmhd", stt: 18, the: "hd", ngan: "Xác minh hóa đơn", ten: "Xác minh hóa đơn", kieu: "CAO", nhanTu: "HĐ đã thực hiện xác minh", nhanMau: "Tổng số HĐ phải thực hiện xác minh", dvt: "hóa đơn", mau: [300, 1600], tyLe: [0.86, 1] },
+  { id: "k", stt: 19, the: "k", ten: "Hệ số K", kieu: "CAO", nhanTu: "NNT đã thực hiện rà soát", nhanMau: "Tổng số NNT phải thực hiện rà soát", dvt: "NNT", mau: [90, 380], tyLe: [0.84, 1] },
+  { id: "xp", stt: 20, the: "xp", ten: "Xử phạt VPHC", kieu: "CAO", nhanTu: "Số đã xử phạt", nhanMau: "Tổng số phải xử phạt", dvt: "quyết định", mau: [80, 320], tyLe: [0.45, 0.92] },
+  { id: "gt-goi", stt: 21, the: "gt", ngan: "Theo gói QLDN3", ten: "Đóng mã giải thể (Không bao gồm đã chuyển kiểm tra tại trụ sở NNT) theo gói của Phòng QLDN3", kieu: "CAO", nhanTu: "Số đã thực hiện", nhanMau: "Tổng số lượng giao", dvt: "NNT", mau: [30, 160], tyLe: [0.3, 0.86] },
+  { id: "gt-moi", stt: 22, the: "gt", ngan: "Phát sinh mới", ten: "Đóng mã giải thể (Không bao gồm đã chuyển kiểm tra tại trụ sở NNT) phát sinh mới", kieu: "THAP", nhanTu: "Số tồn quá hạn", nhanMau: "Tổng số hồ sơ phải xử lý", dvt: "hồ sơ", mau: [40, 180], tyLe: [0, 0.14] },
+  { id: "kttb", stt: 24, the: "kttb", ten: "Kiểm tra tại bàn", kieu: "CAO", nhanTu: "Số HS đã thực hiện", nhanMau: "Tổng số HS", dvt: "hồ sơ", mau: [220, 820], tyLe: [0.4, 0.95], ghiChu: "KPI kiểm tra tại bàn chờ cơ quan thống nhất cách tính (biên bản demo 09/10, quyết định 5)" },
+  { id: "hoan-tncn", stt: 25, the: "hoan", ngan: "Hoàn TNCN", ten: "Hoàn TNCN", kieu: "THAP", nhanTu: "Số tồn quá hạn", nhanMau: "Tổng số hồ sơ tồn", dvt: "hồ sơ", mau: [60, 260], tyLe: [0, 0.1] },
+  { id: "hoan-gtgt", stt: 26, the: "hoan", ngan: "Hoàn trước GTGT", ten: "Hoàn trước GTGT", kieu: "THAP", nhanTu: "Số tồn quá hạn", nhanMau: "Tổng số hồ sơ tồn", dvt: "hồ sơ", mau: [20, 120], tyLe: [0, 0.12] },
 ];
 export const chiTieuCuaThe = (the: TheId) => CHI_TIEU_Q.filter((c) => c.the === the);
 
@@ -226,7 +253,13 @@ export function capCua(ct: ChiTieuQ, dvId: string, thang: number, nam = 2026, ca
   /* Thu: số giao là số CẢ NĂM, nên tỷ lệ lũy kế đi lên theo tháng. Các chỉ
      tiêu khác là việc phát sinh lũy kế, nên mẫu số đi lên theo tháng. */
   /* Nợ đầu năm cũng là một số CỐ ĐỊNH trong năm, không lũy kế theo tháng. */
-  let mau = (m0 + r() * (m1 - m0)) * quyMo(dvId) * (ct.the === "thu" || ct.kieu === "TANG" ? 1 : thang / 9);
+  /* Quy mô (mẫu số) là của ĐƠN VỊ, không của năm: gieo theo năm thì cùng kỳ
+     2025 của một phòng là một phòng khác hẳn, và "thu so với cùng kỳ" ra 180%
+     (sửa 15/10/2026). Vẫn rút `r()` để giữ nguyên thứ tự dãy — mọi số 2026 và
+     mọi tỷ lệ 2025 không đổi. */
+  const rMau = r();
+  const gocMau = nam === 2026 ? rMau : prng(hatCua(2026, "ct", ct.id, dvId))();
+  let mau = (m0 + gocMau * (m1 - m0)) * quyMo(dvId) * (ct.the === "thu" || ct.kieu === "TANG" ? 1 : thang / 9);
   let tyLe = (t0 + r() * (t1 - t0)) * (ct.the === "thu" ? thang / 9 : 1);
   if (ct.the !== "thu") tyLe += (rt() - 0.5) * 0.04 * (ct.kieu === "THAP" ? 0.3 : 1);
   if (nam < 2026) tyLe = ct.kieu === "TANG" ? tyLe * 0.8 : tyLe * (0.9 + r() * 0.12);
