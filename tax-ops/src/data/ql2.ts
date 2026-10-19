@@ -648,3 +648,62 @@ export const tyLeTPRTheoDonVi = (den: number) => {
   const ra = new Map<string, number | null>(ds.map((d) => [d.id, d.so.phai ? daRaSoatTPR(d.so) / d.so.phai : null]));
   return { theo: ra, binhQuan: b.tong.so.phai ? daRaSoatTPR(b.tong.so) / b.tong.so.phai : 0 };
 };
+
+/** Lọc bảng TPR theo đơn vị đang chọn — dùng chung cho màn hình và tệp báo cáo. */
+export const locTPR = (bang: ReturnType<typeof bangTPR>, donVi: readonly string[]) => {
+  const coDV = (ten: string) => !donVi.length || donVi.includes(ten);
+  /* Phòng HKD không có trong danh mục đơn vị của bộ lọc: nó chỉ hiện khi đang
+     xem đủ năm phòng Văn phòng, tức khi đang xem cả khối. */
+  const phong = bang.phong.filter((p) => p.id === "HKD" ? VP.every((d) => coDV(d.ten)) : coDV(p.ten));
+  const vp = !donVi.length || phong.length > 0 ? bang.vp : null;
+  const tcs = bang.tcs.filter((d) => coDV(d.ten));
+  const tong: DongTPR = {
+    id: "tong", ma: "", ten: "Tổng cộng",
+    so: congTPR([...(vp ? [vp.so] : []), ...tcs.map((t) => t.so)]),
+    nntQL: (vp?.nntQL ?? 0) + tcs.reduce((t, x) => t + x.nntQL, 0),
+  };
+  return { tong, vp, phong: vp ? phong : [], tcs };
+};
+
+/* ── QL2-06 · Gói rủi ro hóa đơn Công an ─────────────────────────────────── */
+
+/*
+  Theo mẫu "BC gói hđ CA" (MoM 15/10): bốn loại kết quả, mỗi loại tính cả số
+  DN và số hóa đơn. Đã xử lý không lưu — nó là tổng bốn loại.
+
+  Nguồn dữ liệu của gói CHƯA được xác nhận (MoM không nêu hệ thống tải); số
+  dưới đây là mô phỏng để duyệt giao diện và luồng báo cáo.
+*/
+export const KET_QUA_CA = [
+  { id: "tuLoai", nhan: "Tự loại trước khi có KL của CQĐT" },
+  { id: "khongSD", nhan: "Không sử dụng HĐ, không hạch toán chi phí" },
+  { id: "xuPhat", nhan: "Lập biên bản, ban hành QĐ xử phạt" },
+  { id: "camKet", nhan: "Xin cam kết không điều chỉnh giảm" },
+] as const;
+
+export interface SoCA { dn: number; hd: number }
+export interface HangCA { dv: DonViQL2; phai: SoCA; ketQua: SoCA[] }
+
+export const daXuLyCA = (h: { ketQua: SoCA[] }): SoCA =>
+  h.ketQua.reduce((t, k) => ({ dn: t.dn + k.dn, hd: t.hd + k.hd }), { dn: 0, hd: 0 });
+
+/** Chia `tong` thành `n` phần nguyên không âm, cộng lại đúng bằng `tong`. */
+const chiaPhan = (r: () => number, tong: number, n: number) => {
+  const w = Array.from({ length: n }, () => r() + 0.05);
+  const s = w.reduce((t, x) => t + x, 0);
+  const ra = w.map((x) => Math.floor((x / s) * tong));
+  ra[0] += tong - ra.reduce((t, x) => t + x, 0);
+  return ra;
+};
+
+export const bangCongAn = (hatKy: number): HangCA[] => DON_VI_QL2.map((dv) => {
+  const r = prng(hatCua(hatKy, dv.id, "congan"));
+  const dn = nguyen(r, 6, Math.round(70 * (dv.nhom === "VP" ? 1.8 : 1)));
+  const hd = Math.round(dn * (2 + r() * 12));
+  /* Gói Công an chạy lũy kế và gần xong — mẫu tháng 7 đạt 92–100% theo DN. */
+  const daDN = Math.min(dn, Math.round(dn * (0.9 + r() * 0.1)));
+  const daHD = Math.min(hd, Math.round(hd * (0.86 + r() * 0.14)));
+  const phanDN = chiaPhan(r, daDN, KET_QUA_CA.length);
+  const phanHD = chiaPhan(r, daHD, KET_QUA_CA.length);
+  return { dv, phai: { dn, hd }, ketQua: KET_QUA_CA.map((_, i) => ({ dn: phanDN[i], hd: phanHD[i] })) };
+});
