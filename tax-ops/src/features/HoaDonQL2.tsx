@@ -55,7 +55,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
   const [xem, datXem] = useThamSo<string>("xem", "");
 
   const baoCao = baoCaoCuaMuc("hoadon", muc);
-  // QL2-05 còn chờ mẫu; TPR và Công an dựng theo mẫu đính kèm MoM 15/10.
+  // QL2-05 còn chờ mẫu; TPR và Công an dựng theo mẫu đính kèm MoM 15/10, chỉ xem.
   const nhom = nhomCuaMuc("hoadon", muc);
   const [tuK, datTuK] = useThamSo<string>("ktu", "");
   const [denK, datDenK] = useThamSo<string>("kden", "");
@@ -99,7 +99,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
       khoa={khoa}
       /* Chỉ hạ chữ đầu: hạ cả nhãn thì số La Mã của quý thành "quý iii". */
       nhanKy={`${baoCao} · ${ky.nhan.charAt(0).toLowerCase()}${ky.nhan.slice(1)}`}
-      chan={baoCao === "QL2-03" || baoCao === "QL2-06" ? "Bảng đã dựng theo mẫu đính kèm biên bản 15/10 nhưng chưa nối vào luồng xem trước và phát hành, nên chưa gửi duyệt được. Dùng Xuất Excel trên bảng." : nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
+      chan={nhom?.khung ? `${baoCao} chưa có mẫu báo cáo từ phòng nghiệp vụ. Bảng trên màn mới là khung, chưa gửi duyệt được.` : null}
       xemTruoc={boSheet.length > 0 && <NutXemTruoc mo={moXemTruoc} onToggle={() => datXem(moXemTruoc ? "" : boSheet[0]?.name ?? "")}/>}
       tomTat={[["Bộ sheet sẽ gửi", `${boSheet.length} sheet`], ["Phạm vi", meta.scope]]}
     />}
@@ -141,7 +141,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
     {muc === "xm" && <BangXacMinh ky={ky}/>}
     {muc === "xmqh" && <TonQuaHanXM ky={ky}/>}
 
-    {muc === "tpr" && <TPRQL2 key={ky.id} ky={ky} meta={meta}/>}
+    {muc === "tpr" && <TPRQL2 key={ky.id} ky={ky}/>}
 
     {muc === "cbrr" && <Khung
       tieuDe="QL2-05 · Ứng dụng cảnh báo rủi ro"
@@ -159,7 +159,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
       cauHoi={["Q-04", "Q-12", "Q-13"]}
     />}
 
-    {muc === "congan" && <CongAnQL2 key={ky.id} ky={ky} vaiTro={vaiTro} meta={meta}/>}
+    {muc === "congan" && <CongAnQL2 key={ky.id} ky={ky}/>}
 
   </div></XuatProvider>;
 }
@@ -168,6 +168,8 @@ export const nhanBaoCao = (ma: string) => ({
   "QL2-01": "Chênh lệch tờ khai GTGT và hóa đơn điện tử",
   "QL2-02": "Cảnh báo hệ số K",
   "QL2-04": "Xác minh hóa đơn",
+  "QL2-03": "Rủi ro hóa đơn TPR",
+  "QL2-06": "Gói rủi ro hóa đơn Công an",
 }[ma] ?? ma);
 
 /* ── Tổng quan (§4.3) ────────────────────────────────────────────────────── */

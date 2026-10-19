@@ -37,7 +37,9 @@ try {
       expectedPending: source.filter((r) => ![9, 14].includes(r.trangThai)).length,
       actualPending: xm.reduce((t, r) => t + d.tonXM(r), 0),
       widths: sheet.rows.map((r) => r.length), headers: sheet.headers, percentages: sheet.percent,
-      unsupported: ["QL2-03", "QL2-05", "QL2-06"].map((ma) => ql2Workbook(ma, xk, []).length),
+      unsupported: ["QL2-05"].map((ma) => ql2Workbook(ma, xk, []).length),
+      tprSheets: d.KY_QL2_03.map((k) => ql2Workbook("QL2-03", k, []).map((s) => s.name).join("+")),
+      caSheet: (() => { const s = ql2Workbook("QL2-06", d.KY_QL2_01[0], [])[0]; const t = s.rows[0]; return { w: s.rows.every((r) => r.length === s.headers.length), can: t[3] === t[7] + t[9] + t[11] + t[13] + t[15] }; })(),
     };
   });
   assert.deepEqual(report.states, [10, 14, 9, 6, 7, 8]);
@@ -52,7 +54,10 @@ try {
   assert.equal(report.percentages[0], report.headers.indexOf("Tỷ lệ hoàn thành"));
   assert(!report.headers.some((h) => /trong hạn|quá hạn/.test(h)));
   assert(report.headers.some((h) => /Trạng thái 9/.test(h)));
-  assert.deepEqual(report.unsupported, [0, 0, 0]);
+  assert.deepEqual(report.unsupported, [0]);
+  assert.equal(report.tprSheets[0], "Mau 1 ky+TH luy ke");
+  assert(report.tprSheets.includes("Luy ke+Trong quy"));
+  assert(report.caSheet.w && report.caSheet.can, "Gói CA: tổng phải thực hiện phải bằng bốn loại kết quả cộng còn phải xử lý");
 
   await go("muc=kton");
   assert((await p.$$eval(".ql1-ds-table tbody tr", (rows) => rows.map((r) => r.textContent))).every((r) => r.includes("Chưa xử lý") || r.includes("Lưu tạm")));
@@ -100,15 +105,10 @@ try {
   assert(await p.$eval('.ql1-ds-table thead', (e) => e.textContent.includes("Số hóa đơn")));
 
   await go("muc=congan");
-  const inputs = await p.$$('.ql2-manual');
-  for (const [i, value] of ["10", "30", "4", "12", "0", "0", "0", "0", "0", "0", "Công văn demo 01"].entries()) await inputs[i].type(value);
-  await click("Lưu dòng");
-  assert((await p.$eval('.ql1-table tbody tr', (e) => e.textContent)).includes("40,00%"));
-  await p.reload({ waitUntil: "networkidle0" });
-  assert.equal(await p.$eval('.ql2-manual', (e) => e.value), "10");
-  const done = (await p.$$('.ql2-manual'))[2];
-  await done.click({ clickCount: 3 }); await done.type("11"); await click("Lưu dòng");
-  assert((await p.$eval('[role="alert"]', (e) => e.textContent)).includes("không được vượt"));
+  /* Chỉ xem: không ô nhập, không nút lưu; thanh duyệt mở được xem trước. */
+  assert.equal(await p.$('.ql2-manual'), null);
+  assert(!(await p.$eval('body', (e) => e.textContent)).includes("Lưu dòng"));
+  assert((await p.$eval('.ql1-table tbody tr', (e) => e.textContent)).includes("A. Tổng cộng"));
   await go("muc=tpr");
   assert((await p.$eval('.ql1-table', (e) => e.textContent)).includes("8501"));
   assert((await p.$eval('.ql1-table', (e) => e.textContent)).includes("Phòng HKD"));
@@ -129,5 +129,5 @@ try {
   await go("muc=congan"); assert.equal(await p.$('.ql2-manual'), null);
   await go("muc=kton"); assert(!(await p.$eval('body', (e) => e.textContent)).includes("Đánh dấu gửi QLRR"));
   assert.deepEqual(errors, []);
-  console.log("PASS: periods, K reconciliation and exclusions, XM invoice counts and exports, manual entry validation/persistence/roles, seven routes desktop/mobile.");
+  console.log("PASS: periods, K reconciliation and exclusions, XM invoice counts and exports, view-only TPR and police package with report sheets, roles, seven routes desktop/mobile.");
 } finally { await browser.close(); }

@@ -9,6 +9,7 @@ import {
 import {
   ngayTonDauK, daTraTheo, KHAC_QL2_01, TRANG_THAI_XM, bangHeSoK, bangQL2_01, bangXM, canRaSoat, chuaCoKetQua,
   daTraXM, tonCuoiK, tonXM, tongXM, type KyQL2,
+  COT_KQ_TPR, KET_QUA_CA, bangCongAn, bangTPR, daRaSoatTPR, daXuLyCA, locTPR, thangCuaKy, type DongTPR, type HangCA,
 } from "@/data/ql2";
 import type { ReportStatus } from "@/domain/types";
 import type { Cell, SheetData } from "write-excel-file/browser";
@@ -159,6 +160,33 @@ const dongQL2 = <T extends { dv: { ten: string; ma: string; nhom: string; stt: n
   return { rows: out, bold };
 };
 
+/* Một sheet TPR theo mẫu. Không đánh dấu dòng đậm: dòng đậm trong tệp xuất
+   thành công thức SUM các dòng dưới nó, mà dưới 8501 là các dòng "Trong đó"
+   đã nằm trong 8501 — cộng lại thì đếm hai lần. */
+function sheetTPR(name: string, tu: number, den: number, nhan: string, donVi: string[]): ReportSheet {
+  const { tong, vp, phong, tcs } = locTPR(bangTPR(tu, den), donVi);
+  const gia = (d: DongTPR): ReportValue[] => {
+    const da = daRaSoatTPR(d.so);
+    return [d.nntQL, d.so.phai, ratio(da, d.so.phai), da, ...COT_KQ_TPR.map((c) => d.so[c.id]), d.so.phai - da, ratio(d.so.phai - da, d.so.phai)];
+  };
+  return {
+    name,
+    title: `TỔNG HỢP KẾT QUẢ TRIỂN KHAI ĐÁNH GIÁ NNT THEO PHÂN TÍCH RỦI RO HÓA ĐƠN – ${nhan}`,
+    headers: [
+      "Mã CQT", "Tên cơ quan thuế", "Số lượng NNT quản lý", "Tổng NNT RR cao đưa vào kế hoạch rà soát kiểm tra",
+      "Tỷ lệ (%) NNT đã thực hiện rà soát/Tổng số NNT phải thực hiện rà soát", "Số NNT đã thực hiện rà soát",
+      ...COT_KQ_TPR.map((c) => c.id === "tienXuLy" ? c.nhan : `Số NNT ${c.nhan}`),
+      "Số NNT chưa thực hiện rà soát", "Tỷ lệ (%) NNT chưa thực hiện rà soát/Tổng số NNT phải thực hiện rà soát",
+    ],
+    rows: [
+      ["", tong.ten, ...gia(tong)],
+      ...(vp ? [[vp.ma, vp.ten, ...gia(vp)], ...phong.map((p) => ["", `Trong đó: ${p.ten}`, ...gia(p)])] : []),
+      ...tcs.map((d) => [d.ma, d.ten, ...gia(d)]),
+    ],
+    percent: [4, 16],
+  };
+}
+
 export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[], vuongMac: readonly string[] = []): ReportSheet[] {
   const loc = <T extends { dv: { ten: string } }>(rows: T[]) => rows.filter((r) => !donVi.length || donVi.includes(r.dv.ten));
 
@@ -234,6 +262,42 @@ export function ql2Workbook(baoCao: string, ky: KyQL2, donVi: string[], vuongMac
       rows: r2,
       bold,
       percent: [7, 8],
+    }];
+  }
+
+  if (baoCao === "QL2-03") {
+    /*
+      Bộ sheet theo HAI mẫu đính kèm MoM 15/10: "Mẫu 1 kỳ" (riêng kỳ đánh giá)
+      và "TH" (lũy kế từ đầu năm). Quý thay sheet một kỳ bằng sheet trong quý;
+      6 tháng chỉ có lũy kế.
+    */
+    const { tu, den } = thangCuaKy(ky);
+    const nam = ky.ngayChot.slice(6);
+    const hai = (n: number) => String(n).padStart(2, "0");
+    const phan: [string, number, number, string][] =
+      ky.loai === "THANG" ? [["Mau 1 ky", den, den, `KỲ ĐÁNH GIÁ ${hai(den)}/${nam}`], ["TH luy ke", 1, den, `LŨY KẾ THÁNG 01 ĐẾN THÁNG ${hai(den)}/${nam}`]]
+      : ky.loai === "QUY" ? [["Luy ke", 1, den, `LŨY KẾ THÁNG 01 ĐẾN THÁNG ${hai(den)}/${nam}`], ["Trong quy", tu, den, `${ky.nhan.toUpperCase()} · THÁNG ${hai(tu)} ĐẾN ${hai(den)}/${nam}`]]
+      : [["Luy ke", tu, den, `LŨY KẾ THÁNG ${hai(tu)} ĐẾN THÁNG ${hai(den)}/${nam}`]];
+    return phan.map(([name, a, b, nhan]) => sheetTPR(name, a, b, nhan, donVi));
+  }
+
+  if (baoCao === "QL2-06") {
+    const rows = loc(bangCongAn(ky.hat));
+    const gia = (h: Pick<HangCA, "phai" | "ketQua">): ReportValue[] => {
+      const da = daXuLyCA(h);
+      return [h.phai.dn, h.phai.hd, da.dn, da.hd, ...h.ketQua.flatMap((k) => [k.dn, k.hd]), h.phai.dn - da.dn, h.phai.hd - da.hd, ratio(da.dn, h.phai.dn)];
+    };
+    const congGia = (ds: HangCA[]) => gia({
+      phai: { dn: ds.reduce((t, h) => t + h.phai.dn, 0), hd: ds.reduce((t, h) => t + h.phai.hd, 0) },
+      ketQua: KET_QUA_CA.map((_, i) => ({ dn: ds.reduce((t, h) => t + h.ketQua[i].dn, 0), hd: ds.reduce((t, h) => t + h.ketQua[i].hd, 0) })),
+    });
+    const { rows: r2, bold } = dongQL2(rows, gia, congGia);
+    const nhan = ["Tổng phải thực hiện", "Tổng đã rà soát, xử lý", ...KET_QUA_CA.map((k) => k.nhan), "Số còn phải xử lý"];
+    return [{
+      name: "Goi Cong an",
+      title: `CÁC GÓI RỦI RO HÓA ĐƠN CÔNG AN, VIỆN KIỂM SÁT – ${ky.nhan.toUpperCase()}`,
+      headers: ["STT", "Mã cơ quan thuế", "Phòng/Đội", ...nhan.flatMap((n) => [`${n} · Số DN`, `${n} · Số HĐ`]), "Tỷ lệ % thực hiện"],
+      rows: r2, bold, percent: [17],
     }];
   }
 
