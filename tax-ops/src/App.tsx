@@ -52,8 +52,8 @@ const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location
   bấm thêm một lần ở mọi lần đăng nhập để tới chỗ mình thật sự làm việc.
 */
 /* Bốn nhóm lớn của Quản trị công việc là bốn mục thanh bên, mỗi mục một màn. */
-const NHOM_CUA_VIEW: Partial<Record<ViewId, NhomId>> = { "kq-thu": "thu", "kq-no": "no", "kq-tthc": "tthc", "kq-qlht": "qlht" };
-const VIEW_CUA_NHOM: Record<NhomId, ViewId> = { thu: "kq-thu", no: "kq-no", tthc: "kq-tthc", qlht: "kq-qlht" };
+const NHOM_CUA_VIEW: Partial<Record<ViewId, NhomId>> = { "kq-thu": "thu", "kq-no": "no", "kq-tthc": "tthc", "kq-qlht": "qlht", "kq-kttb": "kttb", "kq-hoan": "hoan" };
+const VIEW_CUA_NHOM: Record<NhomId, ViewId> = { thu: "kq-thu", no: "kq-no", tthc: "kq-tthc", qlht: "kq-qlht", kttb: "kq-kttb", hoan: "kq-hoan" };
 
 function manMacDinh(user: Pick<DemoUser, "phong" | "vaiTro"> | null): ViewId {
   /* Phó phòng và lãnh đạo Thuế TP chỉ có các màn khối QLDN; việc của họ là đọc
@@ -125,7 +125,7 @@ export function App() {
       document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan kết quả công tác", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-tthc": "Thủ tục hành chính", "kq-qlht": "Quản lý, hỗ trợ doanh nghiệp", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
+    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan kết quả công tác", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-tthc": "Thủ tục hành chính", "kq-qlht": "Quản lý, hỗ trợ doanh nghiệp", "kq-kttb": "Kiểm tra tại bàn", "kq-hoan": "Hoàn thuế", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 

@@ -77,15 +77,21 @@ export const NAV: MucNav[] = [
   { id: "kq-no", label: "Quản lý nợ", short: "Nợ", icon: "debt", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-tthc", label: "Thủ tục hành chính", short: "TTHC", icon: "file", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-qlht", label: "Quản lý, hỗ trợ DN", short: "QL, hỗ trợ", icon: "risk", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  /* Tách khỏi "Quản lý, hỗ trợ DN" theo yêu cầu phòng thuế 20/10/2026. */
+  { id: "kq-kttb", label: "Kiểm tra tại bàn", short: "KT tại bàn", icon: "search", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-hoan", label: "Hoàn thuế", short: "Hoàn thuế", icon: "refund", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
 
   /* Bốn phân hệ cũ thành TUYẾN ẨN: liên kết đã gửi và các chốt kiểm vẫn mở
      được, và mục nhóm chứa báo cáo của nó sáng lên trên thanh bên. */
   { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-no" },
   { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
-  { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
-  { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
+  { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-kttb" },
+  { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-hoan" },
 
-  { id: "tinhtrang", label: "Tình trạng dữ liệu", short: "Dữ liệu", icon: "database", nhom: "data", phong: null, vaiTro: NGHIEP_VU },
+  /* Bỏ khỏi thanh bên theo yêu cầu phòng thuế 20/10/2026. Màn vẫn mở được
+     bằng liên kết `?view=tinhtrang` (liên kết đã gửi, kiểm thử), chỉ không
+     còn mục để bấm — nhóm "Dữ liệu" vì thế cũng không còn hiện. */
+  { id: "tinhtrang", label: "Tình trạng dữ liệu", short: "Dữ liệu", icon: "database", nhom: "data", phong: null, vaiTro: NGHIEP_VU, an: true },
 
   /* Vai Vận hành dữ liệu không thuộc phòng nào và chỉ mở đúng màn này. */
   { id: "giamsat", label: "Giám sát dữ liệu", short: "Giám sát", icon: "clock", nhom: "vanhanh", phong: null, vaiTro: ["VAN_HANH"] },

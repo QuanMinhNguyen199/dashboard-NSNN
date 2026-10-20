@@ -2008,6 +2008,9 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 .qd-nhom-the + .qd-nhom-the { margin-top: 16px; padding-top: 14px; }
 .qd-nhom-tieu-de { margin-bottom: 10px; font-size: 13.5px; }
 .qd-cong-tac { margin-bottom: 12px; }
+/* Bộ lọc tiêu chí: tới sáu nút, tên dài — được xuống dòng thay vì đẩy trang
+   tràn ngang ở khổ hẹp. */
+.qd-loc-tc { flex-wrap: wrap; max-width: 100%; }
 .qd-ghi-mot { margin: 0 0 12px; padding: 8px 12px; border-radius: var(--radius-control); background: var(--warning-bg); color: var(--ink-2); font-size: 12.5px; line-height: 1.5; }
 .qd-ghi-mot b { color: var(--warning); font-weight: 650; }
 .qd-khong-ps td { padding-top: 10px; padding-bottom: 10px; background: var(--surface-soft); color: var(--ink-3); font-size: 12.5px; white-space: normal; line-height: 1.6; }
@@ -2165,13 +2168,15 @@ td.o-nong { color: var(--critical); font-weight: 700; }
   ô đứng cạnh nhau, ngăn bằng kẻ mảnh vẽ bằng box-shadow của ô — nên khung
   có bao nhiêu hàng ô thì kẻ vẫn liền, không cần biết ô nào ở mép.
 
-  Bố cục rộng: hàng trên Thu (1 ô) · Quản lý nợ (3 ô) · TTHC (1 ô) trên lưới
-  năm cột; hàng dưới Quản lý, hỗ trợ DN sáu ô một hàng. Mọi ô xấp xỉ một bề
-  rộng, nên số của các nhóm đọc cùng một nhịp.
+  Bố cục rộng (từ 20/10/2026, sáu nhóm — KT tại bàn và Hoàn thuế tách thành
+  nhóm riêng): lưới sáu cột. Hàng trên Thu (1) · Quản lý nợ (3) · TTHC (2);
+  hàng dưới Quản lý, hỗ trợ DN (4) · KT tại bàn (1) · Hoàn thuế (1). Hai hàng
+  đều kín, thứ tự đọc vẫn đúng thứ tự file chấm điểm. TTHC là ô duy nhất rộng
+  gấp đôi — nhóm một ô, nên giãn ra không chia nhịp số của nhóm nào.
 */
-.qd-kq { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px 16px; }
-.qd-kq-nhom { grid-column: span min(var(--o), 5); min-width: 0; }
-.qd-kq-nhom.is-qlht { grid-column: 1 / -1; }
+.qd-kq { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 16px; }
+.qd-kq-nhom { grid-column: span min(var(--o), 6); min-width: 0; }
+.qd-kq-nhom.is-tthc { grid-column: span 2; }
 .qd-kq-tieu-de { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; overflow: hidden; color: var(--ink); font-size: 14px; font-weight: 650; white-space: nowrap; text-overflow: ellipsis; }
 .qd-kq-tieu-de small { color: var(--ink-3); font-size: 12px; font-weight: 500; }
 .qd-kq-khung { display: grid; grid-template-columns: repeat(var(--o), minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
@@ -2227,7 +2232,6 @@ td.o-nong { color: var(--critical); font-weight: 700; }
   .qd-kq-nhom.is-tthc { order: 2; grid-column: span 1; }
   .qd-kq-nhom.is-no { order: 3; grid-column: 1 / -1; }
   .qd-kq-nhom.is-qlht { order: 4; grid-column: 1 / -1; }
-  .qd-kq-nhom.is-qlht .qd-kq-khung { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
   .qd-kq { grid-template-columns: 1fr; }
@@ -2316,11 +2320,13 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
   .qd-kq-nhom.is-thu, .qd-kq-nhom.is-no, .qd-kq-nhom.is-tthc, .qd-kq-nhom.is-qlht { order: 0; }
   .qd-kq-nhom.is-thu, .qd-kq-nhom.is-tthc { grid-column: span 1; }
   .qd-kq-nhom.is-no, .qd-kq-nhom.is-qlht { grid-column: span 3; }
-  .qd-kq-nhom.is-qlht .qd-kq-khung { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Ba hàng: Thu (1) + Nợ (3) · TTHC (1) + QL, hỗ trợ DN (3, bốn ô một hàng)
+     · KT tại bàn (2) + Hoàn thuế (2). */
+  .qd-kq-nhom.is-kttb, .qd-kq-nhom.is-hoan { grid-column: span 2; }
 }
 @media (max-width: 900px) {
   .qd-kq { grid-template-columns: 1fr; }
-  .qd-kq-nhom.is-thu, .qd-kq-nhom.is-no, .qd-kq-nhom.is-tthc, .qd-kq-nhom.is-qlht { grid-column: 1 / -1; }
+  .qd-kq-nhom.is-thu, .qd-kq-nhom.is-no, .qd-kq-nhom.is-tthc, .qd-kq-nhom.is-qlht, .qd-kq-nhom.is-kttb, .qd-kq-nhom.is-hoan { grid-column: 1 / -1; }
 }
 
 /* Adapt: ở khổ hẹp nút Xuất của danh sách cảnh báo không trải hết bề ngang,

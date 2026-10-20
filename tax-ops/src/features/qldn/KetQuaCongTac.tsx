@@ -347,23 +347,32 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
   xem (lãnh đạo: khối đang chọn). Cán bộ chỉ một dòng — DN của mình. Dòng toàn
   thuế cộng SỐ GỐC của cả 30 đơn vị rồi mới tính, đúng định nghĩa bình quân.
 */
+/*
+  LỌC THEO TIÊU CHÍ (người dùng đề xuất 19/10/2026). Mỗi tiêu chí là một cụm
+  ba, bốn cột, nên nhóm Nợ với năm tiêu chí ra một bảng phải cuộn ngang rất
+  xa — và người đi từ Bộ tiêu chí sang chỉ cần đúng một cụm. Bộ lọc dùng chính
+  tham số `tc` mà Bộ tiêu chí đã ghi: đi từ đó sang thì bảng đã lọc sẵn, gửi
+  liên kết thì người nhận thấy đúng cụm ấy. "Tất cả" giữ nguyên bảng đủ cụm
+  để so ngang nhiều tiêu chí.
+*/
 function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
-  const [tc] = useThamSo<string>("tc", "");
+  const [tc, datTc] = useThamSo<string>("tc", "");
   const [khoiXem] = useThamSo<Khoi>("khoi", "VP", ["VP", "TCS"]);
   const [trang, datTrang] = useState(1);
   const hop = useRef<HTMLDivElement>(null);
-  const ds = tieuChiCuaThe(the).filter((t) => !t.noTrenThu || duocXem(pv.vai, "noTrenThu"));
+  const cuaNhom = tieuChiCuaThe(the).filter((t) => !t.noTrenThu || duocXem(pv.vai, "noTrenThu"));
+  /* `tc` của nhóm khác (liên kết cũ, đổi tab) không lọc mất cả bảng. */
+  const dangLoc = cuaNhom.find((t) => String(t.stt) === tc) ?? null;
+  const ds = dangLoc ? [dangLoc] : cuaNhom;
 
-  /* Đi từ Bộ tiêu chí sang: cuộn tới đúng cụm cột của tiêu chí vừa bấm. */
+  /* Đi từ Bộ tiêu chí sang: đưa bảng vào tầm nhìn. Bảng đã lọc còn một cụm
+     nên không còn phải cuộn ngang tìm cột. */
   useEffect(() => {
-    if (!tc) return;
-    const o = hop.current?.querySelector<HTMLElement>(`th[data-stt="${tc}"]`);
-    if (!o) return;
-    hop.current!.scrollIntoView({ block: "start", behavior: "smooth" });
-    o.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-  }, [tc]);
+    if (!dangLoc) return;
+    hop.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [dangLoc]);
 
-  if (!ds.length) return null;
+  if (!cuaNhom.length) return null;
   const cuaToi = pv.vai === "LD" ? null : (pv.phongGoc ?? pv.donVi[0]).id;
   const dong = pv.canBo
     ? [{ id: pv.donVi[0].id, ten: "DN được phân công", cb: pv.canBo }]
@@ -376,27 +385,34 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
     const v = t.lay(d.id, ky.thang);
     return s.length ? s.map((x, i) => x + v[i]) : v;
   }, []);
-  const lop = (t: (typeof ds)[number], i: number) => [i === 0 ? "qd-goc-dau" : "", String(t.stt) === tc ? "is-mo" : ""].join(" ").trim() || undefined;
+  const lop = (_t: (typeof ds)[number], i: number) => (i === 0 ? "qd-goc-dau" : undefined);
   const o = (t: (typeof ds)[number], v: number[]) => <>
     {v.map((x, i) => <td key={i} className={["num", lop(t, i)].join(" ").trim()}>{so(x, t.nguon[i].dvt)}</td>)}
-    <td className={["num qd-goc-kq", String(t.stt) === tc ? "is-mo" : ""].join(" ").trim()}><strong>{pt(ketQuaGoc(t, v), t.phep === "TANG")}</strong></td>
+    <td className="num qd-goc-kq"><strong>{pt(ketQuaGoc(t, v), t.phep === "TANG")}</strong></td>
   </>;
 
   return <Panel title="Theo bộ tiêu chí đánh giá" subtitle={`Cấu trúc sheet II. Khối QLDN · số gốc ở trước, kết quả ở cột cuối mỗi cụm · lũy kế đến hết tháng ${ky.thang}/2026`}>
     <div ref={hop}>
+      {cuaNhom.length > 1 && <div className="qd-cong-tac">
+        <div className="bo-loc-seg qd-loc-tc" role="group" aria-label="Lọc theo tiêu chí">
+          <button type="button" aria-pressed={!dangLoc} onClick={() => datTc("")}>Tất cả {cuaNhom.length} tiêu chí</button>
+          {cuaNhom.map((t) => <button key={t.stt} type="button" aria-pressed={dangLoc?.stt === t.stt} title={`Tiêu chí ${t.stt} · ${tenSTT(t.stt)}`} onClick={() => datTc(String(t.stt))}>{t.ten}</button>)}
+        </div>
+      </div>}
+      <div data-motion="content" data-motion-key={`${the}-${dangLoc?.stt ?? "all"}`}>
       <TableWrap label={`số gốc theo bộ tiêu chí · ${THE_Q.find((x) => x.id === the)?.ten ?? ""}`}>
         <table className="qd-bang qd-bang-goc">
           <thead>
             <tr>
               <th scope="col" rowSpan={2} className="qd-goc-dv">{pv.canBo ? "Phạm vi" : "Đơn vị"}</th>
-              {ds.map((t) => <th key={t.stt} scope="colgroup" colSpan={t.nguon.length + 1} data-stt={t.stt} className={["qd-goc-nhom qd-goc-dau", String(t.stt) === tc ? "is-mo" : ""].join(" ").trim()}>
+              {ds.map((t) => <th key={t.stt} scope="colgroup" colSpan={t.nguon.length + 1} data-stt={t.stt} className="qd-goc-nhom qd-goc-dau">
                 <span>{tenSTT(t.stt)}</span>
               </th>)}
             </tr>
             <tr>
               {ds.flatMap((t) => [
                 ...t.nguon.map((n, i) => <th key={`${t.stt}-${i}`} scope="col" className={["num", lop(t, i)].join(" ").trim()}><span>{n.nhan}</span><small className="qd-ct">{n.dvt}</small></th>),
-                <th key={`${t.stt}-kq`} scope="col" className={["num qd-goc-kq qd-th-rong", String(t.stt) === tc ? "is-mo" : ""].join(" ").trim()}>
+                <th key={`${t.stt}-kq`} scope="col" className="num qd-goc-kq qd-th-rong">
                   <span>Kết quả</span><small className="qd-ct" title={congThucSTT(t.stt)}>{congThucNgan(t.stt)}{t.moc ? ` · ${t.moc}` : ""}</small>
                 </th>,
               ])}
@@ -414,6 +430,7 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
           </tbody>
         </table>
       </TableWrap>
+      </div>
       {soTrang > 1 && <div className="table-footer"><span>{dong.length} đơn vị</span><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>}
     </div>
   </Panel>;

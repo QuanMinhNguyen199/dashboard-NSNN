@@ -11,8 +11,11 @@ const base = (process.argv[2] ?? "http://127.0.0.1:5174").replace(/\/+$/, "");
   nhận danh sách theo TÀI KHOẢN, và kiểm cả hai chiều — màn phải mở được, và
   màn của phòng khác phải không mở được.
 */
-const MAN_QL1 = ["canhbao", "debt", "tinhtrang"];
-const MAN_QL3 = ["canhbao", "risk", "tinhtrang"];
+/* "tinhtrang" rời danh sách 20/10/2026: phòng thuế bỏ Tình trạng dữ liệu khỏi
+   thanh bên, nên nó không còn mục điều hướng nào để sáng lên. Màn vẫn mở
+   bằng liên kết và vẫn được kiểm riêng ở cuối tệp. */
+const MAN_QL1 = ["canhbao", "debt"];
+const MAN_QL3 = ["canhbao", "risk"];
 
 const browser = await puppeteer.launch({ channel: "chrome", headless: "new", args: ["--no-sandbox"] });
 const page = await browser.newPage();
@@ -603,7 +606,8 @@ if (JSON.stringify(ql1.mucNgoai) !== JSON.stringify(MUC_NGOAI_QL1)) {
   theo phòng trên thanh bên. Quản trị công việc mang bốn nhóm chỉ tiêu của file
   chấm điểm; báo cáo QL1 nằm trong nhóm Quản lý nợ.
 */
-const NHOM_BEN = ["Tổng quan kết quả", "Thu NSNN", "Quản lý nợ", "Thủ tục hành chính", "Quản lý, hỗ trợ DN"];
+/* 20/10/2026: phòng thuế tách Kiểm tra tại bàn và Hoàn thuế thành hai mục riêng. */
+const NHOM_BEN = ["Tổng quan kết quả", "Thu NSNN", "Quản lý nợ", "Thủ tục hành chính", "Quản lý, hỗ trợ DN", "Kiểm tra tại bàn", "Hoàn thuế"];
 if (ql1.coCumPhanHe) throw new Error("Thanh bên vẫn còn nhóm \"Phân hệ\" — biên bản yêu cầu khối QLDN đã gỡ nó.");
 if (JSON.stringify(ql1.nutBen) !== JSON.stringify(NHOM_BEN)) {
   throw new Error(`Nhóm Quản trị công việc phải là ${JSON.stringify(NHOM_BEN)}, đang là ${JSON.stringify(ql1.nutBen)}`);
@@ -1377,7 +1381,16 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
   await page.evaluate(() => sessionStorage.clear());
   await page.goto(`${base}/quan-ly/`, { waitUntil: "networkidle0" });
   await dangNhap(page, "cv.ql2");
-  for (const [muc, ma] of [["tpr", "QL2-03"], ["cbrr", "QL2-05"], ["congan", "QL2-06"]]) {
+  /* QL2-03 và QL2-06 rời danh sách khung ngày 19/10/2026: đã có mẫu (MoM
+     15/10) và bộ sheet, người dùng yêu cầu xem, báo cáo, duyệt và xuất — nên
+     chúng phải GỬI DUYỆT ĐƯỢC. Chỉ QL2-05 còn là khung. */
+  for (const muc of ["tpr", "congan"]) {
+    await page.goto(`${base}/?view=hoadon&muc=${muc}`, { waitUntil: "networkidle0" });
+    await page.waitForSelector(".thanh-duyet");
+    const mo = await page.evaluate(() => [...document.querySelectorAll(".duyet-hanh-dong button")].find((b) => b.textContent.trim() === "Gửi duyệt")?.disabled === false);
+    if (!mo) throw new Error(`${muc}: đã có mẫu và bộ sheet nhưng vẫn không gửi duyệt được.`);
+  }
+  for (const [muc, ma] of [["cbrr", "QL2-05"]]) {
     await page.goto(`${base}/?view=hoadon&muc=${muc}`, { waitUntil: "networkidle0" });
     await page.waitForSelector(".thanh-duyet");
     const k = await page.evaluate(() => {
@@ -1696,12 +1709,13 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
     };
   });
 
-  if (ben.phanHe.length !== 4 || !ben.phanHe.includes("Rủi ro hóa đơn")) {
-    throw new Error(`Cụm Phân hệ phải mở cả bốn phòng, đang là ${JSON.stringify(ben.phanHe)}`);
-  }
+  /* Cụm Phân hệ đã gỡ khỏi thanh bên từ 13/10/2026 (phép kiểm thanh bên ở
+     trên cũng đòi điều ấy) — phép kiểm cũ "mở cả bốn phòng" mâu thuẫn với nó.
+     Tình trạng dữ liệu rời thanh bên 20/10/2026 theo yêu cầu phòng thuế. */
+  if (ben.phanHe.length) throw new Error(`Thanh bên vẫn còn cụm Phân hệ: ${JSON.stringify(ben.phanHe)}`);
   if (ben.cayTrongBen) throw new Error("Thanh bên còn cây mục của phân hệ.");
-  if (!ben.duLieu.includes("Tình trạng dữ liệu")) {
-    throw new Error(`Cụm Dữ liệu thiếu màn chung "Tình trạng dữ liệu": ${JSON.stringify(ben.duLieu)}`);
+  if (ben.duLieu.includes("Tình trạng dữ liệu")) {
+    throw new Error("Tình trạng dữ liệu đã bỏ khỏi thanh bên nhưng vẫn còn mục.");
   }
   /* "Dữ liệu gốc" đã gỡ khỏi mọi phòng ngày 09/10/2026. */
   if (ben.duLieu.includes("Dữ liệu gốc") || ben.tab.some((x) => x.includes("Dữ liệu gốc"))) {
