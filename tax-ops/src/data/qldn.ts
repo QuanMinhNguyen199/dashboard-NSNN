@@ -179,13 +179,18 @@ export const THE_Q: TheQ[] = [
   bên trong; người dùng chọn nhóm lớn trước rồi lọc nhóm nhỏ, như cách file
   Excel xếp cột.
 */
-export type NhomId = "thu" | "no" | "tthc" | "qlht";
+export type NhomId = "thu" | "no" | "tthc" | "qlht" | "kttb" | "hoan";
 export interface NhomQ { id: NhomId; ten: string; ngan: string; the: TheId[] }
 export const NHOM_Q: NhomQ[] = [
   { id: "thu", ten: "Công tác thu NSNN", ngan: "Thu NSNN", the: ["thu"] },
   { id: "no", ten: "Công tác quản lý nợ", ngan: "Quản lý nợ", the: ["no", "cc", "thxc"] },
   { id: "tthc", ten: "Công tác thủ tục hành chính", ngan: "Thủ tục hành chính", the: ["tthc"] },
-  { id: "qlht", ten: "Công tác quản lý, hỗ trợ doanh nghiệp", ngan: "Quản lý, hỗ trợ DN", the: ["hd", "k", "xp", "gt", "kttb", "hoan"] },
+  { id: "qlht", ten: "Công tác quản lý, hỗ trợ doanh nghiệp", ngan: "Quản lý, hỗ trợ DN", the: ["hd", "k", "xp", "gt"] },
+  /* Phòng thuế yêu cầu 20/10/2026: kiểm tra tại bàn và hoàn thuế mỗi việc một
+     mục riêng trên thanh bên, tách khỏi "Quản lý, hỗ trợ DN". Thứ tự vẫn theo
+     file chấm điểm: STT 24 rồi 25, 26 — đứng sau nhóm quản lý, hỗ trợ DN. */
+  { id: "kttb", ten: "Công tác kiểm tra tại bàn", ngan: "Kiểm tra tại bàn", the: ["kttb"] },
+  { id: "hoan", ten: "Công tác hoàn thuế", ngan: "Hoàn thuế", the: ["hoan"] },
 ];
 export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
 
