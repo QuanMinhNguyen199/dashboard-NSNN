@@ -72,7 +72,7 @@ export const NAV: MucNav[] = [
     làm kiểm tra". Báo cáo của bốn phòng nằm trong nhóm chỉ tiêu nó đo, sau
     công tắc "Kết quả | Báo cáo" — xem `features/qldn/BaoCaoPhanHe`.
   */
-  { id: "dieuhanh", label: "Tổng quan kết quả", short: "Kết quả", icon: "report", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "dieuhanh", label: "Tổng quan quản trị", short: "Quản trị", icon: "report", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-thu", label: "Thu NSNN", short: "Thu", icon: "report", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-no", label: "Quản lý nợ", short: "Nợ", icon: "debt", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-tthc", label: "Thủ tục hành chính", short: "TTHC", icon: "file", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },

@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { DIEM_QLDN, KY_XEP_HANG, NHOM_DIEM, PHONG_XEP, type NhomDiem } from "@/data/xepHangQLDN";
 import { congThucNgan, congThucSTT, ketQuaGoc, tenSTT, tieuChiCuaThe } from "@/data/tieuChiQLDN";
 import { Icon, PageIntro, Pager, Panel, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
@@ -129,7 +130,15 @@ function ThanhTyLe({ ct, x, bq }: { ct: ChiTieuQ; x: number; bq: number | null }
     tab trên trang. Hàng tab trên trang là các nhóm nhỏ; dưới nó là công tắc
     "Kết quả | Báo cáo" khi nhóm nhỏ có báo cáo phân hệ đi kèm.
 */
+/*
+  Màn tổng quan (đổi tên "Tổng quan quản trị" 22/10/2026) có hai tab: "Kết
+  quả công tác" giữ nguyên nội dung cũ, "Xếp hạng" là điểm của năm phòng
+  QLDN theo file chấm điểm BCGB tháng 10. Tab Xếp hạng chỉ có với vai được
+  xem thứ hạng — cán bộ không thấy cả hàng tab (một hàng một nút là một hàng
+  không bấm được gì).
+*/
 type Xem = "" | "baocao";
+type TabTQ = "" | "xephang";
 export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
   user: DemoUser;
   nhom?: NhomId;
@@ -142,6 +151,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
      trước báo cáo và tự xoá nó khi dựng — dùng chung tên thì báo cáo nhúng
      xoá luôn trạng thái "đang mở Báo cáo", tải lại trang là rơi về Kết quả. */
   const [xem, datXem] = useThamSo<Xem>("bc", "", ["", "baocao"]);
+  const [tabURL, datTab] = useThamSo<TabTQ>("tq", "", ["", "xephang"]);
   if (!pv) return <NgoaiPhamVi/>;
 
   const nhom = nhomId ? NHOM_Q.find((n) => n.id === nhomId)! : null;
@@ -154,9 +164,23 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
   const bc = the && coBaoCao(user) && motPhong ? BAO_CAO_CUA_THE[the] ?? null : null;
   const moBaoCao = Boolean(bc && xem === "baocao");
   const moThe = (t: TheId) => moNhom?.(nhomCuaThe(t).id, t);
+  const coXepHang = !nhom && duocXem(pv.vai, "thuHang");
+  const tab: TabTQ = coXepHang ? tabURL : "";
+  const moXepHang = tab === "xephang";
 
   return <div className="page-stack qd-page">
-    <PageIntro title={nhom ? nhom.ten : "Tổng quan kết quả công tác"}/>
+    <PageIntro title={nhom ? nhom.ten : "Tổng quan quản trị"}/>
+    {coXepHang && <nav className="thanh-muc" aria-label="Nội dung tổng quan quản trị">
+      <HangTab lop="thanh-muc-hang" khoaMo={tab}>
+        {([["", "Kết quả công tác"], ["xephang", "Xếp hạng"]] as const).map(([id, nhan]) => <button
+          key={id} type="button"
+          className={`muc-tab${tab === id ? " is-active" : ""}`}
+          data-mo={tab === id ? "1" : undefined}
+          aria-current={tab === id ? "page" : undefined}
+          onClick={() => datTab(id)}
+        ><span>{nhan}</span></button>)}
+      </HangTab>
+    </nav>}
     {nhom && <nav className="thanh-muc" aria-label={`Nhóm chỉ tiêu của ${nhom.ten.toLowerCase()}`}>
       {/* Nhóm nhỏ là hàng tab CHÍNH của màn nhóm. Nhóm chỉ có một nhóm nhỏ
           (Thu NSNN, TTHC) không dựng hàng tab: một hàng luôn đúng một nút là
@@ -177,9 +201,11 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
     </nav>}
     {/* Báo cáo phân hệ có thanh lọc kỳ và đơn vị của riêng nó (mỗi báo cáo
         một nhịp kỳ), nên thanh phạm vi của khối QLDN chỉ đứng với "Kết quả". */}
-    {!moBaoCao && <ThanhPhamVi pv={pv} ky={ky} datKy={datKy}/>}
-    <div className="qd-results" data-motion="content" data-motion-key={`${nhomId ?? "tq"}-${the}-${xem}-${ky.id}-${pv.donVi.map((d) => d.id).join(",")}`}>
-      {!the ? <TongQuan pv={pv} ky={ky} actor={user.name} moThe={moThe}/>
+    {/* Xếp hạng là điểm của MỘT kỳ chấm, cho cả khối phòng QLDN: ô kỳ và ô
+        phạm vi không đổi được gì ở đó, nên thanh phạm vi không đứng cùng. */}
+    {!moBaoCao && !moXepHang && <ThanhPhamVi pv={pv} ky={ky} datKy={datKy}/>}
+    <div className="qd-results" data-motion="content" data-motion-key={`${nhomId ?? "tq"}-${tab}-${the}-${xem}-${ky.id}-${pv.donVi.map((d) => d.id).join(",")}`}>
+      {!the ? (moXepHang ? <XepHangPhong pv={pv} actor={user.name}/> : <TongQuan pv={pv} ky={ky} actor={user.name} moThe={moThe}/>)
         : moBaoCao ? <BaoCaoPhanHe bc={bc!} user={user} donViId={pv.donVi[0].id}/>
         : <ChiTietThe key={the} the={the} pv={pv} ky={ky} actor={user.name} moCanhBao={moCanhBao}/>}
     </div>
@@ -279,6 +305,168 @@ function ThanhMoc({ ct, x, bq }: { ct: ChiTieuQ; x: number; bq: number | null })
     <i style={{ transform: `scaleX(${f(x)})` }}/>
     {bq !== null && <span className="qd-sc-bq" style={{ transform: `translateX(${f(bq) * 100}%)` }}><b/></span>}
   </span>;
+}
+
+/* ---------- Xếp hạng các phòng theo file chấm điểm ---------- */
+
+type KhoaXep = "tong" | NhomDiem;
+
+/* Điểm bốn chữ số như file Excel; dấu luôn hiện, nên tốt/xấu không chỉ nằm ở màu. */
+const diemSo = (x: number) => x === 0 ? "0,0000"
+  : `${x < 0 ? "−" : "+"}${Math.abs(x).toLocaleString("vi-VN", { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`;
+const lopDiem = (x: number) => x > 0 ? "xhp-diem is-tot" : x < 0 ? "xhp-diem is-xau" : "xhp-diem";
+/* "Phòng QLHT DN 1" → "QLHT DN 1": trong card hẹp, chữ "Phòng" lặp năm lần không nói thêm gì. */
+const tenNgan = (ten: string) => ten.replace(/^Phòng\s+/, "");
+
+/*
+  Thanh phân kỳ quanh 0: cộng mọc sang phải, trừ mọc sang trái. Đó là hình
+  của chính thang điểm (−1 … +1), nên nhìn dọc một card là thấy phòng nào kéo
+  điểm xuống mà không phải đọc dấu từng dòng. `tran` = điểm tối đa: 1 với điểm
+  nhóm, 4 với tổng điểm.
+*/
+function ThanhDiem({ x, tran }: { x: number; tran: number }) {
+  const f = Math.min(Math.abs(x) / tran, 1);
+  return <span className="xhp-thanh" aria-hidden="true">
+    {x !== 0 && <i className={x > 0 ? "is-tot" : "is-xau"} style={{ ["--f" as string]: f }}/>}
+  </span>;
+}
+
+/*
+  Xếp hạng năm phòng QLDN theo file chấm điểm — dạng CARD THEO CHỦ ĐỀ (phòng
+  thuế không muốn đọc dạng bảng, 22/10/2026). Cùng kiểu khung nhóm với tab
+  Kết quả công tác: tên nhóm ở trên, khung viền mảnh chia ô bên dưới.
+
+  • Hàng đầu: Tổng điểm — năm ô, mỗi ô một phòng theo thứ hạng. Đây là câu
+    hỏi đầu tiên của cuộc họp giao ban, nên nó đứng trước và to nhất.
+  • Bên dưới: bốn card chủ đề, mỗi card TỰ XẾP năm phòng theo điểm của chủ đề
+    ấy. Không còn ô "Xếp theo" — mỗi chủ đề đã có thứ tự của riêng nó.
+
+  Theo một phòng qua các chủ đề: bấm một phòng ở bất kỳ đâu thì phòng ấy sáng
+  lên ở cả năm khung (bấm lại để bỏ), và phần chỉ tiêu mở rộng của mọi card
+  nói giá trị của chính phòng ấy. Mặc định là phòng của người xem. Chuyển
+  động: nền dòng chuyển màu khi đổi phòng đang theo; thanh điểm mọc từ vạch 0
+  khi mở tab — một lần, đúng lúc người dùng vừa bấm vào tab.
+*/
+function XepHangPhong({ pv, actor }: { pv: PhamVi; actor: string }) {
+  const cuaToi = pv.vai === "LD" ? null : (pv.phongGoc ?? pv.donVi[0]).id;
+  const [theo, datTheo] = useState<string | null>(cuaToi);
+
+  const dong = useMemo(() => DIEM_QLDN.map((d, i) => ({
+    ...d, thuTu: i, ten: DON_VI_Q.find((x) => x.id === d.donVi)?.ngan ?? d.donVi,
+  })), []);
+  type Dong = (typeof dong)[number];
+  const giaTri = (d: Dong, k: KhoaXep) => k === "tong" ? d.tong : d.diem[k];
+  /*
+    Hạng KHÔNG trùng số (người dùng yêu cầu 22/10/2026) — lệch RANK của file
+    Excel, nơi đồng điểm cùng hạng (1, 1, 3). Đồng điểm trong một chủ đề thì
+    phòng có tổng điểm cao hơn xếp trên; vẫn bằng thì theo thứ tự phòng.
+    Quy tắc phá hòa này là GIẢ ĐỊNH, chờ phòng thuế xác nhận.
+  */
+  const xepTheo = (k: KhoaXep) => [...dong].sort((a, b) => giaTri(b, k) - giaTri(a, k) || b.tong - a.tong || a.thuTu - b.thuTu);
+  const hangCua = (d: Dong, k: KhoaXep) => xepTheo(k).indexOf(d) + 1;
+  const tenTheo = theo ? tenNgan(dong.find((d) => d.donVi === theo)?.ten ?? "") : null;
+
+  const bam = (id: string) => datTheo((cu) => cu === id ? null : id);
+  const docDong = (d: Dong, k: KhoaXep, nhom: string) =>
+    `${d.ten}${d.donVi === cuaToi ? ", đơn vị của tôi" : ""}: hạng ${hangCua(d, k)} ${nhom}, ${diemSo(giaTri(d, k))} điểm`;
+
+  const xuat = () => exportExcel([{
+    name: "Xep_hang", title: `XẾP HẠNG CÁC PHÒNG QLDN · ${KY_XEP_HANG.toUpperCase()}`,
+    headers: ["Hạng", "Phòng", ...NHOM_DIEM.map((n) => n.ten), "Tổng điểm"],
+    rows: xepTheo("tong").map((d) => [hangCua(d, "tong"), d.ten, ...NHOM_DIEM.map((n) => d.diem[n.id]), d.tong]),
+  }], { period: KY_XEP_HANG, scope: "Khối phòng QLDN", actor, status: "DRAFT" as const }, "xep-hang-phong-qldn_bcgb-thang-10.xlsx");
+
+  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG} · theo bộ tiêu chí đánh giá các chỉ tiêu`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    <div className="qd-overview-guide xhp-guide"><span>Bấm một phòng để theo phòng đó qua các chủ đề</span><span>{tenTheo ? <>Đang theo: <b>{tenTheo}</b></> : "Chưa chọn phòng"}</span></div>
+    <div className="xhp">
+      <section className="xhp-tong" aria-labelledby="xhp-tong">
+        <h3 className="qd-kq-tieu-de" id="xhp-tong">Tổng điểm<small>cộng 4 nhóm · điểm tối đa 4</small></h3>
+        <ol className="xhp-tong-khung">
+          {xepTheo("tong").map((d) => <li key={d.donVi}>
+            <button type="button" className={`xhp-tong-o${theo === d.donVi ? " is-theo" : ""}`} aria-pressed={theo === d.donVi} aria-label={docDong(d, "tong", "tổng điểm")} onClick={() => bam(d.donVi)}>
+              <span className="xhp-tong-hang">{hangCua(d, "tong")}</span>
+              <span className="xhp-tong-ten">{tenNgan(d.ten)}{d.donVi === cuaToi && <small>của tôi</small>}</span>
+              <b className={lopDiem(d.tong)}>{diemSo(d.tong)}</b>
+              <ThanhDiem x={d.tong} tran={4}/>
+            </button>
+          </li>)}
+        </ol>
+      </section>
+      <div className="xhp-luoi">
+        {NHOM_DIEM.map((n) => <section key={n.id} className="xhp-nhom" aria-labelledby={`xhp-${n.id}`}>
+          <h3 className="qd-kq-tieu-de" id={`xhp-${n.id}`} title={n.ten}>{n.ten}<small>trung bình {n.chiTieu.length} chỉ tiêu</small></h3>
+          <ol className="xhp-khung">
+            {xepTheo(n.id).map((d) => <li key={d.donVi}>
+              <button type="button" className={`xhp-dong${theo === d.donVi ? " is-theo" : ""}`} aria-pressed={theo === d.donVi} aria-label={docDong(d, n.id, n.ten)} onClick={() => bam(d.donVi)}>
+                <span className="xhp-dong-hang">{hangCua(d, n.id)}</span>
+                {/* Không gắn "của tôi" ở đây: card bốn cột hẹp, thêm chữ là cắt
+                    tên phòng thành "QLHT DN 1…". Phòng của người xem đã sáng
+                    sẵn (mặc định đang theo) và được ghi rõ ở hàng Tổng điểm. */}
+                <span className="xhp-dong-ten">{tenNgan(d.ten)}</span>
+                <ThanhDiem x={d.diem[n.id]} tran={1}/>
+                <b className={lopDiem(d.diem[n.id])}>{diemSo(d.diem[n.id])}</b>
+              </button>
+            </li>)}
+          </ol>
+          <ChiTieuNhom nhom={n} theo={theo} tenCua={(id) => tenNgan(dong.find((d) => d.donVi === id)?.ten ?? id)}/>
+        </section>)}
+      </div>
+    </div>
+    {/* Nguồn và hai chỗ lệch nói thẳng trên màn: người đọc so số này với
+        tab Kết quả công tác (số mô phỏng) sẽ thấy hai bộ số khác nhau. */}
+    <p className="qd-ghi-mot xhp-nguon">
+      <b>Số của file chấm điểm, không phải số mô phỏng.</b> Lấy từ sheet “II. Khối QLDN”. Điểm mỗi chỉ tiêu từ −1 đến +1. Điểm nhóm là trung bình điểm các chỉ tiêu trong nhóm. Đồng điểm thì phòng có tổng điểm cao hơn xếp trên, nên không có hai phòng cùng hạng. Giữ đúng như file: TTHC vẫn tính tỷ lệ hài lòng dù biên bản 09/10 đã bỏ; Quản lý, hỗ trợ DN gồm cả kiểm tra tại bàn và hoàn trước GTGT.
+    </p>
+  </Panel>;
+}
+
+/* Điểm chỉ tiêu dạng ngắn cho ô điểm: "+1", "+0,5", "0", "−0,5", "−1". */
+const diemNgan = (x: number) => x === 0 ? "0" : `${x < 0 ? "−" : "+"}${Math.abs(x).toLocaleString("vi-VN")}`;
+
+/*
+  Chỉ tiêu bên trong một chủ đề (22/10/2026) — MỞ KHI CẦN, ngay trong card,
+  không hộp thoại (The No-Overlay Rule). Điểm nhóm là trung bình của 2–9 chỉ
+  tiêu nên che mất lý do; phần này trả lời "phòng kém ở đâu".
+
+  Mỗi chỉ tiêu: STT và tên theo file, mốc so sánh, giá trị của PHÒNG ĐANG
+  THEO, rồi điểm của cả năm phòng. Năm ô điểm đứng theo THỨ TỰ PHÒNG CỐ ĐỊNH
+  (1 → 5, như dòng của sheet), không theo hạng: ô thứ hai luôn là QLHT DN 2, nên
+  dò một phòng dọc xuống chín chỉ tiêu là đi thẳng một cột (Fixed Slots Rule).
+
+  Hiển thị nguyên như file, kể cả những ô đã ghi nhận là chấm lệch.
+*/
+function ChiTieuNhom({ nhom, theo, tenCua }: { nhom: (typeof NHOM_DIEM)[number]; theo: string | null; tenCua: (id: string) => string }) {
+  const [mo, datMo] = useState(false);
+  const iTheo = theo ? PHONG_XEP.indexOf(theo) : -1;
+  const id = `xhp-ct-${nhom.id}`;
+  return <div className="xhp-ct">
+    <button type="button" className="xhp-mo" aria-expanded={mo} aria-controls={id} onClick={() => datMo((x) => !x)}>
+      <span>{mo ? "Ẩn" : "Xem"} {nhom.chiTieu.length} chỉ tiêu</span><Icon name="chevronDown" size={15}/>
+    </button>
+    {mo && <div id={id} className="xhp-ct-than" data-motion="detail">
+      <div className="xhp-ct-dau" aria-hidden="true">
+        <span>{iTheo >= 0 ? `Giá trị của ${tenCua(theo!)}` : "Bấm một phòng để xem giá trị"}</span>
+        <span className="xhp-o-hang">{PHONG_XEP.map((p, i) => <em key={p} className={i === iTheo ? "is-theo" : undefined} title={tenCua(p)}>{i + 1}</em>)}</span>
+      </div>
+      <ol className="xhp-ct-ds">
+        {nhom.chiTieu.map((c) => <li key={c.stt}>
+          <p className="xhp-ct-ten"><span>STT {c.stt}</span> {c.ten}</p>
+          <div className="xhp-ct-so">
+            <span className="xhp-ct-gt">
+              {iTheo >= 0 && <b className={lopDiem(c.diem[iTheo])}>{c.giaTri[iTheo]}</b>}
+              <small>{c.moc}</small>
+            </span>
+            <ol className="xhp-o-hang" aria-label="Điểm năm phòng">
+              {PHONG_XEP.map((p, i) => <li key={p} className={`xhp-o ${c.diem[i] > 0 ? "is-tot" : c.diem[i] < 0 ? "is-xau" : "is-khong"}${i === iTheo ? " is-theo" : ""}`}>
+                <span className="sr-only">{tenCua(p)}: </span>{diemNgan(c.diem[i])}
+              </li>)}
+            </ol>
+          </div>
+          {c.ghi && <small className="xhp-ct-ghi">{c.ghi}</small>}
+        </li>)}
+      </ol>
+    </div>}
+  </div>;
 }
 
 /* ---------- Chi tiết một thẻ ---------- */
