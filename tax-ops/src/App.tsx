@@ -36,7 +36,7 @@ const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location
   ghi thành một dòng riêng trong ma trận quyền:
 
     CV mọi phòng → Cảnh báo nhắc việc (thay "Danh sách việc / dữ liệu kỳ")
-    TP mọi phòng → Tổng quan kết quả (phân hệ theo phòng đã gỡ 13/10/2026)
+    TP mọi phòng → Tổng quan quản trị (phân hệ theo phòng đã gỡ 13/10/2026)
 
   Từ 13/10/2026 năm phòng QLDN làm cùng một việc, nên trang mặc định chỉ còn
   theo VAI, không theo phòng. Ngoại lệ cũ "chuyên viên QL4 vào thẳng tổng đài"
@@ -125,7 +125,7 @@ export function App() {
       document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan kết quả công tác", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-tthc": "Thủ tục hành chính", "kq-qlht": "Quản lý, hỗ trợ doanh nghiệp", "kq-kttb": "Kiểm tra tại bàn", "kq-hoan": "Hoàn thuế", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
+    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan quản trị", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-tthc": "Thủ tục hành chính", "kq-qlht": "Quản lý, hỗ trợ doanh nghiệp", "kq-kttb": "Kiểm tra tại bàn", "kq-hoan": "Hoàn thuế", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
