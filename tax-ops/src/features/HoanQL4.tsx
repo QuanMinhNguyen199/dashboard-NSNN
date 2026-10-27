@@ -201,8 +201,8 @@ function TongQuanQL4() {
             <span className="so-sanh-ten" title={h.dv.ten}>{rutGonTenDonVi(h.dv.ten)}</span>
             <span className="so-sanh-o">
               <span className="so-sanh-thanh">
-                <i className={tren ? "is-duoi" : undefined} style={{ width: `${Math.min(100, (t ?? 0) * 100 * 2)}%` }}/>
-                {bq !== null && <b style={{ left: `${Math.min(100, bq * 100 * 2)}%` }} title={`Bình quân ${hienTyLe(bq)}`}/>}
+                <i className={tren ? "is-duoi" : undefined} style={{ transform: `scaleX(${Math.min(100, (t ?? 0) * 100 * 2) / 100})` }}/>
+                {bq !== null && <b style={{ transform: `translateX(${Math.min(100, bq * 100 * 2)}%)` }} title={`Bình quân ${hienTyLe(bq)}`}/>}
               </span>
               <em>{hienTyLe(t)}</em>
             </span>

@@ -5,10 +5,11 @@ import type { Tone } from "@/domain/types";
 export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "chevronDown" | "menu" | "close" | "users" | "database" | "external" | "logout" | "key";
+  | "arrow" | "chevronDown" | "chevronUp" | "menu" | "close" | "users" | "database" | "external" | "logout" | "key";
 
 const paths: Record<IconName, ReactNode> = {
   chevronDown: <polyline points="6 9 12 15 18 9"/>,
+  chevronUp: <polyline points="6 15 12 9 18 15"/>,
   home: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
   debt: <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5M8 16h3"/></>,
   risk: <><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></>,

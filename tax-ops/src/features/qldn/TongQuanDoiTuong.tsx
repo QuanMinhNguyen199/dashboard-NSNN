@@ -1,16 +1,19 @@
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useMemo, useRef, useState } from "react";
 import { FigureLine, Icon, PageIntro, Pager, Panel, SearchField, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
 import { useThamSo } from "@/state/diaChi";
 import {
-  CHI_TIEU_Q, KY_Q, NAM_THANH_LAP, NHOM_Q, QUY_MO_VON, SAC_THUE, THE_Q, TRANG_THAI_DN, duocXem, doiTuongPhamVi, ketQuaChiTieu, nhanPhamVi, nhomCuaThe, trangDN,
+  CHI_TIEU_Q, KY_Q, NAM_THANH_LAP, NHOM_Q, QUY_MO_VON, SAC_THUE, THE_Q, TRANG_THAI_DN, dnTheoKhoa, duocXem, doiTuongPhamVi, ketQuaChiTieu, nhanPhamVi, nhomCuaThe, trangDN,
   type NhomId, type PhamVi, type TheId, type TrangThaiDN,
 } from "@/data/qldn";
 import { BO_TIEU_CHI } from "@/data/boTieuChi";
 import { NgoaiPhamVi, ThanhPhamVi, usePhamVi } from "@/features/qldn/PhamViQLDN";
 import { HangTab } from "@/components/MucPhanHe";
+import { CaseLayout } from "@/components/CaseLayout";
+import { MUC_RUI_RO, bienPhapPhamVi, cuongCheDN, ruiRoPhamVi } from "@/data/hoSoQLDN";
+import { HoSoDN } from "@/features/qldn/HoSoDN";
 
 /*
   Mô-đun 1 — Tổng quan quản lý đối tượng (biên bản 09/10/2026 §5).
@@ -38,9 +41,9 @@ const TRANG_THAI_ID = TRANG_THAI_DN.map((t) => t.id);
   màu cho người mù màu và người nhìn thường. Cam dưới tương phản 3:1 nên chú
   giải luôn mang số phần trăm, không để màu nói một mình.
 */
-const MAU_SAC_THUE = ["#1657a8", "#e08a2c", "#2f9e8f", "#8a5cc2", "#d1495b"];
+const MAU_SAC_THUE = ["var(--cat-1)", "var(--cat-2)", "var(--cat-3)", "var(--cat-4)", "var(--cat-5)"];
 
-const phanTram = (x: number, tong: number) => tong ? `${((x / tong) * 100).toLocaleString("vi-VN", { maximumFractionDigits: 1 })}%` : "—";
+const phanTram = (x: number, tong: number) => tong ? `${((x / tong) * 100).toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%` : "—";
 const tyDong = (x: number) => x.toLocaleString("vi-VN", { maximumFractionDigits: 1 });
 
 export function TongQuanDoiTuong({ user, moNhom }: { user: DemoUser; moNhom?: (nhom: NhomId, the: TheId, stt?: number) => void }) {
@@ -53,12 +56,14 @@ export function TongQuanDoiTuong({ user, moNhom }: { user: DemoUser; moNhom?: (n
 
   return <div className="page-stack qd-page">
     <PageIntro title="Tổng quan đối tượng"/>
+    {/* Thanh phạm vi là khối đầu tiên ở mọi màn (critique 27/10/2026). Bộ tiêu
+        chí là định nghĩa chung của cơ quan: ô vẫn đứng đó, nói bằng chữ. */}
+    {tab === "tieuchi"
+      ? <ThanhPhamVi pv={pv} kyChu="Bộ tiêu chí tháng 10/2026" phamViChu="Chung cho mọi đơn vị"/>
+      : <ThanhPhamVi pv={pv} kyChu="Đến 30/09/2026"/>}
     <nav className="thanh-muc" aria-label="Mục của tổng quan đối tượng">
       <HangTab lop="thanh-muc-hang" khoaMo={tab}>{TAB.map((t) => <button key={t.id} type="button" className={`muc-tab${tab === t.id ? " is-active" : ""}`} data-mo={tab === t.id ? "1" : undefined} aria-current={tab === t.id ? "page" : undefined} onClick={() => datTab(t.id)}><span>{t.nhan}</span></button>)}</HangTab>
     </nav>
-    {/* Bộ tiêu chí là định nghĩa của cơ quan, không đổi theo phạm vi — tab ấy
-        không có thanh phạm vi. */}
-    {tab !== "tieuchi" && <ThanhPhamVi pv={pv} coKy={false} them={<div className="bo-loc-muc"><span className="bo-loc-nhan">Số liệu</span><strong className="bo-loc-ky">Đến 30/09/2026</strong></div>}/>}
     {tab === "tongquan" ? <TongQuan pv={pv} moDanhSach={moDanhSach} moNhom={moNhom}/>
       : tab === "danhsach" ? <DanhSach pv={pv} loc={loc} datLoc={datLoc} actor={user.name}/>
       : <BoTieuChi moNhom={moNhom} actor={user.name} pv={pv}/>}
@@ -138,12 +143,76 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
     <Panel title="Tình hình nợ thuế" subtitle="Nợ tổng thể của nhóm đối tượng · chi tiết ở Kết quả công tác, tab Nợ thuế">
       <div className="qd-o-so">
         <div><span>Doanh nghiệp đang nợ thuế</span><strong>{integer(o.no.soDN)}</strong><small>{phanTram(o.no.soDN, o.soDN)} số DN</small></div>
-        <div><span>Tổng số nợ</span><strong>{tyDong(o.no.tongNo)}</strong><small>tỷ đồng · <span className={o.no.tongNo > o.no.tongNoDauNam ? "qd-chenh is-xau" : "qd-chenh is-tot"}>{o.no.tongNo > o.no.tongNoDauNam ? "tăng" : "giảm"} {phanTram(Math.abs(o.no.tongNo - o.no.tongNoDauNam), o.no.tongNoDauNam)}</span> so với đầu năm</small></div>
+        <div><span>Tổng số nợ</span><strong>{tyDong(o.no.tongNo)}</strong><small>tỷ đồng · <span className={o.no.tongNo > o.no.tongNoDauNam ? "qd-chenh is-xau" : "qd-chenh is-tot"}><i className="qd-cham" aria-hidden="true"/>{o.no.tongNo > o.no.tongNoDauNam ? "tăng" : "giảm"} {phanTram(Math.abs(o.no.tongNo - o.no.tongNoDauNam), o.no.tongNoDauNam)}</span> so với đầu năm</small></div>
         <div><span>Đã cưỡng chế nợ thuế</span><strong>{integer(o.no.cuongChe)}</strong><small>người nộp thuế</small></div>
         <div><span>Đã tạm hoãn xuất cảnh</span><strong>{integer(o.no.thxc)}</strong><small>người nộp thuế</small></div>
       </div>
+      <BienPhapCuongChe pv={pv}/>
     </Panel>
+
+    <PhanTichRuiRo pv={pv}/>
   </>;
+}
+
+/*
+  Biện pháp cưỡng chế (biên bản 22/10/2026): mỗi biện pháp một dòng, kèm số
+  NNT đang chịu — KHÔNG gộp thành "đã cưỡng chế: Có/Không". Một NNT chịu
+  nhiều biện pháp nên các dòng cộng lại lớn hơn số NNT; dòng đầu khối nói
+  thẳng điều đó để không ai cộng tay rồi tưởng số sai.
+*/
+function BienPhapCuongChe({ pv }: { pv: PhamVi }) {
+  const bp = useMemo(() => bienPhapPhamVi(pv), [pv]);
+  const max = Math.max(...bp.ds.map((b) => b.soNNT), 1);
+  return <section className="qd-bp" aria-labelledby="qd-bp-de">
+    <div className="qd-bp-dau">
+      <h3 id="qd-bp-de">Biện pháp cưỡng chế đang áp dụng</h3>
+      <span>{integer(bp.nhieuBienPhap)} NNT chịu từ 2 biện pháp trở lên, nên các dòng cộng lại lớn hơn {integer(bp.soNNT)} NNT bị cưỡng chế</span>
+    </div>
+    <ul className="qd-thanh-ds is-tinh qd-bp-ds">
+      {bp.ds.map((b) => <li key={b.id} title={`${b.ten}: ${integer(b.soNNT)} NNT, ${integer(b.dangHieuLuc)} còn hiệu lực`}>
+        <span className="qd-thanh-ten">{b.ten}</span>
+        <span className="qd-thanh-ray"><i style={{ width: `${(b.soNNT / max) * 100}%` }}/></span>
+        <span className="qd-thanh-so"><b>{integer(b.soNNT)}</b><small>{integer(b.dangHieuLuc)} còn hiệu lực</small></span>
+      </li>)}
+    </ul>
+  </section>;
+}
+
+/*
+  Phân tích rủi ro (biên bản 22/10/2026: "Tổng quan đối tượng: thêm phân tích
+  rủi ro"). Cách hiển thị là việc số 4 của biên bản, CHƯA có người phụ trách
+  chốt — khối này là đề xuất: ba mức theo thang ba mức của đề án DN360, cộng
+  các dấu hiệu rủi ro thường gặp. Ghi chú cuối khối nói rõ điều đó.
+
+  Dải chồng ba mức dùng lại `.qd-chong` của khối Tình hình kê khai: cùng một
+  câu hỏi "bao nhiêu phần của tổng", nên cùng một hình.
+*/
+function PhanTichRuiRo({ pv }: { pv: PhamVi }) {
+  const rr = useMemo(() => ruiRoPhamVi(pv), [pv]);
+  const lop = { CAO: "is-do", TB: "is-vang", THAP: "is-tot" } as const;
+  const maxDH = Math.max(...rr.dauHieu.map((x) => x.so), 1);
+  return <Panel title="Phân tích rủi ro" subtitle={`${integer(rr.tong)} doanh nghiệp đang hoạt động · phân loại theo ba mức rủi ro`}>
+    <p className="qd-ghi-mot">Bản đề xuất, chờ chốt nội dung hiển thị (biên bản 22/10/2026, việc số 4). Một doanh nghiệp có thể mang nhiều dấu hiệu. Số liệu mô phỏng.</p>
+    <div className="qd-rr">
+      <div className="qd-rr-muc">
+        <div className="qd-chong" aria-hidden="true">
+          {/* Cùng thứ tự với dải Kê khai: tốt bên trái, xấu bên phải. */}
+          {[...MUC_RUI_RO].reverse().map((m) => <i key={m.id} className={lop[m.id]} style={{ width: phanTram(rr.muc[m.id], rr.tong).replace(",", ".") }}/>)}
+        </div>
+        <ul className="qd-chu-giai">
+          {[...MUC_RUI_RO].reverse().map((m) => <li key={m.id}><i className={lop[m.id]}/><span>{m.ten}</span><b>{integer(rr.muc[m.id])}</b><small>{phanTram(rr.muc[m.id], rr.tong)}</small></li>)}
+        </ul>
+      </div>
+      <div className="qd-rr-dh">
+        <h3>Dấu hiệu rủi ro thường gặp<small>số doanh nghiệp có dấu hiệu</small></h3>
+        <ul className="qd-thanh-ds is-tinh">{rr.dauHieu.map((x) => <li key={x.ten} title={`${x.ten}: ${integer(x.so)} DN`}>
+          <span className="qd-thanh-ten">{x.ten}</span>
+          <span className="qd-thanh-ray"><i style={{ width: `${(x.so / maxDH) * 100}%` }}/></span>
+          <span className="qd-thanh-so"><b>{integer(x.so)}</b><small>{phanTram(x.so, rr.tong)}</small></span>
+        </li>)}</ul>
+      </div>
+    </div>
+  </Panel>;
 }
 
 /* Cột đứng cho số thu theo năm: một màu; năm 2026 (chưa trọn năm) nhạt hơn
@@ -177,7 +246,7 @@ function DonutSacThue({ phan }: { phan: number[] }) {
     <svg viewBox="0 0 160 160" role="img" aria-label={SAC_THUE.map((s, i) => `${s} ${phanTram(phan[i], tong)}`).join(", ")}>
       <g transform="rotate(-90 80 80)">{phan.map((p, i) => {
         const dai = (C * p) / tong;
-        const cung = <circle key={i} cx="80" cy="80" r={R} fill="none" stroke={MAU_SAC_THUE[i]} strokeWidth={tro === i ? 22 : 18}
+        const cung = <circle key={i} cx="80" cy="80" r={R} fill="none" style={{ stroke: MAU_SAC_THUE[i] }} strokeWidth={tro === i ? 22 : 18}
           strokeDasharray={`${Math.max(dai - KHE, 0.5)} ${C}`} strokeDashoffset={-dau}
           onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)}><title>{`${SAC_THUE[i]}: ${phanTram(p, tong)}`}</title></circle>;
         dau += dai;
@@ -209,12 +278,18 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
   const [trang, datTrang] = useState(1);
   const [tim, datTim] = useState("");
   const [xep, datXep] = useState<{ cot: CotXep; giam: boolean } | null>(null);
+  /* Doanh nghiệp đang mở hồ sơ nằm trong ĐỊA CHỈ (`so=`) — The URL Is The
+     State Rule; khóa dựng lại được dòng dù trang chứa nó không còn mở. */
+  const [dangMo, datDangMo] = useThamSo<string>("so", "");
+  const noiBam = useRef<HTMLButtonElement | null>(null);
+  const chon = useMemo(() => (dangMo ? dnTheoKhoa(pv, dangMo) : null), [pv, dangMo]);
+  const dong = () => { datDangMo(""); requestAnimationFrame(() => noiBam.current?.focus()); };
   const tongLoc = useMemo(() => trangDN(pv, loc || null, 1, 0).tong, [pv, loc]);
   const q = tim.trim().toLowerCase();
   const canDung = Boolean(q || xep);
   const vuot = canDung && tongLoc > GIOI_HAN_TIM;
 
-  const { tong, dong } = useMemo(() => {
+  const { tong, dong: dongTrang } = useMemo(() => {
     if (!canDung || vuot) return trangDN(pv, loc || null, trang, CO_TRANG);
     let tat = trangDN(pv, loc || null, 1, tongLoc).dong;
     if (q) tat = tat.filter((d) => d.mst.includes(q) || d.ten.toLowerCase().includes(q));
@@ -243,15 +318,23 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
     const { dong: tat } = trangDN(pv, loc || null, 1, 2000);
     await exportExcel([{
       name: "Danh_sach_DN", title: `DANH SÁCH DOANH NGHIỆP${loc ? `: ${nhanTT(loc).toUpperCase()}` : ""}`,
-      headers: ["MST", "Tên người nộp thuế", "Đơn vị quản lý", "Cán bộ quản lý", "Trạng thái", "Năm thành lập", "Vốn điều lệ (tỷ đồng)", "Thu NSNN 2026 (tỷ đồng)", "Nợ thuế (tỷ đồng)"],
-      rows: tat.map((d) => [d.mst, d.ten, d.donVi, d.canBo, nhanTT(d.trangThai), d.namThanhLap, d.von, d.thu2026, d.no]),
+      headers: ["MST", "Tên người nộp thuế", "Đơn vị quản lý", "Cán bộ quản lý", "Trạng thái", "Năm thành lập", "Vốn điều lệ (tỷ đồng)", "Thu NSNN 2026 (tỷ đồng)", "Nợ thuế (tỷ đồng)", "Biện pháp cưỡng chế"],
+      rows: tat.map((d) => [d.mst, d.ten, d.donVi, d.canBo, nhanTT(d.trangThai), d.namThanhLap, d.von, d.thu2026, d.no, cuongCheDN(d).map((c) => `${c.bienPhap} (${c.conHieuLuc ? "đang hiệu lực" : "đã chấm dứt"})`).join("; ")]),
     }], { period: "Đến 30/09/2026", scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "danh-sach-doanh-nghiep.xlsx");
   };
 
-  return <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · số tiền tính bằng tỷ đồng`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  const soCot = 6 + (loc ? 0 : 1) + (nhieuDV ? 1 : 0) + (pv.canBo ? 0 : 1);
+  return <CaseLayout
+    presentation="drawer"
+    label={chon ? `Hồ sơ doanh nghiệp ${chon.mst}` : "Hồ sơ doanh nghiệp"}
+    mobileOpen={Boolean(chon)}
+    onClose={dong}
+    detail={chon ? <HoSoDN d={chon}/> : null}
+  >
+  <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · số tiền tính bằng tỷ đồng · bấm một dòng để mở hồ sơ`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-loc-cb">
       <label className="compact-field qd-loc-tt"><span className="bo-loc-nhan">Trạng thái</span>
-        <select className="bo-loc-select" value={loc} onChange={(e) => { datLoc(e.target.value as TrangThaiDN | ""); datTrang(1); }}>
+        <select className="bo-loc-select" value={loc} onChange={(e) => { datLoc(e.target.value as TrangThaiDN | ""); datTrang(1); datDangMo(""); }}>
           <option value="">Tất cả trạng thái</option>
           {TRANG_THAI_DN.map((t) => <option key={t.id} value={t.id}>{t.ten}</option>)}
         </select>
@@ -266,26 +349,38 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
           <th scope="col">Tên người nộp thuế</th>
           {nhieuDV && <th scope="col">Đơn vị</th>}
           {!pv.canBo && <th scope="col">Cán bộ quản lý</th>}
-          <th scope="col">Trạng thái</th>
+          {/* Đã lọc một trạng thái thì cột này lặp một giá trị ở mọi dòng — tiêu đề khối đã nói nó. */}
+          {!loc && <th scope="col">Trạng thái</th>}
           {COT_XEP.map((c) => thXep(c.id))}
+          <th scope="col">Cưỡng chế</th>
         </tr></thead>
-        <tbody>{dong.map((d) => <tr key={d.mst}>
+        <tbody>{dongTrang.map((d) => {
+          const cc = cuongCheDN(d);
+          return <tr key={d.khoa} className={`qd-viec${d.khoa === dangMo ? " is-selected" : ""}`} onClick={(e) => {
+            noiBam.current = e.currentTarget.querySelector<HTMLButtonElement>(".row-select");
+            datDangMo(d.khoa === dangMo ? "" : d.khoa);
+          }}>
           <td><code>{d.mst}</code></td>
-          <td>{d.ten}</td>
+          {/* Cả hàng bấm được; nút phủ ô tên để bàn phím mở được hồ sơ — The Whole Row Rule. */}
+          <td><button type="button" className="row-select" aria-expanded={d.khoa === dangMo}>{d.ten}</button></td>
           {nhieuDV && <td>{d.donVi}</td>}
           {!pv.canBo && <td>{d.canBo}</td>}
-          <td>{nhanTT(d.trangThai)}</td>
+          {!loc && <td>{nhanTT(d.trangThai)}</td>}
           <td className="num">{d.namThanhLap}</td>
           <td className="num">{tyDong(d.von)}</td>
           <td className="num">{d.thu2026 ? tyDong(d.thu2026) : <span className="cell-empty">0</span>}</td>
           <td className="num">{d.no ? tyDong(d.no) : <span className="cell-empty">0</span>}</td>
-        </tr>)}
-        {dong.length === 0 && <tr><td colSpan={9} className="table-empty">Không có doanh nghiệp khớp “{tim}”. Thử tìm theo đủ 10 số MST hoặc một phần tên.</td></tr>}
+          {/* Tên từng biện pháp, không Có/Không (biên bản 22/10/2026). */}
+          <td className="qd-cc-o">{cc.length ? cc.map((c) => <span key={c.soQD} className={c.conHieuLuc ? undefined : "is-tat"} title={`${c.bienPhap} · ${c.conHieuLuc ? "đang hiệu lực" : "đã chấm dứt"}`}>{c.ngan}{!c.conHieuLuc && " (đã chấm dứt)"}</span>) : <span className="cell-empty">—</span>}</td>
+        </tr>;
+        })}
+        {dongTrang.length === 0 && <tr><td colSpan={soCot} className="table-empty">Không có doanh nghiệp khớp “{tim}”. Thử tìm theo đủ 10 số MST hoặc một phần tên.</td></tr>}
         </tbody>
       </table>
     </TableWrap>
-    <div className="table-footer"><span>Số liệu mô phỏng</span><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>
-  </Panel>;
+    <div className="table-footer"><span>Số liệu mô phỏng</span><Pager trang={trang} soTrang={soTrang} onChange={(n) => { datTrang(n); datDangMo(""); }}/></div>
+  </Panel>
+  </CaseLayout>;
 }
 
 /* ---------- Bộ tiêu chí đánh giá ---------- */

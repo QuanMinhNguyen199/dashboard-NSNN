@@ -96,8 +96,8 @@ function BangTPR({ ky, tu, den, tieuDe, chonCach, phu = false, tienTo = "tpr" }:
       <td className="num">{money(d.so.phai - da)}</td>
       <td>{tl === null ? <span className="cell-empty">—</span> : <span className="so-sanh-o">
         <span className="so-sanh-thanh">
-          <i className={binhQuan !== null && tl < binhQuan ? "is-duoi" : undefined} style={{ width: `${Math.min(100, tl * 100)}%` }}/>
-          {binhQuan !== null && <b style={{ left: `${Math.min(100, binhQuan * 100)}%` }} title={`Bình quân ${hienTyLe(binhQuan)}`}/>}
+          <i className={binhQuan !== null && tl < binhQuan ? "is-duoi" : undefined} style={{ transform: `scaleX(${Math.min(100, tl * 100) / 100})` }}/>
+          {binhQuan !== null && <b style={{ transform: `translateX(${Math.min(100, binhQuan * 100)}%)` }} title={`Bình quân ${hienTyLe(binhQuan)}`}/>}
         </span>
         <em>{hienTyLe(tl)}</em>
       </span>}</td>
