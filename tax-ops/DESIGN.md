@@ -42,10 +42,17 @@ colors:
   data-track: "#e7edf5"
   scroll-thumb: "#c3cedd"
   scroll-thumb-hover: "#9aa9bd"
+  ink-3-on-selected: "#566373"
+  warning-mark: "#d9a520"
+  cat-1: "#1657a8"
+  cat-2: "#e08a2c"
+  cat-3: "#2f9e8f"
+  cat-4: "#8a5cc2"
+  cat-5: "#d1495b"
 typography:
   display:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "clamp(22px, 2vw, 26px)"
+    fontSize: "clamp(24px, 2.2vw, 30px)"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.02em"
@@ -55,12 +62,24 @@ typography:
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.02em"
+  figure:
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
+    fontSize: "24px"
+    fontWeight: 700
+    lineHeight: 1.2
+    letterSpacing: "-0.015em"
   metric:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "18px"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.015em"
+  subhead:
+    fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
+    fontSize: "16px"
+    fontWeight: 650
+    lineHeight: 1.35
+    letterSpacing: "-0.008em"
   title:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "14px"
@@ -113,6 +132,7 @@ rounded:
   panel: "10px"
   control: "6px"
   chip: "4px"
+  hairline: "2px"
   nav: "4px"
   dialog: "12px"
   circle: "50%"
@@ -324,6 +344,8 @@ Tính cách của chữ vẫn đến từ cân nặng và khoảng cách nhiều
 ### Hierarchy
 - **Display** (650, `clamp(24px, 2.2vw, 30px)`, 1.22, -0.022em): chỉ tên hệ trong khối nhận diện màn đăng nhập. Đây là chỗ duy nhất trong hệ có chữ lớn, và nó được phép lớn vì màn đăng nhập không phải màn làm việc.
 - **Headline** (650, 20px, 1.25, -0.02em): tiêu đề hộp thoại tạo báo cáo, tiêu đề form đăng nhập, tiêu đề màn từ chối quyền.
+- **Figure** (700, 24px, 1.2, -0.015em): con số chính của ô tổng quan — thẻ chỉ tiêu ở Kết quả công tác, bốn ô mức ở Cảnh báo nhắc việc, ô nợ ở Tổng quan đối tượng, tổng điểm và hạng ở Xếp hạng. Ghi vào thang ngày 27/10/2026: các ô ấy đã dùng 22–30px rải rác; audit gom về một bậc thay vì hạ xuống 18px, vì ở đó con số LÀ nội dung của ô. Khổ hẹp hạ xuống Headline 20px.
+- **Subhead** (650, 16px, 1.35): tên bản ghi đầu ngăn chi tiết (tên doanh nghiệp, tiêu đề ngăn trượt) và nội dung chính của khối chi tiết hồ sơ. Một bậc giữa Title và Metric, ghi vào thang cùng ngày.
 - **Metric** (650, 18px, 1.25, -0.015em): con số trong dải tổng hợp và trong luồng trạng thái. Giữ nguyên 18px cả trên mobile — dải tổng hợp ở Trang công việc đổi khuôn hình (mỗi ô thành một hàng nhãn-số) chứ không hạ cỡ số, vì con số là thứ người dùng quét trước.
 - **Title** (700, 14px, -0.008em): tiêu đề khối `.panel-head h2`. Đây là bậc tiêu đề thường gặp nhất; tiêu đề màn ẩn nên khối chính là đơn vị người dùng đọc. Nó ở **700** chứ không phải 650 vì tên hàng trong bảng cũng là 14px và cũng màu `--ink`: lệch 50 đơn vị cân nặng ở cùng một cỡ và cùng một màu là lệch không nhìn ra, và tiêu đề khối khi đó không hơn được chính nội dung nó quản.
 - **Body** (400, 14px/1.5): chữ nền của `body`, nhãn điều hướng, giá trị trong ô chi tiết (nặng 500).
@@ -335,6 +357,8 @@ Tính cách của chữ vẫn đến từ cân nặng và khoảng cách nhiều
 - **Group-label** (700, 10.5px, +0.01em, chữ thường): nhãn nhóm BÁO CÁO trong cụm mục của phân hệ. Nó nằm một bậc dưới Nav-group, trong cùng vùng navy, nên nó phân biệt bằng cỡ và vị trí chứ không bằng việc viết hoa thêm một lần nữa.
 
 ### Named Rules
+
+**The Nine Steps Rule.** Mọi `font-size` trong `styles.css` đứng trên một trong chín bậc: 10.5 · 11 · 12 · 13 · 14 · 16 · 18 · 20 · 24px (bậc Display của màn đăng nhập dùng `clamp` riêng). Audit 27/10/2026 đếm được 21 cỡ — 9.5, 11.5, 12.5, 13.5, 15, 17, 21, 22, 26, 28, 30 — và gom về bậc gần nhất. Một cỡ mới phải vào thang này trước, với tên và vai, rồi mới vào CSS.
 
 **The Silent H1 Rule.** Tiêu đề trang không hiện. `PageIntro` vẫn dựng `<h1>` nhưng gắn `className="sr-only"`: tên màn đã nằm ở mục điều hướng đang mở trong sidebar, in lại nó ở đầu nội dung là nói hai lần và ăn mất dòng đắt nhất của trang. Thẻ vẫn nằm trong DOM vì một trang không có tiêu đề là một trang mà người dùng bàn phím không biết mình đang ở đâu. Không gỡ `<h1>`, và cũng không bỏ `sr-only` để "cho cân". Cùng nguyên tắc này áp xuống cấp khối — xem **The Row Already Said It Rule** ở mục Components.
 
@@ -366,7 +390,7 @@ Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-lay
 - **900px** — sidebar ẩn, mặt làm việc bỏ lùi trái, thanh điều hướng đáy hiện lên cùng nút mở ngăn điều hướng (nền `#fffffff2`, `backdrop-filter: blur(14px)`), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
 - **720px** — màn đăng nhập xếp dọc; dải tổng hợp về hai cột; nút phân đoạn đổi thành `<select>`; ô bảng cao 44px; dải thông báo xếp dọc hoàn toàn; luồng duyệt đổi trục ngang thành trục dọc.
 
-**Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`, và có một công tắc chung cắt mọi animation cùng transition xuống 0,01ms khi người dùng yêu cầu giảm chuyển động.
+**Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`. Khi người dùng yêu cầu giảm chuyển động, công tắc chung tắt mọi animation và mọi chuyển tiếp dịch chuyển, nhưng GIỮ chuyển màu, nền, viền, độ mờ trong 120ms — đó là phản hồi trạng thái, không phải chuyển động (sửa 27/10/2026; bản cũ cắt cả màu về 0,01ms). Thanh và vạch chạy bằng `transform`, không bằng `width` hay `left`.
 
 ### Named Rules
 
@@ -891,7 +915,9 @@ Nền navy, chữ trắng, bo 10px, cố định góc phải dưới, rộng `mi
 - **Do** giữ `<h1>` trong DOM ở dạng `sr-only` trên mỗi màn, đúng thứ tự tiêu đề.
 - **Do** dùng chấm, nhãn hoặc icon kèm màu cho mọi tín hiệu trạng thái; màu không bao giờ là tín hiệu duy nhất.
 - **Do** đặt sàn 44px cho mọi vùng chạm từ 900px trở xuống.
-- **Do** đặt mọi animation sau `prefers-reduced-motion` và giữ công tắc cắt chung.
+- **Do** đặt mọi animation sau `prefers-reduced-motion` và giữ công tắc chung: tắt dịch chuyển, giữ phản hồi màu.
+- **Do** dùng `--ink-3-on-selected` (qua phần ghi đè sẵn có) cho chữ phụ trên nền hàng đang chọn; `--ink-3` chỉ đạt 4,07:1 ở đó.
+- **Do** đặt công thức của cột vào khối "Cách tính" dưới bảng, không vào đầu cột.
 - **Do** dán nhãn "Mô phỏng" ở mọi màn có số liệu, kể cả màn nằm ngoài Shell.
 - **Do** cho mỗi vùng cuộn nhận Tab một cái tên.
 - **Do** khai báo cơ sở 0 (`minmax(0, 1fr)` hoặc `min-width: 0`) cho mọi rãnh lưới có thể chứa bảng.
@@ -904,6 +930,8 @@ Nền navy, chữ trắng, bo 10px, cố định góc phải dưới, rộng `mi
 - **Do** chuyển con số chỉ tồn tại trong dòng phụ sang một chỗ khác trong thân khối trước khi bỏ dòng phụ.
 
 ### Don't:
+- **Don't** kẻ sọc màu một bên (`border-left` dày hay giả tố `::before`) lên khối, thẻ hay dải trạng thái; trạng thái đã có chip và chữ.
+- **Don't** dùng ký tự Unicode (▲ ▼ ✓ ✕) thay icon; dùng `Icon` của hệ.
 - **Don't** tô màu trạng thái vào con số. Màu sống ở nhãn, chip và dải thông báo.
 - **Don't** thêm màu ngoài palette chung NSNN nếu màu đó không mang vai semantic đã đăng ký.
 - **Don't** cho mục điều hướng đang mở một tín hiệu thứ hai. Thanh trắng trên nền navy đã là tương phản mạnh nhất hệ này có.

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Badge, DetailGrid, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { Badge, DetailGrid, Icon, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
 import { theoDonVi, useBoLoc } from "@/components/BoLoc";
@@ -309,7 +309,7 @@ export function DangXuLy({ ky, nhom }: { ky: KyQL4; nhom: "VP" | "TCS" }) {
                   : <Badge tone="positive">còn {Math.abs(r.soNgayQuaHan)}</Badge>}
               </td>
               {kiemTra === "hien" && r.kiemTra.map((ok, i) => <td key={i} className="center">
-                <span className={ok ? "kt-dat" : "kt-khong"} title={ok ? "Đạt" : "Không đạt"}>{ok ? "✓" : "✕"}</span>
+                <span className={ok ? "kt-dat" : "kt-khong"} title={ok ? "Đạt" : "Không đạt"}><Icon name={ok ? "check" : "close"} size={15}/><span className="sr-only">{ok ? "Đạt" : "Không đạt"}</span></span>
               </td>)}
             </tr>)}
             {hien.length === 0 && <tr><td className="table-empty" colSpan={rong.length}>Không có hồ sơ nào khớp bộ lọc.</td></tr>}

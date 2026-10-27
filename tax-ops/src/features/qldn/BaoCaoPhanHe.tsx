@@ -1,10 +1,7 @@
 import type { DemoUser } from "@/auth/demoAuth";
 import { NhungProvider } from "@/components/ui";
 import { MucPhanHeProvider } from "@/components/MucPhanHe";
-import { DebtQL1 } from "@/features/DebtQL1";
-import { HoaDonQL2 } from "@/features/HoaDonQL2";
-import { RiskQL3 } from "@/features/RiskQL3";
-import { HoanQL4 } from "@/features/HoanQL4";
+import { DebtQL1, HoaDonQL2, HoanQL4, RiskQL3 } from "@/features/phanHeLazy";
 import type { ViewId } from "@/domain/types";
 import { donViCuaPhong, type TheId } from "@/data/qldn";
 import { PhongBaoCaoProvider } from "@/state/DuyetContext";

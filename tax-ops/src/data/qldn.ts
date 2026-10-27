@@ -488,6 +488,8 @@ export function doiTuongPhamVi(pv: PhamVi): DoiTuongDonVi {
 /* ---------- Danh sách doanh nghiệp (tầng chi tiết của mô-đun 1) ---------- */
 
 export interface DongDN {
+  /** Khóa dựng lại được dòng này mà không cần trang chứa nó — cho `so=` của ngăn hồ sơ. */
+  khoa: string;
   mst: string; ten: string; donVi: string; canBo: string; trangThai: TrangThaiDN;
   namThanhLap: number; von: number; thu2026: number; no: number;
 }
@@ -509,25 +511,51 @@ export function trangDN(pv: PhamVi, trangThai: TrangThaiDN | null, trang: number
   for (; i < het; i++) {
     let j = i, k = 0;
     while (j >= khoi[k].so) { j -= khoi[k].so; k++; }
-    const { d, o } = khoi[k];
-    let tt: TrangThaiDN = trangThai ?? "HD";
-    if (!trangThai) {
-      let con = j;
-      for (const t of TRANG_THAI_DN) { if (con < o.trangThai[t.id]) { tt = t.id; break; } con -= o.trangThai[t.id]; }
-    }
-    const r = prng(hatCua(41, "dn", d.id, tt, String(j)));
-    const so = Number(d.id.replace(/\D/g, "")) * 100000 + j + TRANG_THAI_DN.findIndex((t) => t.id === tt) * 20000;
-    const cb = pv.canBo ?? canBoCua(d.id)[Math.floor(r() * canBoCua(d.id).length)];
-    const moi = tt === "MOI";
-    dong.push({
-      mst: mstGia(so), ten: tenNNTGia(so), donVi: d.ngan, canBo: cb.ten, trangThai: tt,
-      namThanhLap: moi ? 2026 : 2026 - nguyen(r, 1, 24),
-      von: Math.round((d.khoi === "VP" ? 5 + r() * 400 : 0.5 + r() * 30) * 10) / 10,
-      thu2026: tt === "HD" || moi ? Math.round(r() * (d.khoi === "VP" ? 120 : 8) * 100) / 100 : 0,
-      no: r() < 0.14 ? Math.round(r() * (d.khoi === "VP" ? 40 : 3) * 100) / 100 : 0,
-    });
+    dong.push(dungDN(pv, khoi[k].d, khoi[k].o, trangThai, j));
   }
   return { tong, dong };
+}
+
+/*
+  Một dòng của danh sách, dựng từ (đơn vị, bộ lọc trạng thái, thứ tự trong
+  đơn vị). Giữ nguyên cách gieo của bản trước — cùng hạt, cùng thứ tự rút
+  `r()` — nên mọi dòng đã đưa đi trình diễn không đổi số.
+
+  Lưu ý có sẵn từ trước: dòng dựng khi ĐANG LỌC theo trạng thái gieo theo thứ
+  tự trong trạng thái ấy, nên cùng một vị trí cho ra doanh nghiệp khác với khi
+  không lọc. Khóa vì thế mang cả bộ lọc.
+*/
+function dungDN(pv: PhamVi, d: DonViQ, o: DoiTuongDonVi, loc: TrangThaiDN | null, j: number): DongDN {
+  let tt: TrangThaiDN = loc ?? "HD";
+  if (!loc) {
+    let con = j;
+    for (const t of TRANG_THAI_DN) { if (con < o.trangThai[t.id]) { tt = t.id; break; } con -= o.trangThai[t.id]; }
+  }
+  const r = prng(hatCua(41, "dn", d.id, tt, String(j)));
+  const so = Number(d.id.replace(/\D/g, "")) * 100000 + j + TRANG_THAI_DN.findIndex((t) => t.id === tt) * 20000;
+  const cb = pv.canBo ?? canBoCua(d.id)[Math.floor(r() * canBoCua(d.id).length)];
+  const moi = tt === "MOI";
+  return {
+    khoa: `${d.id}.${loc ?? "all"}.${j}`,
+    mst: mstGia(so), ten: tenNNTGia(so), donVi: d.ngan, canBo: cb.ten, trangThai: tt,
+    namThanhLap: moi ? 2026 : 2026 - nguyen(r, 1, 24),
+    von: Math.round((d.khoi === "VP" ? 5 + r() * 400 : 0.5 + r() * 30) * 10) / 10,
+    thu2026: tt === "HD" || moi ? Math.round(r() * (d.khoi === "VP" ? 120 : 8) * 100) / 100 : 0,
+    no: r() < 0.14 ? Math.round(r() * (d.khoi === "VP" ? 40 : 3) * 100) / 100 : 0,
+  };
+}
+
+/** Dựng lại một dòng từ khóa của nó; `null` khi khóa không thuộc phạm vi đang xem. */
+export function dnTheoKhoa(pv: PhamVi, khoa: string): DongDN | null {
+  const [dvId, loc, so] = khoa.split(".");
+  const d = pv.donVi.find((x) => x.id === dvId);
+  const j = Number(so);
+  if (!d || !Number.isInteger(j) || j < 0) return null;
+  const tt = loc === "all" ? null : TRANG_THAI_DN.find((t) => t.id === loc)?.id;
+  if (tt === undefined) return null;
+  const o = doiTuongCua(d.id, pv.canBo?.phan ?? 1);
+  if (j >= (tt ? o.trangThai[tt] : o.soDN)) return null;
+  return dungDN(pv, d, o, tt, j);
 }
 
 /* =====================================================================
@@ -551,9 +579,21 @@ export type DauViecId = (typeof DAU_VIEC)[number]["id"];
 export type MucCanhBao = "QUA_HAN" | "HOM_NAY" | "SAP_DEN";
 export const NHAN_MUC: Record<MucCanhBao, string> = { QUA_HAN: "Đã quá hạn", HOM_NAY: "Hết hạn hôm nay", SAP_DEN: "Sắp đến hạn" };
 
+/*
+  Trạng thái xử lý của một việc (biên bản 22/10/2026: "chi tiết các đầu việc
+  theo danh mục, trạng thái"). Ba bước nằm TRONG cơ quan thuế; bước trả kết
+  quả đã xong thì việc không còn là cảnh báo nên không có trạng thái riêng.
+*/
+export type TrangThaiViec = "CHUA" | "DANG" | "CHO_DUYET";
+export const TRANG_THAI_VIEC: { id: TrangThaiViec; ten: string }[] = [
+  { id: "CHUA", ten: "Chưa xử lý" },
+  { id: "DANG", ten: "Đang xử lý" },
+  { id: "CHO_DUYET", ten: "Chờ lãnh đạo duyệt" },
+];
+
 export interface ViecQ {
   id: string; dauViec: DauViecId; dvId: string; donVi: string; canBoId: string; canBo: string;
-  mst: string; nnt: string; noiDung: string; han: Date; hoSo: string[];
+  mst: string; nnt: string; noiDung: string; han: Date; hoSo: string[]; trangThai: TrangThaiViec;
 }
 
 const homNay = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
@@ -581,6 +621,8 @@ export function viecCua(dvId: string): ViecQ[] {
         id: `${dvId}-${dv.id}-${i}`, dauViec: dv.id, dvId, donVi: d.ngan, canBoId: cb.id, canBo: cb.ten,
         mst: mstGia(so), nnt: tenNNTGia(so), noiDung: dv.noiDung[i % dv.noiDung.length], han,
         hoSo: ["Hồ sơ đề nghị của NNT", "Biên bản làm việc", "Dự thảo quyết định", "Văn bản đôn đốc"].slice(0, soHoSo),
+        /* Dãy riêng: rút thêm từ `r` sẽ đổi hạn và tên của mọi việc đứng sau. */
+        trangThai: (() => { const x = prng(hatCua(59, "ttviec", dvId, dv.id, String(i)))(); return x < 0.45 ? "CHUA" : x < 0.8 ? "DANG" : "CHO_DUYET"; })(),
       });
     }
   }

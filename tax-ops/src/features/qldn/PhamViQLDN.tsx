@@ -67,26 +67,36 @@ function ChonPhong({ pv }: { pv: PhamVi }) {
 }
 
 /*
-  Thanh phạm vi — CÁC Ô CỐ ĐỊNH, giống nhau ở mọi vai (Fixed Slots Rule):
-    [Kỳ] [Phạm vi] [Vai · quyền chờ chốt] [Số liệu mô phỏng]
-  Vai chỉ đổi NỘI DUNG ô Phạm vi: lãnh đạo Thuế TP có hộp chọn đơn vị, các
-  vai khác thấy tên phạm vi của mình — ma trận §4 ghi "Chọn đơn vị hiển thị"
-  chỉ lãnh đạo có.
+  Thanh phạm vi — CÁC Ô CỐ ĐỊNH, giống nhau ở mọi vai VÀ MỌI MÀN (Fixed Slots
+  Rule, critique 27/10/2026):
+    [Kỳ] [Phạm vi] [thêm] [Vai · quyền chờ chốt · Số liệu mô phỏng]
+  Thanh luôn là khối ĐẦU TIÊN của nội dung, trên mọi hàng tab — nên nó đứng
+  đúng một độ cao ở mọi màn. Bản trước đứng dưới hàng tab, nên trôi từ 45 tới
+  142px tuỳ màn có mấy hàng tab, và biến mất ở bốn màn.
+
+  Màn nào kỳ hay phạm vi không đổi được (Xếp hạng phòng chấm một kỳ cố định,
+  Bộ tiêu chí là định nghĩa chung, Báo cáo có kỳ riêng) thì ô VẪN ĐỨNG ĐÓ và
+  nói giá trị đang áp dụng bằng chữ (`kyChu`, `phamViChu`) — người đọc luôn
+  biết con số trước mắt thuộc kỳ nào.
 */
-export function ThanhPhamVi({ pv, ky, datKy, coKy = true, them }: { pv: PhamVi; ky?: KyQ; datKy?: (id: string) => void; coKy?: boolean; them?: ReactNode }) {
+export function ThanhPhamVi({ pv, ky, datKy, coKy = true, kyChu, phamViChu, them }: { pv: PhamVi; ky?: KyQ; datKy?: (id: string) => void; coKy?: boolean; kyChu?: string; phamViChu?: string; them?: ReactNode }) {
   const cho = choChotCua(pv.vai);
+  const chonKy = coKy && ky && datKy && !kyChu;
   return <div className="bo-loc-chung qd-pham-vi">
-    {coKy && ky && datKy && <div className="bo-loc-muc">
+    <div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-ky">Kỳ</span>
-      <select className="bo-loc-select" aria-labelledby="qd-ky" value={ky.id} onChange={(e) => datKy(e.target.value)}>
-        {KY_Q.map((k) => <option key={k.id} value={k.id}>{k.nhan}</option>)}
-      </select>
-    </div>}
+      {chonKy
+        ? <select className="bo-loc-select" aria-labelledby="qd-ky" value={ky!.id} onChange={(e) => datKy!(e.target.value)}>
+          {KY_Q.map((k) => <option key={k.id} value={k.id}>{k.nhan}</option>)}
+        </select>
+        : <span className="bo-loc-gia" aria-labelledby="qd-ky" title={kyChu ?? ky?.nhan}>{kyChu ?? ky?.nhan}</span>}
+    </div>
     <div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-pham-vi-nhan">Phạm vi</span>
-      {pv.vai === "LD" ? <ChonDonVi/>
+      {phamViChu ? <span className="bo-loc-gia" aria-labelledby="qd-pham-vi-nhan" title={phamViChu}>{phamViChu}</span>
+        : pv.vai === "LD" ? <ChonDonVi/>
         : coCongTacKhoi(pv) ? <ChonPhong pv={pv}/>
-        : <strong className="bo-loc-ky" aria-labelledby="qd-pham-vi-nhan">{nhanPhamVi(pv)}</strong>}
+        : <span className="bo-loc-gia" aria-labelledby="qd-pham-vi-nhan" title={nhanPhamVi(pv)}>{nhanPhamVi(pv)}</span>}
     </div>
     {them}
     {/* Thời điểm cập nhật đứng cạnh nhãn mô phỏng: người đọc số cần biết số

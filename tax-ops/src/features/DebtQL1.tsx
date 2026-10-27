@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Badge, Button, DetailGrid, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
+import { Badge, Button, DetailGrid, Icon, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
 import { ThanhMuc, baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
@@ -147,7 +147,7 @@ function TangGiam({ nay, truoc, dang }: { nay: number; truoc: number; dang: Dang
   const hien = dang === "abs"
     ? money(Math.abs(d))
     : `${new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 1 }).format(Math.abs(d / truoc) * 100)}%`;
-  return <span className={`num delta ${d > 0 ? "is-up" : "is-down"}`}>{d > 0 ? "▲" : "▼"} {hien}</span>;
+  return <span className={`num delta ${d > 0 ? "is-up" : "is-down"}`}><Icon name={d > 0 ? "chevronUp" : "chevronDown"} size={12}/>{hien}</span>;
 }
 
 function TyLe({ x }: { x: number }) {
@@ -586,7 +586,7 @@ export function DebtQL1({ actor }: { actor: string }) {
               ? <ONhan key={c.khoa} id={row.id} dangMo={dangMo}>{oDs(row, c)}</ONhan>
               : <td key={c.khoa} className={c.kieu === "tien" ? "num" : undefined}>{oDs(row, c)}</td>))}
           </tr>)}
-          {locDay.length === 0 && <tr><td className="table-empty" colSpan={cotHien.length}>Không có người nộp thuế nào khớp bộ lọc đang đặt.</td></tr>}
+          {locDay.length === 0 && <tr><td className="table-empty" colSpan={cotHien.length}>{coLoc ? "Không có người nộp thuế nào khớp bộ lọc đang đặt. Bấm Đặt lại để bỏ bộ lọc." : "Kỳ và đơn vị đang chọn không có người nộp thuế nào trong danh sách này. Thử chọn kỳ khác ở thanh lọc phía trên."}</td></tr>}
         </tbody>
       </table></TableWrap>
       <footer className="table-footer">

@@ -324,8 +324,8 @@ function ThanhBQ({ x, bq }: { x: number | null; bq: number }) {
   const duoi = x < bq;
   return <span className="so-sanh-o">
     <span className="so-sanh-thanh">
-      <i className={duoi ? "is-duoi" : undefined} style={{ width: `${Math.min(100, x * 100)}%` }}/>
-      <b style={{ left: `${Math.min(100, bq * 100)}%` }} title={`Bình quân ${(bq * 100).toFixed(2).replace(".", ",")}%`}/>
+      <i className={duoi ? "is-duoi" : undefined} style={{ transform: `scaleX(${Math.min(100, x * 100) / 100})` }}/>
+      <b style={{ transform: `translateX(${Math.min(100, bq * 100)}%)` }} title={`Bình quân ${(bq * 100).toFixed(2).replace(".", ",")}%`}/>
     </span>
     <em>{(x * 100).toFixed(2).replace(".", ",")}%</em>
   </span>;
