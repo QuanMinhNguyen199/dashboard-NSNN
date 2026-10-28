@@ -2844,3 +2844,61 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
   .xhc-ngan .xhc-ct th, .xhc-ngan .xhc-ct td { padding: 7px 6px; }
   .xhc-ngan .xhc-ct thead th:first-child { width: 37%; }
 }
+
+/* =====================================================================
+   Thanh bên thu gọn (28/10/2026) — chỉ từ 901px trở lên.
+   ===================================================================== */
+/* Mở rộng: không icon (DESIGN.md), chữ làm điều hướng như cũ. */
+.sidebar .nav-item > .icon, .mobile-drawer .nav-item > .icon { display: none; }
+/* Icon panel nằm trong hàng nhận diện, dùng cùng bề mặt navy. */
+.sidebar .brand { gap: 8px; }
+.sidebar .brand > div { flex: 1; min-width: 0; }
+.sidebar-toggle { display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--on-chrome-2); cursor: pointer; transition: background-color 120ms, color 120ms; }
+@media (hover: hover) and (pointer: fine) {
+  .sidebar-toggle:hover { background: #ffffff14; color: var(--on-chrome-1); }
+}
+.sidebar-toggle:active { background: #ffffff26; color: var(--on-chrome-1); }
+.sidebar-toggle:focus-visible { outline: 2px solid var(--focus-on-chrome); outline-offset: 2px; }
+.sidebar-toggle .icon { flex-shrink: 0; }
+.mobile-drawer .sidebar-toggle { display: none; }
+
+.nhan-noi { position: fixed; left: 80px; z-index: 40; transform: translateY(-50%); padding: 6px 10px; border-radius: var(--radius-control); background: var(--chrome); color: var(--on-chrome-1); font-size: 13px; font-weight: 600; white-space: nowrap; box-shadow: 0 6px 16px rgb(14 42 71 / 28%); pointer-events: none; }
+
+@media (min-width: 901px) {
+  /* Thu gọn: KHÔNG còn rãnh (người dùng chốt 28/10/2026) — thanh bên ẩn hẳn,
+     chỉ nút panel ở lại, đứng đúng toạ độ nó có trong hàng biểu trưng khi hé.
+     `visibility` ẩn thanh nhưng cho riêng nút hiện lại; các mục ẩn cũng ra
+     khỏi thứ tự Tab, nên bàn phím chỉ gặp đúng một nút. */
+  /* Nút panel đứng MỘT chỗ ở cả ba trạng thái — mở, thu gọn, hé — tại góc trên
+     trái, bên trái biểu trưng (người dùng chốt 28/10/2026): rê chuột từ nút
+     sang thanh không có gì nhảy dưới con trỏ. Biểu trưng lùi 40px nhường chỗ. */
+  .sidebar .sidebar-toggle { position: fixed; top: 21px; left: 12px; z-index: 36; }
+  .sidebar .brand { padding-left: 40px; }
+  .ops-app.is-thu-gon .sidebar { visibility: hidden; }
+  .ops-app.is-thu-gon .sidebar-toggle { visibility: visible; color: var(--ink-2); }
+  .ops-app.is-thu-gon .workspace { margin-left: 56px; }
+  @media (hover: hover) and (pointer: fine) {
+    .ops-app.is-thu-gon:not(.is-ngo) .sidebar-toggle:hover { background: var(--surface-tint); color: var(--focus); }
+  }
+  .ops-app.is-thu-gon:not(.is-ngo) .sidebar-toggle:focus-visible { outline-color: var(--focus); }
+  /* Hé: thanh đầy đủ đè lên nội dung, mặt làm việc không dịch. Nút vẫn đứng
+     yên dưới con trỏ. */
+  .ops-app.is-thu-gon.is-ngo .sidebar { visibility: visible; z-index: 35; box-shadow: 4px 0 8px rgb(14 42 71 / 14%), 16px 0 40px rgb(14 42 71 / 22%); }
+  .ops-app.is-thu-gon.is-ngo .sidebar-toggle { color: var(--on-chrome-1); }
+}
+@media (max-width: 900px) { .sidebar-toggle, .nhan-noi { display: none; } }
+
+/* Chuyển động: đổi bề rộng là đổi ngay (không animate width). Ngay sau khi bấm,
+   chữ của thanh mở rộng hiện dần, icon của rãnh hiện dần — một lần, đúng lúc
+   người dùng vừa bấm, không phát lại khi đổi màn. */
+@media (prefers-reduced-motion: no-preference) {
+  .ops-app.is-vua-doi:not(.is-thu-gon) .sidebar .nav-item > span,
+  .ops-app.is-vua-doi:not(.is-thu-gon) .sidebar .brand > div,
+  .ops-app.is-vua-doi:not(.is-thu-gon) .sidebar-user { animation: tb-hien 220ms var(--ease-out) backwards; }
+  .nhan-noi { animation: tb-nhan 120ms ease-out; }
+  /* Hé: lộ dần từ cột của nút ra — nút luôn nằm trong phần đã lộ. */
+  .ops-app.is-thu-gon.is-ngo .sidebar { animation: tb-ngo 180ms var(--ease-out); }
+}
+@keyframes tb-ngo { from { clip-path: inset(0 calc(100% - 56px) 0 0); } to { clip-path: inset(0 -40px 0 0); } }
+@keyframes tb-hien { from { opacity: 0; transform: translateX(-6px); } }
+@keyframes tb-nhan { from { opacity: 0; transform: translate(-4px, -50%); } }
