@@ -4,12 +4,23 @@ import type { Tone } from "@/domain/types";
 
 export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
+  | "business" | "bell" | "overview" | "treasury" | "receivables" | "procedures" | "support" | "inspection" | "taxReturn"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "chevronDown" | "chevronUp" | "menu" | "close" | "users" | "database" | "external" | "logout" | "key";
+  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key";
 
 const paths: Record<IconName, ReactNode> = {
+  business: <><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h1m4 0h1M9 11h1m4 0h1M9 15h1m4 0h1M10 21v-3h4v3"/></>,
+  bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></>,
+  overview: <><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M8 16v-4m4 4V8m4 8v-6"/></>,
+  treasury: <><path d="m3 8 9-5 9 5H3ZM5 11v6m5-6v6m4-6v6m5-6v6M3 21h18M4 18h16"/></>,
+  receivables: <><path d="M4 6h14a2 2 0 0 1 2 2v11H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12v2"/><path d="M20 11h-6v5h6M17 13.5h.01"/></>,
+  procedures: <><rect x="5" y="5" width="14" height="16" rx="1"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m8 12 1 1 2-2m2 1h3m-8 5h8"/></>,
+  support: <><path d="M4 13v-3a8 8 0 0 1 16 0v3M20 16v2a3 3 0 0 1-3 3h-4"/><rect x="3" y="10" width="4" height="7" rx="1"/><rect x="17" y="10" width="4" height="7" rx="1"/></>,
+  inspection: <><path d="M11 21H5V3h10l4 4v4M14 3v5h5M8 12h3M8 16h2"/><circle cx="16" cy="16" r="4"/><path d="m19 19 3 3"/></>,
+  taxReturn: <><path d="M8 21H4V3h16v8M8 7h8M8 11h3M16 14h3a3 3 0 0 1 0 6h-6m3-3-3 3 3 3"/></>,
   chevronDown: <polyline points="6 9 12 15 18 9"/>,
   chevronUp: <polyline points="6 15 12 9 18 15"/>,
+  chevronLeft: <polyline points="15 18 9 12 15 6"/>,
   home: <><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></>,
   debt: <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5M8 16h3"/></>,
   risk: <><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></>,
@@ -24,6 +35,8 @@ const paths: Record<IconName, ReactNode> = {
   upload: <><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v5h16v-5"/></>,
   arrow: <path d="m9 5 7 7-7 7"/>,
   menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
+  money: <><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5v5M17.5 9.5v5"/></>,
+  panel: <><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></>,
   close: <><path d="m6 6 12 12M18 6 6 18"/></>,
   users: <><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 4v2"/></>,
   database: <><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></>,

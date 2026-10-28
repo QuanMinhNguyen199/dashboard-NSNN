@@ -21,8 +21,60 @@ export const NSNN_LINK = (() => {
   return url.href;
 })();
 
+/*
+  THANH BÊN THU GỌN (28/10/2026). Từ 901px trở lên người dùng thu thanh bên
+  về ĐÚNG MỘT nút panel ở góc trên trái — không còn rãnh icon (người dùng chốt
+  28/10/2026, theo cách của Claude) — để bảng rộng gần trọn khung nhìn.
+
+  • Nút panel đứng CỐ ĐỊNH ở góc trên trái, bên trái biểu trưng, ở cả ba
+    trạng thái mở / thu gọn / hé — không nhảy chỗ khi đổi trạng thái; tên nút đổi theo hành động, đọc qua aria-label và hiện
+    bằng nhãn nổi khi Tab tới.
+  • HÉ THANH BÊN: đang thu gọn mà rê chuột vào nút thì thanh đầy đủ trượt ra
+    ĐÈ lên nội dung, không đẩy bố cục; rời chuột khỏi thanh thì thu lại, Esc
+    cũng đóng. Mở chờ 120ms để chuột lướt ngang không bật nhầm, đóng chờ
+    220ms để chuột trượt lệch mép một chút không mất thanh. Khi hé, nút đứng
+    yên dưới con trỏ; bấm nút là ghim mở hẳn. Chỉ máy có chuột (hover:
+    hover); bàn phím bấm nút để mở như cũ.
+  • Trạng thái là tiện ích của RIÊNG từng người, lưu trên máy họ — không vào
+    địa chỉ: gửi liên kết cho người khác không được đổi thanh bên của họ.
+  • Không animate bề rộng (đổi bố cục từng khung hình): đổi ngay, chỉ chữ hiện
+    dần khi mở rộng, và chỉ ngay sau khi bấm — không phát lại mỗi lần đổi màn.
+*/
+const KHOA_THU_GON = "taxops-thanh-ben-thu-gon";
+function docThuGon() { try { return localStorage.getItem(KHOA_THU_GON) === "1"; } catch { return false; } }
+function ghiThuGon(v: boolean) { try { localStorage.setItem(KHOA_THU_GON, v ? "1" : "0"); } catch { /* chế độ riêng tư: chỉ giữ trong phiên */ } }
+
 export function Shell({ view, user, onView, onLogout, children }: { view: ViewId; user: DemoUser; onView: (view: ViewId, muc?: string) => void; onLogout: () => void; children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [thuGon, datThuGonNoi] = useState(docThuGon);
+  const [vuaDoi, datVuaDoi] = useState(false);
+  const [ngo, datNgo] = useState(false);
+  const henNgo = useRef<number>();
+  const [nhan, datNhan] = useState<{ chu: string; top: number; left?: number } | null>(null);
+  const datThuGon = (v: boolean) => {
+    datThuGonNoi(v); ghiThuGon(v); datNhan(null);
+    window.clearTimeout(henNgo.current);
+    /* Ghim từ lúc đang hé: chữ đã hiện sẵn, không cho hiện dần lần nữa. */
+    if (!ngo) { datVuaDoi(true); window.setTimeout(() => datVuaDoi(false), 320); }
+    datNgo(false);
+  };
+  const moNgo = () => {
+    if (!thuGon || ngo || !window.matchMedia("(min-width: 901px) and (hover: hover)").matches) return;
+    window.clearTimeout(henNgo.current);
+    henNgo.current = window.setTimeout(() => { datNhan(null); datNgo(true); }, 120);
+  };
+  const huyHenNgo = () => window.clearTimeout(henNgo.current);
+  const dongNgo = () => {
+    window.clearTimeout(henNgo.current);
+    if (ngo) henNgo.current = window.setTimeout(() => datNgo(false), 220);
+  };
+  /* Nhãn nổi chỉ dựng khi rãnh thu gọn thật sự đang hiện (≥ 901px). */
+  const hienNhan = (chu: string, el: HTMLElement, luonHien = false) => {
+    if (ngo || (!thuGon && !luonHien) || !window.matchMedia("(min-width: 901px)").matches) return;
+    const r = el.getBoundingClientRect();
+    datNhan({ chu, top: r.top + r.height / 2, left: luonHien ? r.right + 8 : undefined });
+  };
+  const anNhan = () => datNhan(null);
   const maPhong = user.phong ? ` ${user.phong}` : "";
   const drawerRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -32,6 +84,14 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   const duoc = navCho(user).filter((item) => !item.an);
   const dangMo = NAV.find((item) => item.id === view)?.thuoc ?? view;
   useEffect(() => setMenuOpen(false), [view]);
+  useEffect(() => { datNgo(false); }, [view]);
+  useEffect(() => {
+    if (!ngo) return;
+    const phim = (e: KeyboardEvent) => { if (e.key === "Escape") datNgo(false); };
+    document.addEventListener("keydown", phim);
+    return () => document.removeEventListener("keydown", phim);
+  }, [ngo]);
+  useEffect(() => () => window.clearTimeout(henNgo.current), []);
   useEffect(() => {
     if (!menuOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -62,8 +122,18 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
     if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   };
 
+  const nutThuGon = <>
+    <button type="button" className="sidebar-toggle" aria-controls="thanh-ben" aria-expanded={!thuGon}
+      aria-label={thuGon ? "Mở rộng thanh bên" : "Thu gọn thanh bên"}
+      onClick={(e) => { const nut = e.currentTarget; datThuGon(!thuGon); if (e.detail === 0) requestAnimationFrame(() => hienNhan(thuGon ? "Thu gọn thanh bên" : "Mở rộng thanh bên", nut, true)); }}
+      onPointerEnter={(e) => thuGon ? moNgo() : hienNhan("Thu gọn thanh bên", e.currentTarget, true)}
+      onPointerLeave={() => { anNhan(); if (!ngo) huyHenNgo(); }}
+      onFocus={(e) => hienNhan(thuGon ? "Mở rộng thanh bên" : "Thu gọn thanh bên", e.currentTarget, true)} onBlur={anNhan}
+      ><Icon name="panel" size={20}/></button>
+  </>;
+
   const nav = <>
-    <div className="brand"><TaxLogo/><div><strong>Quản lý nghiệp vụ Thuế</strong><span>Thuế TP Hà Nội</span></div></div>
+    <div className="brand"><TaxLogo/><div><strong>Quản lý nghiệp vụ Thuế</strong><span>Thuế TP Hà Nội</span></div>{nutThuGon}</div>
     <nav className="side-nav" aria-label="Nghiệp vụ chính">
       {NHOM.map(({ id: nhom, nhan }) => {
         const muc = duoc.filter((item) => item.nhom === nhom);
@@ -80,13 +150,15 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
             NÀO, còn báo cáo và mục của phòng là việc bên trong phòng ấy, nằm
             trên nội dung dưới dạng hai hàng tab — xem `ThanhMuc`.
           */}
-          {muc.map((item) => <NavItem key={item.id} item={item} active={dangMo === item.id} onView={onView}/>)}
+          {muc.map((item) => <NavItem key={item.id} item={item} active={dangMo === item.id} onView={onView} hienNhan={hienNhan} anNhan={anNhan}/>)}
         </div>;
       })}
     </nav>
     <div className="sidebar-user">
       <strong>{user.name}</strong><small title={`${NHAN_VAI[user.vaiTro]}${maPhong} – ${user.unit}`}>{NHAN_VAI[user.vaiTro]}{maPhong} · {rutGonTenDonVi(user.unit)}</small>
-      <button className="logout-button" type="button" onClick={onLogout}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
+      <button className="logout-button" type="button" onClick={onLogout}
+        onPointerEnter={(e) => hienNhan(`Đăng xuất · ${user.name}`, e.currentTarget)} onPointerLeave={anNhan}
+        onFocus={(e) => hienNhan(`Đăng xuất · ${user.name}`, e.currentTarget)} onBlur={anNhan}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
     </div>
   </>;
 
@@ -106,11 +178,13 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
     cáo mẫu bản nháp").
 
   /* `key={view}`: xem ghi chú ở `MucPhanHeProvider` về vì sao nó phải dựng lại. */
-  return <MucPhanHeProvider key={view} view={view}><div className="ops-app">
+  return <MucPhanHeProvider key={view} view={view}><div className={`ops-app${thuGon ? " is-thu-gon" : ""}${ngo ? " is-ngo" : ""}${vuaDoi ? " is-vua-doi" : ""}`}>
     {/* Điều hướng cộng nút đăng xuất đứng trước nội dung, nên không có lối tắt
         thì mỗi lần đổi màn là mấy lần Tab trước khi chạm nội dung. */}
     <a className="skip-link" href="#workspace">Bỏ qua điều hướng, tới nội dung</a>
-    <aside className="sidebar" {...chan}>{nav}</aside>
+    <aside className="sidebar" id="thanh-ben" aria-label="Thanh điều hướng" onPointerEnter={() => { if (ngo) huyHenNgo(); }} onPointerLeave={dongNgo} {...chan}>{nav}</aside>
+
+    {nhan && <div className="nhan-noi" role="tooltip" style={{ top: nhan.top, left: nhan.left }}>{nhan.chu}</div>}
     {/*
       KHÔNG CÒN MĂNG SÉT.
 
@@ -150,6 +224,11 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   </div></MucPhanHeProvider>;
 }
 
-function NavItem({ item, active, onView }: { item: (typeof NAV)[number]; active: boolean; onView: (view: ViewId, muc?: string) => void }) {
-  return <button type="button" className={`nav-item${active ? " is-active" : ""}`} aria-current={active ? "page" : undefined} onClick={() => onView(item.id)}><span>{item.label}</span></button>;
+function NavItem({ item, active, onView, hienNhan, anNhan }: { item: (typeof NAV)[number]; active: boolean; onView: (view: ViewId, muc?: string) => void; hienNhan: (chu: string, el: HTMLElement) => void; anNhan: () => void }) {
+  return <button type="button" className={`nav-item${active ? " is-active" : ""}`} aria-current={active ? "page" : undefined} onClick={() => onView(item.id)}
+    onPointerEnter={(e) => hienNhan(item.label, e.currentTarget)} onPointerLeave={anNhan}
+    onFocus={(e) => hienNhan(item.label, e.currentTarget)} onBlur={anNhan}>
+    {/* Icon chỉ hiện ở rãnh thu gọn — thanh mở rộng vẫn là chữ làm điều hướng. */}
+    <Icon name={item.icon} size={18}/><span>{item.label}</span>
+  </button>;
 }

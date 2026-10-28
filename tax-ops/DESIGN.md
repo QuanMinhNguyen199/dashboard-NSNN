@@ -645,6 +645,7 @@ Từ 720px xuống, dải nhận diện co thành một hàng ngang cao tự nhi
 
 ### Navigation
 - **Sidebar** rộng 252px, nền navy, cuộn dọc riêng, đệm `20px 14px 14px`. Các màn cấp hệ thống chia theo nhóm; nhóm "Dữ liệu" mở đầu bằng **Tình trạng dữ liệu**. Chữ làm điều hướng: mục **không có icon**, chỉ có nhãn 14px. Ba nhóm ("Điều hành" / "Nghiệp vụ" / "Dữ liệu") ngăn nhau bằng `margin-top: 24px` và một vạch `#ffffff2b`; nhãn nhóm là bậc `nav-group`, `aria-hidden` vì `role="group"` đã mang tên. Nhóm là tiêu đề cấu trúc, các mục bên dưới mới là đích điều hướng.
+- **Thu gọn thanh bên** (28/10/2026, từ 901px trở lên; người dùng chốt theo cách của Claude). Nút panel đứng cố định ở góc trên trái (12px, 21px), BÊN TRÁI biểu trưng, ở cả ba trạng thái mở / thu gọn / hé (biểu trưng lùi 40px nhường chỗ). Thu gọn thì thanh bên ẩn hẳn — KHÔNG có rãnh icon — chỉ còn nút panel, mặt làm việc lùi trái 56px để không đè nút. **Hé thanh bên**: rê chuột vào nút thì thanh đầy đủ trượt ra ĐÈ lên nội dung (có bóng đổ, mặt làm việc không dịch), rời chuột khỏi thanh hoặc Esc thì thu lại; mở chờ 120ms, đóng chờ 220ms. Khi hé, nút đứng yên dưới con trỏ; bấm nút là ghim mở hẳn. Chỉ máy có chuột; bàn phím bấm nút để mở. Trạng thái lưu trên máy từng người (`localStorage`), không vào địa chỉ. Không animate bề rộng; thanh hé lộ dần từ cột của nút ra, tắt khi giảm chuyển động.
 - **Không còn submenu trong sidebar** (09/10/2026). Mục của một phòng nằm trên nội dung, thành hai hàng tab — xem **The Sidebar Names The Departments, The Tabs Name The Reports Rule**. Sidebar chỉ còn các màn cấp hệ thống, mỗi phòng một mục.
 - **Mục nghỉ:** chữ `--on-chrome-1` cân nặng 400, nền trong suốt, cao 38px. Khai báo `font-weight: 550` cũ đã bị gỡ: nó bị một quy tắc sau đè mất nên chưa bao giờ có hiệu lực, và 550 cạnh 600 của mục đang mở là bậc không ai nhìn ra.
 - **Hover:** nền `#ffffff14`, chữ trắng, trượt phải 3px — chỉ khi có chuột thật và không yêu cầu giảm chuyển động.
@@ -979,3 +980,7 @@ Nền navy, chữ trắng, bo 10px, cố định góc phải dưới, rộng `mi
 - **Don't** nắn chiều cao hàng bằng một con số cứng hay bằng `line-clamp`; chặn số dòng của ô mới là cách làm.
 - **Don't** đưa dữ liệu thật lên màn bằng bất kỳ đường nào, kể cả sau một công tắc mặc định tắt — xem **The Mockup Uses Only Fake Data Rule**.
 - **Don't** để hệ trôi về dáng sản phẩm tiêu dùng: không gradient, không minh họa, không góc bo lớn, không màu bão hòa ngoài bảng đã đăng ký.
+
+### Icon điều hướng thu gọn (28/10/2026)
+
+Icon 20px, nét 1.8, cùng khung 24×24, màu `--on-chrome-2`; mục đang chọn dùng nền trắng 12% và icon trắng. Ánh xạ: đối tượng → tòa nhà doanh nghiệp; nhắc việc → chuông; quản trị → biểu đồ trong khung; thu NSNN → ngân khố; nợ → ví công nợ; thủ tục → bảng kiểm; hỗ trợ → tai nghe; kiểm tra → hồ sơ và kính lúp; hoàn thuế → chứng từ và mũi tên hoàn trả. Đây là đề xuất thiết kế, chưa có kiểm chứng khả năng nhận diện với người dùng.
