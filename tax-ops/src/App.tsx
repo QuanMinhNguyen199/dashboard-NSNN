@@ -49,8 +49,26 @@ const dashboardLogin = import.meta.env.VITE_PORTAL === "true" && window.location
   bấm thêm một lần ở mọi lần đăng nhập để tới chỗ mình thật sự làm việc.
 */
 /* Bốn nhóm lớn của Quản trị công việc là bốn mục thanh bên, mỗi mục một màn. */
-const NHOM_CUA_VIEW: Partial<Record<ViewId, NhomId>> = { "kq-thu": "thu", "kq-no": "no", "kq-tthc": "tthc", "kq-qlht": "qlht", "kq-kttb": "kttb", "kq-hoan": "hoan" };
-const VIEW_CUA_NHOM: Record<NhomId, ViewId> = { thu: "kq-thu", no: "kq-no", tthc: "kq-tthc", qlht: "kq-qlht", kttb: "kq-kttb", hoan: "kq-hoan" };
+const NHOM_CUA_VIEW: Partial<Record<ViewId, NhomId>> = { "kq-thu": "thu", "kq-no": "no", "kq-kekhai": "kekhai", "kq-hoadon": "hoadon", "kq-tongdai": "tongdai", "kq-kttb": "kttb", "kq-hoan": "hoan" };
+const VIEW_CUA_NHOM: Record<NhomId, ViewId> = { thu: "kq-thu", no: "kq-no", kekhai: "kq-kekhai", hoadon: "kq-hoadon", tongdai: "kq-tongdai", kttb: "kq-kttb", hoan: "kq-hoan" };
+
+/*
+  Liên kết CŨ của hai màn đã chia lại ngày 28/10/2026. `kq-tthc` (TTHC) nay
+  là tab đầu của Quản lý kê khai. `kq-qlht` gom bốn nhóm nhỏ nay nằm ở hai
+  màn: xử phạt, giải thể sang Quản lý kê khai; hóa đơn, hệ số K sang Quản lý
+  hóa đơn. Thẻ "hd" cũ tách đôi — mở về Rà soát TPR. Địa chỉ được viết lại
+  ngay, để liên kết gửi tiếp đi là liên kết mới.
+*/
+function lienKetCu(value: string | null, q: URLSearchParams): ViewId | null {
+  if (value !== "kq-tthc" && value !== "kq-qlht") return null;
+  const nhom = q.get("nhom");
+  if (nhom === "hd") q.set("nhom", "tpr");
+  if (value === "kq-tthc") q.delete("bc");
+  const view: ViewId = value === "kq-tthc" || nhom === "xp" || nhom === "gt" ? "kq-kekhai" : "kq-hoadon";
+  q.set("view", view);
+  window.history.replaceState(null, "", `${window.location.pathname}?${q.toString()}`);
+  return view;
+}
 
 function manMacDinh(user: Pick<DemoUser, "phong" | "vaiTro"> | null): ViewId {
   /* Phó phòng và lãnh đạo Thuế TP chỉ có các màn khối QLDN; việc của họ là đọc
@@ -63,7 +81,10 @@ function manMacDinh(user: Pick<DemoUser, "phong" | "vaiTro"> | null): ViewId {
 }
 
 function readView(): ViewId {
-  const value = new URLSearchParams(window.location.search).get("view");
+  const q = new URLSearchParams(window.location.search);
+  const value = q.get("view");
+  const cu = lienKetCu(value, q);
+  if (cu) return cu;
   if (value === "reports") return readDemoSession()?.phong === "QL3" ? "risk" : "debt";
   if (views.includes(value as ViewId)) return value as ViewId;
   return manMacDinh(readDemoSession());
@@ -122,8 +143,11 @@ export function App() {
       document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
       return;
     }
-    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan quản trị", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-tthc": "Thủ tục hành chính", "kq-qlht": "Quản lý, hỗ trợ doanh nghiệp", "kq-kttb": "Kiểm tra tại bàn", "kq-hoan": "Hoàn thuế", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
-    document.title = `${title[view]} – Quản lý nghiệp vụ Thuế`;
+    const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan quản trị", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-kekhai": "Quản lý kê khai", "kq-hoadon": "Quản lý hóa đơn", "kq-tongdai": "Tổng đài hỗ trợ NNT", "kq-kttb": "Phòng kiểm tra", "kq-hoan": "Hoàn thuế", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
+    /* Tiêu đề theo màn THẬT SỰ hiện ra: vai không mở được màn trên địa chỉ rơi về màn đầu của vai. */
+    const duocMo = navCho(user);
+    const hien = duocMo.some((m) => m.id === view) ? view : duocMo[0]?.id ?? view;
+    document.title = `${title[hien]} – Quản lý nghiệp vụ Thuế`;
   }, [user, view]);
 
   const login = (next: DemoUser) => {

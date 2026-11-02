@@ -1,7 +1,8 @@
 import { hatCua, nguyen, prng } from "@/data/ngauNhien";
+import { tenNNTGia } from "@/data/ngauNhien";
 import {
-  CHI_TIEU_Q, canBoCua, capCua, doiTuongCua, tyLeCua,
-  type ChiTieuQ, type DauViecId, type DongDN, type PhamVi, type ViecQ,
+  CHI_TIEU_Q, canBoCua, capCua, doiTuongCua, donViTheoId, tyLeCua,
+  type CanBoQ, type ChiTieuQ, type DauViecId, type DongDN, type PhamVi, type ViecQ,
 } from "@/data/qldn";
 
 /*
@@ -323,4 +324,140 @@ export function xepHangCanBo(dvId: string, thang: number): HangCanBo[] {
   return dong
     .sort((a, b) => b.diem - a.diem || a.duoi - b.duoi || a.ten.localeCompare(b.ten, "vi"))
     .map((d, i) => ({ ...d, hang: i + 1 }));
+}
+
+/* =====================================================================
+   6. Người nộp thuế của một cán bộ (Thu NSNN → Theo cán bộ)
+   ===================================================================== */
+
+/*
+  Bấm một cán bộ ở bảng "Theo cán bộ" của Thu NSNN thì ra danh sách NNT cán
+  bộ ấy quản lý, kèm số thu của từng NNT; bấm một NNT thì ra hồ sơ của nó
+  (người dùng chốt 28/10/2026, theo bản của nhóm bên kia).
+
+  Danh sách là các DN ĐANG HOẠT ĐỘNG (hoạt động + mới thành lập) trong phần
+  DN của cán bộ — cùng số với Tổng quan đối tượng khi xem phạm vi cán bộ ấy.
+  Số thu của từng NNT CHIA RA từ số thu của cán bộ (`capCua`), nên cộng cả
+  danh sách ra đúng con số trên dòng của cán bộ. Phân bổ lệch như thu thật:
+  vài DN lớn chiếm phần lớn số thu. Trọng số gieo theo cán bộ, không theo
+  tháng, nên một DN giữ nguyên thứ hạng khi đổi kỳ.
+*/
+export const soNNTCanBo = (dvId: string, cb: CanBoQ) => {
+  const o = doiTuongCua(dvId, cb.phan);
+  return o.trangThai.HD + o.trangThai.MOI;
+};
+
+function trongSoNNT(dvId: string, cb: CanBoQ) {
+  const n = soNNTCanBo(dvId, cb);
+  const r = prng(hatCua(83, "nnt", cb.id));
+  const w = Array.from({ length: n }, (_, i) => (0.55 + r() * 0.9) / Math.pow(i + 1, 1.15));
+  const tong = w.reduce((a, b) => a + b, 0);
+  return w.map((x) => x / tong).sort((a, b) => b - a);
+}
+
+function dungNNT(dvId: string, cb: CanBoQ, j: number, thu: number): DongDN {
+  const d = donViTheoId(dvId)!;
+  const r = prng(hatCua(83, "nnt-dn", cb.id, String(j)));
+  /* MST 10 chữ số dựng từ (đơn vị, cán bộ, thứ tự): không trùng nhau trong
+     một danh sách, và nằm ngoài dải `mstGia` của danh sách đối tượng. */
+  const so = Number(dvId.replace(/\D/g, "")) * 1000000 + Number(cb.id.replace(/^.*CB/, "")) * 10000 + j;
+  const moi = r() < 0.05;
+  return {
+    khoa: `${cb.id}.${j}`,
+    mst: `02${String(so).padStart(8, "0")}`, ten: tenNNTGia(so), donVi: d.ngan, canBo: cb.ten, trangThai: moi ? "MOI" : "HD",
+    namThanhLap: moi ? 2026 : 2026 - nguyen(r, 1, 24),
+    von: Math.round((d.khoi === "VP" ? 5 + r() * 400 : 0.5 + r() * 30) * 10) / 10,
+    thu2026: thu,
+    no: r() < 0.14 ? Math.round(r() * (d.khoi === "VP" ? 40 : 3) * 100) / 100 : 0,
+  };
+}
+
+/** Danh sách NNT của cán bộ, xếp theo số thu lũy kế giảm dần. */
+export function nntCuaCanBo(ct: ChiTieuQ, dvId: string, cb: CanBoQ, thang: number): DongDN[] {
+  const tong = capCua(ct, dvId, thang, 2026, cb).tu;
+  const ts = trongSoNNT(dvId, cb);
+  const thu = ts.map((t) => Math.round(tong * t * 100) / 100);
+  /* Phần lẻ do làm tròn dồn vào DN đầu, để cộng lại đúng số của cán bộ. */
+  thu[0] = Math.round((tong - thu.slice(1).reduce((a, b) => a + b, 0)) * 100) / 100;
+  return thu.map((x, j) => dungNNT(dvId, cb, j, x));
+}
+
+/* ---------- Tình hình một DN theo từng nghiệp vụ ---------- */
+
+/*
+  Một DN nhìn qua các phân hệ: phân công, thu, nợ, hoàn, kiểm tra tại bàn, kê
+  khai, hóa đơn. Số đặt ra, gieo trên dãy riêng (hạt 87) theo khóa của DN.
+*/
+const NGANH = [
+  "Kinh doanh bất động sản, quyền sử dụng đất",
+  "Xây dựng nhà để ở",
+  "Bán buôn máy móc, thiết bị và phụ tùng máy khác",
+  "Hoạt động tư vấn quản lý",
+  "Sản xuất các cấu kiện kim loại",
+  "Vận tải hàng hóa bằng đường bộ",
+  "Lập trình máy vi tính",
+  "Bán lẻ hàng hóa trong siêu thị, trung tâm thương mại",
+];
+const LOAI_HINH = [
+  "Công ty TNHH một thành viên", "Công ty TNHH hai thành viên trở lên", "Công ty cổ phần", "Doanh nghiệp có vốn đầu tư nước ngoài",
+];
+const TT_KTTB = ["Đã ban hành thông báo giải trình", "Đang kiểm tra", "Đã kết thúc, chưa phát hiện sai phạm"];
+
+export interface NghiepVuDN {
+  ngayPhanCong: Date; nganhNghe: string; loaiHinh: string;
+  thu: { thang: number; luyKe: number; cungKy: number };
+  no: { hienTai: number; dauNam: number; chamNop: number };
+  hoan: { dangXuLy: number; quaHan: number; soTien: number };
+  kttb: { trongKeHoach: boolean; trangThai: string | null };
+  keKhai: { chuaNop: number; nopCham: number };
+  hoaDon: { canXacMinh: number; quaHan: number; tpr: boolean; heSoK: boolean };
+}
+
+export function nghiepVuDN(d: DongDN, thang: number): NghiepVuDN {
+  const r = prng(hatCua(87, "nvdn", d.khoa));
+  const luyKe = d.thu2026;
+  const dangXuLy = r() < 0.18 ? nguyen(r, 1, 3) : 0;
+  const trongKeHoach = r() < 0.16;
+  const canXacMinh = r() < 0.12 ? nguyen(r, 1, 12) : 0;
+  return {
+    ngayPhanCong: new Date(Math.max(d.namThanhLap, 2019 + nguyen(r, 0, 6)), nguyen(r, 0, 11), nguyen(r, 1, 28)),
+    nganhNghe: NGANH[nguyen(r, 0, NGANH.length - 1)],
+    loaiHinh: LOAI_HINH[nguyen(r, 0, LOAI_HINH.length - 1)],
+    thu: {
+      thang: Math.round(luyKe * (0.6 + r() * 0.8) / thang * 100) / 100,
+      luyKe,
+      cungKy: d.namThanhLap >= 2026 ? 0 : Math.round(luyKe / (0.8 + r() * 0.5) * 100) / 100,
+    },
+    no: {
+      hienTai: d.no,
+      dauNam: d.no ? Math.round(d.no * (0.5 + r() * 1.2) * 100) / 100 : (r() < 0.1 ? Math.round(r() * 2 * 100) / 100 : 0),
+      chamNop: d.no ? Math.round(d.no * (0.02 + r() * 0.08) * 1000) : 0,
+    },
+    hoan: { dangXuLy, quaHan: dangXuLy && r() < 0.3 ? 1 : 0, soTien: dangXuLy ? Math.round(80 + r() * 4000) : 0 },
+    kttb: { trongKeHoach, trangThai: trongKeHoach ? TT_KTTB[nguyen(r, 0, TT_KTTB.length - 1)] : null },
+    keKhai: { chuaNop: r() < 0.08 ? nguyen(r, 1, 2) : 0, nopCham: r() < 0.2 ? nguyen(r, 1, 3) : 0 },
+    hoaDon: { canXacMinh, quaHan: canXacMinh && r() < 0.4 ? nguyen(r, 1, canXacMinh) : 0, tpr: r() < 0.06, heSoK: r() < 0.05 },
+  };
+}
+
+/* =====================================================================
+   7. Hồ sơ một NNT của danh sách chênh lệch QL2-01
+   ===================================================================== */
+
+/*
+  Báo cáo › DS NNT chênh lệch mở hồ sơ DN khi bấm một NNT (người dùng chốt
+  29/10/2026). Danh sách QL2-01 chỉ mang MST, tên, đơn vị, cán bộ; các trường
+  còn lại của hồ sơ gieo theo MST (hạt 91), nên cùng một MST luôn ra cùng một
+  hồ sơ ở mọi kỳ và mọi dòng (một MST có thể lệch tới bốn loại tờ khai).
+*/
+export function dnTuDanhSach(nnt: { mst: string; ten: string; donVi: string; canBo: string }): DongDN {
+  const r = prng(hatCua(91, "dn-ql2", nnt.mst));
+  return {
+    khoa: `ql2.${nnt.mst}`,
+    mst: nnt.mst, ten: nnt.ten, donVi: nnt.donVi, canBo: nnt.canBo, trangThai: "HD",
+    namThanhLap: 2026 - nguyen(r, 1, 24),
+    von: Math.round((5 + r() * 400) * 10) / 10,
+    thu2026: Math.round(r() * 80 * 100) / 100,
+    no: r() < 0.14 ? Math.round(r() * 40 * 100) / 100 : 0,
+  };
 }

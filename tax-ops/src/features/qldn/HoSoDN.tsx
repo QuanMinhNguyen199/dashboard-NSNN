@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { DetailGrid, Icon, TableWrap, integer } from "@/components/ui";
 import { TRANG_THAI_DN, type DongDN } from "@/data/qldn";
-import { hoSoDN, type NamDN } from "@/data/hoSoQLDN";
+import { hoSoDN, nghiepVuDN, type NamDN, type NghiepVuDN } from "@/data/hoSoQLDN";
 
 /*
   Hồ sơ sức khỏe một doanh nghiệp (biên bản 22/10/2026 §3.2: "hiển thị lịch
@@ -11,7 +11,9 @@ import { hoSoDN, type NamDN } from "@/data/hoSoQLDN";
   chỉ `so=` — ngoại lệ thứ ba của The No-Overlay Rule, đúng như danh sách NNT
   của QL3.
 
-  Thứ tự đọc: doanh nghiệp là ai → xếp loại (ô cố định, đang chờ tiêu chí) →
+  Thứ tự đọc: doanh nghiệp là ai → tình hình theo từng nghiệp vụ (thu, nợ,
+  hoàn, kiểm tra tại bàn, kê khai, hóa đơn — thêm 28/10/2026 khi hồ sơ mở
+  được từ Thu NSNN) → xếp loại (ô cố định, đang chờ tiêu chí) →
   dấu hiệu rủi ro → so qua các năm → ba lịch sử (xử phạt, cưỡng chế, thủ tục).
 
   KHÔNG chấm điểm. Biên bản giao Phòng Kiểm tra gửi tiêu chí xếp loại và cách
@@ -34,8 +36,56 @@ const CHI_SO: { nhan: string; gia: (n: NamDN) => number; hien: (n: NamDN) => str
   { nhan: "Hồ sơ thủ tục đã nộp", gia: (n) => n.soTTHC, hien: (n) => integer(n.soTTHC), tot: "cao" },
 ];
 
-export function HoSoDN({ d }: { d: DongDN }) {
+/* Tiền của khối nghiệp vụ: thu và nợ tính bằng tỷ đồng, phần nhỏ hiện triệu. */
+const tien = (ty: number) => !ty ? "0" : ty >= 1 ? `${tyDong(ty)} tỷ đồng` : `${integer(Math.round(ty * 1000))} triệu đồng`;
+const coKhong = (x: boolean) => x ? "Có" : "Không";
+
+/*
+  Sáu khối nghiệp vụ, mỗi khối vài dòng nhãn – giá trị. Ô nào khác 0 / "Có"
+  mới in đậm, để mắt dừng đúng chỗ có việc — không tô màu cả khối.
+*/
+function KhoiNghiepVu({ nv, thang, soCuongChe }: { nv: NghiepVuDN; thang: number; soCuongChe: number }) {
+  const khoi: { ten: string; dong: [string, string, boolean?][] }[] = [
+    { ten: "Thu NSNN", dong: [
+      [`Đã nộp tháng ${thang}/2026`, tien(nv.thu.thang)],
+      [`Lũy kế đến hết tháng ${thang}`, tien(nv.thu.luyKe)],
+      ["Cùng kỳ năm trước", nv.thu.cungKy ? tien(nv.thu.cungKy) : "Chưa thành lập"],
+    ] },
+    { ten: "Nợ và cưỡng chế", dong: [
+      ["Nợ thuế hiện tại", nv.no.hienTai ? tien(nv.no.hienTai) : "Không nợ", nv.no.hienTai > 0],
+      ["Nợ đầu năm", tien(nv.no.dauNam)],
+      ["Tiền chậm nộp", nv.no.chamNop ? `${integer(nv.no.chamNop)} triệu đồng` : "0"],
+      ["Biện pháp cưỡng chế đang áp", soCuongChe ? `${soCuongChe} biện pháp` : "Không", soCuongChe > 0],
+    ] },
+    { ten: "Hoàn thuế", dong: [
+      ["Hồ sơ đang xử lý", integer(nv.hoan.dangXuLy), nv.hoan.dangXuLy > 0],
+      ["Trong đó quá hạn", integer(nv.hoan.quaHan), nv.hoan.quaHan > 0],
+      ["Số tiền đề nghị hoàn", nv.hoan.soTien ? `${integer(nv.hoan.soTien)} triệu đồng` : "0"],
+    ] },
+    { ten: "Kiểm tra tại bàn", dong: [
+      ["Trong kế hoạch kiểm tra năm", coKhong(nv.kttb.trongKeHoach), nv.kttb.trongKeHoach],
+      ["Trạng thái", nv.kttb.trangThai ?? "—"],
+    ] },
+    { ten: "Kê khai", dong: [
+      ["Tờ khai chưa nộp", integer(nv.keKhai.chuaNop), nv.keKhai.chuaNop > 0],
+      ["Tờ khai nộp chậm năm 2026", integer(nv.keKhai.nopCham), nv.keKhai.nopCham > 0],
+    ] },
+    { ten: "Hóa đơn", dong: [
+      ["Hóa đơn cần xác minh", integer(nv.hoaDon.canXacMinh), nv.hoaDon.canXacMinh > 0],
+      ["Trong đó quá hạn", integer(nv.hoaDon.quaHan), nv.hoaDon.quaHan > 0],
+      ["Trong diện rà soát TPR", coKhong(nv.hoaDon.tpr), nv.hoaDon.tpr],
+      ["Cảnh báo hệ số K", coKhong(nv.hoaDon.heSoK), nv.hoaDon.heSoK],
+    ] },
+  ];
+  return <div className="qd-dn-nv">{khoi.map((k) => <div key={k.ten} className="qd-dn-nv-o">
+    <h4>{k.ten}</h4>
+    <dl>{k.dong.map(([nhan, gia, dam]) => <div key={nhan}><dt>{nhan}</dt><dd className={dam ? "is-co" : undefined}>{gia}</dd></div>)}</dl>
+  </div>)}</div>;
+}
+
+export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
   const hs = useMemo(() => hoSoDN(d), [d]);
+  const nv = useMemo(() => nghiepVuDN(d, thang), [d, thang]);
   const nam = hs.nam.filter((n) => n.co);
   const ttTen = TRANG_THAI_DN.find((t) => t.id === d.trangThai)!.ten;
 
@@ -46,9 +96,16 @@ export function HoSoDN({ d }: { d: DongDN }) {
       { label: "Năm thành lập", value: d.namThanhLap },
       { label: "Đơn vị quản lý", value: d.donVi },
       { label: "Cán bộ quản lý", value: d.canBo },
+      { label: "Ngày phân công", value: ngayVN(nv.ngayPhanCong) },
       { label: "Vốn điều lệ", value: `${tyDong(d.von)} tỷ đồng` },
-      { label: "Nợ thuế hiện tại", value: d.no ? `${tyDong(d.no)} tỷ đồng` : "Không nợ" },
+      { label: "Loại hình", value: nv.loaiHinh },
+      { label: "Ngành nghề kinh doanh chính", value: nv.nganhNghe },
     ]}/>
+
+    <section className="qd-dn-khoi" aria-labelledby="qd-dn-nv">
+      <h3 id="qd-dn-nv">Tình hình theo nghiệp vụ<small>đến hết tháng {thang}/2026</small></h3>
+      <KhoiNghiepVu nv={nv} thang={thang} soCuongChe={hs.cuongChe.filter((c) => c.conHieuLuc).length}/>
+    </section>
 
     <section className="qd-dn-khoi" aria-labelledby="qd-dn-xl">
       <h3 id="qd-dn-xl">Xếp loại sức khỏe</h3>

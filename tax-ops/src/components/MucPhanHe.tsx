@@ -224,10 +224,24 @@ const Ngu = createContext<GiaTri | null>(null);
   Quản trị công việc. Một phân hệ nhúng vào nhóm "Cưỡng chế" chỉ được mở đúng
   mục của báo cáo cưỡng chế; mục khác của phòng ấy không thuộc nhóm này.
 */
-export function MucPhanHeProvider({ view, choPhep = null, children }: { view: ViewId; choPhep?: readonly string[] | null; children: ReactNode }) {
+/*
+  `dieuKhien` (29/10/2026): báo cáo NHÚNG trong một nhóm chỉ tiêu không tự dựng
+  hàng tab — mục của nó nằm ngay trên hàng "Chỉ tiêu | …" của nhóm (xem
+  `mucNhung`), nên nhóm giữ trạng thái `muc` và truyền vào đây.
+*/
+export function MucPhanHeProvider({ view, choPhep = null, dieuKhien, children }: { view: ViewId; choPhep?: readonly string[] | null; dieuKhien?: { muc: string; datMuc: (muc: string) => void }; children: ReactNode }) {
   const ds = phang(view).filter((m) => !choPhep || choPhep.includes(m.id));
-  const [muc, datMuc] = useThamSo<string>("muc", ds[0]?.id ?? "tongquan", ds.map((m) => m.id));
-  return <Ngu.Provider value={{ muc, datMuc, choPhep }}>{children}</Ngu.Provider>;
+  const [mucRieng, datMucRieng] = useThamSo<string>("muc", ds[0]?.id ?? "tongquan", ds.map((m) => m.id));
+  const gia = dieuKhien ? { ...dieuKhien, choPhep } : { muc: mucRieng, datMuc: datMucRieng, choPhep };
+  return <Ngu.Provider value={gia}>{children}</Ngu.Provider>;
+}
+
+/** Mục của một báo cáo nhúng, PHẲNG, theo thứ tự cụm: báo cáo một mục mang tên báo cáo, báo cáo nhiều mục mang tên từng mục. */
+export function mucNhung(view: ViewId, choPhep: readonly string[]) {
+  return (CUM_MUC[view] ?? []).flatMap((n) => {
+    const co = n.muc.filter((m) => choPhep.includes(m.id));
+    return co.map((m) => ({ id: m.id, nhan: co.length === 1 ? n.nhan ?? m.nhan : m.nhan, khung: Boolean(n.khung) }));
+  });
 }
 
 export function useMucPhanHe() {
@@ -257,21 +271,10 @@ export function useMucPhanHe() {
 */
 export function ThanhMuc({ view }: { view: ViewId }) {
   const { muc, datMuc, choPhep } = useMucPhanHe();
-  /* Nhúng trong nhóm chỉ tiêu: chỉ giữ báo cáo và mục được phép. Còn đúng
-     MỘT báo cáo thì bỏ hàng báo cáo — tên nó đã nằm trên công tắc "Kết quả |
-     Báo cáo" của nhóm — và chỉ dựng hàng mục khi có từ hai mục. */
-  const nhom = (CUM_MUC[view] ?? [])
-    .map((n) => (choPhep ? { ...n, muc: n.muc.filter((m) => choPhep.includes(m.id)) } : n))
-    .filter((n) => n.muc.length > 0);
-  if (choPhep && nhom.length === 1) {
-    const chi = nhom[0];
-    if (chi.muc.length < 2) return null;
-    return <nav className="thanh-muc" aria-label={NHAN_CUM[view] ?? "Mục của báo cáo"}>
-      <HangTab lop="thanh-muc-hang is-con is-don" khoaMo={muc}>
-        {chi.muc.map((m) => <button key={m.id} type="button" className={`muc-tab-con${muc === m.id ? " is-active" : ""}`} data-mo={muc === m.id ? "1" : undefined} aria-current={muc === m.id ? "page" : undefined} onClick={() => datMuc(m.id)}>{m.nhan}</button>)}
-      </HangTab>
-    </nav>;
-  }
+  /* Nhúng trong nhóm chỉ tiêu: mục đã nằm trên hàng "Chỉ tiêu | …" của nhóm
+     (29/10/2026, xem `mucNhung`), nên phân hệ không dựng hàng tab của nó. */
+  if (choPhep) return null;
+  const nhom = (CUM_MUC[view] ?? []).filter((n) => n.muc.length > 0);
   const dangNhom = nhom.find((n) => n.muc.some((m) => m.id === muc)) ?? nhom[0];
   const laLa = (dangNhom?.muc.length ?? 0) === 1;
 

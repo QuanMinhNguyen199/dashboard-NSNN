@@ -114,9 +114,9 @@ export const TIEU_CHI_BANG: TieuChiBang[] = [
     lay: (dv, t, cb) => { const c = cap("tthc", dv, t, cb); const ton = Math.max(1, Math.round(c.mau * phan(dv, "ton", 0.08, 0.14))); return [Math.min(ton, Math.round(c.tu * phan(dv, "tonqh", 0.25, 0.45))), ton]; } },
 
   /* ---- Quản lý, hỗ trợ DN ---- */
-  { stt: 17, the: "hd", ten: "Rà soát TPR", phep: "CHIA",
+  { stt: 17, the: "tpr", ten: "Rà soát TPR", phep: "CHIA",
     nguon: [{ nhan: "NNT đã thực hiện rà soát", dvt: NNT }, { nhan: "Tổng số NNT phải thực hiện rà soát", dvt: NNT }], lay: thang_("tpr") },
-  { stt: 18, the: "hd", ten: "Xác minh hóa đơn", phep: "CHIA",
+  { stt: 18, the: "xmhd", ten: "Xác minh hóa đơn", phep: "CHIA",
     nguon: [{ nhan: "HĐ đã thực hiện xác minh", dvt: "hóa đơn" }, { nhan: "Tổng số HĐ phải thực hiện xác minh", dvt: "hóa đơn" }], lay: thang_("xmhd") },
   { stt: 19, the: "k", ten: "Hệ số K", phep: "CHIA",
     nguon: [{ nhan: "NNT đã thực hiện rà soát", dvt: NNT }, { nhan: "Tổng số NNT phải thực hiện rà soát", dvt: NNT }], lay: thang_("k") },
