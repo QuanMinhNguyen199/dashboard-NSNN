@@ -67,7 +67,8 @@ export const NAV: MucNav[] = [
   /* Kiểm tra tại bàn và Hoàn thuế đứng NGOÀI Quản trị công việc, ngay sau
      Cảnh báo nhắc việc (người dùng chốt 28/10/2026, theo cách chia phía Thuế). */
   /* "Kiểm tra tại bàn" đổi thành "Phòng kiểm tra" (30/10/2026): mục gom hai
-     tab — Kiểm tra tại bàn (giữ nguyên) và Kiểm tra tại trụ sở. */
+     tab — Tổng quan (kiểm tra tại trụ sở, đứng trái từ 02/11/2026) và Kiểm
+     tra tại bàn (giữ nguyên). */
   { id: "kq-kttb", label: "Phòng kiểm tra", short: "Kiểm tra", icon: "inspection", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-hoan", label: "Hoàn thuế", short: "Hoàn thuế", icon: "taxReturn", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
 
