@@ -37,6 +37,13 @@ export function PhamViProvider({ children }: { children: ReactNode }) {
 
   Cán bộ không có ô chọn: biên bản §3 "chuyên viên xem số của mình".
 */
+/** Đổi phòng đang xem của trưởng phòng ("" = phòng của mình) — dùng khi một dòng bảng dẫn sang báo cáo của phòng khác. */
+export function useDatXemPhong() {
+  const ngu = useContext(Ngu);
+  if (!ngu) throw new Error("useDatXemPhong phải nằm trong PhamViProvider.");
+  return ngu.datXem;
+}
+
 export const coCongTacKhoi = (pv: PhamVi | null) => Boolean(pv) && (pv!.vai === "TP" || pv!.vai === "PP");
 
 export function usePhamVi(user: DemoUser): { pv: PhamVi | null; ky: KyQ; datKy: (id: string) => void } {
@@ -80,9 +87,9 @@ function ChonPhong({ pv }: { pv: PhamVi }) {
   biết con số trước mắt thuộc kỳ nào.
 */
 export function ThanhPhamVi({ pv, ky, datKy, coKy = true, kyChu, phamViChu, them }: { pv: PhamVi; ky?: KyQ; datKy?: (id: string) => void; coKy?: boolean; kyChu?: string; phamViChu?: string; them?: ReactNode }) {
-  const cho = choChotCua(pv.vai);
   const chonKy = coKy && ky && datKy && !kyChu;
   return <div className="bo-loc-chung qd-pham-vi">
+    <NutThuGon/>
     <div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-ky">Kỳ</span>
       {chonKy
@@ -102,12 +109,18 @@ export function ThanhPhamVi({ pv, ky, datKy, coKy = true, kyChu, phamViChu, them
     {/* Thời điểm cập nhật đứng cạnh nhãn mô phỏng: người đọc số cần biết số
         "tươi" tới đâu trước khi trích nó đi họp. Giờ kéo là giờ của lịch kéo
         dữ liệu hằng ngày (mô phỏng). */}
-    <span className="bo-loc-phu">
-      <b>{NHAN_VAI_Q[pv.vai]}</b>
-      {cho.length > 0 && <> · <span className="qd-cho-chot" title="Ma trận chỉ số theo vai trò, biên bản 09/10/2026 §4">{cho.map((c) => NHAN_CHI_SO[c]).join(", ")}: chờ chốt quyền</span></>}
-      {" · "}Cập nhật 06:00 {new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}{" · "}Số liệu mô phỏng
-    </span>
+    <PhuVai pv={pv}/>
   </div>;
+}
+
+/** Dòng phụ cuối thanh phạm vi: vai, quyền chờ chốt, giờ cập nhật. Dùng chung cho ô thanh lọc báo cáo nhúng. */
+export function PhuVai({ pv, lop = "" }: { pv: PhamVi; lop?: string }) {
+  const cho = choChotCua(pv.vai);
+  return <span className={`bo-loc-phu ${lop}`.trim()}>
+    <b>{NHAN_VAI_Q[pv.vai]}</b>
+    {cho.length > 0 && <> · <span className="qd-cho-chot" title="Ma trận chỉ số theo vai trò, biên bản 09/10/2026 §4">{cho.map((c) => NHAN_CHI_SO[c]).join(", ")}: chờ chốt quyền</span></>}
+    {" · "}Cập nhật 06:00 {new Date().toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}{" · "}Số liệu mô phỏng
+  </span>;
 }
 
 /*
@@ -187,4 +200,39 @@ export function NgoaiPhamVi() {
     <strong>Tài khoản này không thuộc không gian làm việc khối QLDN.</strong>
     <span>Không gian này dành cho cán bộ, phó phòng, trưởng phòng các phòng QLDN và lãnh đạo Thuế TP. Dùng thanh bên để mở màn của vai bạn; nếu bạn cần quyền xem, liên hệ quản trị hệ thống.</span>
   </div>;
+}
+/*
+  Thanh phạm vi trên ĐIỆN THOẠI (29/10/2026): thu thành MỘT dòng tóm tắt giá
+  trị đang áp dụng ("Tháng 9/2026 · Phòng QLHT DN 3"), bấm để mở các ô chọn.
+  Mở đầy đủ, thanh dính đầu màn cao 144–172px — gần một phần năm màn hình suốt
+  khi cuộn. Tóm tắt đọc từ chính các ô trong thanh (kể cả thanh lọc báo cáo
+  nhúng vẽ vào bằng portal), nên nó luôn nói đúng thứ đang áp dụng. Ẩn các ô
+  bằng CSS anh em (`[aria-expanded=false] ~ *`), không đụng `className` của
+  thanh. Từ 701px nút không hiện và thanh như cũ.
+*/
+export function NutThuGon() {
+  const nut = useRef<HTMLButtonElement>(null);
+  const [mo, datMo] = useState(false);
+  const [tom, datTom] = useState("");
+  useEffect(() => {
+    const thanh = nut.current?.parentElement;
+    if (!thanh) return;
+    const doc = () => {
+      const phan = [...thanh.querySelectorAll(".bo-loc-muc")].map((m) => {
+        const chon = m.querySelector("select");
+        const chu = chon ? chon.selectedOptions[0]?.textContent : m.querySelector(".bo-loc-gia, .bo-loc-ky, .bo-loc-nut > span")?.textContent;
+        return (chu ?? "").split(" · ")[0].trim();
+      }).filter(Boolean);
+      datTom(phan.join(" · "));
+    };
+    doc();
+    const theoDoi = new MutationObserver(doc);
+    theoDoi.observe(thanh, { childList: true, subtree: true, characterData: true });
+    thanh.addEventListener("change", doc);
+    return () => { theoDoi.disconnect(); thanh.removeEventListener("change", doc); };
+  }, []);
+  return <button ref={nut} type="button" className="pv-thu-gon" aria-expanded={mo} onClick={() => datMo((x) => !x)}>
+    <span><span className="sr-only">Kỳ và phạm vi: </span>{tom || "Kỳ và phạm vi"}</span>
+    <Icon name="chevronDown" size={16}/>
+  </button>;
 }

@@ -476,7 +476,11 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 
 .table-shell { margin-inline: -14px; }
 
-.table-wrap { max-height: min(62vh, 560px); overflow: auto; }
+/* `position: relative`: chữ ẩn cho trình đọc màn hình (`.sr-only`, định vị
+   tuyệt đối) trong ô bảng phải lấy khung cuộn làm gốc. Thiếu nó, chữ ẩn ở cột
+   bị khuất neo vào khối ngoài và kéo cả trang cuộn ngang (đo 29/10/2026: 96–104px
+   ở 768px trên Thu, Nợ). */
+.table-wrap { position: relative; max-height: min(62vh, 560px); overflow: auto; }
 /* Dải chỉ được DỰNG khi bảng thật sự tràn (xem `TableWrap`), nên ở đây không
    còn `display: none` theo điểm ngắt nữa — có mặt là có việc. */
 .scroll-hint { min-height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 5px; padding: 0 12px; color: var(--brand); border-bottom: 1px solid var(--line-soft); background: var(--surface-tint); font-size: 11px; font-weight: 600; }
@@ -2198,7 +2202,6 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 */
 .qd-kq { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 16px; }
 .qd-kq-nhom { grid-column: span min(var(--o), 6); min-width: 0; }
-.qd-kq-nhom.is-tthc { grid-column: span 2; }
 .qd-kq-tieu-de { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; overflow: hidden; color: var(--ink); font-size: 14px; font-weight: 650; white-space: nowrap; text-overflow: ellipsis; }
 .qd-kq-tieu-de small { color: var(--ink-3); font-size: 12px; font-weight: 500; }
 .qd-kq-khung { display: grid; grid-template-columns: repeat(var(--o), minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
@@ -2248,17 +2251,11 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 
 /* Khổ vừa: hai cột — Thu và TTHC cạnh nhau, Quản lý nợ một hàng, Quản lý
    hỗ trợ DN ba ô × hai hàng. */
-@media (max-width: 1360px) {
-  .qd-kq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .qd-kq-nhom.is-thu { order: 1; grid-column: span 1; }
-  .qd-kq-nhom.is-tthc { order: 2; grid-column: span 1; }
-  .qd-kq-nhom.is-no { order: 3; grid-column: 1 / -1; }
-  .qd-kq-nhom.is-qlht { order: 4; grid-column: 1 / -1; }
-}
+
 @media (max-width: 700px) {
   .qd-kq { grid-template-columns: 1fr; }
-  .qd-kq-nhom.is-thu, .qd-kq-nhom.is-tthc { grid-column: 1 / -1; }
-  .qd-kq-khung, .qd-kq-nhom.is-qlht .qd-kq-khung { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .qd-kq-nhom { grid-column: 1 / -1; }
+  .qd-kq-khung { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .qd-kq-o { padding: 14px; }
   .qd-kq-so > b { font-size: 20px; }
 }
@@ -2273,7 +2270,7 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 .qd-kq-moc > span { display: grid; gap: 1px; justify-items: start; white-space: nowrap; }
 .qd-kq-moc em { font-size: 10.5px; letter-spacing: .02em; }
 @media (max-width: 700px) {
-  .qd-kq-khung, .qd-kq-nhom.is-qlht .qd-kq-khung { grid-template-columns: 1fr; }
+  .qd-kq-khung { grid-template-columns: 1fr; }
 }
 /* Khung cùng hàng cao bằng nhau: khung TTHC không có dòng ghi chú vẫn hết đúng chỗ hai khung bên cạnh. */
 .qd-kq-nhom { display: grid; grid-template-rows: auto 1fr; }
@@ -2332,23 +2329,21 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
 .qd-page .bo-loc-seg { padding: 3px; }
 
 /*
-  Layout: KHÔNG đổi thứ tự nhóm theo khổ màn hình. `order` cũ đưa TTHC lên
-  trước Quản lý nợ ở ≤1360px — thứ tự nhìn khác thứ tự Tab (WCAG 1.3.2,
-  2.4.3). Lưới bốn cột giữ đúng thứ tự file chấm điểm: hàng một Thu (1) +
-  Quản lý nợ (3), hàng hai TTHC (1) + Quản lý, hỗ trợ DN (3 ô × 2 hàng).
+  Layout: KHÔNG đổi thứ tự nhóm theo khổ màn hình — thứ tự nhìn phải là thứ
+  tự Tab (WCAG 1.3.2, 2.4.3). Thứ tự DOM là `THU_TU_TQ`. Lưới bốn cột (chia
+  lại 28/10/2026): Thu (1) + Quản lý nợ (3) · KT tại bàn (2) + Hoàn thuế (2)
+  · Quản lý kê khai (cả hàng) · Quản lý hóa đơn (cả hàng).
 */
 @media (max-width: 1360px) {
   .qd-kq { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .qd-kq-nhom.is-thu, .qd-kq-nhom.is-no, .qd-kq-nhom.is-tthc, .qd-kq-nhom.is-qlht { order: 0; }
-  .qd-kq-nhom.is-thu, .qd-kq-nhom.is-tthc { grid-column: span 1; }
-  .qd-kq-nhom.is-no, .qd-kq-nhom.is-qlht { grid-column: span 3; }
-  /* Ba hàng: Thu (1) + Nợ (3) · TTHC (1) + QL, hỗ trợ DN (3, bốn ô một hàng)
-     · KT tại bàn (2) + Hoàn thuế (2). */
+  .qd-kq-nhom.is-thu { grid-column: span 1; }
+  .qd-kq-nhom.is-no { grid-column: span 3; }
   .qd-kq-nhom.is-kttb, .qd-kq-nhom.is-hoan { grid-column: span 2; }
+  .qd-kq-nhom.is-kekhai, .qd-kq-nhom.is-hoadon { grid-column: 1 / -1; }
 }
 @media (max-width: 900px) {
   .qd-kq { grid-template-columns: 1fr; }
-  .qd-kq-nhom.is-thu, .qd-kq-nhom.is-no, .qd-kq-nhom.is-tthc, .qd-kq-nhom.is-qlht, .qd-kq-nhom.is-kttb, .qd-kq-nhom.is-hoan { grid-column: 1 / -1; }
+  .qd-kq .qd-kq-nhom { grid-column: 1 / -1; }
 }
 
 /* Adapt: ở khổ hẹp nút Xuất của danh sách cảnh báo không trải hết bề ngang,
@@ -2715,10 +2710,10 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
    ===================================================================== */
 
 /* Cách tính các cột — công thức rời khỏi đầu cột, đứng ngay dưới bảng. */
-.qd-cach-tinh { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 24px; margin: 10px 0 0; padding: 10px 12px; border-radius: var(--radius-control); background: var(--surface-soft); font-size: 12px; line-height: 1.5; }
-.qd-cach-tinh > div { display: grid; gap: 1px; min-width: 0; }
-.qd-cach-tinh dt { color: var(--ink-2); font-weight: 600; }
-.qd-cach-tinh dd { margin: 0; color: var(--ink-3); overflow-wrap: anywhere; }
+/* Cách tính: một dòng chữ nhỏ dưới bảng (gọn 28/10/2026). */
+.qd-cach-tinh { margin: 10px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.55; overflow-wrap: anywhere; }
+.qd-cach-tinh b { color: var(--ink-2); font-weight: 600; }
+.qd-cach-tinh i { color: var(--ink-2); font-style: normal; font-weight: 600; }
 
 /* Chữ phụ trên nền hàng đang chọn đạt AA. Ghi đè biến, nên mọi chữ dùng
    `--ink-3` bên trong hàng — dòng phụ, nhãn "đơn vị của tôi", điểm 0 — cùng
@@ -2753,7 +2748,7 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 
 /* Hàng điều khiển của bảng xếp hạng: khối · thứ tự · số dòng, ngay trên bảng. */
 .qd-khoi-dem { margin-left: auto; color: var(--ink-3); font-size: 12px; }
-.qd-cach-tinh { margin: 0 0 12px; }
+
 
 /* Ghi chú vàng: chặn độ dài dòng (đo được ~172 ký tự). */
 .qd-ghi-mot { max-width: 96ch; }
@@ -2902,3 +2897,209 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 @keyframes tb-ngo { from { clip-path: inset(0 calc(100% - 56px) 0 0); } to { clip-path: inset(0 -40px 0 0); } }
 @keyframes tb-hien { from { opacity: 0; transform: translateX(-6px); } }
 @keyframes tb-nhan { from { opacity: 0; transform: translate(-4px, -50%); } }
+
+/* =====================================================================
+   Thu NSNN · Theo cán bộ → NNT → hồ sơ (28/10/2026)
+   ===================================================================== */
+.qd-cb-mo { display: inline-flex; align-items: center; gap: 0; }
+.qd-cb-nnt { margin-left: 4px; color: var(--ink-3); font-weight: 400; }
+/* Mũi tên chỉ sang phải: dòng mở một ngăn bên phải. */
+.qd-cb-mo .icon { margin-left: 6px; color: var(--ink-3); transform: rotate(-90deg); }
+.qd-viec:hover .qd-cb-mo .icon { color: var(--brand); }
+
+.qd-nnt { display: grid; gap: 12px; }
+.qd-nnt-tom { margin: 0; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
+.qd-nnt-tom b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.qd-nnt-tim { width: 100%; }
+.qd-nnt-bang { min-width: 0; table-layout: fixed; }
+.qd-nnt-bang th:first-child, .qd-nnt-bang td:first-child { width: 118px; }
+.qd-nnt-bang th:last-child, .qd-nnt-bang td:last-child { width: 150px; }
+.qd-nnt-bang td { overflow-wrap: anywhere; }
+.qd-nnt-mst { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.qd-nnt-trong { display: grid; justify-items: start; gap: 10px; padding: 20px 0; }
+.qd-nnt-trong p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.qd-nnt-ho-so { display: grid; gap: 14px; }
+.qd-nnt-ve { justify-self: start; display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 0 8px 0 4px; border: 0; border-radius: var(--radius-control); background: none; color: var(--brand); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.qd-nnt-ve:hover { background: var(--surface-tint); }
+
+/* Hồ sơ DN · sáu khối nghiệp vụ: lưới hai cột trong ngăn, một cột khi hẹp. */
+.qd-dn-nv { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.qd-dn-nv-o { padding: 10px 12px; border: 1px solid var(--line-soft); border-radius: var(--radius-control); }
+.qd-dn-nv-o h4 { margin: 0 0 6px; color: var(--ink); font-size: 13px; font-weight: 600; }
+.qd-dn-nv-o dl { display: grid; margin: 0; }
+.qd-dn-nv-o dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line-soft); }
+.qd-dn-nv-o dl > div:first-child { border-top: 0; }
+.qd-dn-nv-o dt { color: var(--ink-3); font-size: 12px; }
+.qd-dn-nv-o dd { margin: 0; color: var(--ink-2); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+.qd-dn-nv-o dd.is-co { color: var(--ink); font-weight: 600; }
+
+/* Tab chưa có chỉ tiêu (28/10/2026): cùng dáng ô "đang chờ" của hồ sơ DN. */
+.qd-chua-ct { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px dashed var(--control-line); border-radius: var(--radius-control); background: var(--surface-soft); color: var(--ink-3); }
+.qd-chua-ct p { display: grid; gap: 4px; margin: 0; }
+.qd-chua-ct strong { color: var(--ink); font-size: 14px; font-weight: 600; }
+.qd-chua-ct span { color: var(--ink-2); font-size: 13px; line-height: 1.55; max-width: 72ch; }
+
+/* Chênh lệch tờ khai (29/10/2026): bảng tổng hợp; dòng phòng mở danh sách ở Báo cáo. */
+.qd-cl-bang tbody tr.qd-viec { cursor: pointer; }
+.qd-cl-mo { display: inline-flex; align-items: center; gap: 6px; }
+.qd-cl-mo .icon { color: var(--ink-3); }
+
+/* Bảng xếp hạng (gọn 28/10/2026): nhãn "đơn vị của tôi" xuống dòng dưới tên,
+   để cột So cùng kỳ mới không đẩy bảng mười cột của Nợ ra ngoài khung 1280px. */
+.qd-bang:not(.qd-bang-goc) td > .qd-cua-toi { display: block; font-size: 12px; }
+
+/* Nhãn mốc trên ô tổng quan (29/10/2026): chữ đầy đủ khi ô đủ rộng, viết tắt
+   BQ / T8 / CK khi ô hẹp (lưới sáu cột ở ≥1361px, ô ~170px không chứa nổi ba
+   nhãn đầy đủ). Dòng chú giải đầu khối giải nghĩa cả hai dạng. */
+.qd-kq-o { container-type: inline-size; }
+.qd-moc-ngan { display: none; }
+@container (max-width: 215px) {
+  .qd-moc-dai { display: none; }
+  .qd-moc-ngan { display: inline; }
+}
+
+/* Hàng con của nhóm chỉ tiêu (29/10/2026): "Chỉ tiêu", rồi chữ "Báo cáo" dẫn
+   các mục báo cáo phân hệ. Chữ dẫn không bấm được — nó chỉ chia hai phần. */
+.muc-tab-nhom { flex: none; align-self: center; margin: 0 2px 0 10px; padding-left: 12px; border-left: 1px solid var(--line); color: var(--ink-3); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.muc-tab-con .nav-khung { margin-left: 6px; color: var(--ink-3); background: var(--surface-soft); }
+
+/* Ô thanh phạm vi khi chứa thanh lọc báo cáo nhúng (29/10/2026): cùng khung,
+   cùng chiều cao với thanh phạm vi ở tab Chỉ tiêu (Fixed Geometry). Nút loại
+   kỳ cao đúng bằng ô chọn; dòng phụ là câu vai · cập nhật của thanh phạm vi —
+   mã báo cáo đã nằm ở thanh duyệt ngay dưới. */
+.qd-pham-vi .bo-loc-seg { padding: 0; }
+.qd-pham-vi .bo-loc-seg button { min-height: 30px; }
+.qd-pham-vi.is-bao-cao > .bo-loc-phu:not(.is-vai) { display: none; }
+.qd-pham-vi.is-bao-cao > .is-vai { order: 9; }
+@media (max-width: 900px) {
+  .qd-pham-vi .bo-loc-seg button { min-height: 42px; }
+}
+/* Khổ 901–1360px: thanh phạm vi Chỉ tiêu vốn đã đẩy dòng phụ xuống hàng hai;
+   ô báo cáo làm y như vậy, để hai chế độ cao bằng nhau ở mọi báo cáo. */
+@media (min-width: 901px) and (max-width: 1360px) {
+  .qd-pham-vi > .bo-loc-phu { flex-basis: 100%; text-align: right; }
+}
+/* Ô chọn kỳ trong ô thanh lọc báo cáo: tối đa 210px (khoảng cách cột 16px), để báo cáo có bốn loại kỳ
+   (Hệ số K: Ngày · Tuần · Tháng · Tùy chọn) vẫn cùng chiều cao thanh phạm vi. */
+@media (min-width: 901px) { .qd-pham-vi.is-bao-cao { column-gap: 16px; } .qd-pham-vi.is-bao-cao .bo-loc-select { max-width: 210px; } }
+/* Dòng phụ cao bằng dòng "Phạm vi" (20px): khi hai thứ cùng rơi xuống hàng hai
+   ở 768px, hàng ấy cao như nhau dù trên đó có ô Phạm vi hay không. */
+.qd-pham-vi > .bo-loc-phu { line-height: 20px; }
+
+/* Thanh phạm vi thu gọn trên điện thoại — xem `NutThuGon`. */
+.pv-thu-gon { display: none; }
+@media (max-width: 700px) {
+  .qd-pham-vi { min-height: 0; padding: 4px 8px; }
+  .qd-pham-vi > .pv-thu-gon { display: flex; flex: 1 1 100%; min-width: 0; max-width: 100%; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; padding: 0 6px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+  .qd-pham-vi > .pv-thu-gon > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qd-pham-vi > .pv-thu-gon .icon { color: var(--ink-3); }
+  .qd-pham-vi > .pv-thu-gon[aria-expanded="true"] .icon { transform: rotate(180deg); }
+  .qd-pham-vi > .pv-thu-gon[aria-expanded="false"] ~ * { display: none !important; }
+  .qd-pham-vi > .pv-thu-gon[aria-expanded="true"] { margin-bottom: 4px; border-bottom: 1px solid var(--line-soft); border-radius: 0; }
+  .qd-pham-vi:has(> .pv-thu-gon[aria-expanded="true"]) { padding-bottom: 10px; }
+  .qd-pham-vi > .pv-thu-gon:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+  .qd-pham-vi > .pv-thu-gon .icon { transition: transform 160ms var(--ease-out); }
+}
+/* Điện thoại, màn QLDN (29/10/2026): công tắc "Theo đơn vị | Theo cán bộ" và
+   nút Xuất Excel đứng chung MỘT hàng thay vì mỗi thứ một hàng — bớt một hàng
+   điều khiển trước khi tới bảng. */
+@media (max-width: 700px) {
+  .qd-page .panel-actions > .inline-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+  .qd-page .panel-actions > .inline-controls > .button { width: auto; }
+}
+
+/* Ô tổng quan, phương án 2 (29/10/2026): tỷ lệ là số to, thanh ngay dưới nó;
+   số tuyệt đối ở hàng hai, chữ mô tả được xuống dòng trong ô hẹp. */
+.qd-kq-so > .qd-sc-thanh { display: block; margin-top: 6px; }
+.qd-kq-tl { align-items: baseline; }
+.qd-kq-tl > small { min-width: 0; overflow-wrap: anywhere; }
+
+/* =====================================================================
+   Phòng kiểm tra › Kiểm tra tại trụ sở (30/10/2026). Tiền tố `kt-`.
+   Dùng lại khung QLDN (`qd-bang-goc`, hàng tab, Panel); chỉ thêm dải bốn
+   ô, dòng khối / đơn vị của bảng mẫu và bảng đánh giá cao / thấp.
+   ===================================================================== */
+/* Bốn ô chính: MỘT khung, các ô ngăn bằng kẻ — cùng ngôn ngữ dải ô Tổng quan quản trị. */
+.kt-o-so { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-control); background: var(--line); }
+.kt-o { display: grid; grid-template-rows: auto auto auto 6px auto 1fr; align-content: start; gap: 6px; min-width: 0; padding: 16px 18px 14px; background: var(--surface); }
+.kt-o-ten { color: var(--ink-2); font-size: 13px; font-weight: 650; }
+.kt-o-to { color: var(--ink); font-size: 24px; font-weight: 700; line-height: 1.25; letter-spacing: -.015em; font-variant-numeric: tabular-nums; }
+.kt-o-to small { color: var(--ink-3); font-size: 13px; font-weight: 500; letter-spacing: 0; }
+.kt-o-cach { color: var(--ink-3); font-size: 12px; line-height: 1.4; }
+.kt-o-phu { color: var(--ink-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.kt-o-phu b { color: var(--ink); font-weight: 650; }
+.kt-moc { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; padding-top: 8px; border-top: 1px solid var(--line-soft); font-size: 12px; font-variant-numeric: tabular-nums; }
+.kt-moc em { color: var(--ink-3); font-style: normal; }
+.kt-moc > span { color: var(--ink); font-weight: 650; }
+.kt-moc small { flex-basis: 100%; color: var(--ink-3); }
+.kt-ss { display: inline-flex; align-items: center; gap: 3px; }
+.kt-ss.is-tang .icon { color: var(--positive); }
+.kt-ss.is-giam .icon { color: var(--critical); }
+
+/* Thanh tỷ lệ: thang 0–100%, chạy bằng transform — đổi kỳ hay đơn vị là một chuyển động trượt. */
+.kt-thanh { display: block; height: 6px; overflow: hidden; border-radius: var(--radius-hairline); background: var(--data-track); }
+.kt-thanh > i { display: block; height: 100%; background: var(--data); transform-origin: left center; }
+.kt-thanh.is-trong { background: none; }
+.kt-thanh.is-nho { width: 36px; height: 4px; }
+.kt-ty-le { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
+
+/* Bảng mẫu: vừa khung (bảng gốc giãn theo `max-content`), tiêu đề xuống dòng. */
+.kt-page .kt-bang, .qd-page .kt-bang { width: 100%; }
+.qd-page .kt-bang thead tr th { white-space: normal; vertical-align: bottom; }
+.kt-bang :is(th, td).num { min-width: 64px; padding-inline: 7px; }
+.kt-bang td.num small { white-space: nowrap; }
+.kt-bang .qd-goc-dv { min-width: 200px; }
+.kt-bang tbody th.qd-goc-dv { color: var(--ink); font-size: 13px; font-weight: 500; }
+.kt-dv { color: inherit; font: inherit; text-align: left; }
+.kt-ma { display: block; margin-top: 1px; color: var(--ink-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+/* Dòng khối nổi bằng cân nặng chữ và vạch trên, không bằng mảng màu (The Total Row Does Not Need A Colour Rule). */
+.kt-bang tr.kt-khoi > * { border-top: 1px solid var(--ink-3); background: var(--surface-soft); }
+.kt-bang tr.kt-khoi th.qd-goc-dv { font-weight: 650; }
+.kt-bang tr.kt-con th.qd-goc-dv { padding-left: 24px; }
+.kt-bang-loai th.num { min-width: 104px; }
+
+/* Đánh giá đơn vị: thanh ngang trong bảng, cao nhất trên đầu. Một chuỗi số, một màu. */
+.kt-dg-bang { width: 100%; min-width: 0; }
+.kt-dg-bang tbody th { position: static; height: auto; background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.kt-dg-bang tbody tr:hover > * { background: var(--surface-soft); }
+.kt-dg-bang .kt-dg-hang { width: 52px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.kt-dg-bang .kt-dg-cot-thanh { width: 40%; min-width: 200px; }
+.kt-dg-thanh { display: grid; grid-template-columns: minmax(0, 1fr) 52px; align-items: center; gap: 10px; }
+.kt-dg-thanh > b { color: var(--ink); font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; }
+.kt-thanh.is-ngang { height: 12px; border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
+.kt-thanh.is-ngang > i { border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
+.kt-dg-o { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
+/* Nhãn cao / thấp: chữ và biểu tượng, nền trung tính — màu trạng thái để dành cho trạng thái. */
+.kt-cuc { display: inline-flex; align-items: center; gap: 2px; padding: 1px 6px 1px 4px; border: 1px solid var(--line); border-radius: var(--radius-chip); background: var(--surface); color: var(--ink-2); font-size: 11px; font-style: normal; font-weight: 600; white-space: nowrap; }
+.kt-cuc.is-cao { border-color: var(--control-line-hover); color: var(--brand-strong); }
+
+/* Điều khiển của bảng chính: Số liệu · Hiển thị · Xuất Excel trên một hàng. Ô lọc rộng cố định — đổi lựa chọn không xô nút bên cạnh. */
+.kt-dieu-khien { flex-wrap: wrap; justify-content: flex-end; }
+.kt-loc-khoi .bo-loc-select { width: 180px; }
+.kt-xep-theo .bo-loc-select { width: 252px; }
+/* Ô "Số liệu" của tab Kiểm tra tại trụ sở: đầu phải hàng tab (≥701px), đầu nội dung (điện thoại). */
+.kt-o-loai .bo-loc-seg button { white-space: nowrap; }
+.thanh-muc.co-phai { position: relative; }
+.kt-loai-tab { position: absolute; top: 3px; right: 0; }
+.kt-loai-dt { display: none; }
+@media (max-width: 700px) {
+  .kt-loai-tab { display: none; }
+  .kt-loai-dt { display: flex; }
+  .kt-loai-dt .bo-loc-seg { flex: 1 1 auto; }
+  .kt-loai-dt .bo-loc-seg button { flex: 1 1 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kt-thanh > i { transition: transform 420ms var(--ease-out); }
+}
+@media (max-width: 1180px) {
+  .kt-o-so { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .kt-loc-khoi, .kt-loc-khoi .bo-loc-select { width: 100%; }
+}
+@media (max-width: 560px) {
+  .kt-o-so { grid-template-columns: 1fr; }
+}

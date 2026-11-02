@@ -12,7 +12,7 @@
 */
 export type ViewId =
   | "doituong" | "dieuhanh" | "canhbao"
-  | "kq-thu" | "kq-no" | "kq-tthc" | "kq-qlht" | "kq-kttb" | "kq-hoan"
+  | "kq-thu" | "kq-no" | "kq-kekhai" | "kq-hoadon" | "kq-tongdai" | "kq-kttb" | "kq-hoan"
   | "debt" | "risk" | "hoadon" | "hoan"
   | "tinhtrang"
   | "giamsat";

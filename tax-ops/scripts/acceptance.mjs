@@ -607,7 +607,10 @@ if (JSON.stringify(ql1.mucNgoai) !== JSON.stringify(MUC_NGOAI_QL1)) {
   chấm điểm; báo cáo QL1 nằm trong nhóm Quản lý nợ.
 */
 /* 20/10/2026: phòng thuế tách Kiểm tra tại bàn và Hoàn thuế thành hai mục riêng. */
-const NHOM_BEN = ["Tổng quan quản trị", "Thu NSNN", "Quản lý nợ", "Thủ tục hành chính", "Quản lý, hỗ trợ DN", "Kiểm tra tại bàn", "Hoàn thuế"];
+/* 28/10/2026: chia lại theo nghiệp vụ phía Thuế — Quản lý kê khai, Quản lý
+   hóa đơn, Tổng đài hỗ trợ NNT; Kiểm tra tại bàn và Hoàn thuế ra khỏi nhóm,
+   đứng sau Cảnh báo nhắc việc. */
+const NHOM_BEN = ["Tổng quan quản trị", "Thu NSNN", "Quản lý nợ", "Quản lý kê khai", "Quản lý hóa đơn", "Tổng đài hỗ trợ NNT"];
 if (ql1.coCumPhanHe) throw new Error("Thanh bên vẫn còn nhóm \"Phân hệ\" — biên bản yêu cầu khối QLDN đã gỡ nó.");
 if (JSON.stringify(ql1.nutBen) !== JSON.stringify(NHOM_BEN)) {
   throw new Error(`Nhóm Quản trị công việc phải là ${JSON.stringify(NHOM_BEN)}, đang là ${JSON.stringify(ql1.nutBen)}`);
@@ -804,7 +807,7 @@ for (const view of ["hoan&muc=dsphieu"]) {
 {
   /* Từ 13/10/2026 phân hệ theo phòng không còn là trang đích: trưởng phòng mọi
      phòng vào Tổng quan kết quả; chuyên viên QL4 vẫn vào thẳng tổng đài, nay
-     ở Thủ tục hành chính › Báo cáo. */
+     ở Tổng đài hỗ trợ NNT › Báo cáo. */
   for (const [ma, manDau] of [["tp.ql1", "dieuhanh"], ["tp.ql2", "dieuhanh"], ["tp.ql3", "dieuhanh"], ["tp.ql4", "dieuhanh"], ["cv.ql4", "canhbao"], ["cv.ql5", "canhbao"], ["tp.ql5", "dieuhanh"]]) {
     await dangXuat(page);
     await dangNhap(page, ma);

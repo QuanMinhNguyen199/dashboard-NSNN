@@ -1,5 +1,8 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { XepHangCanBo } from "@/features/qldn/XepHangCanBo";
+import { NNTCanBo } from "@/features/qldn/NNTCanBo";
+import { CaseLayout } from "@/components/CaseLayout";
+import { soNNTCanBo } from "@/data/hoSoQLDN";
 import { DIEM_QLDN, KY_XEP_HANG, NHOM_DIEM, PHONG_XEP, type NhomDiem } from "@/data/xepHangQLDN";
 import { congThucNgan, congThucSTT, ketQuaGoc, tenSTT, tieuChiCuaThe } from "@/data/tieuChiQLDN";
 import { Icon, PageIntro, Pager, Panel, TableWrap, integer } from "@/components/ui";
@@ -7,15 +10,19 @@ import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
 import type { ReportSheet, ReportValue } from "@/domain/reportExport";
-import { useThamSo } from "@/state/diaChi";
+import { datThamSo, useThamSo } from "@/state/diaChi";
 import {
-  CHI_TIEU_Q, DON_VI_Q, KY_Q, NHAN_KHOI, NHAN_NHIP, NHOM_Q, THE_Q, capCua, chiTieuCuaThe, duocXem, ketQuaChiTieu,
+  CHI_TIEU_Q, DON_VI_Q, KY_Q, canBoCua, NHAN_KHOI, NHAN_NHIP, NHOM_Q, THE_Q, capCua, chiTieuCuaThe, duocXem, ketQuaChiTieu,
   congThucCua, nhanPhamVi, nhomCuaThe, theoCanBo, theoDonVi, tyLeCua, uocThu, xepHang,
   type Cap, type ChiTieuQ, type KetQuaChiTieu, type Khoi, type KyQ, type NhipUoc, type NhomId, type PhamVi, type TheId,
 } from "@/data/qldn";
-import { NgoaiPhamVi, ThanhPhamVi, usePhamVi } from "@/features/qldn/PhamViQLDN";
-import { HangTab } from "@/components/MucPhanHe";
+import { NgoaiPhamVi, NutThuGon, PhuVai, ThanhPhamVi, useDatXemPhong, usePhamVi } from "@/features/qldn/PhamViQLDN";
+import { HangTab, mucNhung } from "@/components/MucPhanHe";
+import { ODatBoLoc } from "@/components/BoLoc";
 import { BAO_CAO_CUA_THE, BaoCaoPhanHe, coBaoCao } from "@/features/qldn/BaoCaoPhanHe";
+import { KiemTraTruSo, OSoLieuKT } from "@/features/qldn/KiemTraTruSo";
+import { ChenhLechTK, kyQL2Cua } from "@/features/qldn/ChenhLechTK";
+import { KY_QL2_01 } from "@/data/ql2";
 
 /*
   Mô-đun 2 — Quản trị công việc và kết quả thực hiện (biên bản 09/10/2026 §6).
@@ -45,14 +52,16 @@ const THE_HOP_LE: TheId[] = THE_Q.map((t) => t.id);
 const so = (x: number, dvt: string) => dvt === "tỷ đồng"
   ? x.toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
   : integer(Math.round(x));
+const NGUONG = 0.0005;
+/* Tỷ lệ làm tròn ra 0,0% thì in "0,0%" trơn — "−0,0%" là một dấu không có thật. */
 const pt = (x: number | null, dau = false) => x === null ? "—"
+  : Math.abs(x) < NGUONG ? "0,0%"
   : `${x < 0 ? "−" : dau && x > 0 ? "+" : ""}${(Math.abs(x) * 100).toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
 /* Chênh lệch dưới 0,05 điểm phần trăm làm tròn ra "0,0": nó là NGANG mốc,
    không được mang dấu hay màu — "−0,0 đpt" tô đỏ là báo một tin xấu không có. */
-const NGUONG = 0.0005;
 const dpt = (d: number) => Math.abs(d) < NGUONG ? "0,0 đpt"
   : `${d < 0 ? "−" : "+"}${(Math.abs(d) * 100).toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} đpt`;
-const chenhSo = (d: number, dvt: string) => `${d < 0 ? "−" : "+"}${so(Math.abs(d), dvt)}`;
+const chenhSo = (d: number, dvt: string) => so(Math.abs(d), dvt).replace(/[0,.]/g, "") === "" ? so(0, dvt) : `${d < 0 ? "−" : "+"}${so(Math.abs(d), dvt)}`;
 /* Viết thường chữ đầu, trừ chữ viết tắt ("NNT", "TTHC") — viết thường cả
    cụm thì ra "nnt phải cưỡng chế". */
 const thuong = (s: string) => /^[A-ZĐ]{2,}/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1);
@@ -79,7 +88,7 @@ function Chenh({ ct, d, children, title }: { ct: ChiTieuQ; d: number; children: 
 /* ---------- So sánh ba mốc ---------- */
 
 /* `dem` = mốc là một PHÉP ĐẾM, không phải chênh lệch (xem ô BQ toàn TP). */
-interface MocSoSanh { nhan: string; ngan: string; gia: string | null; chenh: number; ghi: string; dem?: boolean }
+interface MocSoSanh { nhan: string; ngan: string; viet: string; gia: string | null; chenh: number; ghi: string; dem?: boolean }
 
 /** Ba mốc so sánh của §2.4, đã lọc theo quyền của vai. */
 function mocCua(kq: KetQuaChiTieu, pv: PhamVi, ky: KyQ): MocSoSanh[] {
@@ -96,16 +105,16 @@ function mocCua(kq: KetQuaChiTieu, pv: PhamVi, ky: KyQ): MocSoSanh[] {
   if (duocXem(pv.vai, "binhQuan") && pv.vai === "LD" && pv.donVi.length === DON_VI_Q.length) {
     const bq = tl(kq.binhQuan);
     const kem = theoDonVi(ct, DON_VI_Q, ky.thang).filter((d) => tot(ct, tl(d.cap) - bq) === false).length;
-    ra.push({ nhan: "Số đơn vị kém hơn bình quân toàn thuế", ngan: "Dưới BQ", gia: `${kem} trên ${DON_VI_Q.length} đơn vị`, chenh: 0, ghi: `${kem}/${DON_VI_Q.length}`, dem: true });
+    ra.push({ nhan: "Số đơn vị kém hơn bình quân toàn thuế", ngan: "Bình quân", viet: "BQ", gia: `${kem} trên ${DON_VI_Q.length} đơn vị`, chenh: 0, ghi: `${kem}/${DON_VI_Q.length}`, dem: true });
   } else if (duocXem(pv.vai, "binhQuan")) {
     const bq = tl(kq.binhQuan);
-    ra.push({ nhan: "Bình quân toàn thuế", ngan: "BQ", gia: pt(bq, ct.kieu === "TANG"), chenh: tl(kq.nay) - bq, ghi: dpt(tl(kq.nay) - bq) });
+    ra.push({ nhan: "Bình quân toàn thuế", ngan: "Bình quân", viet: "BQ", gia: pt(bq, ct.kieu === "TANG"), chenh: tl(kq.nay) - bq, ghi: dpt(tl(kq.nay) - bq) });
   }
   const truoc = KY_Q.find((k) => k.thang === ky.thang - 1)?.nhan.split(" ·")[0] ?? `Tháng ${ky.thang - 1}/2026`;
-  const tTruoc = truoc.replace("Tháng ", "T").replace("/2026", "");
-  for (const [nhan, ngan, c] of [[`Tháng trước (${truoc.replace("Tháng ", "T")})`, tTruoc, kq.thangTruoc], ["Cùng kỳ 2025", "CK", kq.cungKy]] as const) {
-    if (coTyLe) ra.push({ nhan, ngan, gia: pt(tl(c), ct.kieu === "TANG"), chenh: tl(kq.nay) - tl(c), ghi: dpt(tl(kq.nay) - tl(c)) });
-    else ra.push({ nhan, ngan, gia: `${so(c.tu, ct.dvt)} ${ct.dvt}`, chenh: kq.nay.tu - c.tu, ghi: chenhSo(kq.nay.tu - c.tu, ct.dvt) });
+  const tTruoc = truoc.replace("/2026", "");
+  for (const [nhan, ngan, viet, c] of [[`Tháng trước (${truoc.replace("Tháng ", "T")})`, tTruoc, tTruoc.replace("Tháng ", "T"), kq.thangTruoc], ["Cùng kỳ 2025", "Cùng kỳ", "CK", kq.cungKy]] as const) {
+    if (coTyLe) ra.push({ nhan, ngan, viet, gia: pt(tl(c), ct.kieu === "TANG"), chenh: tl(kq.nay) - tl(c), ghi: dpt(tl(kq.nay) - tl(c)) });
+    else ra.push({ nhan, ngan, viet, gia: `${so(c.tu, ct.dvt)} ${ct.dvt}`, chenh: kq.nay.tu - c.tu, ghi: chenhSo(kq.nay.tu - c.tu, ct.dvt) });
   }
   return ra;
 }
@@ -155,6 +164,16 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
      xoá luôn trạng thái "đang mở Báo cáo", tải lại trang là rơi về Kết quả. */
   const [xem, datXem] = useThamSo<Xem>("bc", "", ["", "baocao"]);
   const [tabURL, datTab] = useThamSo<TabTQ>("tq", "", ["", "xephang", "canbo"]);
+  /* Mục của báo cáo nhúng (`muc=`) nằm ở đây, không trong phân hệ: hàng
+     "Chỉ tiêu | mục báo cáo…" là một hàng của nhóm (29/10/2026). */
+  const [mucURL, datMucURL] = useThamSo<string>("muc", "");
+  /* "Số liệu: tất cả các cuộc | đích danh" của tab Kiểm tra tại trụ sở điều khiển
+     CẢ xếp hạng lẫn bảng chi tiết, nên nó đứng trên thanh phạm vi và trạng thái
+     sống ở đây — một điều khiển, một nguồn. */
+  const [loaiKT, datLoaiKT] = useThamSo<"" | "dd">("loai", "", ["", "dd"]);
+  /* Ô của thanh phạm vi, nơi thanh lọc báo cáo nhúng vẽ vào. */
+  const [oLoc, datOLoc] = useState<HTMLDivElement | null>(null);
+  const datXemPhong = useDatXemPhong();
   if (!pv) return <NgoaiPhamVi/>;
 
   const nhom = nhomId ? NHOM_Q.find((n) => n.id === nhomId)! : null;
@@ -166,6 +185,19 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
   const motPhong = pv.donVi.length === 1 && pv.donVi[0].khoi === "VP";
   const bc = the && coBaoCao(user) && motPhong ? BAO_CAO_CUA_THE[the] ?? null : null;
   const moBaoCao = Boolean(bc && xem === "baocao");
+  const dsMuc = bc ? mucNhung(bc.phanHe, bc.muc) : [];
+  const muc = dsMuc.some((m) => m.id === mucURL) ? mucURL : dsMuc[0]?.id ?? "";
+  const moMuc = (id: string) => { datMucURL(id === dsMuc[0]?.id ? "" : id); datXem("baocao"); };
+  /* Chênh lệch tờ khai: dòng một phòng ở bảng tổng hợp mở Báo cáo › DS NNT
+     chênh lệch của phòng ấy, ĐÚNG KỲ lũy kế của tháng đang xem — số trên dòng
+     là số dòng người dùng sẽ thấy. Phòng khác thì đổi phạm vi (chỉ xem). */
+  const moDSChenh = (dvId: string) => {
+    const goc = (pv.phongGoc ?? pv.donVi[0]).id;
+    if (dvId !== pv.donVi[0].id) datXemPhong(dvId === goc ? "" : dvId);
+    const k = kyQL2Cua(ky).id;
+    datThamSo({ ky: k === KY_QL2_01[0].id ? null : k });
+    moMuc("dschenh");
+  };
   const moThe = (t: TheId) => moNhom?.(nhomCuaThe(t).id, t);
   const coXepHang = !nhom && duocXem(pv.vai, "thuHang");
   const tab: TabTQ = coXepHang ? tabURL : "";
@@ -179,7 +211,12 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         báo cáo phân hệ có kỳ riêng chọn ở thanh lọc của nó — ô vẫn đứng đó và
         nói giá trị đang áp dụng, không biến mất. */}
     {tab === "xephang" && !the ? <ThanhPhamVi pv={pv} kyChu="Giao ban tháng 10/2026 · cố định" phamViChu="Khối phòng QLDN"/>
-      : moBaoCao ? <ThanhPhamVi pv={pv} kyChu="Theo thanh lọc của báo cáo" phamViChu={pv.donVi[0].ngan}/>
+      /* Báo cáo nhúng: ô thanh phạm vi giữ nguyên chỗ và khung, nội dung là
+         thanh lọc của báo cáo (Loại kỳ · Kỳ · Phạm vi) — một thanh, không hai. */
+      : moBaoCao ? <div ref={datOLoc} className="bo-loc-chung qd-pham-vi is-bao-cao"><NutThuGon/><PhuVai pv={pv} lop="is-vai"/></div>
+      /* Kiểm tra tại trụ sở là báo cáo toàn ngành của khối kiểm tra, không
+         theo phòng QLDN: ô phạm vi vẫn đứng đó và nói giá trị bằng chữ. */
+      : the === "ktts" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
       : <ThanhPhamVi pv={pv} ky={ky} datKy={datKy}/>}
     {coXepHang && <nav className="thanh-muc" aria-label="Nội dung tổng quan quản trị">
       <HangTab lop="thanh-muc-hang" khoaMo={tab}>
@@ -192,7 +229,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         ><span>{nhan}</span></button>)}
       </HangTab>
     </nav>}
-    {nhom && <nav className="thanh-muc" aria-label={`Nhóm chỉ tiêu của ${nhom.ten.toLowerCase()}`}>
+    {nhom && <nav className={`thanh-muc${the === "ktts" ? " co-phai" : ""}`} aria-label={`Nhóm chỉ tiêu của ${nhom.ten.toLowerCase()}`}>
       {/* Nhóm nhỏ là hàng tab CHÍNH của màn nhóm. Nhóm chỉ có một nhóm nhỏ
           (Thu NSNN, TTHC) không dựng hàng tab: một hàng luôn đúng một nút là
           một hàng không bấm được gì. */}
@@ -202,27 +239,50 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
           className={`muc-tab${the === t ? " is-active" : ""}`}
           data-mo={the === t ? "1" : undefined}
           aria-current={the === t && !bc ? "page" : undefined}
-          onClick={() => { datThe(t); datXem(""); }}
+          onClick={() => { datThe(t); datXem(""); datMucURL(""); }}
         ><span>{THE_Q.find((x) => x.id === t)!.ngan}</span></button>)}
       </HangTab>}
-      {bc && <HangTab lop={`thanh-muc-hang is-con${nhom.the.length > 1 ? "" : " is-don"}`} khoaMo={xem}>
-        <button type="button" className={`muc-tab-con${!moBaoCao ? " is-active" : ""}`} data-mo={!moBaoCao ? "1" : undefined} aria-current={!moBaoCao ? "page" : undefined} onClick={() => datXem("")}>Kết quả</button>
-        <button type="button" className={`muc-tab-con${moBaoCao ? " is-active" : ""}`} data-mo={moBaoCao ? "1" : undefined} aria-current={moBaoCao ? "page" : undefined} onClick={() => datXem("baocao")}>Báo cáo: {bc.nhan}</button>
+      {/* "Số liệu" của tab trụ sở đứng ở đầu phải hàng tab — hàng ấy luôn cao
+          38px, nên thanh phạm vi và mọi khối bên dưới giữ nguyên chỗ khi đổi
+          tab (Fixed Slots; đặt trên thanh phạm vi làm thanh cao thêm 28px). */}
+      {the === "ktts" && <OSoLieuKT dd={loaiKT === "dd"} dat={datLoaiKT} lop="kt-loai-tab"/>}
+      {/* MỘT hàng con cho cả hai chế độ (29/10/2026): "Chỉ tiêu", rồi từng mục
+          của báo cáo phân hệ. Trước đây là hai hàng — "Chỉ tiêu | Báo cáo: …"
+          rồi hàng tab của phân hệ bên dưới — với ba kiểu tab chồng nhau. Hàng
+          giống hệt nhau ở hai chế độ, chỉ nút sáng đổi chỗ (Fixed Slots). */}
+      {bc && <HangTab lop={`thanh-muc-hang is-con${nhom.the.length > 1 ? "" : " is-don"}`} khoaMo={moBaoCao ? muc : ""}>
+        <button type="button" className={`muc-tab-con${!moBaoCao ? " is-active" : ""}`} data-mo={!moBaoCao ? "1" : undefined} aria-current={!moBaoCao ? "page" : undefined} onClick={() => datXem("")}>Chỉ tiêu</button>
+        <span className="muc-tab-nhom" aria-hidden="true">Báo cáo</span>
+        {dsMuc.map((m) => <button key={m.id} type="button" className={`muc-tab-con${moBaoCao && muc === m.id ? " is-active" : ""}`} data-mo={moBaoCao && muc === m.id ? "1" : undefined} aria-current={moBaoCao && muc === m.id ? "page" : undefined} aria-label={`Báo cáo: ${m.nhan}${m.khung ? ", khung chờ mẫu" : ""}`} onClick={() => moMuc(m.id)}>
+          {m.nhan}{m.khung && <em className="nav-khung">Khung</em>}
+        </button>)}
       </HangTab>}
     </nav>}
-    <div className="qd-results" data-motion="content" data-motion-key={`${nhomId ?? "tq"}-${tab}-${the}-${xem}-${ky.id}-${pv.donVi.map((d) => d.id).join(",")}`}>
+    <div className="qd-results" data-motion="content" data-motion-key={`${nhomId ?? "tq"}-${tab}-${the}-${xem}-${moBaoCao ? muc : ""}-${ky.id}-${pv.donVi.map((d) => d.id).join(",")}`}>
       {!the ? (tab === "canbo" ? <XepHangCanBo pv={pv} ky={ky} actor={user.name}/> : moXepHang ? <XepHangPhong pv={pv} actor={user.name}/> : <TongQuan pv={pv} ky={ky} actor={user.name} moThe={moThe}/>)
-        : moBaoCao ? <BaoCaoPhanHe bc={bc!} user={user} donViId={pv.donVi[0].id}/>
+        : moBaoCao ? <ODatBoLoc.Provider value={oLoc}><BaoCaoPhanHe bc={bc!} user={user} donViId={pv.donVi[0].id} muc={muc} datMuc={moMuc}/></ODatBoLoc.Provider>
+        : the === "ktts" ? <KiemTraTruSo ky={ky} actor={user.name} dd={loaiKT === "dd"} datLoai={datLoaiKT}/>
+        : the === "cltk" ? <ChenhLechTK pv={pv} ky={ky} actor={user.name} moDanhSach={bc ? moDSChenh : undefined}/>
+        : !chiTieuCuaThe(the).length ? <ChuaCoChiTieu coBaoCao={Boolean(bc)}/>
         : <ChiTietThe key={the} the={the} pv={pv} ky={ky} actor={user.name} moCanhBao={moCanhBao}/>}
     </div>
   </div>;
 }
 /* ---------- Tổng quan: các thẻ chỉ tiêu ---------- */
 
+/*
+  Thứ tự nhóm trên lưới tổng quan (chia lại 28/10/2026). Lưới sáu cột, hai
+  hàng kín: Thu (1) · Quản lý nợ (3) · KT tại bàn (1) · Hoàn thuế (1); rồi
+  Quản lý kê khai (3) · Quản lý hóa đơn (3). Thứ tự DOM đúng thứ tự nhìn, để
+  trình đọc màn hình đọc như mắt đọc. Tổng đài chưa có chỉ tiêu nên không có ô.
+*/
+const THU_TU_TQ: NhomId[] = ["thu", "no", "kttb", "hoan", "kekhai", "hoadon", "tongdai"];
+
 function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string; moThe: (t: TheId) => void }) {
   const coTyLe = duocXem(pv.vai, "tyLe");
   const coBQ = duocXem(pv.vai, "binhQuan");
-  const ds = useMemo(() => THE_Q.map((t) => ({ the: t, kq: ketQuaChiTieu(chiTieuCuaThe(t.id)[0], pv, ky) })), [pv, ky]);
+  /* Thẻ chưa có chỉ tiêu (Chênh lệch tờ khai, Tổng đài) không có ô ở tổng quan. */
+  const ds = useMemo(() => THE_Q.filter((t) => chiTieuCuaThe(t.id).length).map((t) => ({ the: t, kq: ketQuaChiTieu(chiTieuCuaThe(t.id)[0], pv, ky) })), [pv, ky]);
   const uoc = duocXem(pv.vai, "uocThu") ? uocThu(pv, "THANG") : null;
   const no = duocXem(pv.vai, "noTrenThu") ? ketQuaChiTieu(CHI_TIEU_Q[0], pv, ky) : null;
 
@@ -244,12 +304,14 @@ function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string
   const coChenh = coTyLe || coBQ;
   let thuTu = 0;
   return <Panel chinh title="Kết quả các mặt công tác" subtitle={nhanPhamVi(pv)} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
-    <div className="qd-overview-guide is-chu-giai"><span>{coBQ && "BQ: bình quân toàn thuế · "}T{ky.thang - 1}: tháng trước · CK: cùng kỳ 2025 <b>{coChenh ? "Chênh lệch: điểm phần trăm" : "Chênh lệch: số tuyệt đối"}</b></span></div>
+    {/* Nhãn mốc trên ô ghi bằng chữ ("Bình quân", "Tháng 8", "Cùng kỳ"), không
+        viết tắt (29/10/2026) — dòng này chỉ còn nói đơn vị của chênh lệch. */}
+    <div className="qd-overview-guide is-chu-giai"><span>{coBQ ? (pv.vai === "LD" && pv.donVi.length === DON_VI_Q.length ? "Bình quân (BQ): số đơn vị dưới bình quân toàn thuế · tháng trước (T" + (ky.thang - 1) + ") · cùng kỳ 2025 (CK)" : "So với bình quân toàn thuế (BQ), tháng trước (T" + (ky.thang - 1) + ") và cùng kỳ 2025 (CK)") : "So với tháng trước (T" + (ky.thang - 1) + ") và cùng kỳ 2025 (CK)"} · <b>{coChenh ? "chênh lệch tính bằng điểm phần trăm" : "chênh lệch tính bằng số tuyệt đối"}</b></span></div>
     <div className="qd-kq">
-      {NHOM_Q.map((n) => <section key={n.id} className={`qd-kq-nhom is-${n.id}`} aria-labelledby={`qd-kq-${n.id}`} style={{ ["--o" as string]: n.the.length }}>
+      {THU_TU_TQ.map((id) => NHOM_Q.find((n) => n.id === id)!).map((n) => ({ n, so: ds.filter((x) => n.the.includes(x.the.id)).length })).filter((x) => x.so).map(({ n, so: soO }) => <section key={n.id} className={`qd-kq-nhom is-${n.id}`} aria-labelledby={`qd-kq-${n.id}`} style={{ ["--o" as string]: soO }}>
         {/* Tên nhóm luôn là tên đầy đủ ("Công tác thu NSNN"): tên ngắn trùng
             đúng tên ô duy nhất bên trong, đọc ra một nhãn lặp hai lần. */}
-        <h3 className="qd-kq-tieu-de" id={`qd-kq-${n.id}`} title={n.ten}>{n.ten}{n.the.length > 1 && <small>{n.the.length} chỉ tiêu</small>}</h3>
+        <h3 className="qd-kq-tieu-de" id={`qd-kq-${n.id}`} title={n.ten}>{n.ten}{soO > 1 && <small>{soO} chỉ tiêu</small>}</h3>
         <div className="qd-kq-khung">
           {ds.filter((x) => n.the.includes(x.the.id)).map(({ the, kq }) => {
             const { ct } = kq;
@@ -271,22 +333,32 @@ function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string
             ].filter(Boolean).join("; ");
             return <button key={the.id} type="button" className="qd-kq-o" style={{ ["--i" as string]: i }} aria-label={docTo} onClick={() => moThe(the.id)}>
               <span className="qd-kq-ten">{the.ten}<Icon name="arrow" size={15}/></span>
-              <strong className="qd-kq-so"><b key={ky.id}>{so(kq.nay.tu, ct.dvt)}</b><small>{ct.dvt} · {thuong(ct.nhanTu)}</small></strong>
-              {/* Ô cố định: có tỷ lệ thì là tỷ lệ, cán bộ thì là mẫu số tuyệt đối. */}
+              {/*
+                Ô TO là TỶ LỆ (phương án 2, 29/10/2026): thứ trưởng phòng hỏi
+                trước là "phòng mình đạt bao nhiêu, hơn hay kém bình quân" — số
+                tuyệt đối 15.779,0 không so được giữa các ô. Thanh và vạch bình
+                quân đứng ngay dưới tỷ lệ; số tuyệt đối xuống hàng hai, cỡ nhỏ.
+                Vai không có tỷ lệ (cán bộ) giữ số tuyệt đối ở ô to, mẫu số ở
+                hàng hai — vị trí ô không đổi, nội dung đổi theo vai.
+              */}
+              {coTyLe && x !== null
+                ? <strong className="qd-kq-so">
+                    <b key={ky.id}>{pt(x, ct.kieu === "TANG")}</b>
+                    <small>{ct.kieu === "TANG" ? "tỷ lệ so với đầu năm" : ct.kieu === "THAP" ? `${congThucNgan(ct.stt)} · thấp hơn là tốt` : congThucNgan(ct.stt)}</small>
+                    {/* Chỉ tiêu "thấp là tốt" và "tăng/giảm" KHÔNG có thanh: thang
+                        0–100% làm 5,8% dẹt về 0 và đánh lừa khi đặt cạnh 84,8%. */}
+                    {ct.kieu === "CAO" && <ThanhMoc ct={ct} x={x} bq={bq}/>}
+                  </strong>
+                : <strong className="qd-kq-so"><b key={ky.id}>{so(kq.nay.tu, ct.dvt)}</b><small>{ct.dvt} · {thuong(ct.nhanTu)}</small></strong>}
               <span className="qd-kq-tl">
                 {coTyLe && x !== null
-                  ? <><b key={ky.id}>{pt(x, ct.kieu === "TANG")}</b>{ct.kieu === "TANG" ? <small>so với đầu năm</small>
-                      /* Chỉ tiêu "thấp là tốt" (tồn quá hạn) KHÔNG có thanh: thang
-                         0–100% làm 5,8% dẹt về 0, còn thang co theo số lớn nhất
-                         làm 5,8% trông đầy gần bằng 84,8% của ô bên cạnh. Ô nói
-                         thẳng chiều tốt của nó thay cho một hình vẽ đánh lừa. */
-                      : ct.kieu === "THAP" ? <small>thấp hơn là tốt</small> : <ThanhMoc ct={ct} x={x} bq={bq}/>}</>
+                  ? <><b key={ky.id}>{so(kq.nay.tu, ct.dvt)}</b><small>{ct.dvt} · {thuong(ct.nhanTu)}</small></>
                   : duocXem(pv.vai, "soGiao") || ct.the !== "thu"
                     ? <><b>{so(kq.nay.mau, ct.dvt)}</b><small>{thuong(ct.nhanMau)}</small></>
                     /* Mẫu số của thu là SỐ GIAO — cán bộ không có số giao (§4). */
                     : <small className="qd-khong-co">Không có {thuong(ct.nhanMau)}</small>}
               </span>
-              <span className="qd-kq-moc" style={{ gridTemplateColumns: `repeat(${coBQ ? 3 : 2}, auto)` }}>{moc.map((m) => <span key={m.nhan}><em>{m.ngan}</em><Moc ct={ct} m={m}/></span>)}</span>
+              <span className="qd-kq-moc" style={{ gridTemplateColumns: `repeat(${coBQ ? 3 : 2}, auto)` }}>{moc.map((m) => <span key={m.nhan}><em><span className="qd-moc-dai">{m.ngan}</span><span className="qd-moc-ngan" aria-hidden="true">{m.viet}</span></em><Moc ct={ct} m={m}/></span>)}</span>
               <span className={`qd-kq-ghi${ct.ghiChu ? " is-cho" : ""}`}>{ghi}</span>
             </button>;
           })}
@@ -483,10 +555,31 @@ type Theo = "DONVI" | "CANBO";
   xếp chồng: với lãnh đạo, hai bảng 30 đơn vị là gần bốn màn cuộn để so hai
   con số mà người đọc vốn chỉ xem từng cái một. Tệp Excel vẫn xuất đủ cả hai.
 */
+/*
+  Tab CHƯA CÓ chỉ tiêu trong bộ tiêu chí (28/10/2026): Tổng đài hỗ trợ NNT
+  chưa có chỉ tiêu nào. Không tự đặt công thức — màn nói thẳng đang chờ gì và
+  chỉ sang Báo cáo nếu có. Chênh lệch tờ khai cũng chưa có chỉ tiêu nhưng đã
+  có số theo dõi — xem `ChenhLechTK`.
+*/
+function ChuaCoChiTieu({ coBaoCao }: { coBaoCao: boolean }) {
+  return <Panel chinh title="Tổng đài hỗ trợ NNT" subtitle="Chưa có chỉ tiêu đánh giá">
+    <div className="qd-chua-ct">
+      <Icon name="clock" size={18}/>
+      <p><strong>Chưa có chỉ tiêu trong bộ tiêu chí đánh giá</strong>
+        <span>Bộ tiêu chí 26 chỉ tiêu chưa có chỉ tiêu nào cho tổng đài hỗ trợ NNT. Khi Thuế xác nhận chỉ tiêu, tab này hiện kết quả như các tab khác.
+        {coBaoCao ? " Số liệu hiện có nằm ở tab Báo cáo." : ""}</span></p>
+    </div>
+  </Panel>;
+}
+
 function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi; ky: KyQ; actor: string; moCanhBao?: (dvId: string) => void }) {
-  const [theo, datTheo] = useState<Theo>("DONVI");
+  /* Liên kết mang `so=` của một cán bộ (ngăn NNT đang mở) thì vào thẳng "Theo cán bộ". */
+  const [soURL] = useThamSo<string>("so", "");
+  const [theo, datTheo] = useState<Theo>(() => the === "thu" && soURL && pv.donVi.length === 1 && canBoCua(pv.donVi[0].id).some((c) => c.id === soURL) ? "CANBO" : "DONVI");
   const ds = chiTieuCuaThe(the);
-  const [ctId, datCtId] = useState(ds[0].id);
+  /* Đi từ Bộ tiêu chí sang (`tc=`) thì mở đúng chỉ tiêu ấy. */
+  const [tcURL] = useThamSo<string>("tc", "");
+  const [ctId, datCtId] = useState(() => ds.find((x) => String(x.stt) === tcURL)?.id ?? ds[0].id);
   const ct = ds.find((x) => x.id === ctId) ?? ds[0];
   const info = THE_Q.find((t) => t.id === the)!;
   /* "Theo cán bộ" chỉ có nghĩa khi đang xem MỘT đơn vị. */
@@ -515,7 +608,11 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
           {ds.map((x) => <button key={x.id} type="button" aria-pressed={x.id === ct.id} onClick={() => datCtId(x.id)}>{x.ngan ?? x.ten}</button>)}
         </div>
       </div>}
-      <TomTatMoc ct={ct} pv={pv} ky={ky}/>
+      {/* Dải số tóm tắt CHỈ cho lãnh đạo (gọn 28/10/2026): bảng của lãnh đạo
+          là các đơn vị con, không có dòng nào là số của cả phạm vi đang chọn.
+          Vai khác đã có dòng của mình (hoặc bảng theo tháng của cán bộ) mang
+          đủ các số ấy — dải ô chỉ lặp lại. */}
+      {pv.vai === "LD" && <TomTatMoc ct={ct} pv={pv} ky={ky}/>}
       {ct.ghiChu && <div className="notice info qd-ghi"><strong>Chờ chốt</strong><span>{ct.ghiChu}. Số hồ sơ hiển thị để theo dõi, chưa dùng để đánh giá.</span></div>}
       {/* Hai việc đang chờ của biên bản demo 09/10 gom thành MỘT dòng. */}
       {the === "no" && <p className="qd-ghi-mot">
@@ -525,7 +622,11 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
         ? <BangTheoThang key={ct.id} ct={ct} pv={pv} ky={ky}/>
         : <BangXepHang key={`${ct.id}-${theo}`} ct={ct} pv={pv} ky={ky} theo={motDonVi ? theo : "DONVI"} moCanhBao={moCanhBao}/>}
     </Panel>
-    <BangTieuChi the={the} pv={pv} ky={ky}/>
+    {/* Bảng theo bộ tiêu chí chỉ hiện khi nhóm có tiêu chí CHƯA có ở bảng
+        trên (Thu: tiêu chí 2, 3; Nợ: 5–8; THXC: 13; TTHC: 15). Nhóm mà mọi
+        tiêu chí đều là chỉ tiêu ở trên thì bảng này lặp nguyên số (gọn
+        28/10/2026). */}
+    {tieuChiCuaThe(the).some((t) => !ds.some((x) => x.stt === t.stt)) && <BangTieuChi the={the} pv={pv} ky={ky}/>}
   </>;
 }
 
@@ -659,12 +760,12 @@ function ThCt({ nhan, ct, day }: CotCt) {
      nó tên nằm một dòng và bảng tràn khỏi khung 1280px. */
   return <th scope="col" className="num" title={day ?? ct}><span>{nhan}</span></th>;
 }
+/* Cách tính: MỘT dòng chữ nhỏ dưới bảng (gọn 28/10/2026) — đọc được trên
+   màn, không chiếm một khối riêng phía trên bảng. */
 function CachTinh({ cot }: { cot: (CotCt | false | null | undefined)[] }) {
   const co = cot.filter((c): c is CotCt => Boolean(c && c.ct));
   if (!co.length) return null;
-  return <dl className="qd-cach-tinh" aria-label="Cách tính các cột">
-    {co.map((c) => <div key={c.nhan}><dt>{c.nhan}</dt><dd>{c.day ?? c.ct}</dd></div>)}
-  </dl>;
+  return <p className="qd-cach-tinh"><b>Cách tính.</b> {co.map((c, i) => <Fragment key={c.nhan}>{i ? "; " : ""}<span><i>{c.nhan}</i> = {c.day ?? c.ct}</span></Fragment>)}.</p>;
 }
 
 /* Bảng đơn vị hoặc cán bộ, xếp theo tỷ lệ. Cột hiện theo ma trận quyền. */
@@ -712,28 +813,55 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
     tháng trước", "Tổng nợ/Tổng thu NSNN"). Có thêm cột tỷ lệ tháng trước để
     "So tháng trước" là một phép trừ nhìn thấy được.
   */
-  const coTruoc = theo === "DONVI" && coTyLe;
+  /* Cột "Tỷ lệ T8" bỏ (gọn 28/10/2026): "So tháng trước" đã là phép trừ
+     ấy. Cột "So cùng kỳ" thay dải ô tóm tắt — mốc thứ ba của §2.4, nay có
+     cho từng đơn vị chứ không chỉ cho phạm vi. */
   const tTruoc = `T${ky.thang - 1}`;
-  const tlBQTruoc = coTruoc ? tyLeCua(ct, ketQuaChiTieu(ct, pv, { ...ky, thang: ky.thang - 1 }).binhQuan) : null;
+  const cungKy = new Map(dong.map((d) => [d.id, theo === "CANBO" ? null : capCua(ct, d.id, ky.thang, 2025)]));
 
   /* Mười dòng một trang: bảng 30 đơn vị của lãnh đạo dài hơn hai màn. Bảng
      của phòng (5 phòng, ≤18 cán bộ) thường vừa một hoặc hai trang. */
   const [trang, datTrang] = useState(1);
   const cotCt = [
     coTyLe && { nhan: "Tỷ lệ", ct: congThucNgan(ct.stt), day: congThucCua(ct) },
-    coTruoc && { nhan: `Tỷ lệ ${tTruoc}`, ct: `Tỷ lệ lũy kế đến hết ${tTruoc}` },
     coBQ && { nhan: "So bình quân", ct: `Tỷ lệ − tỷ lệ bình quân toàn thuế (${pt(tlBQ, ct.kieu === "TANG")})` },
-    theo === "DONVI" && { nhan: "So tháng trước", ct: coTruoc ? `Tỷ lệ − Tỷ lệ ${tTruoc}` : `Tháng này − ${tTruoc}` },
+    theo === "DONVI" && { nhan: "So tháng trước", ct: coTyLe ? `Tỷ lệ − tỷ lệ lũy kế đến hết ${tTruoc}` : `Tháng này − ${tTruoc}` },
+    theo === "DONVI" && { nhan: "So cùng kỳ", ct: coTyLe ? "Tỷ lệ − tỷ lệ cùng kỳ 2025" : "Tháng này − cùng kỳ 2025" },
     coNoThu && { nhan: "Nợ / thu NSNN", ct: "Tổng nợ / Tổng thu NSNN · mức Cục giao: 8%" },
   ];
   const CO = 10;
   const soTrang = Math.max(1, Math.ceil(hang.length / CO));
   const trongTrang = hang.slice((trang - 1) * CO, trang * CO);
 
+  /*
+    Thu NSNN · Theo cán bộ: mỗi dòng cán bộ mở NGĂN TRƯỢT danh sách NNT của
+    người ấy, và từ đó mở hồ sơ từng NNT (người dùng chốt 28/10/2026) — xem
+    `NNTCanBo`. Cán bộ đang mở ở `so=`, NNT đang mở ở `nnt=`. Chỉ nhóm Thu:
+    số thu cộng được theo NNT; chỉ tiêu tỷ lệ của nhóm khác thì chưa.
+  */
+  const coNNT = theo === "CANBO" && ct.the === "thu";
+  const dvId = pv.donVi[0].id;
+  const dsCB = useMemo(() => coNNT ? canBoCua(dvId) : [], [coNNT, dvId]);
+  const [soMo, datSoMo] = useThamSo<string>("so", "");
+  const [nntMo, datNntMo] = useThamSo<string>("nnt", "");
+  const cbMo = coNNT ? dsCB.find((c) => c.id === soMo) ?? null : null;
+  const jNNT = nntMo === "" ? null : Number.parseInt(nntMo, 10);
+  const noiBam = useRef<HTMLButtonElement | null>(null);
+  const dongNgan = () => { datNntMo(""); datSoMo(""); requestAnimationFrame(() => noiBam.current?.focus()); };
+  const moCB = (id: string, nut: HTMLButtonElement | null) => { noiBam.current = nut; datNntMo(""); datSoMo(soMo === id ? "" : id); };
+
   /* Điều khiển của bảng đứng NGAY TRÊN bảng nó điều khiển (critique
      27/10/2026): bản trước để "Tốt nhất / Kém nhất trước" dưới chân bảng, sau
      cả khối Cách tính. */
-  return <>
+  return <CaseLayout
+    presentation="drawer"
+    label={cbMo ? `Người nộp thuế · ${cbMo.ten}` : "Người nộp thuế của cán bộ"}
+    mobileOpen={Boolean(cbMo)}
+    onClose={dongNgan}
+    detail={cbMo ? <NNTCanBo key={cbMo.id} ct={ct} dvId={dvId} donVi={pv.donVi[0].ngan} cb={cbMo} ky={ky}
+      nnt={jNNT !== null && Number.isFinite(jNNT) && jNNT >= 0 ? jNNT : null}
+      moNNT={(j) => datNntMo(j === null ? "" : String(j))}/> : null}
+  >
   <div className="qd-khoi-xep">
     {haiKhoi && theo === "DONVI" && <>
       <span className="bo-loc-nhan">Xếp hạng trong</span>
@@ -748,9 +876,8 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
       <button type="button" aria-pressed={!kemTruoc} onClick={() => { datKemTruoc(false); datTrang(1); }}>Tốt nhất trước</button>
       <button type="button" aria-pressed={kemTruoc} onClick={() => { datKemTruoc(true); datTrang(1); }}>Kém nhất trước</button>
     </div>
-    <span className="qd-khoi-dem">{integer(hang.length)} {theo === "CANBO" ? "cán bộ" : "đơn vị"} · xếp theo tỷ lệ</span>
+    <span className="qd-khoi-dem">{integer(hang.length)} {theo === "CANBO" ? "cán bộ" : "đơn vị"} · xếp theo tỷ lệ{coNNT ? " · bấm một cán bộ để xem NNT" : ""}</span>
   </div>
-  <CachTinh cot={cotCt}/>
   <TableWrap label={`${ct.ten} theo ${theo === "CANBO" ? "cán bộ" : "đơn vị"}`}>
     <table className="qd-bang">
       <thead><tr>
@@ -765,17 +892,25 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
         {trongTrang.map((h) => {
           const t = truoc.get(h.id);
           const tlTruoc = t ? tyLeCua(ct, t) : null;
-          return <tr key={h.id} className={h.id === cuaToi ? "is-selected" : undefined}>
+          const cb = coNNT ? dsCB.find((c) => c.id === h.id) : undefined;
+          return <tr key={h.id} className={cb ? `qd-viec${h.id === soMo ? " is-selected" : ""}` : h.id === cuaToi ? "is-selected" : undefined}
+            onClick={cb ? (e) => moCB(h.id, e.currentTarget.querySelector<HTMLButtonElement>(".row-select")) : undefined}>
             {coHang && <td className="num">{h.hang}</td>}
-            <td>{h.ten}{h.id === cuaToi && <span className="qd-cua-toi"> · đơn vị của tôi</span>}</td>
+            {cb
+              /* Cả hàng bấm được; nút ở ô tên cho bàn phím — The Whole Row Rule. */
+              ? <td><button type="button" className="row-select qd-cb-mo" aria-haspopup="dialog">{h.ten}<span className="qd-cb-nnt"> · {integer(soNNTCanBo(dvId, cb))} NNT</span><Icon name="chevronDown" size={14}/></button></td>
+              : <td>{h.ten}{h.id === cuaToi && <span className="qd-cua-toi"><span className="sr-only">, </span>Đơn vị của tôi</span>}</td>}
             <td className="num"><strong>{so(h.cap.tu, ct.dvt)}</strong></td>
             {coGiao && <td className="num">{so(h.cap.mau, ct.dvt)}</td>}
             {coTyLe && <td className="num"><span className="qd-o-thanh">{ct.kieu === "CAO" && <ThanhTyLe ct={ct} x={h.tyLe ?? 0} bq={tlBQ}/>}<span>{pt(h.tyLe, ct.kieu === "TANG")}</span></span></td>}
-            {coTruoc && <td className="num qd-o-phu">{pt(tlTruoc, ct.kieu === "TANG")}</td>}
             {coBQ && <td className="num">{h.tyLe !== null && tlBQ !== null ? <Chenh ct={ct} d={h.tyLe - tlBQ}>{dpt(h.tyLe - tlBQ)}</Chenh> : "—"}</td>}
             {theo === "DONVI" && <td className="num">{coTyLe
               ? (h.tyLe !== null && tlTruoc !== null ? <Chenh ct={ct} d={h.tyLe - tlTruoc}>{dpt(h.tyLe - tlTruoc)}</Chenh> : "—")
               : (t ? <Chenh ct={ct} d={h.cap.tu - t.tu}>{chenhSo(h.cap.tu - t.tu, ct.dvt)}</Chenh> : "—")}</td>}
+            {theo === "DONVI" && (() => { const c = cungKy.get(h.id); const tlCk = c ? tyLeCua(ct, c) : null;
+              return <td className="num">{coTyLe
+                ? (h.tyLe !== null && tlCk !== null ? <Chenh ct={ct} d={h.tyLe - tlCk}>{dpt(h.tyLe - tlCk)}</Chenh> : "—")
+                : (c ? <Chenh ct={ct} d={h.cap.tu - c.tu}>{chenhSo(h.cap.tu - c.tu, ct.dvt)}</Chenh> : "—")}</td>; })()}
             {coNoThu && (() => { const thu = capCua(CHI_TIEU_Q[0], h.id, ky.thang).tu; const r = thu ? h.cap.tu / thu : null;
               return <td className="num"><span className={r !== null && r > 0.08 ? "qd-chenh is-xau" : "qd-chenh is-tot"}><i className="qd-cham" aria-hidden="true"/>{pt(r)}<span className="sr-only">{r !== null && r > 0.08 ? ", vượt mức Cục giao 8%" : ", trong mức Cục giao 8%"}</span></span></td>; })()}
             <td className="num">{moDuoc(h.id) && h.cap.quaHan
@@ -792,9 +927,8 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
           <td className="num">{so(bq.tu, ct.dvt)}</td>
           {coGiao && <td className="num">{so(bq.mau, ct.dvt)}</td>}
           {coTyLe && <td className="num">{pt(tlBQ, ct.kieu === "TANG")}</td>}
-          {coTruoc && <td className="num">{pt(tlBQTruoc, ct.kieu === "TANG")}</td>}
           <td/>
-          {theo === "DONVI" && <td/>}
+          {theo === "DONVI" && <><td/><td/></>}
           {coNoThu && <td/>}
           <td className="num">{integer(bq.quaHan)}</td>
         </tr>}
@@ -802,7 +936,8 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
     </table>
   </TableWrap>
   {soTrang > 1 && <div className="table-footer"><span/><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>}
-  </>;
+  <CachTinh cot={cotCt}/>
+  </CaseLayout>;
 }
 
 /* Cán bộ: số của DN mình theo tháng. Có số giao và tỷ lệ (15/10/2026) — cột
@@ -816,7 +951,7 @@ function BangTheoThang({ ct, pv, ky }: { ct: ChiTieuQ; pv: PhamVi; ky: KyQ }) {
     { nhan: "Phát sinh trong tháng", ct: "Lũy kế − Lũy kế tháng trước" },
     { nhan: "Cùng kỳ 2025", ct: "Lũy kế cùng tháng năm 2025" },
   ];
-  return <><CachTinh cot={cotCt}/><TableWrap label={`${ct.ten} theo tháng`}>
+  return <><TableWrap label={`${ct.ten} theo tháng`}>
     <table className="qd-bang">
       <thead><tr>
         <th scope="col">Tháng</th>
@@ -843,7 +978,7 @@ function BangTheoThang({ ct, pv, ky }: { ct: ChiTieuQ; pv: PhamVi; ky: KyQ }) {
         </tr>;
       })}</tbody>
     </table>
-  </TableWrap></>;
+  </TableWrap><CachTinh cot={cotCt}/></>;
 }
 
 function UocThu({ pv }: { pv: PhamVi }) {

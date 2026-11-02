@@ -64,6 +64,12 @@ export const NAV: MucNav[] = [
      liệu lọc theo phân quyền TMS 2.4.2. */
   { id: "doituong", label: "Tổng quan đối tượng", short: "Đối tượng", icon: "business", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
   { id: "canhbao", label: "Cảnh báo nhắc việc", short: "Cảnh báo", icon: "bell", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
+  /* Kiểm tra tại bàn và Hoàn thuế đứng NGOÀI Quản trị công việc, ngay sau
+     Cảnh báo nhắc việc (người dùng chốt 28/10/2026, theo cách chia phía Thuế). */
+  /* "Kiểm tra tại bàn" đổi thành "Phòng kiểm tra" (30/10/2026): mục gom hai
+     tab — Kiểm tra tại bàn (giữ nguyên) và Kiểm tra tại trụ sở. */
+  { id: "kq-kttb", label: "Phòng kiểm tra", short: "Kiểm tra", icon: "inspection", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-hoan", label: "Hoàn thuế", short: "Hoàn thuế", icon: "taxReturn", nhom: "work", phong: null, vaiTro: KHOI_QLDN },
 
   /*
     QUẢN TRỊ CÔNG VIỆC (chốt 13/10/2026): bốn nhóm lớn của file chấm điểm lên
@@ -75,16 +81,16 @@ export const NAV: MucNav[] = [
   { id: "dieuhanh", label: "Tổng quan quản trị", short: "Quản trị", icon: "overview", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-thu", label: "Thu NSNN", short: "Thu", icon: "treasury", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
   { id: "kq-no", label: "Quản lý nợ", short: "Nợ", icon: "receivables", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
-  { id: "kq-tthc", label: "Thủ tục hành chính", short: "TTHC", icon: "procedures", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
-  { id: "kq-qlht", label: "Quản lý, hỗ trợ DN", short: "QL, hỗ trợ", icon: "support", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
-  /* Tách khỏi "Quản lý, hỗ trợ DN" theo yêu cầu phòng thuế 20/10/2026. */
-  { id: "kq-kttb", label: "Kiểm tra tại bàn", short: "KT tại bàn", icon: "inspection", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
-  { id: "kq-hoan", label: "Hoàn thuế", short: "Hoàn thuế", icon: "taxReturn", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  /* Chia lại theo nghiệp vụ 28/10/2026 — xem `NHOM_Q`. Liên kết cũ
+     `kq-tthc`, `kq-qlht` dẫn về đúng tab mới (`readView` ở App). */
+  { id: "kq-kekhai", label: "Quản lý kê khai", short: "Kê khai", icon: "procedures", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-hoadon", label: "Quản lý hóa đơn", short: "Hóa đơn", icon: "file", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
+  { id: "kq-tongdai", label: "Tổng đài hỗ trợ NNT", short: "Tổng đài", icon: "support", nhom: "qtcv", phong: null, vaiTro: KHOI_QLDN },
 
   /* Bốn phân hệ cũ thành TUYẾN ẨN: liên kết đã gửi và các chốt kiểm vẫn mở
      được, và mục nhóm chứa báo cáo của nó sáng lên trên thanh bên. */
   { id: "debt", label: "Báo cáo công tác nợ", short: "Báo cáo nợ", icon: "debt", nhom: "phanhe", phong: ["QL1"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-no" },
-  { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-qlht" },
+  { id: "hoadon", label: "Rủi ro hóa đơn", short: "Hóa đơn", icon: "file", nhom: "phanhe", phong: ["QL2"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-hoadon" },
   { id: "risk", label: "Kiểm tra tại bàn", short: "Kiểm tra", icon: "risk", nhom: "phanhe", phong: ["QL3"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-kttb" },
   { id: "hoan", label: "Hoàn thuế TNCN và tổng đài", short: "Hoàn thuế", icon: "refund", nhom: "phanhe", phong: ["QL4"], vaiTro: NGHIEP_VU, an: true, thuoc: "kq-hoan" },
 

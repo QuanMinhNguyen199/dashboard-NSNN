@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Button, Icon } from "@/components/ui";
 import { KY_MAC_DINH } from "@/data/ql1";
 import { datThamSo } from "@/state/diaChi";
@@ -87,6 +88,14 @@ export function theoDonVi<T>(rows: T[], chon: LuaChonLoc, lay: (row: T) => strin
 }
 
 export interface MucDonVi { id: string; ten: string }
+
+/*
+  Ô đặt thanh lọc (29/10/2026). Báo cáo phân hệ NHÚNG trong một nhóm chỉ tiêu
+  không dựng thanh lọc thứ hai dưới các hàng tab: nó vẽ vào đúng ô thanh phạm vi
+  ở đầu màn (Fixed Slots — ô đứng yên, nội dung đổi theo chế độ). Không có ô thì
+  thanh lọc dựng tại chỗ như ở màn phân hệ riêng.
+*/
+export const ODatBoLoc = createContext<HTMLElement | null>(null);
 
 export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuyChon }: {
   /** Kỳ viết sẵn thành chữ. Dùng khi dữ liệu chỉ có MỘT kỳ. */
@@ -197,11 +206,14 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
 
   const datLaiDuoc = (!khoaTen && dangChon.length > 0) || (kyCo ? chon.ky !== kyCo[0].id : false);
 
-  return <div className="bo-loc-chung">
+  const oDat = useContext(ODatBoLoc);
+  const noiDung = <>
     {kyCo
       ? <>
           {coHaiLoai && <div className="bo-loc-muc">
-            <span className="bo-loc-nhan">Loại kỳ</span>
+            {/* Trong ô thanh phạm vi, nút "Tháng | Quý" tự nói nó là gì — nhãn
+                chỉ còn cho trình đọc màn hình, để thanh vừa một dòng. */}
+            <span className={oDat ? "sr-only" : "bo-loc-nhan"}>Loại kỳ</span>
             {/* Dựng từ CÁC LOẠI CÓ THẬT trong danh mục kỳ, không từ một danh
                 sách viết cứng: báo cáo tổng đài có ngày/tuần/tháng, QL2-01 chỉ
                 có tháng và lũy kế. Viết cứng thì mỗi báo cáo mới lại phải sửa
@@ -223,12 +235,13 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
         </div>}
 
     <div className="bo-loc-muc">
-      <span className="bo-loc-nhan" id="bo-loc-donvi-nhan">Đơn vị</span>
+      {/* Trong ô thanh phạm vi, nhãn giữ đúng chữ của ô ấy. */}
+      <span className="bo-loc-nhan" id="bo-loc-donvi-nhan">{oDat ? "Phạm vi" : "Đơn vị"}</span>
       {/* Hộp chọn nhiều tự dựng thay vì `<select multiple>`: select nhiều trên
           khổ hẹp cao bằng nửa màn và không cho biết đã chọn gì nếu không cuộn. */}
       {/* Escape là đường thoát bằng bàn phím; focus vẫn ở nút mở nên người
           dùng không bị ném về đầu trang. */}
-      {khoaTen ? <strong className="bo-loc-ky" aria-labelledby="bo-loc-donvi-nhan" title="Đổi phòng: về Kết quả và chọn ở ô Phạm vi">{rutGon(khoaTen)}{khoaCuaToi ? " · phòng của bạn" : " · chỉ xem"}</strong> :
+      {khoaTen ? <strong className="bo-loc-ky" aria-labelledby="bo-loc-donvi-nhan" title="Đổi phòng: về Kết quả và chọn ở ô Phạm vi">{rutGon(khoaTen)}{khoaCuaToi ? (oDat ? "" : " · phòng của bạn") : " · chỉ xem"}</strong> :
       <div className="bo-loc-chon" ref={hopChon} onKeyDown={(e) => { if (e.key === "Escape") setMo(false); }}>
         <button type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" aria-labelledby="bo-loc-donvi-nhan" onClick={() => setMo((t) => !t)}>
           <span>{tomTat}</span><Icon name="chevronDown" size={16}/>
@@ -248,5 +261,7 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
       ghiDiaChi(kyGoc, []);
     }}>Đặt lại</Button>}
     {phuChu && <span className="bo-loc-phu">{phuChu}</span>}
-  </div>;
+  </>;
+  if (oDat) return createPortal(noiDung, oDat);
+  return <div className="bo-loc-chung">{noiDung}</div>;
 }

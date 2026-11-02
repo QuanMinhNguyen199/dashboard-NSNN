@@ -135,7 +135,7 @@ const hatKy = (thang: number, nam = 2026) => nam * 100 + thang;
   • THAP — tỷ lệ thấp là tốt (tồn quá hạn / tổng hồ sơ).
   • TANG — tốc độ tăng của tử so với mẫu, thấp là tốt (nợ nay so nợ đầu năm).
 */
-export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "hd" | "k" | "xp" | "gt" | "kttb" | "hoan";
+export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktts" | "hoan";
 export type Kieu = "CAO" | "THAP" | "TANG";
 
 export interface ChiTieuQ {
@@ -164,32 +164,46 @@ export const THE_Q: TheQ[] = [
   { id: "no", ten: "Nợ thuế", ngan: "Nợ thuế" },
   { id: "cc", ten: "Cưỡng chế nợ thuế", ngan: "Cưỡng chế" },
   { id: "thxc", ten: "Tạm hoãn xuất cảnh", ngan: "Tạm hoãn XC" },
-  { id: "tthc", ten: "Thủ tục hành chính tồn", ngan: "TTHC" },
-  { id: "hd", ten: "Rủi ro và xác minh hóa đơn", ngan: "Hóa đơn" },
+  { id: "tthc", ten: "Thủ tục hành chính", ngan: "Thủ tục hành chính" },
+  { id: "xp", ten: "Xử phạt vi phạm hành chính", ngan: "Xử phạt VPHC" },
+  { id: "gt", ten: "Đóng mã, giải thể", ngan: "Đóng mã, giải thể" },
+  { id: "tpr", ten: "Rà soát TPR", ngan: "Rà soát TPR" },
+  { id: "xmhd", ten: "Xác minh hóa đơn", ngan: "Xác minh hóa đơn" },
   { id: "k", ten: "Hệ số K", ngan: "Hệ số K" },
-  { id: "xp", ten: "Xử phạt vi phạm hành chính", ngan: "Xử phạt" },
-  { id: "gt", ten: "Giải thể, đóng mã", ngan: "Giải thể" },
-  { id: "kttb", ten: "Kiểm tra tại bàn", ngan: "KT tại bàn" },
+  /* Hai thẻ CHƯA CÓ chỉ tiêu trong bộ tiêu chí 26 chỉ tiêu (28/10/2026):
+     Chênh lệch tờ khai chờ người dùng gửi cách tính; Tổng đài chưa có chỉ
+     tiêu nào. Cả hai có báo cáo phân hệ — xem `BAO_CAO_CUA_THE`. */
+  { id: "cltk", ten: "Chênh lệch tờ khai", ngan: "Chênh lệch tờ khai" },
+  { id: "tongdai", ten: "Tổng đài hỗ trợ NNT", ngan: "Tổng đài hỗ trợ NNT" },
+  { id: "kttb", ten: "Kiểm tra tại bàn", ngan: "Kiểm tra tại bàn" },
+  /* Kiểm tra tại trụ sở NNT (30/10/2026): báo cáo của các Phòng Kiểm tra và
+     Thuế cơ sở theo mẫu "Đầu ra - Biểu excel báo cáo", sheet Chi tiết TTKT.
+     Không có chỉ tiêu trong bộ tiêu chí QLDN — xem `KiemTraTruSo`. */
+  { id: "ktts", ten: "Kiểm tra tại trụ sở", ngan: "Kiểm tra tại trụ sở" },
   { id: "hoan", ten: "Hồ sơ hoàn thuế", ngan: "Hoàn thuế" },
 ];
 
 /*
-  Bốn NHÓM LỚN — đúng bốn cột "Tổng điểm trung bình" (màu xanh) của sheet
-  "II. Khối QLDN" trong file Bộ tiêu chí đánh giá. Mười một thẻ là nhóm nhỏ
-  bên trong; người dùng chọn nhóm lớn trước rồi lọc nhóm nhỏ, như cách file
-  Excel xếp cột.
+  NHÓM MÀN theo NGHIỆP VỤ QUẢN LÝ (người dùng chốt 28/10/2026, theo cách chia
+  tab phía Thuế đang dùng): Quản lý kê khai gom TTHC, xử phạt, đóng mã giải
+  thể; Quản lý hóa đơn gom TPR, xác minh hóa đơn, hệ số K, chênh lệch tờ khai;
+  Tổng đài hỗ trợ NNT thành nhóm riêng. Bản trước chia đúng bốn cột "Tổng
+  điểm trung bình" của sheet "II. Khối QLDN" — cách chia ấy VẪN dùng để chấm
+  điểm và xếp hạng phòng (`NHOM_DIEM` ở `xepHangQLDN.ts`); đổi ở đây chỉ đổi
+  chỗ đứng của màn, không đổi điểm.
 */
-export type NhomId = "thu" | "no" | "tthc" | "qlht" | "kttb" | "hoan";
+export type NhomId = "thu" | "no" | "kekhai" | "hoadon" | "tongdai" | "kttb" | "hoan";
 export interface NhomQ { id: NhomId; ten: string; ngan: string; the: TheId[] }
 export const NHOM_Q: NhomQ[] = [
   { id: "thu", ten: "Công tác thu NSNN", ngan: "Thu NSNN", the: ["thu"] },
   { id: "no", ten: "Công tác quản lý nợ", ngan: "Quản lý nợ", the: ["no", "cc", "thxc"] },
-  { id: "tthc", ten: "Công tác thủ tục hành chính", ngan: "Thủ tục hành chính", the: ["tthc"] },
-  { id: "qlht", ten: "Công tác quản lý, hỗ trợ doanh nghiệp", ngan: "Quản lý, hỗ trợ DN", the: ["hd", "k", "xp", "gt"] },
+  { id: "kekhai", ten: "Quản lý kê khai", ngan: "Quản lý kê khai", the: ["tthc", "xp", "gt"] },
+  { id: "hoadon", ten: "Quản lý hóa đơn", ngan: "Quản lý hóa đơn", the: ["tpr", "xmhd", "k", "cltk"] },
+  { id: "tongdai", ten: "Tổng đài hỗ trợ NNT", ngan: "Tổng đài hỗ trợ NNT", the: ["tongdai"] },
   /* Phòng thuế yêu cầu 20/10/2026: kiểm tra tại bàn và hoàn thuế mỗi việc một
      mục riêng trên thanh bên, tách khỏi "Quản lý, hỗ trợ DN". Thứ tự vẫn theo
      file chấm điểm: STT 24 rồi 25, 26 — đứng sau nhóm quản lý, hỗ trợ DN. */
-  { id: "kttb", ten: "Công tác kiểm tra tại bàn", ngan: "Kiểm tra tại bàn", the: ["kttb"] },
+  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["kttb", "ktts"] },
   { id: "hoan", ten: "Công tác hoàn thuế", ngan: "Hoàn thuế", the: ["hoan"] },
 ];
 export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
@@ -220,8 +234,8 @@ export const CHI_TIEU_Q: ChiTieuQ[] = [
   { id: "thxc-n", stt: 11, the: "thxc", ngan: "Theo số NNT", ten: "Tỷ lệ số lượng NNT đã thực hiện tạm hoãn xuất cảnh/Số lượng phải thực hiện THXC", kieu: "CAO", nhanTu: "Số lượng NNT đã THXC + đã đôn đốc nộp", nhanMau: "Số lượng NNT phải thực hiện THXC", dvt: "NNT", mau: [40, 210], tyLe: [0.3, 0.9] },
   { id: "thxc-t", stt: 12, the: "thxc", ngan: "Theo số tiền", ten: "Tỷ lệ số tiền đã thực hiện tạm hoãn xuất cảnh/Số tiền phải thực hiện THXC", kieu: "CAO", nhanTu: "Số tiền nợ đã THXC + đã đôn đốc nộp", nhanMau: "Số tiền phải thực hiện THXC", dvt: "tỷ đồng", mau: [60, 400], tyLe: [0.84, 1] },
   { id: "tthc", stt: 14, the: "tthc", ten: "Tỷ lệ tồn quá hạn thực hiện TTHC (Đã loại trừ hoàn GTGT và TNCN) theo tháng", kieu: "THAP", nhanTu: "Số TTHC tồn quá hạn", nhanMau: "Số TTHC đã thực hiện", dvt: "hồ sơ", mau: [900, 3200], tyLe: [0, 0.07] },
-  { id: "tpr", stt: 17, the: "hd", ngan: "Rà soát TPR", ten: "Rà soát TPR", kieu: "CAO", nhanTu: "NNT đã thực hiện rà soát", nhanMau: "Tổng số NNT phải thực hiện rà soát", dvt: "NNT", mau: [120, 460], tyLe: [0.88, 1] },
-  { id: "xmhd", stt: 18, the: "hd", ngan: "Xác minh hóa đơn", ten: "Xác minh hóa đơn", kieu: "CAO", nhanTu: "HĐ đã thực hiện xác minh", nhanMau: "Tổng số HĐ phải thực hiện xác minh", dvt: "hóa đơn", mau: [300, 1600], tyLe: [0.86, 1] },
+  { id: "tpr", stt: 17, the: "tpr", ngan: "Rà soát TPR", ten: "Rà soát TPR", kieu: "CAO", nhanTu: "NNT đã thực hiện rà soát", nhanMau: "Tổng số NNT phải thực hiện rà soát", dvt: "NNT", mau: [120, 460], tyLe: [0.88, 1] },
+  { id: "xmhd", stt: 18, the: "xmhd", ngan: "Xác minh hóa đơn", ten: "Xác minh hóa đơn", kieu: "CAO", nhanTu: "HĐ đã thực hiện xác minh", nhanMau: "Tổng số HĐ phải thực hiện xác minh", dvt: "hóa đơn", mau: [300, 1600], tyLe: [0.86, 1] },
   { id: "k", stt: 19, the: "k", ten: "Hệ số K", kieu: "CAO", nhanTu: "NNT đã thực hiện rà soát", nhanMau: "Tổng số NNT phải thực hiện rà soát", dvt: "NNT", mau: [90, 380], tyLe: [0.84, 1] },
   { id: "xp", stt: 20, the: "xp", ten: "Xử phạt VPHC", kieu: "CAO", nhanTu: "Số đã xử phạt", nhanMau: "Tổng số phải xử phạt", dvt: "quyết định", mau: [80, 320], tyLe: [0.45, 0.92] },
   { id: "gt-goi", stt: 21, the: "gt", ngan: "Theo gói QLDN3", ten: "Đóng mã giải thể (Không bao gồm đã chuyển kiểm tra tại trụ sở NNT) theo gói của Phòng QLDN3", kieu: "CAO", nhanTu: "Số đã thực hiện", nhanMau: "Tổng số lượng giao", dvt: "NNT", mau: [30, 160], tyLe: [0.3, 0.86] },

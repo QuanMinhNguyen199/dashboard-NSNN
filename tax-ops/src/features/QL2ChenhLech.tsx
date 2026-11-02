@@ -1,4 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { CaseLayout } from "@/components/CaseLayout";
+import { HoSoDN } from "@/features/qldn/HoSoDN";
+import { dnTuDanhSach } from "@/data/hoSoQLDN";
 import { Badge, Button, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
 import { theoDonVi, useBoLoc, useKhoaDonVi } from "@/components/BoLoc";
 import { useAction } from "@/state/ActionContext";
@@ -12,7 +15,7 @@ import { rutGonTenDonVi } from "@/data/danhMuc";
 import type { VaiTro } from "@/domain/types";
 import {
   CHIEU_CHENH, CO_CHENH, KET_QUA_PRS03, KHAC_QL2_01, bangQL2_01, canRaSoat, chuaCoKetQua,
-  danhSachChenhLech, donViThieuR31, DON_VI_QL2, nhanLuyKe, type ChieuQL2_01, type HangQL2_01, type KyQL2, type LoaiTK,
+  danhSachChenhLech, donViThieuR31, DON_VI_QL2, nhanLuyKe, type ChieuQL2_01, type HangQL2_01, type KyQL2, type LoaiTK, type NNTChenhLech,
 } from "@/data/ql2";
 
 /*
@@ -314,6 +317,21 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
   const [daChon, datDaChon] = useState<string[]>([]);
 
   const tatCa = useMemo(() => danhSachChenhLech(ky.hat), [ky.hat]);
+
+  /*
+    Bấm một NNT mở HỒ SƠ DN trong ngăn trượt (người dùng chốt 29/10/2026) —
+    như ngăn NNT của Thu NSNN. Khóa là MST (`nnt=`), không phải dòng: một MST
+    có tới bốn dòng (bốn loại tờ khai) nhưng chỉ một hồ sơ. Tên NNT là nút mở
+    hồ sơ ở MỌI dòng; phần còn lại của dòng giữ việc cũ — chọn dòng để giao
+    phiếu ở chế độ dự phòng, mở hồ sơ ở các dòng khác (The Whole Row Rule).
+  */
+  const [nntMo, datNntMo] = useThamSo<string>("nnt", "");
+  const noiBam = useRef<HTMLElement | null>(null);
+  const dongMo = nntMo ? tatCa.find((r) => r.mst === nntMo) ?? null : null;
+  const dnMo = useMemo(() => dongMo ? dnTuDanhSach({ mst: dongMo.mst, ten: dongMo.ten, donVi: rutGonTenDonVi(dongMo.dv.ten), canBo: dongMo.canBo }) : null, [dongMo]);
+  const thangKy = Number(ky.ngayChot.split("/")[1]) || 9;
+  const moHoSo = (r: NNTChenhLech, tu: HTMLElement | null) => { noiBam.current = tu; datNntMo(r.mst); };
+  const dongHoSo = () => { datNntMo(""); requestAnimationFrame(() => noiBam.current?.focus()); };
   const loc = useMemo(() => {
     const q = tim.trim().toLowerCase();
     return theoDonVi(tatCa, chon, (r) => r.dv.ten)
@@ -335,7 +353,13 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
   const khoaDong = (r: (typeof tatCa)[number]) => `${ky.hat}-${r.mst}-${r.chieu}`;
   const giaoDuoc = chuaGiao.filter((r) => daChon.includes(khoaDong(r))).length;
 
-  return <><Panel className="ql2-chenh-list"
+  return <><CaseLayout
+    presentation="drawer"
+    label={dnMo ? `Hồ sơ NNT · ${dnMo.ten}` : "Hồ sơ người nộp thuế"}
+    mobileOpen={Boolean(dnMo)}
+    onClose={dongHoSo}
+    detail={dnMo ? <HoSoDN d={dnMo} thang={thangKy}/> : null}
+  ><Panel className="ql2-chenh-list"
     title="Danh sách NNT có chênh lệch"
     /* HAI con số: một MST có thể có tới bốn dòng, nên số dòng khác số doanh
        nghiệp — và người đọc phải thấy cả hai để không đếm nhầm. */
@@ -429,8 +453,11 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
             };
             return <tr
               key={khoa}
-              className={daChon.includes(khoa) ? "is-selected" : undefined}
-              onClick={(e) => { if (!(e.target instanceof Element && e.target.closest(".o-chon"))) bat(); }}
+              className={`qd-viec${daChon.includes(khoa) || r.mst === nntMo ? " is-selected" : ""}`}
+              onClick={(e) => {
+                if (e.target instanceof Element && e.target.closest(".o-chon")) return;
+                if (choChon) bat(); else moHoSo(r, e.currentTarget.querySelector<HTMLElement>(".row-select"));
+              }}
             >
             {choGiao && <td className="center">
               {/* Ô tích THẬT nằm dưới, trong suốt và trải hết ô; hình vuông
@@ -443,7 +470,9 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
               </label>
             </td>}
             <td>{r.mst}</td>
-            <td>{r.ten}{r.khongNopTK && <> <Badge tone="warning">Không nộp TK</Badge></>}</td>
+            <td><button type="button" className="row-select" aria-haspopup="dialog" aria-label={`${r.ten}: mở hồ sơ`} onClick={(e) => { e.stopPropagation(); moHoSo(r, e.currentTarget); }}>
+              <span>{r.ten}</span>{r.khongNopTK && <Badge tone="warning">Không nộp TK</Badge>}
+            </button></td>
             <td title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</td>
             <td>{r.canBo}</td>
             <td>{CHIEU_CHENH.find((c) => c.id === r.chieu)?.nhan}</td>
@@ -461,7 +490,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
       </table>
     </TableWrap>
     <Pager trang={t} soTrang={soTrang} onChange={datTrang}/>
-  </Panel>
+  </Panel></CaseLayout>
   {choGiao && moDuPhong && <>
     <TienDoPhieu loai="PRS-03" hatKy={ky.hat} donViChoPhep={donViThieu.map((d) => d.ten)}/>
     <NhapKetQuaPhieu key={`${ky.id}-${donViThieu.map((d) => d.id).join(",")}`} loai="PRS-03" hatKy={ky.hat} donViChoPhep={donViThieu.map((d) => d.ten)}/>
