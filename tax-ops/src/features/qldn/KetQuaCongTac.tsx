@@ -167,7 +167,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
   /* Mục của báo cáo nhúng (`muc=`) nằm ở đây, không trong phân hệ: hàng
      "Chỉ tiêu | mục báo cáo…" là một hàng của nhóm (29/10/2026). */
   const [mucURL, datMucURL] = useThamSo<string>("muc", "");
-  /* "Số liệu: tất cả các cuộc | đích danh" của tab Kiểm tra tại trụ sở điều khiển
+  /* "Số liệu: tất cả các cuộc | đích danh" của tab Tổng quan (Phòng kiểm tra) điều khiển
      CẢ xếp hạng lẫn bảng chi tiết, nên nó đứng trên thanh phạm vi và trạng thái
      sống ở đây — một điều khiển, một nguồn. */
   const [loaiKT, datLoaiKT] = useThamSo<"" | "dd">("loai", "", ["", "dd"]);
@@ -214,7 +214,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
       /* Báo cáo nhúng: ô thanh phạm vi giữ nguyên chỗ và khung, nội dung là
          thanh lọc của báo cáo (Loại kỳ · Kỳ · Phạm vi) — một thanh, không hai. */
       : moBaoCao ? <div ref={datOLoc} className="bo-loc-chung qd-pham-vi is-bao-cao"><NutThuGon/><PhuVai pv={pv} lop="is-vai"/></div>
-      /* Kiểm tra tại trụ sở là báo cáo toàn ngành của khối kiểm tra, không
+      /* Tổng quan của Phòng kiểm tra là báo cáo toàn ngành của khối kiểm tra, không
          theo phòng QLDN: ô phạm vi vẫn đứng đó và nói giá trị bằng chữ. */
       : the === "ktts" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
       : <ThanhPhamVi pv={pv} ky={ky} datKy={datKy}/>}
@@ -261,6 +261,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
     <div className="qd-results" data-motion="content" data-motion-key={`${nhomId ?? "tq"}-${tab}-${the}-${xem}-${moBaoCao ? muc : ""}-${ky.id}-${pv.donVi.map((d) => d.id).join(",")}`}>
       {!the ? (tab === "canbo" ? <XepHangCanBo pv={pv} ky={ky} actor={user.name}/> : moXepHang ? <XepHangPhong pv={pv} actor={user.name}/> : <TongQuan pv={pv} ky={ky} actor={user.name} moThe={moThe}/>)
         : moBaoCao ? <ODatBoLoc.Provider value={oLoc}><BaoCaoPhanHe bc={bc!} user={user} donViId={pv.donVi[0].id} muc={muc} datMuc={moMuc}/></ODatBoLoc.Provider>
+        : the === "ktnnt" ? <ChuaCoNoiDung ten="Kiểm tra tại trụ sở NNT"/>
         : the === "ktts" ? <KiemTraTruSo ky={ky} actor={user.name} dd={loaiKT === "dd"} datLoai={datLoaiKT}/>
         : the === "cltk" ? <ChenhLechTK pv={pv} ky={ky} actor={user.name} moDanhSach={bc ? moDSChenh : undefined}/>
         : !chiTieuCuaThe(the).length ? <ChuaCoChiTieu coBaoCao={Boolean(bc)}/>
@@ -568,6 +569,19 @@ function ChuaCoChiTieu({ coBaoCao }: { coBaoCao: boolean }) {
       <p><strong>Chưa có chỉ tiêu trong bộ tiêu chí đánh giá</strong>
         <span>Bộ tiêu chí 26 chỉ tiêu chưa có chỉ tiêu nào cho tổng đài hỗ trợ NNT. Khi Thuế xác nhận chỉ tiêu, tab này hiện kết quả như các tab khác.
         {coBaoCao ? " Số liệu hiện có nằm ở tab Báo cáo." : ""}</span></p>
+    </div>
+  </Panel>;
+}
+
+/* Tab đã có chỗ trên hàng tab nhưng chưa có yêu cầu, mẫu báo cáo hay dữ liệu
+   (người dùng chốt 02/11/2026: "tạm thời để trống"). Nói đúng như vậy — không
+   dựng bảng rỗng, không đặt ra chỉ tiêu. */
+function ChuaCoNoiDung({ ten }: { ten: string }) {
+  return <Panel chinh title={ten} subtitle="Chưa có nội dung">
+    <div className="qd-chua-ct">
+      <Icon name="clock" size={18}/>
+      <p><strong>Tab này chưa có nội dung</strong>
+        <span>Nội dung sẽ được dựng khi có yêu cầu và mẫu báo cáo cho phần này.</span></p>
     </div>
   </Panel>;
 }

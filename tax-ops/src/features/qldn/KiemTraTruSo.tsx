@@ -11,7 +11,8 @@ import {
 } from "@/data/kiemTra";
 
 /*
-  Mục "Phòng kiểm tra" › tab "Kiểm tra tại trụ sở" (30/10/2026).
+  Mục "Phòng kiểm tra" › tab "Tổng quan" (30/10/2026; tên cũ "Kiểm tra tại
+  trụ sở", đổi và chuyển sang trái "Kiểm tra tại bàn" ngày 02/11/2026).
 
   Khối chính là BẢNG của mẫu "Đầu ra - Biểu excel báo cáo", sheet Chi tiết
   TTKT — người dùng chỉ định nó là bảng quan trọng nhất. Ba khối hỗ trợ lấy
@@ -205,7 +206,7 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
   const soTrang = Math.max(1, Math.ceil(muc.length / CO_TRANG));
   const tr = Math.min(trang, soTrang);
   const doiLoc = (k: LocKhoi) => { datLoc(k); datTrang(1); };
-  return <Panel chinh title="Chi tiết theo đơn vị" subtitle={`Mẫu Chi tiết TTKT · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)} · so với cùng kỳ 2025`}
+  return <Panel chinh title="Chi tiết theo đơn vị" subtitle={`Kiểm tra tại trụ sở NNT · mẫu Chi tiết TTKT · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)} · so với cùng kỳ 2025`}
     actions={<div className="inline-controls kt-dieu-khien">
       <label className="kt-loc-khoi"><span className="sr-only">Hiển thị đơn vị</span>
         <select className="bo-loc-select" value={loc} onChange={(e) => doiLoc(e.target.value as LocKhoi)}>

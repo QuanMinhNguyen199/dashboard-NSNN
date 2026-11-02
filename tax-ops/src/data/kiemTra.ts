@@ -1,7 +1,8 @@
 import { hatCua, prng } from "@/data/ngauNhien";
 
 /*
-  Kiểm tra tại trụ sở NNT — tab thứ hai của mục "Phòng kiểm tra" (30/10/2026).
+  Kiểm tra tại trụ sở NNT — tab "Tổng quan" của mục "Phòng kiểm tra" (30/10/2026;
+  tên tab đổi từ "Kiểm tra tại trụ sở" ngày 02/11/2026).
 
   CẤU TRÚC lấy từ mẫu "Đầu ra - Biểu excel báo cáo.xlsx", sheet "Chi tiet
   TTKT" (thư mục 30-10): ba tầng dòng Toàn ngành › Khối VP Thuế TP (năm
