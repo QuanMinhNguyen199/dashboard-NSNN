@@ -21,6 +21,8 @@ import { HangTab, mucNhung } from "@/components/MucPhanHe";
 import { ODatBoLoc } from "@/components/BoLoc";
 import { BAO_CAO_CUA_THE, BaoCaoPhanHe, coBaoCao } from "@/features/qldn/BaoCaoPhanHe";
 import { KiemTraTruSo, OSoLieuKT } from "@/features/qldn/KiemTraTruSo";
+import { DongMSTDonVi, NopThua, ToKhaiTonTruc, XuPhatDonVi } from "@/features/qldn/QuanLyKeKhai";
+import { NHAN_NGAY_KEO_TK } from "@/data/ql5";
 import { ChenhLechTK, kyQL2Cua } from "@/features/qldn/ChenhLechTK";
 import { KY_QL2_01 } from "@/data/ql2";
 
@@ -217,6 +219,8 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
       /* Tổng quan của Phòng kiểm tra là báo cáo toàn ngành của khối kiểm tra, không
          theo phòng QLDN: ô phạm vi vẫn đứng đó và nói giá trị bằng chữ. */
       : the === "ktts" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
+      /* Tờ khai tồn trục là ảnh chụp lần kéo gần nhất, không theo tháng: ô Kỳ nói ngày kéo. */
+      : the === "tktt" ? <ThanhPhamVi pv={pv} kyChu={`Lần kéo gần nhất · ${NHAN_NGAY_KEO_TK}`}/>
       : <ThanhPhamVi pv={pv} ky={ky} datKy={datKy}/>}
     {coXepHang && <nav className="thanh-muc" aria-label="Nội dung tổng quan quản trị">
       <HangTab lop="thanh-muc-hang" khoaMo={tab}>
@@ -263,9 +267,17 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         : moBaoCao ? <ODatBoLoc.Provider value={oLoc}><BaoCaoPhanHe bc={bc!} user={user} donViId={pv.donVi[0].id} muc={muc} datMuc={moMuc}/></ODatBoLoc.Provider>
         : the === "ktnnt" ? <ChuaCoNoiDung ten="Kiểm tra tại trụ sở NNT"/>
         : the === "ktts" ? <KiemTraTruSo ky={ky} actor={user.name} dd={loaiKT === "dd"} datLoai={datLoaiKT}/>
+        : the === "tktt" ? <ToKhaiTonTruc pv={pv} actor={user.name}/>
+        : the === "nopthua" ? <NopThua pv={pv} ky={ky} actor={user.name}/>
         : the === "cltk" ? <ChenhLechTK pv={pv} ky={ky} actor={user.name} moDanhSach={bc ? moDSChenh : undefined}/>
         : !chiTieuCuaThe(the).length ? <ChuaCoChiTieu coBaoCao={Boolean(bc)}/>
-        : <ChiTietThe key={the} the={the} pv={pv} ky={ky} actor={user.name} moCanhBao={moCanhBao}/>}
+        : <>
+          <ChiTietThe key={the} the={the} pv={pv} ky={ky} actor={user.name} moCanhBao={moCanhBao}/>
+          {/* Bảng theo mẫu QL5 dưới phần chỉ tiêu (02/11/2026) — cùng tử, mẫu với chỉ tiêu.
+              Cán bộ không có: phạm vi của họ là DN được phân công, còn mẫu là số cả phòng. */}
+          {the === "xp" && !pv.canBo && <XuPhatDonVi pv={pv} ky={ky} actor={user.name}/>}
+          {the === "gt" && !pv.canBo && <DongMSTDonVi pv={pv} ky={ky} actor={user.name}/>}
+        </>}
     </div>
   </div>;
 }
