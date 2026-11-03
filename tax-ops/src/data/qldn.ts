@@ -135,7 +135,7 @@ const hatKy = (thang: number, nam = 2026) => nam * 100 + thang;
   • THAP — tỷ lệ thấp là tốt (tồn quá hạn / tổng hồ sơ).
   • TANG — tốc độ tăng của tử so với mẫu, thấp là tốt (nợ nay so nợ đầu năm).
 */
-export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "hoan" | "tktt" | "nopthua";
+export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "ktcuoc" | "ktdoisoat" | "ktnhap" | "hoan" | "hoangtgt" | "tktt" | "nopthua";
 export type Kieu = "CAO" | "THAP" | "TANG";
 
 export interface ChiTieuQ {
@@ -185,7 +185,16 @@ export const THE_Q: TheQ[] = [
      (02/11/2026) đã bỏ ngày 03/11/2026; nội dung của nó chuyển về tab này.
      Không có chỉ tiêu trong bộ tiêu chí QLDN — xem `KiemTraTruSo`. */
   { id: "ktnnt", ten: "Kiểm tra tại trụ sở NNT", ngan: "Kiểm tra tại trụ sở NNT" },
+  /* Ba tab thêm theo ghi chú folder PKT (03/11/2026): đoàn kiểm tra nhập
+     cuộc, báo cáo đối soát (Module 2 – Mục 3), nhập dữ liệu từ tệp mẫu.
+     Không có chỉ tiêu — xem `PhongKiemTra`. */
+  { id: "ktcuoc", ten: "Cuộc kiểm tra", ngan: "Cuộc kiểm tra" },
+  { id: "ktdoisoat", ten: "Báo cáo đối soát", ngan: "Đối soát" },
+  { id: "ktnhap", ten: "Nhập dữ liệu", ngan: "Nhập dữ liệu" },
   { id: "hoan", ten: "Hồ sơ hoàn thuế", ngan: "Hoàn thuế" },
+  /* Báo cáo tháng hồ sơ hoàn trước – kiểm sau thuế GTGT (folder HoanGTGT,
+     biên bản 28/10/2026). Không có chỉ tiêu — xem `HoanGTGT`. */
+  { id: "hoangtgt", ten: "Hoàn GTGT", ngan: "Hoàn GTGT" },
 ];
 
 /*
@@ -210,8 +219,8 @@ export const NHOM_Q: NhomQ[] = [
      file chấm điểm: STT 24 rồi 25, 26 — đứng sau nhóm quản lý, hỗ trợ DN. */
   /* Kiểm tra tại trụ sở NNT đứng TRÁI Kiểm tra tại bàn và là tab mở mặc định —
      đúng chỗ của tab "Tổng quan" đã bỏ (03/11/2026). */
-  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["ktnnt", "kttb"] },
-  { id: "hoan", ten: "Công tác hoàn thuế", ngan: "Hoàn thuế", the: ["hoan"] },
+  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["ktnnt", "kttb", "ktcuoc", "ktdoisoat", "ktnhap"] },
+  { id: "hoan", ten: "Công tác hoàn thuế", ngan: "Hoàn thuế", the: ["hoan", "hoangtgt"] },
 ];
 export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
 

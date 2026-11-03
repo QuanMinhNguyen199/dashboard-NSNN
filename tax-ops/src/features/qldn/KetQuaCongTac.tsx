@@ -21,6 +21,8 @@ import { HangTab, mucNhung } from "@/components/MucPhanHe";
 import { ODatBoLoc } from "@/components/BoLoc";
 import { BAO_CAO_CUA_THE, BaoCaoPhanHe, coBaoCao } from "@/features/qldn/BaoCaoPhanHe";
 import { KiemTraTruSo, OSoLieuKT } from "@/features/qldn/KiemTraTruSo";
+import { CuocKiemTra, DoiSoatKT, NhapDuLieuKT } from "@/features/qldn/PhongKiemTra";
+import { HoanGTGT, OHanHoan } from "@/features/qldn/HoanGTGT";
 import { DongMSTDonVi, NopThua, ToKhaiTonTruc, XuPhatDonVi } from "@/features/qldn/QuanLyKeKhai";
 import { NHAN_NGAY_KEO_TK } from "@/data/ql5";
 import { ChenhLechTK, kyQL2Cua } from "@/features/qldn/ChenhLechTK";
@@ -219,6 +221,13 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
       /* Kiểm tra tại trụ sở NNT là báo cáo toàn ngành của khối kiểm tra, không
          theo phòng QLDN: ô phạm vi vẫn đứng đó và nói giá trị bằng chữ. */
       : the === "ktnnt" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
+      /* Ba tab PKT: đối soát theo tháng đang chọn; danh sách cuộc và nhập
+         dữ liệu không theo kỳ — ô Kỳ nói giá trị đang áp dụng bằng chữ. */
+      : the === "ktdoisoat" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Các Phòng Kiểm tra"/>
+      : the === "ktcuoc" ? <ThanhPhamVi pv={pv} kyChu="Năm 2026" phamViChu="Các Phòng Kiểm tra"/>
+      : the === "ktnhap" ? <ThanhPhamVi pv={pv} kyChu="Không theo kỳ" phamViChu="Toàn ngành"/>
+      /* Hoàn GTGT là báo cáo toàn ngành theo tháng của ngày quyết định hoàn. */
+      : the === "hoangtgt" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
       /* Tờ khai tồn trục là ảnh chụp lần kéo gần nhất, không theo tháng: ô Kỳ nói ngày kéo. */
       : the === "tktt" ? <ThanhPhamVi pv={pv} kyChu={`Lần kéo gần nhất · ${NHAN_NGAY_KEO_TK}`}/>
       : <ThanhPhamVi pv={pv} ky={ky} datKy={datKy}/>}
@@ -233,7 +242,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         ><span>{nhan}</span></button>)}
       </HangTab>
     </nav>}
-    {nhom && <nav className={`thanh-muc${the === "ktnnt" ? " co-phai" : ""}`} aria-label={`Nhóm chỉ tiêu của ${nhom.ten.toLowerCase()}`}>
+    {nhom && <nav className={`thanh-muc${the === "ktnnt" || the === "hoangtgt" ? " co-phai" : ""}`} aria-label={`Nhóm chỉ tiêu của ${nhom.ten.toLowerCase()}`}>
       {/* Nhóm nhỏ là hàng tab CHÍNH của màn nhóm. Nhóm chỉ có một nhóm nhỏ
           (Thu NSNN, TTHC) không dựng hàng tab: một hàng luôn đúng một nút là
           một hàng không bấm được gì. */}
@@ -250,6 +259,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
           38px, nên thanh phạm vi và mọi khối bên dưới giữ nguyên chỗ khi đổi
           tab (Fixed Slots; đặt trên thanh phạm vi làm thanh cao thêm 28px). */}
       {the === "ktnnt" && <OSoLieuKT dd={loaiKT === "dd"} dat={datLoaiKT} lop="kt-loai-tab"/>}
+      {the === "hoangtgt" && <OHanHoan lop="kt-loai-tab"/>}
       {/* MỘT hàng con cho cả hai chế độ (29/10/2026): "Chỉ tiêu", rồi từng mục
           của báo cáo phân hệ. Trước đây là hai hàng — "Chỉ tiêu | Báo cáo: …"
           rồi hàng tab của phân hệ bên dưới — với ba kiểu tab chồng nhau. Hàng
@@ -266,6 +276,10 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
       {!the ? (tab === "canbo" ? <XepHangCanBo pv={pv} ky={ky} actor={user.name}/> : moXepHang ? <XepHangPhong pv={pv} actor={user.name}/> : <TongQuan pv={pv} ky={ky} actor={user.name} moThe={moThe}/>)
         : moBaoCao ? <ODatBoLoc.Provider value={oLoc}><BaoCaoPhanHe bc={bc!} user={user} donViId={pv.donVi[0].id} muc={muc} datMuc={moMuc}/></ODatBoLoc.Provider>
         : the === "ktnnt" ? <KiemTraTruSo ky={ky} actor={user.name} dd={loaiKT === "dd"} datLoai={datLoaiKT}/>
+        : the === "ktcuoc" ? <CuocKiemTra actor={user.name}/>
+        : the === "ktdoisoat" ? <DoiSoatKT ky={ky} actor={user.name}/>
+        : the === "ktnhap" ? <NhapDuLieuKT user={user}/>
+        : the === "hoangtgt" ? <HoanGTGT ky={ky} actor={user.name}/>
         : the === "tktt" ? <ToKhaiTonTruc pv={pv} actor={user.name}/>
         : the === "nopthua" ? <NopThua pv={pv} ky={ky} actor={user.name}/>
         : the === "cltk" ? <ChenhLechTK pv={pv} ky={ky} actor={user.name} moDanhSach={bc ? moDSChenh : undefined}/>
