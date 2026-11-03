@@ -7,7 +7,7 @@ import { xuatWordKiemTra } from "@/domain/baoCaoKiemTraWord";
 import type { ReportSheet, ReportValue } from "@/domain/reportExport";
 import type { KyQ } from "@/data/qldn";
 import {
-  DON_VI_KT, LOAI_HINH, NHAN_CUM_KT, NHAN_KHOI_KT, PHONG_KT, binhQuan, binhQuanTruoc, laCum, laKhoi, noDong, soLieuKT, ssCungKySo, ssCungKyThu, tenPhamViKT, tyLeDonDoc, tyLeHT,
+  DON_VI_KT, LOAI_HINH, NHAN_CUM_KT, NHAN_KHOI_KT, PHONG_KT, binhQuan, laCum, laKhoi, noDong, soLieuKT, ssCungKySo, ssCungKyThu, tenPhamViKT, tyLeDonDoc, tyLeHT,
   type ChiSoKT, type CumKT, type DonViKT, type KhoiKT, type LoaiHinh, type PhamViKT, type SoLieuKT,
 } from "@/data/kiemTra";
 
@@ -55,7 +55,7 @@ export function KiemTraTruSo({ ky, actor, dd, datLoai }: { ky: KyQ; actor: strin
   return <>
     {/* Trên điện thoại hàng tab không còn chỗ: ô "Số liệu" đứng đầu nội dung. Mỗi khổ chỉ hiện MỘT ô. */}
     <OSoLieuKT dd={dd} dat={datLoai} lop="kt-loai-dt"/>
-    <ChiSoChinh ky={ky} chon={chon} boChon={() => datChon("TN")}/>
+    <ChiSoChinh ky={ky} dd={dd} chon={chon} boChon={() => datChon("TN")}/>
     <XepHang ky={ky} dd={dd}/>
     <BangChiTiet ky={ky} dd={dd} chon={chon} datChon={datChon} actor={actor}/>
     <TheoLoaiHinh ky={ky} chon={chon}/>
@@ -67,7 +67,7 @@ export function OSoLieuKT({ dd, dat, lop }: { dd: boolean; dat: (l: Loai) => voi
   return <div className={`bo-loc-muc kt-o-loai ${lop}`}>
     <span className="bo-loc-nhan" id={`${lop}-nhan`}>Số liệu</span>
     <div className="bo-loc-seg" role="group" aria-labelledby={`${lop}-nhan`}>
-      <button type="button" aria-pressed={!dd} onClick={() => dat("")}>Tất cả các cuộc</button>
+      <button type="button" aria-pressed={!dd} onClick={() => dat("")}>Toàn ngành</button>
       <button type="button" aria-pressed={dd} onClick={() => dat("dd")}>Đích danh</button>
     </div>
   </div>;
@@ -78,31 +78,31 @@ export function OSoLieuKT({ dd, dat, lop }: { dd: boolean; dat: (l: Loai) => voi
    ===================================================================== */
 
 /*
-  Đúng bốn chỉ số biên bản gọi là trọng tâm, theo thứ tự biên bản: tỷ lệ hoàn
-  thành nhiệm vụ, tỷ lệ đích danh, tổng số thu và bình quân / cuộc, tỷ lệ đôn
-  đốc. Ô "Chỉ tiêu nhiệm vụ" của bản 30/10 nhường chỗ cho tỷ lệ đôn đốc; số
-  chỉ tiêu vẫn đứng ở hàng hai của ô đầu. Số to là tỷ lệ (The Rate Leads The
-  Tile Rule); số tuyệt đối xuống hàng hai.
+  Bốn ô theo mẫu người dùng chốt 03/11/2026: tỷ lệ hoàn thành (nhiệm vụ hoặc
+  đích danh, theo ô "Số liệu") → tổng truy thu, truy hoàn và phạt → bình quân
+  / cuộc kèm số cuộc còn phải làm và dở dang → tỷ lệ đôn đốc. Cả bốn ô đọc
+  cùng bộ số với ô "Số liệu", như xếp hạng và bảng chi tiết.
 */
-function ChiSoChinh({ ky, chon, boChon }: { ky: KyQ; chon: PhamViKT; boChon: () => void }) {
+function ChiSoChinh({ ky, dd, chon, boChon }: { ky: KyQ; dd: boolean; chon: PhamViKT; boChon: () => void }) {
   const s = soLieuKT(chon, ky.thang);
-  const so = s.chung, soDD = s.dichDanh;
-  const x = tyLeHT(so), xdd = tyLeHT(soDD), dd = tyLeDonDoc(so);
-  const bq = binhQuan(so), bqTruoc = binhQuanTruoc(so);
-  return <Panel title={`Chỉ số trọng tâm · ${tenPhamViKT(chon)}`} subtitle={`Lũy kế đến ${ngayCuoi(ky)} · chọn một dòng ở bảng chi tiết để xem đơn vị`}
+  const so = dd ? s.dichDanh : s.chung;
+  const x = tyLeHT(so), don = tyLeDonDoc(so), bq = binhQuan(so);
+  const cuoc = dd ? "cuộc đích danh" : "cuộc";
+  return <Panel title={`Chỉ số trọng tâm · ${tenPhamViKT(chon)}`} subtitle={`Lũy kế đến ${ngayCuoi(ky)}`}
     actions={chon !== "TN" ? <Button kind="quiet" onClick={boChon}>Về toàn ngành</Button> : undefined}>
     <div className="kt-o-so">
-      <OChiSo ten="Tỷ lệ hoàn thành nhiệm vụ" to={pt(x)} cachTinh="QĐ hoàn thành / chỉ tiêu nhiệm vụ giao" thanh={x}
-        phu={so.giao ? <><b>{integer(so.htNay)}</b> / {integer(so.giao)} cuộc · còn {integer(Math.max(0, so.giao - so.htNay))}</> : <>Không có chỉ tiêu giao · <b>{integer(so.htNay)}</b> cuộc</>}
+      <OChiSo ten={dd ? "Tỷ lệ hoàn thành đích danh" : "Tỷ lệ hoàn thành nhiệm vụ"} to={pt(x)} thanh={x}
+        cachTinh={dd ? "cuộc đích danh hoàn thành / kế hoạch giao" : "QĐ hoàn thành / chỉ tiêu nhiệm vụ giao"}
+        phu={so.giao ? <><b>{integer(so.htNay)}</b> / {integer(so.giao)} {cuoc}</> : <>{dd ? "Không có kế hoạch đích danh" : "Không có chỉ tiêu giao"} · <b>{integer(so.htNay)}</b> {cuoc}</>}
         moc={<SoCungKy ty={ssCungKySo(so)} truoc={`${integer(so.htTruoc)} cuộc`}/>}/>
-      <OChiSo ten="Tỷ lệ hoàn thành đích danh" to={pt(xdd)} cachTinh="cuộc đích danh hoàn thành / kế hoạch giao" thanh={xdd}
-        phu={soDD.giao ? <><b>{integer(soDD.htNay)}</b> / {integer(soDD.giao)} cuộc đích danh</> : <>Không có kế hoạch đích danh</>}
-        moc={<SoCungKy ty={ssCungKySo(soDD)} truoc={`${integer(soDD.htTruoc)} cuộc`}/>}/>
+      <OChiSo ten="Truy thu, truy hoàn và phạt" to={ty(so.thuNay)} donVi="tỷ đồng" cachTinh="lũy kế năm 2026, sau kiểm tra"
+        phu={<><b>{integer(so.coTruyThu)}</b> cuộc có số truy thu, xử phạt</>}
+        moc={<SoCungKy ty={ssCungKyThu(so)} truoc={`${ty(so.thuTruoc)} tỷ đồng`}/>}/>
       <OChiSo ten="Bình quân thu / cuộc" to={tyBQ(bq)} donVi="tỷ đồng" cachTinh="tổng truy thu, truy hoàn, phạt / QĐ hoàn thành"
-        phu={<>Tổng số thu <b>{ty(so.thuNay)}</b> tỷ đồng</>}
-        moc={<SoCungKy ty={bq !== null && bqTruoc ? bq / bqTruoc : null} truoc={`${tyBQ(bqTruoc)} tỷ đồng / cuộc`}/>}/>
-      <OChiSo ten="Tỷ lệ đôn đốc" to={pt(dd)} cachTinh="số nộp sau kiểm tra / tổng truy thu, truy hoàn, phạt" thanh={dd}
-        phu={<>Đã nộp <b>{ty(so.nop)}</b> / {ty(so.thuNay)} tỷ đồng</>}
+        phu={so.giao ? <>Còn <b>{integer(Math.max(0, so.giao - so.htNay))}</b> cuộc phải hoàn thành</> : <>Không có chỉ tiêu giao</>}
+        moc={<span className="kt-moc"><em>Dở dang</em><span>{integer(so.doDang)} cuộc</span></span>}/>
+      <OChiSo ten="Tỷ lệ đôn đốc" to={pt(don)} cachTinh="số nộp sau kiểm tra / tổng truy thu, truy hoàn, phạt" thanh={don}
+        phu={<>Tổng <b>{ty(so.thuNay)}</b> tỷ đồng</>}
         moc={<span className="kt-moc"><em>Nợ đọng sau kiểm tra</em><span>{ty(noDong(so))} tỷ đồng</span></span>}/>
     </div>
   </Panel>;
@@ -327,25 +327,27 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
   "So trong" (biên bản 02/11 §2.1): năm Phòng Kiểm tra là một nhóm; Thuế cơ
   sở tách cụm nội thành và cụm ngoại thành để so đơn vị tương đồng — không xếp
   25 đơn vị chung một bảng. "Xếp theo" thêm tỷ lệ đôn đốc (sheet 3 của mẫu xếp
-  theo tỷ lệ hoàn thành và tỷ lệ đôn đốc).
+  theo tỷ lệ hoàn thành và tỷ lệ đôn đốc). Ghi chú PKT 03/11/2026 thêm xếp theo
+  truy thu, truy hoàn và phạt.
 
   CUỐI BẢNG bôi đỏ để lãnh đạo nhận ra khi giao ban: một đơn vị cuối với năm
   Phòng Kiểm tra, ba đơn vị cuối với mỗi cụm (12–13 đơn vị). Số đơn vị bôi đỏ
   là GIẢ ĐỊNH, chờ Phòng Kiểm tra xác nhận. Màu không nói một mình: dòng có
   nhãn chữ "Cuối bảng".
 */
-type XepTheo = "" | "so" | "bq" | "dondoc";
+type XepTheo = "" | "so" | "thu" | "bq" | "dondoc";
 type NhomXH = "" | "nt" | "ngt";
 const SO_CUOI: Record<NhomXH, number> = { "": 1, nt: 3, ngt: 3 };
 
 function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
   const [nhom, datNhom] = useThamSo<NhomXH>("nhomk", "", ["", "nt", "ngt"]);
-  const [xep, datXep] = useThamSo<XepTheo>("xep", "", ["", "so", "bq", "dondoc"]);
+  const [xep, datXep] = useThamSo<XepTheo>("xep", "", ["", "so", "thu", "bq", "dondoc"]);
   const dv = nhom === "" ? PHONG_KT : DON_VI_KT.filter((d) => d.cum === (nhom === "nt" ? "NT" : "NGT"));
   const nhanTyLe = dd ? "Tỷ lệ đích danh" : "Tỷ lệ hoàn thành";
   const tieuChi: Record<XepTheo, { nhan: string; gia: (c: ChiSoKT) => number | null; hien: (c: ChiSoKT) => string }> = {
     "": { nhan: nhanTyLe, gia: tyLeHT, hien: (c) => pt(tyLeHT(c)) },
     so: { nhan: dd ? "Cuộc đích danh hoàn thành" : "Số cuộc hoàn thành", gia: (c) => c.htNay, hien: (c) => integer(c.htNay) },
+    thu: { nhan: "Truy thu, truy hoàn và phạt · tỷ đồng", gia: (c) => c.thuNay, hien: (c) => ty(c.thuNay) },
     bq: { nhan: "Bình quân / cuộc · tỷ đồng", gia: binhQuan, hien: (c) => tyBQ(binhQuan(c)) },
     dondoc: { nhan: "Tỷ lệ đôn đốc", gia: tyLeDonDoc, hien: (c) => pt(tyLeDonDoc(c)) },
   };
@@ -353,7 +355,7 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
   const ds = dv.map((d) => ({ d, c: dd ? soLieuKT(d.id, ky.thang).dichDanh : soLieuKT(d.id, ky.thang).chung }))
     .sort((a, b) => (chinh.gia(b.c) ?? -1) - (chinh.gia(a.c) ?? -1));
   const thang = xep === "" || xep === "dondoc" ? 1 : Math.max(1e-9, ...ds.map((x) => chinh.gia(x.c) ?? 0));
-  const phu = (["", "so", "bq", "dondoc"] as XepTheo[]).filter((k) => k !== xep);
+  const phu = (["", "so", "thu", "bq", "dondoc"] as XepTheo[]).filter((k) => k !== xep);
   /* Cao nhất / thấp nhất của các tiêu chí bên, tính trên CẢ nhóm. */
   const cucTri = Object.fromEntries(phu.map((k) => {
     const xepK = ds.filter((x) => tieuChi[k].gia(x.c) !== null).sort((a, b) => tieuChi[k].gia(b.c)! - tieuChi[k].gia(a.c)!);
@@ -371,6 +373,7 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
         <select className="bo-loc-select" value={xep} onChange={(e) => datXep(e.target.value as XepTheo)}>
           <option value="">Xếp theo {nhanTyLe.toLowerCase()}</option>
           <option value="so">Xếp theo số cuộc</option>
+          <option value="thu">Xếp theo truy thu, truy hoàn và phạt</option>
           <option value="bq">Xếp theo bình quân / cuộc</option>
           <option value="dondoc">Xếp theo tỷ lệ đôn đốc</option>
         </select>
