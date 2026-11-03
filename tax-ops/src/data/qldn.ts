@@ -135,7 +135,7 @@ const hatKy = (thang: number, nam = 2026) => nam * 100 + thang;
   • THAP — tỷ lệ thấp là tốt (tồn quá hạn / tổng hồ sơ).
   • TANG — tốc độ tăng của tử so với mẫu, thấp là tốt (nợ nay so nợ đầu năm).
 */
-export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktts" | "ktnnt" | "hoan";
+export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktts" | "ktnnt" | "hoan" | "tktt" | "nopthua";
 export type Kieu = "CAO" | "THAP" | "TANG";
 
 export interface ChiTieuQ {
@@ -167,6 +167,10 @@ export const THE_Q: TheQ[] = [
   { id: "tthc", ten: "Thủ tục hành chính", ngan: "Thủ tục hành chính" },
   { id: "xp", ten: "Xử phạt vi phạm hành chính", ngan: "Xử phạt VPHC" },
   { id: "gt", ten: "Đóng mã, giải thể", ngan: "Đóng mã, giải thể" },
+  /* Hai báo cáo QL5 không có chỉ tiêu trong bộ tiêu chí (02/11/2026, folder
+     02-11): tờ khai tồn trục (RS-QL5-06) và nộp thừa — xem `QuanLyKeKhai`. */
+  { id: "tktt", ten: "Tờ khai tồn trục", ngan: "Tờ khai tồn trục" },
+  { id: "nopthua", ten: "Nộp thừa", ngan: "Nộp thừa" },
   { id: "tpr", ten: "Rà soát TPR", ngan: "Rà soát TPR" },
   { id: "xmhd", ten: "Xác minh hóa đơn", ngan: "Xác minh hóa đơn" },
   { id: "k", ten: "Hệ số K", ngan: "Hệ số K" },
@@ -200,7 +204,7 @@ export interface NhomQ { id: NhomId; ten: string; ngan: string; the: TheId[] }
 export const NHOM_Q: NhomQ[] = [
   { id: "thu", ten: "Công tác thu NSNN", ngan: "Thu NSNN", the: ["thu"] },
   { id: "no", ten: "Công tác quản lý nợ", ngan: "Quản lý nợ", the: ["no", "cc", "thxc"] },
-  { id: "kekhai", ten: "Quản lý kê khai", ngan: "Quản lý kê khai", the: ["tthc", "xp", "gt"] },
+  { id: "kekhai", ten: "Quản lý kê khai", ngan: "Quản lý kê khai", the: ["tthc", "xp", "gt", "tktt", "nopthua"] },
   { id: "hoadon", ten: "Quản lý hóa đơn", ngan: "Quản lý hóa đơn", the: ["tpr", "xmhd", "k", "cltk"] },
   { id: "tongdai", ten: "Tổng đài hỗ trợ NNT", ngan: "Tổng đài hỗ trợ NNT", the: ["tongdai"] },
   /* Phòng thuế yêu cầu 20/10/2026: kiểm tra tại bàn và hoàn thuế mỗi việc một

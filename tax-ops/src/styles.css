@@ -2947,6 +2947,7 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 /* Bảng xếp hạng (gọn 28/10/2026): nhãn "đơn vị của tôi" xuống dòng dưới tên,
    để cột So cùng kỳ mới không đẩy bảng mười cột của Nợ ra ngoài khung 1280px. */
 .qd-bang:not(.qd-bang-goc) td > .qd-cua-toi { display: block; font-size: 12px; }
+.kt-bang .qd-goc-dv > .qd-cua-toi { display: block; font-size: 12px; font-weight: 500; }
 
 /* Nhãn mốc trên ô tổng quan (29/10/2026): chữ đầy đủ khi ô đủ rộng, viết tắt
    BQ / T8 / CK khi ô hẹp (lưới sáu cột ở ≥1361px, ô ~170px không chứa nổi ba
@@ -3078,6 +3079,9 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 /* Điều khiển của bảng chính: Số liệu · Hiển thị · Xuất Excel trên một hàng. Ô lọc rộng cố định — đổi lựa chọn không xô nút bên cạnh. */
 .kt-dieu-khien { flex-wrap: wrap; justify-content: flex-end; }
 .kt-loc-khoi .bo-loc-select { width: 180px; }
+/* Quản lý kê khai › Tờ khai tồn trục, Nộp thừa (02/11/2026): MST đọc theo cột, mã trạng thái là một nhãn mã gọn. */
+.kt-so-mst { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.kk-tt { display: inline-block; min-width: 28px; padding: 1px 6px; border: 1px solid var(--line); border-radius: var(--radius-chip); color: var(--ink); font-size: 12px; font-weight: 650; text-align: center; font-variant-numeric: tabular-nums; }
 .kt-xep-theo .bo-loc-select { width: 252px; }
 /* Ô "Số liệu" của tab Kiểm tra tại trụ sở: đầu phải hàng tab (≥701px), đầu nội dung (điện thoại). */
 .kt-o-loai .bo-loc-seg button { white-space: nowrap; }
