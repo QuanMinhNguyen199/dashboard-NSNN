@@ -1,8 +1,8 @@
 import { hatCua, prng } from "@/data/ngauNhien";
 
 /*
-  Kiểm tra tại trụ sở NNT — tab "Tổng quan" của mục "Phòng kiểm tra" (30/10/2026;
-  tên tab đổi từ "Kiểm tra tại trụ sở" ngày 02/11/2026).
+  Kiểm tra tại trụ sở NNT — tab đầu của mục "Phòng kiểm tra" (30/10/2026; tạm
+  mang tên "Tổng quan" 02/11/2026, về lại tab Kiểm tra tại trụ sở NNT 03/11/2026).
 
   CẤU TRÚC lấy từ mẫu "Đầu ra - Biểu excel báo cáo.xlsx", sheet "Chi tiet
   TTKT" (thư mục 30-10): ba tầng dòng Toàn ngành › Khối VP Thuế TP (năm
@@ -20,12 +20,23 @@ import { hatCua, prng } from "@/data/ngauNhien";
 */
 
 export type KhoiKT = "VP" | "TCS";
+/*
+  Cụm của Khối Thuế cơ sở (biên bản họp Phòng Kiểm tra 02/11/2026 §2.1: tách
+  nội thành / ngoại thành để so các đơn vị tương đồng). GIẢ ĐỊNH TẠM: chia theo
+  địa bàn quận (nội thành) và huyện, thị xã (ngoại thành). Danh mục chính thức
+  chờ Phòng Kiểm tra gửi (việc cần làm số 2) — có thì chỉ sửa `NGOAI_THANH`.
+*/
+export type CumKT = "NT" | "NGT";
+export const NHAN_CUM_KT: Record<CumKT, string> = { NT: "Cụm nội thành", NGT: "Cụm ngoại thành" };
+const NGOAI_THANH = new Set(["10115", "10117", "10119", "10123", "10129", "10151", "10131", "10133", "10135", "10137", "10153", "10143", "10147"]);
 export interface DonViKT {
   id: string;
   /** Mã CQT theo cột B của mẫu. */
   ma: string;
   ten: string;
   khoi: KhoiKT;
+  /** Chỉ Thuế cơ sở có cụm. */
+  cum?: CumKT;
   /** Phòng Kiểm tra số mấy (1–5); không có với Phòng QLHKD và Thuế cơ sở. */
   so?: number;
   /** Phòng QLHKD không có chỉ tiêu nhiệm vụ và kế hoạch đích danh trong mẫu. */
@@ -48,14 +59,16 @@ const TCS: [string, string][] = [
 export const DON_VI_KT: DonViKT[] = [
   ...[1, 2, 3, 4, 5].map((so) => ({ id: `KT${so}`, ma: `10100Q${so + 2}`, ten: `Phòng Kiểm tra số ${so}`, khoi: "VP" as const, so, coChiTieu: true })),
   { id: "QLHKD", ma: "10100P6", ten: "Phòng QLHKD cá nhân và thu khác", khoi: "VP", coChiTieu: false },
-  ...TCS.map(([ma, ten]) => ({ id: `C${ma}`, ma, ten, khoi: "TCS" as const, coChiTieu: true })),
+  ...TCS.map(([ma, ten]) => ({ id: `C${ma}`, ma, ten, khoi: "TCS" as const, cum: (NGOAI_THANH.has(ma) ? "NGT" : "NT") as CumKT, coChiTieu: true })),
 ];
 export const PHONG_KT = DON_VI_KT.filter((d) => d.so);
 export const NHAN_KHOI_KT: Record<KhoiKT, string> = { VP: "Khối VP Thuế TP", TCS: "Khối Thuế cơ sở" };
 
-/** Phạm vi đọc số: toàn ngành, một khối, hoặc một đơn vị. */
-export type PhamViKT = "TN" | KhoiKT | string;
-export const tenPhamViKT = (id: PhamViKT) => (id === "TN" ? "Toàn ngành" : id === "VP" || id === "TCS" ? NHAN_KHOI_KT[id] : DON_VI_KT.find((d) => d.id === id)?.ten ?? "Toàn ngành");
+/** Phạm vi đọc số: toàn ngành, một khối, một cụm Thuế cơ sở, hoặc một đơn vị. */
+export type PhamViKT = "TN" | KhoiKT | CumKT | string;
+export const laKhoi = (id: PhamViKT): id is KhoiKT => id === "VP" || id === "TCS";
+export const laCum = (id: PhamViKT): id is CumKT => id === "NT" || id === "NGT";
+export const tenPhamViKT = (id: PhamViKT) => (id === "TN" ? "Toàn ngành" : laKhoi(id) ? NHAN_KHOI_KT[id] : laCum(id) ? `${NHAN_CUM_KT[id]} · Thuế cơ sở` : DON_VI_KT.find((d) => d.id === id)?.ten ?? "Toàn ngành");
 
 /* ---------- Loại hình cuộc kiểm tra (tài liệu 30-10, Bảng 4) ---------- */
 
@@ -169,7 +182,8 @@ const congSoLieu = (ds: SoLieuKT[]): SoLieuKT => ({
 /** Số liệu lũy kế tới hết `thang`. Khối và toàn ngành là phép cộng các đơn vị, như công thức SUM của mẫu. */
 export function soLieuKT(pv: PhamViKT, thang: number): SoLieuKT {
   if (pv === "TN") return congSoLieu(DON_VI_KT.map((d) => soLieuDonVi(d, thang)));
-  if (pv === "VP" || pv === "TCS") return congSoLieu(DON_VI_KT.filter((d) => d.khoi === pv).map((d) => soLieuDonVi(d, thang)));
+  if (laKhoi(pv)) return congSoLieu(DON_VI_KT.filter((d) => d.khoi === pv).map((d) => soLieuDonVi(d, thang)));
+  if (laCum(pv)) return congSoLieu(DON_VI_KT.filter((d) => d.cum === pv).map((d) => soLieuDonVi(d, thang)));
   const d = DON_VI_KT.find((x) => x.id === pv);
   return d ? soLieuDonVi(d, thang) : soLieuKT("TN", thang);
 }
