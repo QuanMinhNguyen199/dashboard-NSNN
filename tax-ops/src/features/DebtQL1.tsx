@@ -465,7 +465,7 @@ export function DebtQL1({ actor }: { actor: string }) {
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(khoa).trangThai };
   const filename = `${baoCao ?? "QL1"}_${ky.id}_${reportMeta.status}_mo-phong`;
-  return <XuatProvider nut={baoCao ? <><ExportButton onExport={() => exportExcel(boSheet, reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton onExport={() => exportWord(boSheet, reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></> : undefined}><div className="page-stack ql1-page">
+  return <XuatProvider nut={baoCao ? <><ExportButton onExport={() => exportExcel(boSheet, reportMeta, `${filename}.xlsx`)}>Xuất Excel</ExportButton><ExportButton dinhDang="word" onExport={() => exportWord(boSheet, reportMeta, `${filename}.docx`)}>Xuất Word</ExportButton></> : undefined}><div className="page-stack ql1-page">
     <PageIntro title="Báo cáo công tác nợ"/>
     <ThanhMuc view="debt"/>
 

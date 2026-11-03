@@ -324,6 +324,13 @@ h1.sr-only { font-size: 14px; font-weight: 700; }
 .button.is-quiet { min-height: 32px; padding: 0 8px; color: var(--brand); background: transparent; }
 .button.is-quiet:hover { background: var(--surface-tint); }
 .button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; transform: none; }
+/* Nút xuất tệp mang màu nhận diện của định dạng (03/11/2026): Excel #217346
+   (chữ trắng 5,6:1), Word #2B579A (7,3:1). Hai màu chỉ dùng cho nút xuất. */
+.button.is-xuat-excel, .button.is-xuat-word { --xuat: #217346; --xuat-dam: #185c37; color: #fff; background: var(--xuat); border-color: var(--xuat); box-shadow: 0 1px 1px #16263c14; }
+.button.is-xuat-word { --xuat: #2b579a; --xuat-dam: #1e4277; }
+.button.is-xuat-excel:hover, .button.is-xuat-word:hover { background: var(--xuat-dam); border-color: var(--xuat-dam); }
+.button.is-xuat-excel:focus-visible, .button.is-xuat-word:focus-visible { outline: 2px solid var(--xuat); outline-offset: 2px; }
+.button.is-xuat-excel:disabled, .button.is-xuat-word:disabled { opacity: .7; cursor: progress; }
 /*
   Nút "đã xong" trên thanh duyệt: tắt, nhưng KHÔNG mờ.
 
@@ -3095,9 +3102,53 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
   .kt-loai-dt .bo-loc-seg button { flex: 1 1 0; }
 }
 
+/* Bảng chi tiết thu gọn theo cấp (biên bản 02/11/2026). Mũi tên xoay chỉ
+   trạng thái mở; thụt lề theo cấp, không thêm đường kẻ. */
+.kt-nhanh { display: inline-flex; align-items: center; gap: 6px; }
+.kt-nhanh .icon { flex: none; color: var(--ink-3); transform: rotate(-90deg); }
+.kt-nhanh[aria-expanded="true"] .icon { color: var(--ink-2); transform: none; }
+.kt-bang tr.kt-cap-1 th.qd-goc-dv { padding-left: 12px; }
+.kt-bang tr.kt-cap-2 th.qd-goc-dv { padding-left: 28px; }
+.kt-bang tr.kt-cap-3 th.qd-goc-dv { padding-left: 52px; }
+.kt-bang tr.kt-khoi.kt-cap-2 > * { border-top-color: var(--line); background: var(--surface); }
+.kt-mo-het { min-width: 132px; justify-content: center; }
+.kt-mo-bang { min-width: 196px; justify-content: space-between; }
+
+/* "Chọn cột" — dùng lại hộp chọn của thanh lọc; menu canh phải vì nút ở mép phải panel. */
+.kt-chon-cot .bo-loc-nut { min-height: 36px; }
+.kt-dem-cot { min-width: 34px; color: var(--ink-3); font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+/* `.panel` cắt tràn để bo góc; khi menu mở, panel chứa nó thôi cắt — không thì
+   menu bị xén ở đáy panel lúc bảng đang thu gọn. */
+.panel:has(.kt-menu-cot) { overflow: visible; }
+.kt-menu-cot { left: auto; right: 0; z-index: 5; width: 320px; max-height: min(460px, 70vh); gap: 8px; }
+.kt-menu-cot fieldset { display: grid; gap: 2px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.kt-menu-cot legend { padding: 4px 8px 2px; color: var(--ink-3); font-size: 11px; font-weight: 700; }
+.kt-menu-cot label > span { flex: 1 1 auto; }
+.kt-menu-cot input:disabled + span { color: var(--ink-3); }
+.kt-tt { flex: none; padding: 0 6px; border-radius: var(--radius-chip); background: var(--surface-tint); color: var(--brand-strong); font-size: 11px; font-style: normal; font-weight: 600; }
+
+/* Xếp hạng: đơn vị cuối bảng bôi đỏ, kèm nhãn chữ (màu không nói một mình). */
+.kt-dg-ten { display: inline-flex; align-items: center; gap: 8px; }
+.kt-dg-bang tbody tr.is-cuoi > *, .kt-dg-bang tbody tr.is-cuoi:hover > * { background: var(--critical-bg); }
+.kt-dg-bang tbody tr.is-cuoi th, .kt-dg-bang tbody tr.is-cuoi .kt-dg-hang, .kt-dg-bang tbody tr.is-cuoi .kt-dg-thanh > b { color: var(--critical); }
+.kt-dg-bang tbody tr.is-cuoi .kt-thanh > i { background: var(--critical); }
+.kt-cuoi { padding: 1px 6px; border: 1px solid currentColor; border-radius: var(--radius-chip); color: var(--critical); font-size: 11px; font-style: normal; font-weight: 600; }
+
+/* Loại hình: biểu đồ tròn trước, bảng theo phòng thu gọn. */
+.kt-donut { grid-template-columns: 160px minmax(0, 420px); }
+.kt-bang-loai-mo { margin-top: 18px; }
+.kt-trong { margin: 0; color: var(--ink-3); font-size: 13px; }
+
 @media (prefers-reduced-motion: no-preference) {
   .kt-thanh > i { transition: transform 420ms var(--ease-out); }
+  .kt-nhanh .icon { transition: transform 200ms var(--ease-out), color 200ms var(--ease-out); }
+  /* Dòng vừa mở trượt nhẹ từ dòng cha xuống — chỉ dòng con, chỉ lúc mở. */
+  .kt-bang tr:is(.kt-cap-2, .kt-cap-3) > * { animation: kt-dong-mo 260ms var(--ease-out) both; }
+  .kt-bang-loai-mo { animation: kt-dong-mo 260ms var(--ease-out) both; }
+  .kt-menu-cot { animation: kt-dong-mo 160ms var(--ease-out) both; }
+  .kt-donut circle { transition: stroke-width 120ms var(--ease-out), stroke-dasharray 480ms var(--ease-out), stroke-dashoffset 480ms var(--ease-out); }
 }
+@keyframes kt-dong-mo { from { opacity: 0; transform: translateY(-4px); } }
 @media (max-width: 1180px) {
   .kt-o-so { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -3106,4 +3157,7 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 }
 @media (max-width: 560px) {
   .kt-o-so { grid-template-columns: 1fr; }
+  .kt-donut { grid-template-columns: 1fr; justify-items: center; }
+  .kt-menu-cot { left: 0; right: auto; width: min(320px, calc(100vw - 32px)); }
+  .kt-mo-bang { min-width: 0; }
 }

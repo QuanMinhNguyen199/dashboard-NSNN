@@ -135,7 +135,7 @@ const hatKy = (thang: number, nam = 2026) => nam * 100 + thang;
   • THAP — tỷ lệ thấp là tốt (tồn quá hạn / tổng hồ sơ).
   • TANG — tốc độ tăng của tử so với mẫu, thấp là tốt (nợ nay so nợ đầu năm).
 */
-export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktts" | "ktnnt" | "hoan" | "tktt" | "nopthua";
+export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "hoan" | "tktt" | "nopthua";
 export type Kieu = "CAO" | "THAP" | "TANG";
 
 export interface ChiTieuQ {
@@ -180,12 +180,10 @@ export const THE_Q: TheQ[] = [
   { id: "cltk", ten: "Chênh lệch tờ khai", ngan: "Chênh lệch tờ khai" },
   { id: "tongdai", ten: "Tổng đài hỗ trợ NNT", ngan: "Tổng đài hỗ trợ NNT" },
   { id: "kttb", ten: "Kiểm tra tại bàn", ngan: "Kiểm tra tại bàn" },
-  /* "Tổng quan" của mục Phòng kiểm tra (đổi tên từ "Kiểm tra tại trụ sở"
-     02/11/2026): kết quả kiểm tra tại trụ sở NNT của các Phòng Kiểm tra và
-     Thuế cơ sở theo mẫu "Đầu ra - Biểu excel báo cáo", sheet Chi tiết TTKT.
+  /* Kết quả kiểm tra tại trụ sở NNT của các Phòng Kiểm tra và Thuế cơ sở theo
+     mẫu "Đầu ra - Biểu excel báo cáo", sheet Chi tiết TTKT. Tab "Tổng quan"
+     (02/11/2026) đã bỏ ngày 03/11/2026; nội dung của nó chuyển về tab này.
      Không có chỉ tiêu trong bộ tiêu chí QLDN — xem `KiemTraTruSo`. */
-  { id: "ktts", ten: "Tổng quan", ngan: "Tổng quan" },
-  /* Tab giữ chỗ (02/11/2026): chưa có yêu cầu và mẫu báo cáo, nên chưa có nội dung. */
   { id: "ktnnt", ten: "Kiểm tra tại trụ sở NNT", ngan: "Kiểm tra tại trụ sở NNT" },
   { id: "hoan", ten: "Hồ sơ hoàn thuế", ngan: "Hoàn thuế" },
 ];
@@ -210,8 +208,9 @@ export const NHOM_Q: NhomQ[] = [
   /* Phòng thuế yêu cầu 20/10/2026: kiểm tra tại bàn và hoàn thuế mỗi việc một
      mục riêng trên thanh bên, tách khỏi "Quản lý, hỗ trợ DN". Thứ tự vẫn theo
      file chấm điểm: STT 24 rồi 25, 26 — đứng sau nhóm quản lý, hỗ trợ DN. */
-  /* Tổng quan đứng TRÁI Kiểm tra tại bàn và là tab mở mặc định (02/11/2026). */
-  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["ktts", "kttb", "ktnnt"] },
+  /* Kiểm tra tại trụ sở NNT đứng TRÁI Kiểm tra tại bàn và là tab mở mặc định —
+     đúng chỗ của tab "Tổng quan" đã bỏ (03/11/2026). */
+  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["ktnnt", "kttb"] },
   { id: "hoan", ten: "Công tác hoàn thuế", ngan: "Hoàn thuế", the: ["hoan"] },
 ];
 export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
