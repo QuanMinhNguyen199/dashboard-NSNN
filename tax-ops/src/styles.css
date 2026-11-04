@@ -3080,8 +3080,12 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .kt-thanh.is-ngang > i { border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
 .kt-dg-o { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
 /* Nhãn cao / thấp: chữ và biểu tượng, nền trung tính — màu trạng thái để dành cho trạng thái. */
-.kt-cuc { display: inline-flex; align-items: center; gap: 2px; padding: 1px 6px 1px 4px; border: 1px solid var(--line); border-radius: var(--radius-chip); background: var(--surface); color: var(--ink-2); font-size: 11px; font-style: normal; font-weight: 600; white-space: nowrap; }
-.kt-cuc.is-cao { border-color: var(--control-line-hover); color: var(--brand-strong); }
+/* Cao nhất / thấp nhất của cột phụ: chỉ một mũi tên 14px cạnh số (tên đầy đủ
+   ở title và cho trình đọc màn hình). Bản trước là tám nhãn viền trên năm
+   dòng — ồn hơn chính con số, và đẩy bảng tràn khung ở 1440px (taste 03/11). */
+.kt-cuc { display: inline-flex; vertical-align: -2px; margin-right: 4px; color: var(--ink-3); font-style: normal; }
+.kt-cuc.is-cao { color: var(--positive); }
+.kt-cuc.is-thap { color: var(--warning); }
 
 /* Điều khiển của bảng chính: Số liệu · Hiển thị · Xuất Excel trên một hàng. Ô lọc rộng cố định — đổi lựa chọn không xô nút bên cạnh. */
 .kt-dieu-khien { flex-wrap: wrap; justify-content: flex-end; }
@@ -3135,7 +3139,12 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .kt-cuoi { padding: 1px 6px; border: 1px solid currentColor; border-radius: var(--radius-chip); color: var(--critical); font-size: 11px; font-style: normal; font-weight: 600; }
 
 /* Loại hình: biểu đồ tròn trước, bảng theo phòng thu gọn. */
-.kt-donut { grid-template-columns: 160px minmax(0, 420px); }
+/* Chú giải lấp cả bề ngang khối: tên · thanh tỷ trọng mảnh · số · %. */
+.kt-donut { grid-template-columns: 160px minmax(0, 1fr); gap: 32px; }
+.kt-donut .qd-chu-giai li { grid-template-columns: 12px minmax(160px, 220px) minmax(0, 1fr) 64px 48px; }
+.kt-donut .qd-chu-giai b { text-align: right; }
+.kt-cg-thanh { height: 6px; border-radius: 3px; background: var(--surface-soft); overflow: hidden; }
+.kt-cg-thanh > span { display: block; height: 100%; border-radius: 3px; opacity: .85; }
 .kt-bang-loai-mo { margin-top: 18px; }
 .kt-trong { margin: 0; color: var(--ink-3); font-size: 13px; }
 
@@ -3186,10 +3195,18 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .pkt-o small { color: var(--critical); font-size: 12px; font-weight: 500; }
 .pkt-tien-do { min-height: 36px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .pkt-tien-do small { color: var(--ink-3); font-weight: 400; }
-.pkt-loc { display: flex; flex-wrap: wrap; align-items: end; gap: 10px 12px; padding: 12px 0; }
+/* Một hàng lọc: ô tìm giãn, ba ô chọn cố định. */
+.pkt-loc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 0; }
+.pkt-loc .search-field { flex: 1 1 180px; width: auto; }
+.pkt-loc .bo-loc-select { flex: 0 1 140px; min-width: 0; height: 34px; }
 .pkt-bang-cuoc { min-width: 560px; }
 .pkt-bang-cuoc td, .pkt-bang-cuoc th { vertical-align: middle; }
+.pkt-bang-cuoc td { color: var(--ink-2); font-size: 13px; }
+.pkt-bang-cuoc td.num { color: var(--ink); font-size: 14px; font-variant-numeric: tabular-nums; }
+.pkt-bang-cuoc .row-select { gap: 3px; }
+.pkt-bang-cuoc .pkt-dn { color: var(--ink); font-size: 14px; font-weight: 600; }
 .pkt-bang-cuoc .row-select small { color: var(--ink-3); font-size: 12px; font-weight: 400; }
+.pkt-bang-cuoc .pkt-dt { display: none; }
 .pkt-dn { font-weight: 600; }
 .pkt-dong { cursor: pointer; }
 .pkt-dong:hover { background: var(--hover-surface); }
@@ -3200,13 +3217,13 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 /* Đối soát: bảng hai tầng đầu cột như mẫu; nhóm cột loại hình mang nền nhạt
    thay cho nền xanh lá của mẫu Excel, ô tổng của nhóm đậm hơn. */
 .pkt-bieu-chon { padding: 12px 0 8px; }
-.pkt-tom-tat { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; padding: 10px 12px; border-radius: var(--radius-control); background: var(--info-bg); color: var(--ink); font-size: 13px; line-height: 1.5; }
-.pkt-tom-tat svg { flex: none; margin-top: 2px; color: var(--info); }
 .pkt-bang-ds th, .pkt-bang-ds td { white-space: nowrap; }
-.pkt-bang-ds thead th { vertical-align: bottom; white-space: normal; min-width: 76px; line-height: 1.3; }
+.pkt-bang-ds thead th { vertical-align: bottom; white-space: normal; min-width: 62px; line-height: 1.3; }
+.pkt-bang-ds tbody th, .pkt-bang-ds tfoot th { color: var(--ink); font-size: 13px; font-weight: 500; white-space: nowrap; }
+.pkt-bang-ds td { font-variant-numeric: tabular-nums; }
 .pkt-bang-ds thead th span { display: block; }
 .pkt-bang-ds thead th small { display: block; margin-top: 3px; color: var(--ink-3); font-size: 11px; font-weight: 500; }
-.pkt-bang-ds .pkt-ds-phong { min-width: 150px; text-align: left; }
+.pkt-bang-ds .pkt-ds-phong { min-width: 140px; text-align: left; }
 .pkt-bang-ds .pkt-ds-nhom { text-align: center; background: var(--surface-tint); }
 .pkt-bang-ds .is-tong { background: var(--surface-tint); font-weight: 650; }
 .pkt-bang-ds tfoot th, .pkt-bang-ds tfoot td { border-top: 2px solid var(--line); font-weight: 700; }
@@ -3274,8 +3291,8 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 @media (max-width: 560px) {
   .pkt-nhom-o, .pkt-nhom-o.is-ba { grid-template-columns: minmax(0, 1fr); }
   .pkt-o input, .pkt-o select { min-height: 44px; }
-  .pkt-loc > * { width: 100%; }
-  .pkt-loc .search-field { width: 100%; }
+  .pkt-loc .search-field { flex: 1 1 100%; }
+  .pkt-loc .bo-loc-select { flex: 1 1 0; height: 44px; }
   .pkt-cho-dv select { min-width: 0; width: 100%; }
   .pkt-phieu-nut > *, .pkt-kq-nut > * { flex: 1 1 auto; }
 }
@@ -3342,4 +3359,16 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 }
 @media (max-width: 560px) {
   .hg-tab button { min-height: 44px; }
+}
+
+/* Danh sách cuộc trên điện thoại: hai dòng — tên và tiến độ ở dòng 1, loại
+   hình và số truy thu xuống dòng phụ (chuyển chỗ, không bỏ). */
+@media (max-width: 640px) {
+  .pkt-bang-cuoc { min-width: 0; }
+  .pkt-bang-cuoc .pkt-an-dt { display: none; }
+  .pkt-bang-cuoc .pkt-dt { display: block; color: var(--ink-2); }
+  .pkt-bang-cuoc th[scope="row"] { width: 100%; }
+  .pkt-bang-cuoc td { width: 1%; white-space: nowrap; text-align: right; }
+  .kt-donut .qd-chu-giai li { grid-template-columns: 12px minmax(0, 1fr) auto auto; }
+  .kt-cg-thanh { display: none; }
 }
