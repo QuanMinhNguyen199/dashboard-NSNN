@@ -93,20 +93,22 @@ export function CuocKiemTra({ actor }: { actor: string }) {
       actions={<div className="inline-controls"><Button kind="secondary" icon="file" onClick={moMoi}>Thêm cuộc mới</Button><ExportButton onExport={xuat}>Xuất Excel</ExportButton></div>}>
       <div className="pkt-loc">
         <SearchField value={q} onChange={(v) => doiLoc(() => datQ(v))} placeholder="Tìm MST, tên doanh nghiệp"/>
-        <label className="compact-field"><span>Phòng</span><select value={phong} onChange={(e) => doiLoc(() => datPhong(e.target.value))}><option value="">Tất cả</option>{PHONG_DS.map((p) => <option key={p.id} value={p.id}>{p.ten}</option>)}</select></label>
-        <label className="compact-field"><span>Loại hình</span><select value={loai} onChange={(e) => doiLoc(() => datLoai(e.target.value as LoaiCuoc | ""))}><option value="">Tất cả</option>{LOAI_CUOC.map((l) => <option key={l.id} value={l.id}>{l.ngan}</option>)}</select></label>
-        <label className="compact-field"><span>Tiến độ</span><select value={td} onChange={(e) => doiLoc(() => datTd(e.target.value as TienDo | ""))}><option value="">Tất cả</option>{(Object.keys(NHAN_TIEN_DO) as TienDo[]).map((k) => <option key={k} value={k}>{NHAN_TIEN_DO[k]}</option>)}</select></label>
+        {/* Một hàng lọc: tên bộ lọc nằm trong lựa chọn đầu ("Mọi phòng"), nhãn đọc màn hình ở aria-label. */}
+        <select className="bo-loc-select" aria-label="Phòng" value={phong} onChange={(e) => doiLoc(() => datPhong(e.target.value))}><option value="">Mọi phòng</option>{PHONG_DS.map((p) => <option key={p.id} value={p.id}>{p.ten}</option>)}</select>
+        <select className="bo-loc-select" aria-label="Loại hình" value={loai} onChange={(e) => doiLoc(() => datLoai(e.target.value as LoaiCuoc | ""))}><option value="">Mọi loại hình</option>{LOAI_CUOC.map((l) => <option key={l.id} value={l.id}>{l.ngan}</option>)}</select>
+        <select className="bo-loc-select" aria-label="Tiến độ" value={td} onChange={(e) => doiLoc(() => datTd(e.target.value as TienDo | ""))}><option value="">Mọi tiến độ</option>{(Object.keys(NHAN_TIEN_DO) as TienDo[]).map((k) => <option key={k} value={k}>{NHAN_TIEN_DO[k]}</option>)}</select>
       </div>
       {loc.length ? <TableWrap label="Danh sách cuộc kiểm tra">
         <table className="qd-bang pkt-bang-cuoc">
-          <thead><tr><th scope="col">Doanh nghiệp</th><th scope="col">Loại hình</th><th scope="col">Tiến độ</th><th scope="col" className="num">Truy thu · tr.đ</th></tr></thead>
+          <thead><tr><th scope="col">Doanh nghiệp</th><th scope="col" className="pkt-an-dt">Loại hình</th><th scope="col">Tiến độ</th><th scope="col" className="num pkt-an-dt">Truy thu · tr.đ</th></tr></thead>
           <tbody>{loc.slice((tr - 1) * MOI_TRANG, tr * MOI_TRANG).map((c) => <tr key={c.id} className={`pkt-dong${phieu.id === c.id ? " is-chon" : ""}`} onClick={() => mo(c)}>
             <th scope="row"><button type="button" className="row-select" aria-pressed={phieu.id === c.id} onClick={(e) => { e.stopPropagation(); mo(c); }}>
               <span className="pkt-dn">{c.tenDN}</span><small>{c.mst} · {tenPhongDS(c.phong).replace("Phòng Kiểm tra số ", "PKT ")} · {c.truongDoan}</small>
+              <small className="pkt-dt">{nhanLoai(c.loai)}{c.thu !== null ? ` · truy thu ${integer(c.thu)} tr.đ` : ""}</small>
             </button></th>
-            <td>{nhanLoai(c.loai)}</td>
+            <td className="pkt-an-dt">{nhanLoai(c.loai)}</td>
             <td><Badge tone={TONE_TIEN_DO[tienDo(c)]}>{NHAN_TIEN_DO[tienDo(c)]}</Badge></td>
-            <td className="num">{c.thu === null ? <span className="cell-empty">—</span> : integer(c.thu)}</td>
+            <td className="num pkt-an-dt">{c.thu === null ? <span className="cell-empty">—</span> : integer(c.thu)}</td>
           </tr>)}</tbody>
         </table>
       </TableWrap> : <p className="pkt-trong">Không có cuộc nào khớp bộ lọc. <Button kind="quiet" onClick={() => { datQ(""); datPhong(""); datLoai(""); datTd(""); }}>Xoá bộ lọc</Button></p>}
@@ -174,20 +176,20 @@ const pt0 = (a: number, b: number) => (b ? `${Math.round((a / b) * 100)}%` : "�
 const ty1 = (trieu: number) => (trieu ? (trieu / 1000).toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : "–");
 
 /** Cột của một biểu, theo đúng thứ tự và ký hiệu (1), (2.1)… của mẫu. */
-function cotBieu(b: BieuDS): { nhan: string; ma: string; o: (d: DongDS) => ReactNode; xuat: (d: DongDS) => number | string | null; nhom?: true }[] {
+function cotBieu(b: BieuDS): { nhan: string; ngan?: string; ma: string; o: (d: DongDS) => ReactNode; xuat: (d: DongDS) => number | string | null; nhom?: true }[] {
   if (b === "dkBH" || b === "dkHT") return [
     { nhan: b === "dkBH" ? "Tổng đăng ký ban hành" : "Tổng đăng ký hoàn thành", ma: "(1) = (1.1) + (1.2)", o: (d) => so0(d.tong), xuat: (d) => d.tong },
     { nhan: "Trong đó KH2026", ma: "(1.1)", o: (d) => so0(d.theoLoai.kh), xuat: (d) => d.theoLoai.kh },
     { nhan: "Tổng cộng", ma: "(1.2) = (2.1) + … + (2.9)", nhom: true, o: (d) => so0(d.tong - d.theoLoai.kh), xuat: (d) => d.tong - d.theoLoai.kh },
-    ...DOT_XUAT.map((l, i) => ({ nhan: l.nhan, ma: `(2.${i + 1})`, nhom: true as const, o: (d: DongDS) => so0(d.theoLoai[l.id]), xuat: (d: DongDS) => d.theoLoai[l.id] })),
+    ...DOT_XUAT.map((l, i) => ({ nhan: l.nhan, ngan: l.ngan, ma: `(2.${i + 1})`, nhom: true as const, o: (d: DongDS) => so0(d.theoLoai[l.id]), xuat: (d: DongDS) => d.theoLoai[l.id] })),
   ];
   const ht = b === "dsHT";
   return [
     { nhan: ht ? "Tổng đăng ký hoàn thành" : "Tổng đăng ký ban hành", ma: "(1)", o: (d) => so0(d.tong), xuat: (d) => d.tong },
     { nhan: ht ? "Tổng SL QĐ hoàn thành" : "Tổng SL đã ban hành", ma: "(2) = (2.1) + … + (2.10)", nhom: true, o: (d) => so0(d.daLam), xuat: (d) => d.daLam },
-    ...LOAI_CUOC.map((l, i) => ({ nhan: l.nhan, ma: `(2.${i + 1})`, nhom: true as const, o: (d: DongDS) => so0(d.theoLoai[l.id]), xuat: (d: DongDS) => d.theoLoai[l.id] })),
+    ...LOAI_CUOC.map((l, i) => ({ nhan: l.nhan, ngan: l.ngan, ma: `(2.${i + 1})`, nhom: true as const, o: (d: DongDS) => so0(d.theoLoai[l.id]), xuat: (d: DongDS) => d.theoLoai[l.id] })),
     { nhan: ht ? "Tỷ lệ hoàn thành" : "Tỷ lệ ban hành", ma: "(2) / (1)", o: (d) => <strong>{pt0(d.daLam, d.tong)}</strong>, xuat: (d) => (d.tong ? d.daLam / d.tong : null) },
-    ...(ht ? [{ nhan: "Tổng truy thu và phạt hoàn thành · tỷ đồng", ma: "(3)", o: (d: DongDS) => ty1(d.thu), xuat: (d: DongDS) => d.thu / 1000 }] : []),
+    ...(ht ? [{ nhan: "Tổng truy thu và phạt hoàn thành · tỷ đồng", ngan: "Truy thu và phạt · tỷ đồng", ma: "(3)", o: (d: DongDS) => ty1(d.thu), xuat: (d: DongDS) => d.thu / 1000 }] : []),
   ];
 }
 
@@ -234,18 +236,17 @@ export function DoiSoatKT({ ky, actor }: { ky: KyQ; actor: string }) {
   }), { period: `Tháng ${thang}/2026`, scope: "Các Phòng Kiểm tra", actor, status: "DRAFT" }, `doi-soat-kiem-tra_2026-${String(thang).padStart(2, "0")}.xlsx`);
 
   return <Panel title={`${bieu.tieuDe[0]}${bieu.tieuDe.slice(1).toLowerCase()} tháng ${String(thang).padStart(2, "0")}/2026`}
-    subtitle="Tổng hợp từ dữ liệu các đoàn kiểm tra đã nhập ở tab Cuộc kiểm tra · dữ liệu mô phỏng"
+    subtitle={tomTat(b, thang, dong, tong)}
     actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="pkt-bieu-chon"><Segmented label="Biểu" value={b} onChange={datB} options={BIEU.map((x) => ({ value: x.id, label: x.nhan }))}/></div>
-    <p className="pkt-tom-tat"><Icon name="report" size={16}/><span><b>Tóm tắt</b> {tomTat(b, thang, dong, tong)}</span></p>
     <TableWrap label={`${bieu.nhan} tháng ${thang}/2026`}>
       <table className="qd-bang pkt-bang-ds">
         <thead>
           <tr>
             <th scope="col" rowSpan={2} className="pkt-ds-phong">Phòng</th>
-            {cot.map((c, i) => (c.nhom ? (i === dauNhom ? <th key="nhom" scope="colgroup" colSpan={daiNhom} className="pkt-ds-nhom">{nhanNhom}</th> : null) : <th key={i} scope="col" rowSpan={2} className="num"><span>{c.nhan}</span><small>{c.ma}</small></th>))}
+            {cot.map((c, i) => (c.nhom ? (i === dauNhom ? <th key="nhom" scope="colgroup" colSpan={daiNhom} className="pkt-ds-nhom">{nhanNhom}</th> : null) : <th key={i} scope="col" rowSpan={2} className="num" title={c.nhan}><span>{c.ngan ?? c.nhan}</span><small>{c.ma}</small></th>))}
           </tr>
-          <tr>{cot.filter((c) => c.nhom).map((c, i) => <th key={i} scope="col" className={`num${c.ma.includes("=") ? " is-tong" : ""}`}><span>{c.nhan}</span><small>{c.ma}</small></th>)}</tr>
+          <tr>{cot.filter((c) => c.nhom).map((c, i) => <th key={i} scope="col" className={`num${c.ma.includes("=") ? " is-tong" : ""}`} title={c.nhan}><span>{c.ngan ?? c.nhan}</span><small>{c.ma}</small></th>)}</tr>
         </thead>
         <tbody>
           {dong.map((d) => <tr key={d.phong}><th scope="row">{tenPhongDS(d.phong)}</th>{cot.map((c, i) => <td key={i} className={`num${c.nhom && c.ma.includes("=") ? " is-tong" : ""}`}>{c.o(d)}</td>)}</tr>)}
@@ -253,7 +254,7 @@ export function DoiSoatKT({ ky, actor }: { ky: KyQ; actor: string }) {
         <tfoot><tr><th scope="row">Tổng cộng</th>{cot.map((c, i) => <td key={i} className="num">{c.o(tong)}</td>)}</tr></tfoot>
       </table>
     </TableWrap>
-    <p className="pkt-chu-thich">Đối soát đếm trong số cuộc đã đăng ký của tháng những cuộc ban hành / hoàn thành ngay trong tháng đó; cuộc trễ sang tháng sau không tính là đúng hẹn (giả định cách đếm, chờ Phòng Kiểm tra xác nhận).</p>
+    <p className="pkt-chu-thich">Tổng hợp từ dữ liệu các đoàn kiểm tra nhập ở tab Cuộc kiểm tra (dữ liệu mô phỏng). Đối soát đếm trong số cuộc đã đăng ký của tháng những cuộc ban hành / hoàn thành ngay trong tháng đó; cuộc trễ sang tháng sau không tính là đúng hẹn (giả định cách đếm, chờ Phòng Kiểm tra xác nhận).</p>
   </Panel>;
 }
 

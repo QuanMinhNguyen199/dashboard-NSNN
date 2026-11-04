@@ -362,8 +362,8 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
     return [k, { cao: xepK[0]?.d.id, thap: xepK[xepK.length - 1]?.d.id }];
   })) as Record<XepTheo, { cao?: string; thap?: string }>;
   const nhan = (k: XepTheo, id: string) => cucTri[k]?.cao === id
-    ? <em className="kt-cuc is-cao"><Icon name="chevronUp" size={12}/>Cao nhất</em>
-    : cucTri[k]?.thap === id ? <em className="kt-cuc is-thap"><Icon name="chevronDown" size={12}/>Thấp nhất</em> : null;
+    ? <em className="kt-cuc is-cao" title="Cao nhất trong nhóm"><Icon name="chevronUp" size={14}/><span className="sr-only">Cao nhất</span></em>
+    : cucTri[k]?.thap === id ? <em className="kt-cuc is-thap" title="Thấp nhất trong nhóm"><Icon name="chevronDown" size={14}/><span className="sr-only">Thấp nhất</span></em> : null;
   const soCuoi = SO_CUOI[nhom];
   const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
@@ -461,7 +461,10 @@ function DonutLoaiHinh({ phan }: { phan: number[] }) {
       <text x="80" y="96" textAnchor="middle" className="qd-donut-phu">{tro === null ? "cuộc hoàn thành" : `${integer(phan[tro])} cuộc`}</text>
     </svg>
     <ul className="qd-chu-giai">{PHAN_LOAI.map((p, i) => <li key={p.nhan} className={tro === i ? "is-tro" : undefined} tabIndex={0} onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)} onFocus={() => datTro(i)} onBlur={() => datTro(null)}>
-      <i style={{ background: p.mau }}/><span>{p.nhan}</span><b>{integer(phan[i])}</b><small>{phanTram(phan[i], tong)}</small>
+      <i style={{ background: p.mau }}/><span>{p.nhan}</span>
+      {/* Thanh tỷ trọng mảnh lấp phần còn lại của khối — cùng màu với cung trên vòng. */}
+      <span className="kt-cg-thanh" aria-hidden="true"><span style={{ width: `${(phan[i] / Math.max(...phan)) * 100}%`, background: p.mau }}/></span>
+      <b>{integer(phan[i])}</b><small>{phanTram(phan[i], tong)}</small>
     </li>)}</ul>
   </div>;
 }
