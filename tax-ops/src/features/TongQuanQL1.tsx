@@ -117,7 +117,7 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
   const maxTang = xepHang[0]?.muc ?? 0;
 
   return <>
-    <Panel chinh title="Nợ đến ngày báo cáo" subtitle={`Chốt số ngày ${ky.ngayChot} · lấy từ mục So sánh nợ`}>
+    <Panel chinh title="Nợ đến ngày báo cáo" subtitle={`Chốt số ngày ${ky.ngayChot}`}>
       <div className="the-luoi">
         <TheNo nhan="Tổng cộng (B)" khoa="B" o={no}/>
         <TheNo nhan="Nợ khả năng thu (C)" khoa="C" o={no}/>

@@ -224,7 +224,7 @@ function AnalysisBody({ data }: { data: RevenueAnalysisData }) {
           <InspectorTable rows={detailRows} mode={detailMode} />
         </Card>
       </section> : <GridRows rows={[
-        [{ id: "breakdown", span: 8, render: () => <BreakdownTable data={data} /> }, { id: "location", span: 4, hidden: !data.byLocation.length, render: () => <Card title="Đóng góp theo địa bàn" subtitle="10 phường, xã đóng góp nhiều nhất" unit={moneyScale(data.byLocation.map((row) => row.amount))}><Bars rows={data.byLocation} onSelect={(row) => dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: row.id })} /></Card> }],
+        [{ id: "breakdown", span: 8, render: () => <BreakdownTable data={data} /> }, { id: "location", span: 4, hidden: !data.byLocation.length, render: () => <Card title="Top 10 phường, xã đóng góp" unit={moneyScale(data.byLocation.map((row) => row.amount))}><Bars rows={data.byLocation} onSelect={(row) => dispatchIntent({ type: "OPEN_LOCATION_DETAIL", locationId: row.id })} /></Card> }],
         [{ id: "net", span: 12, hidden: !data.netReconciliation, render: () => <NetReconciliation data={data} /> }],
       ]} />}
 
@@ -559,7 +559,7 @@ function BreakdownTable({ data }: { data: RevenueAnalysisData }) {
   return (
     <Card
       title="Bảng chi tiết"
-      subtitle={`${data.breakdown.length} khoản trong nhóm${data.scope === "domestic" ? " · đúng 21 khoản nội địa" : ""}`}
+      subtitle={`${data.breakdown.length} khoản thu`}
       unit={unit}
       actions={
         <label className="dsearch dhead-search">

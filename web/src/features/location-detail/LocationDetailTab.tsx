@@ -155,7 +155,6 @@ function LocationBody({ data, map }: { data: LocationDetailData; map: ReactNode 
         <div className="dstack-row">
           <Card
             title="Sắc thuế địa bàn phụ trách thu"
-            subtitle="Doanh nghiệp, đất đai và các khoản thu khác"
             unit={moneyScale(data.taxGroups.map((row) => row.amount))}
           >
             <Bars rows={data.taxGroups} />

@@ -129,7 +129,7 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
     {/* Lãnh đạo xem theo đơn vị rồi theo đầu việc (§7): chưa chọn đơn vị thì
         chỉ có bảng tổng hợp theo đầu việc — danh sách việc của 30 đơn vị là
         hàng nghìn dòng mà không ai đọc hết. */}
-    {tongHop ? <TheoDauViec ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} chon={datDauViec}/> : <Panel chinh title={muc ? `Danh sách cảnh báo · ${NHAN_MUC[muc].toLowerCase()}` : "Danh sách cảnh báo"} subtitle={`${donVi ? `${tatCa.find((v) => v.dvId === donVi)?.donVi ?? "Đơn vị đã chọn"} · ` : ""}Chọn người nộp thuế để xem hồ sơ`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    {tongHop ? <TheoDauViec ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} chon={datDauViec}/> : <Panel chinh title={muc ? `Danh sách cảnh báo · ${NHAN_MUC[muc].toLowerCase()}` : "Danh sách cảnh báo"} subtitle={donVi ? tatCa.find((v) => v.dvId === donVi)?.donVi ?? "Đơn vị đã chọn" : undefined} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
       <div className="qd-loc-cb">
       <SelectMenu<DauViecId | ""> label="Đầu việc" value={dauViec} onChange={(v) => datDauViec(v)}
         options={[{ value: "", label: "Tất cả 10 đầu việc" }, ...DAU_VIEC.map((d) => ({ value: d.id, label: d.ten }))]}/>
@@ -254,7 +254,7 @@ function TheLoc({ id, nhan, so, ghi, tone }: { id: string; nhan: string; so: num
 }
 
 function TheoDauViec({ ds, chon }: { ds: CanhBao[]; chon: (id: DauViecId) => void }) {
-  return <Panel chinh title="Theo đầu việc" subtitle="Bấm một đầu việc để xem việc của mọi đơn vị đã chọn, hoặc chọn một đơn vị ở bảng trên">
+  return <Panel chinh title="Theo đầu việc">
     <TableWrap label="cảnh báo theo đầu việc">
       <table className="qd-bang">
         <thead><tr><th scope="col">Đầu việc</th>{MUC.map((m) => <th key={m} scope="col" className="num">{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th><th scope="col" className="num">Trong đó chưa xử lý</th></tr></thead>
@@ -286,7 +286,7 @@ function TheoDonVi({ ds, donVi, chon, datChon }: { ds: CanhBao[]; donVi: PhamVi[
   const GIOI_HAN = 10;
   const hien = du ? nhom : nhom.filter((n, i) => i < GIOI_HAN || n.id === chon);
   if (chon && !doi) return <div className="qd-alert-unit"><Icon name="users"/><div><span>Đơn vị đang xem</span><strong>{donVi.find((d) => d.id === chon)?.ngan}</strong></div><Button kind="quiet" onClick={() => datDoi(true)}>Đổi đơn vị</Button><Button kind="quiet" onClick={() => datChon("")}>Bỏ lọc đơn vị</Button></div>;
-  return <Panel title="Theo đơn vị" subtitle={`Xếp theo số việc quá hạn${du || nhom.length <= GIOI_HAN ? "" : ` · ${GIOI_HAN} đơn vị đầu`} · bấm một đơn vị để lọc danh sách bên dưới`} actions={<div className="inline-controls">
+  return <Panel title="Theo đơn vị" subtitle={`Xếp theo số việc quá hạn${du || nhom.length <= GIOI_HAN ? "" : ` · ${GIOI_HAN} đơn vị đầu`}`} actions={<div className="inline-controls">
     {chon && <Button kind="quiet" onClick={() => datChon("")}>Bỏ lọc đơn vị</Button>}
     {/* Hai nhãn xếp chồng cùng một ô: nút rộng bằng nhãn dài nhất và không
         co giãn khi đổi nhãn. Tập nhãn ĐÓNG — số đơn vị nằm ở dòng phụ. */}

@@ -23,7 +23,7 @@ export function OfficialBudgetSnapshot({ variant }: { variant: "summary" | "deta
       <Card
         className="dofficial-reference"
         title="Tham chiếu điều hành 2026"
-        subtitle="Số bàn giao · lũy kế 8 tháng · mốc dùng chung, không đổi theo cách xem"
+        subtitle="Số bàn giao · lũy kế 8 tháng"
         unit={unit}
       >
         <dl className="dofficial-reference-list">

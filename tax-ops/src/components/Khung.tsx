@@ -31,8 +31,7 @@ export function Khung({ tieuDe, moTa, daBiet, conThieu, cauHoi }: {
       <div className="notice warning">
         <strong>Chưa có mẫu báo cáo từ phòng nghiệp vụ</strong>
         <span>
-          Mục này dựng khung để giữ đúng chỗ trong điều hướng và trong vòng duyệt.
-          Bố cục cột sẽ đổi khi mẫu về, nên đừng trích số từ đây.
+          Bố cục cột chờ xác nhận. Chưa dùng để trích số liệu.
         </span>
       </div>
 

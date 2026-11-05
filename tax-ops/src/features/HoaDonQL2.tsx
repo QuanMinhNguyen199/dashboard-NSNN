@@ -225,7 +225,7 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
       hai khối lồng nhau thay vì một khối có mấy ô. QL1 và QL3 dùng `.the-luoi`
       — tràn hết bề ngang thân khối, các ô chia nhau bằng đường kẻ một pixel.
     */}
-    <Panel chinh title="Chênh lệch tờ khai – hóa đơn điện tử" subtitle={`${kyCL.nhan} · từ mục Tổng hợp 01GTGT và DS NNT chênh lệch`}>
+    <Panel chinh title="Chênh lệch tờ khai – hóa đơn điện tử" subtitle={`${kyCL.nhan}`}>
       <div className="the-luoi">
         <div className="the-so"><span className="the-nhan">NNT cần rà soát (lũy kế)</span><strong className="the-gia">{money(canRa)}</strong><span className="the-dvt">người nộp thuế</span></div>
         <div className="the-so"><span className="the-nhan">NNT chưa có kết quả</span><strong className="the-gia">{money(chuaCo)}</strong><span className="the-dvt">người nộp thuế</span></div>
@@ -234,14 +234,14 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
     </Panel>
 
     <div className="tq-doi">
-      <Panel title="Cảnh báo hệ số K" subtitle={`${kyK.nhan} · từ mục Hệ số K – Báo cáo`}>
+      <Panel title="Cảnh báo hệ số K" subtitle={`${kyK.nhan}`}>
         <div className="the-luoi is-hep">
           <div className="the-so"><span className="the-nhan">Tồn cuối ngày</span><strong className="the-gia">{money(tonK)}</strong><span className="the-dvt">lượt cảnh báo</span></div>
           <div className="the-so"><span className="the-nhan">Tỷ lệ đã xử lý trong kỳ</span><strong className="the-gia">{pct(daXuLyK, mauK)}</strong><span className="the-dvt">theo số lượt</span></div>
         </div>
       </Panel>
 
-      <Panel title="Xác minh hóa đơn" subtitle={`${kyXM.nhan} · từ mục Xác minh hóa đơn`}>
+      <Panel title="Xác minh hóa đơn" subtitle={`${kyXM.nhan}`}>
         <div className="the-luoi is-hep">
           <div className="the-so"><span className="the-nhan">Tồn quá hạn</span><strong className="the-gia">{money(quaHan)}</strong><span className="the-dvt">yêu cầu</span></div>
           <div className="the-so"><span className="the-nhan">Tỷ lệ hoàn thành</span><strong className="the-gia">{pct(daTra, tongXm)}</strong><span className="the-dvt">theo số yêu cầu</span></div>

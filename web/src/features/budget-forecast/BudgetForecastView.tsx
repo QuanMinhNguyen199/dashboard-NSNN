@@ -171,8 +171,8 @@ function BudgetBody({
         /* "124 trên 124" không nói gì; chỉ khi đang lọc thì tỷ lệ mới là tin. */
         subtitle={
           rows.length === data.rows.length
-            ? "Chọn một dòng để xem thứ cấu thành"
-            : `${rows.length} trên ${data.rows.length} dòng · chọn một dòng để xem thứ cấu thành`
+            ? undefined
+            : `${rows.length} trên ${data.rows.length} dòng`
         }
         unit={unit}
         actions={
@@ -216,7 +216,6 @@ function BudgetBody({
       <div id="budget-forecast-chart" className="dsection-target" tabIndex={-1}>
       <Card
         title="Thực hiện và dự báo theo tháng"
-        subtitle="Thực hiện, dự toán và dự báo trên cùng một thang"
         unit={unit}
       >
         <ForecastChart points={data.trend} unit={unit} />

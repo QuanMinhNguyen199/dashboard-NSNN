@@ -158,7 +158,7 @@ function TongQuanQL4() {
   const hienTyLe = (x: number | null) => (x === null ? "—" : `${(x * 100).toFixed(2).replace(".", ",")}%`);
 
   return <>
-    <Panel chinh title="Tổng đài hỗ trợ người nộp thuế" subtitle={`${kyTD.nhan} · từ mục Cuộc gọi, Phiếu ghi, Sai hạn`}>
+    <Panel chinh title="Tổng đài hỗ trợ người nộp thuế" subtitle={`${kyTD.nhan}`}>
     {/*
       Dải thẻ là `.the-luoi` chứ không phải `KpiStrip`.
 
@@ -175,7 +175,7 @@ function TongQuanQL4() {
       </div>
     </Panel>
 
-    <Panel title="Hoàn thuế thu nhập cá nhân" subtitle={`${kyHT.nhan} · từ mục Báo cáo tuần chuẩn và Hồ sơ vênh`}>
+    <Panel title="Hoàn thuế thu nhập cá nhân" subtitle={`${kyHT.nhan}`}>
       <div className="the-luoi">
         <div className="the-so"><span className="the-nhan">Tổng hồ sơ tiếp nhận</span><strong className="the-gia">{money(tiepNhan)}</strong><span className="the-dvt">hồ sơ</span></div>
         <div className="the-so"><span className="the-nhan">Tỷ lệ xử lý tự động</span><strong className="the-gia">{pct(tuDong, tiepNhan)}</strong><span className="the-dvt">theo số hồ sơ</span></div>

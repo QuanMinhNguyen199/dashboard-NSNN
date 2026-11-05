@@ -247,7 +247,7 @@ export function ToKhaiTonTruc({ pv, actor }: { pv: PhamVi; actor: string }) {
   ], { period: `Lần kéo ${NHAN_NGAY_KEO_TK}`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "to-khai-ton-truc.xlsx");
 
   return <>
-    <BangDonVi pv={pv} title="Tờ khai tồn trục theo đơn vị" subtitle={`Lần kéo ${NHAN_NGAY_KEO_TK} · bấm một đơn vị để lọc danh sách`}
+    <BangDonVi pv={pv} title="Tờ khai tồn trục theo đơn vị" subtitle={`Lần kéo ${NHAN_NGAY_KEO_TK}`}
       label="Tờ khai tồn trục theo đơn vị" nhom={nhom} gia={cua} chon={chon} datChon={(id) => { datChon(id); datTrang(1); }} onXuat={xuat}
       ghiChu="Nghĩa của 4B, 5B, 5G chờ nghiệp vụ xác nhận."/>
     <Panel title={`Danh sách tờ khai${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} tờ khai · tồn lâu nhất trên đầu`}
