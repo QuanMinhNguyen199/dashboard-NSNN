@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useState, type ReactNode } from "react";
-import { Badge, Pager, Panel, Segmented, TableWrap, integer } from "@/components/ui";
+import { Badge, integer, NhomNut, Pager, Panel, Segmented, SelectMenu, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
 import type { ReportValue } from "@/domain/reportExport";
@@ -76,9 +76,7 @@ export function OHanHoan({ lop }: { lop: string }) {
   const [cachId, datCach] = useThamSo<string>("han", "tt", CACH_TINH.map((c) => c.id));
   return <div className={`bo-loc-muc kt-o-loai ${lop}`}>
     <span className="bo-loc-nhan" id={`${lop}-han`}>Hạn xử lý</span>
-    <div className="bo-loc-seg" role="group" aria-labelledby={`${lop}-han`}>
-      {CACH_TINH.map((c) => <button key={c.id} type="button" aria-pressed={cachId === c.id} title={c.nhan} onClick={() => datCach(c.id)}>{c.ngan}</button>)}
-    </div>
+    <NhomNut labelledBy={`${lop}-han`} value={cachId} onChange={datCach} options={CACH_TINH.map((c) => ({ value: c.id, label: c.ngan, title: c.nhan }))}/>
   </div>;
 }
 
@@ -225,10 +223,10 @@ function HoSoCanXem({ ds, daHoan, chamT, lech, ch, hn, tenMoc }: { ds: HoSoHoan[
      các trường khác xuống dòng phụ `.hg-dt` — chuyển chỗ, không bỏ. */
   const ttDN = (h: HoSoHoan, dt: string) => <><span className="pkt-dn">{h.tenNNT}</span><small>{h.mst} · {h.id} · {tenDonViHoan(h.donVi)}</small><small className="hg-dt">{dt}</small></>;
 
-  return <Panel title="Hồ sơ cần xem" subtitle={tab === "nhac" ? `Chưa có quyết định hoàn, đếm tới hôm nay ${ngay(hn)} · ${hetHan ? `${hetHan} hồ sơ đã hết hạn` : "chưa hồ sơ nào hết hạn"}` : tab === "cham" ? `Quyết định hoàn trong tháng, quá ${ch.nguong} ngày làm việc từ ${tenMoc}` : "Quyết định hoàn trong tháng · số được hoàn khác số hoàn trực tiếp · đánh dấu để xem, không tự sửa số"}>
-    <div className="hg-tab" role="tablist" aria-label="Danh sách hồ sơ cần xem">
-      {(["nhac", "cham", "lech"] as DS[]).map((t) => <button key={t} type="button" role="tab" aria-selected={tab === t} className={tab === t ? "is-active" : undefined} onClick={() => doiTab(t)}>{nhan[t]}<b>{integer(dem[t])}</b></button>)}
-    </div>
+  return <Panel title="Hồ sơ cần xem" subtitle={tab === "nhac" ? `Chưa có quyết định hoàn, đếm tới hôm nay ${ngay(hn)} · ${hetHan ? `${hetHan} hồ sơ đã hết hạn` : "chưa hồ sơ nào hết hạn"}` : tab === "cham" ? `Quyết định hoàn trong tháng, quá ${ch.nguong} ngày làm việc từ ${tenMoc}` : "Quyết định hoàn trong tháng · số được hoàn khác số hoàn trực tiếp · đánh dấu để xem, không tự sửa số"}
+    actions={/* Dropdown ngang tiêu đề panel (04/11/2026), như Xếp hạng đơn vị của Phòng kiểm tra; số lượng giữ trong tên lựa chọn. */
+      <SelectMenu label="Danh sách hồ sơ cần xem" className="kt-loc-khoi kt-xep-theo" value={tab} onChange={doiTab}
+        options={(["nhac", "cham", "lech"] as DS[]).map((t) => ({ value: t, label: nhan[t] }))}/>}>
     {!tong ? <p className="pkt-trong">{tab === "nhac" ? "Không có hồ sơ hoàn trước nào đang chờ quyết định." : tab === "cham" ? "Không có hồ sơ nào ra quyết định chậm trong tháng." : `Không có hồ sơ lệch tiền trong ${integer(daHoan.length)} hồ sơ đã hoàn của tháng.`}</p>
       : <TableWrap label={nhan[tab]}>
         <table className="qd-bang hg-ds">

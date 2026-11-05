@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Button as AriaButton, Checkbox as AriaCheckbox, Dialog, DialogTrigger, Header, Input, Label, ListBox, ListBoxItem, ListBoxSection, Popover, SearchField as AriaSearchField, Select as AriaSelect, ToggleButton, ToggleButtonGroup } from "react-aria-components";
+import type { Key } from "react-aria-components";
 import type { Tone } from "@/domain/types";
 
 export type IconName =
@@ -53,8 +55,18 @@ export function Badge({ tone = "neutral", children }: { tone?: Tone; children: R
   return <span className={`badge tone-${tone}`}>{children}</span>;
 }
 
-export function Button({ kind = "secondary", icon, className, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { kind?: "primary" | "secondary" | "quiet"; icon?: IconName }) {
-  return <button className={`button is-${kind}${className ? ` ${className}` : ""}`} {...props}>{icon && <Icon name={icon} size={17}/>}<span>{children}</span></button>;
+/*
+  Nút trên React Aria (04/11/2026). `onClick` giữ tên cũ nhưng chạy bằng
+  `onPress`: bấm chuột, chạm, Enter/Space như nhau, và sự kiện KHÔNG lan lên
+  hàng bảng chứa nút (React Aria chặn mặc định) — nút trong hàng không còn
+  phải tự `stopPropagation`. Vì cùng lý do đó, nút "cả hàng" (`row-select`)
+  và mục điều hướng vẫn là `<button>` thường: chúng cần click lan lên `<tr>`.
+*/
+type ButtonProps = Pick<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "title" | "name" | "form" | "aria-expanded" | "aria-controls" | "aria-describedby" | "aria-busy" | "aria-label"> & {
+  kind?: "primary" | "secondary" | "quiet"; icon?: IconName; className?: string; children?: ReactNode; disabled?: boolean; onClick?: () => void;
+};
+export function Button({ kind = "secondary", icon, className, children, disabled, onClick, type = "button", ...props }: ButtonProps) {
+  return <AriaButton className={`button is-${kind}${className ? ` ${className}` : ""}`} isDisabled={disabled} onPress={onClick} type={type} {...props}>{icon && <Icon name={icon} size={17}/>}<span>{children}</span></AriaButton>;
 }
 
 /**
@@ -227,12 +239,125 @@ export function useRongToiThieu(truyVan: string) {
 }
 
 
+/* Khóa React Aria luôn là chuỗi ở đây; "" là một khóa hợp lệ ("Tất cả"). */
+const khoa = <T extends string>(k: Key | null) => (k === null ? null : (String(k) as T));
+
+/* Nhóm nút chọn một (React Aria ToggleButtonGroup): mũi tên trái/phải đi giữa
+   các nút. Dưới 560px CSS ẩn nhóm và hiện bản dropdown bên dưới. */
 export function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: { value: T; label: string }[]; onChange: (value: T) => void }) {
-  return <><div className="segmented" role="group" aria-label={label}>{options.map((item) => <button key={item.value} type="button" className={value === item.value ? "is-active" : undefined} aria-pressed={value === item.value} onClick={() => onChange(item.value)}>{item.label}</button>)}</div><label className="segmented-mobile"><span>{label}</span><select value={value} onChange={(event) => onChange(event.target.value as T)}>{options.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></>;
+  return <>
+    <ToggleButtonGroup className="segmented" aria-label={label} selectionMode="single" disallowEmptySelection selectedKeys={[value]}
+      onSelectionChange={(s) => { const k = [...s][0]; if (k !== undefined) onChange(String(k) as T); }}>
+      {options.map((item) => <ToggleButton key={item.value} id={item.value} className={({ isSelected }) => (isSelected ? "is-active" : "")}>{item.label}</ToggleButton>)}
+    </ToggleButtonGroup>
+    <SelectMenu label={label} hienNhan className="segmented-mobile" kieu="o" value={value} onChange={onChange} options={options}/>
+  </>;
 }
 
+/*
+  Nhóm nút chọn một trong thanh lọc (`.bo-loc-seg`, React Aria
+  ToggleButtonGroup). Khác `Segmented`: không đổi thành dropdown ở khổ hẹp,
+  vì các nhóm này chỉ có hai, ba nút ngắn. Mỗi nút có thể `disabled` kèm `title`.
+*/
+export function NhomNut<T extends string>({ label, labelledBy, value, options, onChange, className = "" }: {
+  label?: string; labelledBy?: string; value: T; options: { value: T; label: ReactNode; disabled?: boolean; title?: string }[]; onChange: (value: T) => void; className?: string;
+}) {
+  return <ToggleButtonGroup className={`bo-loc-seg ${className}`.trim()} aria-label={label} aria-labelledby={labelledBy} selectionMode="single" disallowEmptySelection
+    selectedKeys={[value]}
+    onSelectionChange={(s) => { const k = [...s][0]; if (k !== undefined) onChange(String(k) as T); }}>
+    {options.map((o) => <ToggleButton key={o.value} id={o.value} isDisabled={o.disabled} {...(o.title ? { "aria-description": o.title } : {})}><span title={o.title}>{o.label}</span></ToggleButton>)}
+  </ToggleButtonGroup>;
+}
+
+/*
+  Dropdown một lựa chọn trên React Aria (04/11/2026): bàn phím, gõ chữ để
+  nhảy, trình đọc màn hình do thư viện lo. Thay mọi `<select>` của web.
+  - `kieu`: "loc" (mặc định) là ô lọc `.bo-loc-select`; "o" là ô trường biểu
+    mẫu, cùng dáng `select` gốc (viền `--control-line`, chữ thường).
+  - `hienNhan`: nhãn hiện phía trên ô (thay cho `<label><span>…</span><select>`);
+    không có thì `label` chỉ là tên cho trình đọc màn hình.
+  - `cap: 1` thụt lề mục con dưới mục cha (cha vẫn chọn được); `nhanDong` là
+    chữ ô hiện khi đóng, để mục con không mất ngữ cảnh ("Thuế cơ sở · Nội thành").
+  - `nhom`: mục cùng `nhom` gom dưới một tiêu đề không chọn được (thay `optgroup`).
+*/
+export type MucChon<T extends string> = { value: T; label: string; cap?: 1; nhanDong?: string; nhom?: string };
+
+export function SelectMenu<T extends string>({ label, value, options, onChange, className = "", kieu = "loc", hienNhan = false, disabled, title, labelledBy, name }: {
+  label: string; value: T; options: MucChon<T>[]; onChange: (value: T) => void; className?: string; kieu?: "loc" | "o"; hienNhan?: boolean; disabled?: boolean; title?: string; labelledBy?: string; name?: string;
+}) {
+  const dang = options.find((o) => o.value === value);
+  const muc = (o: MucChon<T>) => <ListBoxItem key={o.value} id={o.value} textValue={o.nhanDong ?? o.label} className={`chon-muc${o.cap ? " is-cap-1" : ""}`}>
+    <span className="chon-ten">{o.label}</span>
+    <span className="chon-dau" aria-hidden="true"><Icon name="check" size={14}/></span>
+  </ListBoxItem>;
+  /* Giữ thứ tự xuất hiện của nhóm; mục không nhóm đứng riêng ở chỗ của nó. */
+  const khoi: { nhom?: string; ds: MucChon<T>[] }[] = [];
+  for (const o of options) {
+    const cuoi = khoi[khoi.length - 1];
+    if (cuoi && cuoi.nhom === o.nhom) cuoi.ds.push(o); else khoi.push({ nhom: o.nhom, ds: [o] });
+  }
+  return <AriaSelect className={`chon is-${kieu} ${className}`.trim()} aria-label={hienNhan || labelledBy ? undefined : label} aria-labelledby={labelledBy} name={name}
+    selectedKey={value} isDisabled={disabled} onSelectionChange={(k) => { const v = khoa<T>(k); if (v !== null) onChange(v); }}>
+    {hienNhan && <Label className="chon-nhan">{label}</Label>}
+    <AriaButton className={`chon-nut${kieu === "loc" ? " bo-loc-select" : ""}`} {...(title ? { "aria-description": title } : {})}>
+      <span className="chon-gia" title={title}>{dang?.nhanDong ?? dang?.label}</span>
+      <Icon name="chevronDown" size={16}/>
+    </AriaButton>
+    <Popover className="chon-menu" placement="bottom start" offset={6} maxHeight={360}>
+      <ListBox className="chon-ds">
+        {khoi.map((k, i) => k.nhom
+          ? <ListBoxSection key={`${k.nhom}-${i}`} className="chon-nhom"><Header className="chon-nhom-ten">{k.nhom}</Header>{k.ds.map(muc)}</ListBoxSection>
+          : k.ds.map(muc))}
+      </ListBox>
+    </Popover>
+  </AriaSelect>;
+}
+
+/*
+  Nút mở một hộp nổi có nội dung tự do — danh sách tích chọn, lối tắt, ô tìm
+  (React Aria DialogTrigger + Popover). Thư viện lo bấm ra ngoài để đóng, Esc,
+  trả tiêu điểm về nút mở và tự lật lên khi sát đáy màn. Hộp mang
+  `.bo-loc-menu` nên giữ dáng của các hộp chọn cũ.
+*/
+export function MenuPop({ nut, label, labelledBy, ten, className = "", menuClassName = "", placement = "bottom start", onOpenChange, children }: {
+  nut: ReactNode; label?: string; labelledBy?: string; ten: string; className?: string; menuClassName?: string; placement?: "bottom start" | "bottom end"; onOpenChange?: (mo: boolean) => void; children: ReactNode;
+}) {
+  return <div className={`bo-loc-chon ${className}`.trim()}>
+    <DialogTrigger onOpenChange={onOpenChange}>
+      <AriaButton className="bo-loc-nut" aria-label={label} aria-labelledby={labelledBy}>{nut}<Icon name="chevronDown" size={16}/></AriaButton>
+      <Popover className={`bo-loc-menu menu-pop ${menuClassName}`.trim()} placement={placement} offset={6} maxHeight={400}>
+        <Dialog className="menu-pop-than" aria-label={ten}>{children}</Dialog>
+      </Popover>
+    </DialogTrigger>
+  </div>;
+}
+
+/* Ô tích của cột chọn trong `Table` React Aria (slot "selection"): bảng lo
+   trạng thái, bấm cả hàng và phím Space; ô chỉ vẽ hình vuông như `Checkbox`. */
+export function OChonHang({ label }: { label: string }) {
+  return <AriaCheckbox slot="selection" className="tich o-chon-hang" aria-label={label}>
+    <span className="o-tich" aria-hidden="true"><Icon name="check" size={12}/></span>
+  </AriaCheckbox>;
+}
+
+/* Ô tìm (React Aria SearchField): Esc xoá chữ, nút × hiện khi có chữ. */
 export function SearchField({ value, onChange, placeholder = "Tìm kiếm" }: { value: string; onChange: (value: string) => void; placeholder?: string }) {
-  return <label className="search-field"><span className="sr-only">{placeholder}</span><Icon name="search" size={17}/><input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder}/></label>;
+  return <AriaSearchField className="search-field" aria-label={placeholder} value={value} onChange={onChange}>
+    <Icon name="search" size={17}/>
+    <Input placeholder={placeholder}/>
+    {value && <AriaButton className="search-xoa" aria-label="Xoá chữ tìm"><Icon name="close" size={14}/></AriaButton>}
+  </AriaSearchField>;
+}
+
+/*
+  Ô tích (React Aria Checkbox). Ô vuông do `.o-tich` vẽ; input thật ẩn nhưng
+  vẫn nhận bàn phím. `children` là nhãn; không có nhãn thì phải có `aria-label`.
+*/
+export function Checkbox({ checked, onChange, disabled, children, className = "", "aria-label": ariaLabel }: { checked: boolean; onChange: () => void; disabled?: boolean; children?: ReactNode; className?: string; "aria-label"?: string }) {
+  return <AriaCheckbox className={`tich ${className}`.trim()} isSelected={checked} onChange={onChange} isDisabled={disabled} aria-label={ariaLabel}>
+    <span className="o-tich" aria-hidden="true"><Icon name="check" size={12}/></span>
+    {children}
+  </AriaCheckbox>;
 }
 
 /*
@@ -249,11 +374,11 @@ export function Pager({ trang, soTrang, onChange }: { trang: number; soTrang: nu
   if (soTrang <= 1) return null;
   const di = (muon: number) => onChange(Math.min(Math.max(1, muon), soTrang));
   return <nav className="pager" aria-label="Phân trang danh sách">
-    <button type="button" className="pager-nut truoc" onClick={() => di(trang - 1)} disabled={trang === 1} aria-label="Trang trước"><Icon name="arrow" size={16}/></button>
+    <AriaButton className="pager-nut truoc" onPress={() => di(trang - 1)} isDisabled={trang === 1} aria-label="Trang trước"><Icon name="arrow" size={16}/></AriaButton>
     {/* `role="status"` để người dùng trình đọc màn hình nghe được vị trí mới
         sau khi bấm, thay vì phải tự đi tìm xem mình đang ở trang nào. */}
     <span className="pager-vi-tri" role="status">Trang <strong>{trang}</strong>/{soTrang}</span>
-    <button type="button" className="pager-nut" onClick={() => di(trang + 1)} disabled={trang === soTrang} aria-label="Trang sau"><Icon name="arrow" size={16}/></button>
+    <AriaButton className="pager-nut" onPress={() => di(trang + 1)} isDisabled={trang === soTrang} aria-label="Trang sau"><Icon name="arrow" size={16}/></AriaButton>
   </nav>;
 }
 

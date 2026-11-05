@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { Button as AriaButton, Dialog, Modal, ModalOverlay } from "react-aria-components";
 import { Icon } from "@/components/ui";
-import { createPortal } from "react-dom";
 
 /*
   Chi tiết một bản ghi mở trong THANH TRƯỢT bên phải, ở MỌI khổ màn hình.
@@ -89,27 +89,14 @@ export function CaseLayout({ children, detail, mobileOpen, onClose, label, prese
   </div>;
 }
 
+/* Ngăn trượt là Modal của React Aria: Esc, bấm nền để đóng, bẫy Tab, khoá cuộn. */
 function CaseDrawer({ children, label, onClose }: { children: ReactNode; label: string; onClose: () => void }) {
-  const dialog = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const node = dialog.current;
-    const overflow = document.body.style.overflow;
-    node?.showModal();
-    document.body.style.overflow = "hidden";
-    return () => { node?.close(); document.body.style.overflow = overflow; };
-  }, []);
-  return createPortal(<dialog
-    ref={dialog}
-    className="case-drawer"
-    aria-label={label}
-    onCancel={(event) => { event.preventDefault(); onClose(); }}
-    onClick={(event) => {
-      if (event.target !== event.currentTarget) return;
-      const bounds = event.currentTarget.getBoundingClientRect();
-      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose();
-    }}
-  >
-    <header className="case-drawer-heading"><h2>{label}</h2><button autoFocus type="button" className="case-detail-close" onClick={onClose}><Icon name="close" size={16}/><span>Đóng chi tiết</span></button></header>
-    <div className="case-drawer-body">{children}</div>
-  </dialog>, document.body);
+  return <ModalOverlay className="case-scrim" isOpen onOpenChange={(mo) => { if (!mo) onClose(); }} isDismissable>
+    <Modal className="case-drawer">
+      <Dialog className="case-drawer-than" aria-label={label}>
+        <header className="case-drawer-heading"><h2>{label}</h2><AriaButton autoFocus className="case-detail-close" onPress={onClose}><Icon name="close" size={16}/><span>Đóng chi tiết</span></AriaButton></header>
+        <div className="case-drawer-body">{children}</div>
+      </Dialog>
+    </Modal>
+  </ModalOverlay>;
 }

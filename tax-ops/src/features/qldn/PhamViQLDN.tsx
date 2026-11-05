@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Icon } from "@/components/ui";
+import { Button as AriaButton, Input, SearchField as AriaSearchField } from "react-aria-components";
+import { Checkbox, Icon, MenuPop, SelectMenu } from "@/components/ui";
 import type { DemoUser } from "@/auth/demoAuth";
 import {
   DON_VI_Q, KY_Q, NHAN_CHI_SO, NHAN_KHOI, NHAN_VAI_Q, TAT_CA_ID, choChotCua, nhanPhamVi, phamViCua,
@@ -58,19 +59,14 @@ export function usePhamVi(user: DemoUser): { pv: PhamVi | null; ky: KyQ; datKy: 
   return { pv, ky: KY_Q.find((k) => k.id === ngu.kyId) ?? KY_Q[0], datKy: ngu.datKyId };
 }
 
-/* Ô chọn gốc của trình duyệt: bảy lựa chọn chia hai nhóm theo khối, đọc
-   được bằng bàn phím và trình đọc màn hình, không cần dựng hộp riêng. */
+/* Bảy lựa chọn chia hai nhóm theo khối (SelectMenu, nhóm thay `optgroup`). */
 function ChonPhong({ pv }: { pv: PhamVi }) {
   const ngu = useContext(Ngu)!;
   const cuaToi = pv.phongGoc ?? pv.donVi[0];
-  return <select className="bo-loc-select" aria-labelledby="qd-pham-vi-nhan" value={ngu.xem || cuaToi.id} onChange={(e) => ngu.datXem(e.target.value === cuaToi.id ? "" : e.target.value)}>
-    <optgroup label={NHAN_KHOI.VP}>
-      {DON_VI_Q.filter((d) => d.khoi === "VP").map((d) => <option key={d.id} value={d.id}>{d.ngan}{d.id === cuaToi.id ? " · phòng của tôi" : ""}</option>)}
-    </optgroup>
-    <optgroup label={NHAN_KHOI.TCS}>
-      <option value="TCS">Cả khối thuế cơ sở · {DON_VI_Q.filter((d) => d.khoi === "TCS").length} đơn vị</option>
-    </optgroup>
-  </select>;
+  return <SelectMenu label="Phạm vi" labelledBy="qd-pham-vi-nhan" value={ngu.xem || cuaToi.id} onChange={(v) => ngu.datXem(v === cuaToi.id ? "" : v)} options={[
+    ...DON_VI_Q.filter((d) => d.khoi === "VP").map((d) => ({ value: d.id, label: `${d.ngan}${d.id === cuaToi.id ? " · phòng của tôi" : ""}`, nhom: NHAN_KHOI.VP })),
+    { value: "TCS", label: `Cả khối thuế cơ sở · ${DON_VI_Q.filter((d) => d.khoi === "TCS").length} đơn vị`, nhom: NHAN_KHOI.TCS },
+  ]}/>;
 }
 
 /*
@@ -93,9 +89,7 @@ export function ThanhPhamVi({ pv, ky, datKy, coKy = true, kyChu, phamViChu, them
     <div className="bo-loc-muc">
       <span className="bo-loc-nhan" id="qd-ky">Kỳ</span>
       {chonKy
-        ? <select className="bo-loc-select" aria-labelledby="qd-ky" value={ky!.id} onChange={(e) => datKy!(e.target.value)}>
-          {KY_Q.map((k) => <option key={k.id} value={k.id}>{k.nhan}</option>)}
-        </select>
+        ? <SelectMenu label="Kỳ" labelledBy="qd-ky" value={ky!.id} onChange={datKy!} options={KY_Q.map((k) => ({ value: k.id, label: k.nhan }))}/>
         : <span className="bo-loc-gia" aria-labelledby="qd-ky" title={kyChu ?? ky?.nhan}>{kyChu ?? ky?.nhan}</span>}
     </div>
     <div className="bo-loc-muc">
@@ -129,25 +123,12 @@ export function PhuVai({ pv, lop = "" }: { pv: PhamVi; lop?: string }) {
   trách"). Mỗi đơn vị có thêm nút "Chỉ chọn": chọn năm thuế cơ sở mình phụ
   trách không còn là bỏ tích hai mươi ô.
 
-  Đóng khi bấm ra ngoài bằng `pointerdown` trên tài liệu, không bằng tiêu
-  điểm — bấm vào phần chữ của một `<label>` thả tiêu điểm trước khi ô tích
-  nhận nó. Mở thì tiêu điểm vào ô tìm; Esc đóng và trả tiêu điểm về nút mở.
+  Hộp nổi React Aria (`MenuPop`): mở thì tiêu điểm vào ô tìm; Esc lần đầu xoá
+  chữ tìm, lần sau đóng hộp và trả tiêu điểm về nút mở; đóng thì quên chữ tìm.
 */
 function ChonDonVi() {
   const ngu = useContext(Ngu)!;
-  const [mo, datMo] = useState(false);
   const [tim, datTim] = useState("");
-  const hop = useRef<HTMLDivElement>(null);
-  const nut = useRef<HTMLButtonElement>(null);
-  const oTim = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (!mo) return;
-    oTim.current?.focus();
-    const ngoai = (e: PointerEvent) => { if (!hop.current?.contains(e.target as Node)) datMo(false); };
-    document.addEventListener("pointerdown", ngoai);
-    return () => document.removeEventListener("pointerdown", ngoai);
-  }, [mo]);
-  const dong = () => { datMo(false); datTim(""); nut.current?.focus(); };
 
   const dangChon = ngu.chon.length ? ngu.chon : TAT_CA_ID;
   const tomTat = nhanPhamVi({ vai: "LD", canBo: null, donVi: DON_VI_Q.filter((d) => dangChon.includes(d.id)) });
@@ -161,34 +142,29 @@ function ChonDonVi() {
   const q = tim.trim().toLowerCase();
   const khop = (d: (typeof DON_VI_Q)[number]) => !q || d.ngan.toLowerCase().includes(q) || d.ten.toLowerCase().includes(q);
 
-  return <div className="bo-loc-chon" ref={hop} onKeyDown={(e) => { if (e.key === "Escape") { e.stopPropagation(); dong(); } }}>
-    <button ref={nut} type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" aria-labelledby="qd-pham-vi-nhan qd-pham-vi-gia" onClick={() => (mo ? dong() : datMo(true))}>
-      <span id="qd-pham-vi-gia">{tomTat} ({dangChon.length})</span><Icon name="chevronDown" size={16}/>
-    </button>
-    {mo && <div className="bo-loc-menu qd-menu" role="group" aria-label="Chọn đơn vị hiển thị">
-      <div className="qd-loi-tat">
-        <button type="button" onClick={() => chonKhoi(null)}>Toàn thành phố</button>
-        <button type="button" onClick={() => chonKhoi("VP")}>{NHAN_KHOI.VP}</button>
-        <button type="button" onClick={() => chonKhoi("TCS")}>{NHAN_KHOI.TCS}</button>
-      </div>
-      <input ref={oTim} className="qd-menu-tim" type="search" value={tim} onChange={(e) => datTim(e.target.value)} placeholder="Tìm đơn vị (vd: TCS 07, HKI)" aria-label="Tìm đơn vị"/>
-      {(["VP", "TCS"] as Khoi[]).map((k) => {
-        const ds = DON_VI_Q.filter((d) => d.khoi === k && khop(d));
-        if (!ds.length) return null;
-        return <div key={k} className="qd-nhom-dv">
-          <span className="bo-loc-nhan">{NHAN_KHOI[k]}</span>
-          {ds.map((d) => <div key={d.id} className="qd-dong-dv">
-            <label>
-              <input type="checkbox" checked={dangChon.includes(d.id)} onChange={() => bat(d.id)}/>
-              <span>{d.ngan}</span>
-            </label>
-            <button type="button" className="qd-chi-chon" onClick={() => ngu.datChon([d.id])} aria-label={`Chỉ chọn ${d.ngan}`}>Chỉ chọn</button>
-          </div>)}
-        </div>;
-      })}
-      {DON_VI_Q.every((d) => !khop(d)) && <p className="qd-menu-trong">Không có đơn vị khớp “{tim}”.</p>}
-    </div>}
-  </div>;
+  return <MenuPop menuClassName="qd-menu" labelledBy="qd-pham-vi-nhan qd-pham-vi-gia" ten="Chọn đơn vị hiển thị" onOpenChange={(mo) => { if (!mo) datTim(""); }}
+    nut={<span id="qd-pham-vi-gia">{tomTat} ({dangChon.length})</span>}>
+    <div className="qd-loi-tat">
+      <AriaButton onPress={() => chonKhoi(null)}>Toàn thành phố</AriaButton>
+      <AriaButton onPress={() => chonKhoi("VP")}>{NHAN_KHOI.VP}</AriaButton>
+      <AriaButton onPress={() => chonKhoi("TCS")}>{NHAN_KHOI.TCS}</AriaButton>
+    </div>
+    <AriaSearchField className="qd-menu-tim-o" aria-label="Tìm đơn vị" value={tim} onChange={datTim} autoFocus>
+      <Input className="qd-menu-tim" placeholder="Tìm đơn vị (vd: TCS 07, HKI)"/>
+    </AriaSearchField>
+    {(["VP", "TCS"] as Khoi[]).map((k) => {
+      const ds = DON_VI_Q.filter((d) => d.khoi === k && khop(d));
+      if (!ds.length) return null;
+      return <div key={k} className="qd-nhom-dv">
+        <span className="bo-loc-nhan">{NHAN_KHOI[k]}</span>
+        {ds.map((d) => <div key={d.id} className="qd-dong-dv">
+          <Checkbox checked={dangChon.includes(d.id)} onChange={() => bat(d.id)}><span>{d.ngan}</span></Checkbox>
+          <AriaButton className="qd-chi-chon" onPress={() => ngu.datChon([d.id])} aria-label={`Chỉ chọn ${d.ngan}`}>Chỉ chọn</AriaButton>
+        </div>)}
+      </div>;
+    })}
+    {DON_VI_Q.every((d) => !khop(d)) && <p className="qd-menu-trong">Không có đơn vị khớp “{tim}”.</p>}
+  </MenuPop>;
 }
 
 /*
@@ -219,8 +195,7 @@ export function NutThuGon() {
     if (!thanh) return;
     const doc = () => {
       const phan = [...thanh.querySelectorAll(".bo-loc-muc")].map((m) => {
-        const chon = m.querySelector("select");
-        const chu = chon ? chon.selectedOptions[0]?.textContent : m.querySelector(".bo-loc-gia, .bo-loc-ky, .bo-loc-nut > span")?.textContent;
+        const chu = m.querySelector(".chon-gia, .bo-loc-gia, .bo-loc-ky, .bo-loc-nut > span")?.textContent;
         return (chu ?? "").split(" · ")[0].trim();
       }).filter(Boolean);
       datTom(phan.join(" · "));

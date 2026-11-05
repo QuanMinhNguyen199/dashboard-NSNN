@@ -9,10 +9,13 @@ import { ngayTuO, type GiaTriO, type SheetDoc } from "@/domain/docXlsx";
   nhập, chỉ nói điều người gửi nên xem lại.
 */
 
-export type LoaiNhap = "doan" | "chuyenDe" | "chiTieu" | "khDichDanh";
+/* "Danh mục đoàn kiểm tra" bỏ (05/11/2026): mã phòng, mã và tên trưởng đoàn đã
+   có sẵn trong bộ file gốc QLRR (MA_PHONG, MA_TRUONG_DOAN, TEN_TRUONG_DOAN). */
+export type LoaiNhap = "boQLRR" | "chuyenDe" | "chiTieu" | "khDichDanh";
+export type LoaiMau = Exclude<LoaiNhap, "boQLRR">;
 export interface MauNhap { id: LoaiNhap; ten: string; moTa: string; tep?: string; tienTo?: string }
 export const MAU_NHAP: MauNhap[] = [
-  { id: "doan", ten: "Danh mục đoàn kiểm tra", moTa: "Đoàn, trưởng đoàn và phòng / Thuế cơ sở quản lý đoàn." },
+  { id: "boQLRR", ten: "Bộ file gốc QLRR", moTa: "Bốn tệp Phòng QLRR kết xuất hằng tuần: đang thực hiện, kết luận, quyết định xử lý, số nộp sau kiểm tra." },
   { id: "chuyenDe", ten: "Chuyên đề", moTa: "Danh sách NNT theo từng chuyên đề kiểm tra, mỗi chuyên đề một sheet.", tep: "PKT_CHUYENDE.xlsx", tienTo: "CHUYENDE" },
   { id: "chiTieu", ten: "Chỉ tiêu", moTa: "Chỉ tiêu nhiệm vụ kiểm tra tại trụ sở NNT theo quyết định giao hoặc điều chỉnh.", tep: "PKT_CHITIEU.xlsx", tienTo: "CHITIEU" },
   { id: "khDichDanh", ten: "Kế hoạch đích danh", moTa: "Danh sách NNT trong kế hoạch kiểm tra đích danh năm.", tep: "PKT_KH_DICHDANH.xlsx", tienTo: "KH_DICHDANH" },
@@ -130,7 +133,7 @@ function kiemChuyenDe(sheets: SheetDoc[], tenTep: string): KetQuaKT {
   return { hopLe, van, chan: !hopLe, tomTat: `${tenCD.size} chuyên đề` };
 }
 
-export function kiemTep(loai: LoaiNhap, sheets: SheetDoc[], tenTep: string): KetQuaKT {
+export function kiemTep(loai: LoaiMau, sheets: SheetDoc[], tenTep: string): KetQuaKT {
   if (loai === "chiTieu") return kiemChiTieu(sheets, tenTep);
   if (loai === "khDichDanh") return kiemKHDichDanh(sheets, tenTep);
   return kiemChuyenDe(sheets, tenTep);

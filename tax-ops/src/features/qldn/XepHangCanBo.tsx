@@ -1,5 +1,5 @@
 import { useMemo, useRef } from "react";
-import { DetailGrid, TableWrap, Panel, integer } from "@/components/ui";
+import { DetailGrid, SelectMenu, TableWrap, Panel, integer } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
@@ -73,11 +73,8 @@ export function XepHangCanBo({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: st
     detail={chon ? <ChiTietCanBo d={chon} tong={ds.length}/> : null}
   >
   <Panel chinh title="Xếp hạng cán bộ" subtitle={`${ten} · ${KY.nhan} · ${integer(ds.length)} cán bộ · bấm một dòng để xem từng chỉ tiêu`} actions={<div className="inline-controls">
-    {DS_DV.length > 1 && <label className="compact-field"><span>Đơn vị</span>
-      <select value={phong} onChange={(e) => { datPhong(e.target.value === DS_DV[0].id ? "" : e.target.value); datDangMo(""); }}>
-        {DS_DV.map((p) => <option key={p.id} value={p.id}>{p.ngan}{p.id === cuaToi?.id ? " (của tôi)" : ""}</option>)}
-      </select>
-    </label>}
+    {DS_DV.length > 1 && <SelectMenu className="compact-field" hienNhan kieu="o" label="Đơn vị" value={phong} onChange={(v) => { datPhong(v === DS_DV[0].id ? "" : v); datDangMo(""); }}
+      options={DS_DV.map((p) => ({ value: p.id, label: `${p.ngan}${p.id === cuaToi?.id ? " (của tôi)" : ""}` }))}/>}
     <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
   </div>}>
     <p className="qd-ghi-mot"><b>Cách tính tạm, chờ các phòng gửi chỉ tiêu đánh giá cán bộ (biên bản 22/10/2026, việc số 2).</b> Mỗi chỉ tiêu so tỷ lệ của cán bộ với tỷ lệ chung của phòng: cao hơn quá {NGUONG_CB * 100} điểm % được +1, thấp hơn quá {NGUONG_CB * 100} điểm % được −1, còn lại 0. Điểm là trung bình các chỉ tiêu, từ −1 đến +1. Không tính Thu NSNN vì cán bộ không có số giao thu. Số liệu mô phỏng.</p>

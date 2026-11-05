@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Button as AriaButton, Dialog, Modal, ModalOverlay } from "react-aria-components";
 import { Icon } from "@/components/ui";
 import { MucPhanHeProvider } from "@/components/MucPhanHe";
 import { TaxLogo } from "@/components/TaxLogo";
@@ -76,9 +77,6 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   };
   const anNhan = () => datNhan(null);
   const maPhong = user.phong ? ` ${user.phong}` : "";
-  const drawerRef = useRef<HTMLElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const lastTrigger = useRef<HTMLButtonElement | null>(null);
   /* Tuyến ẩn (bốn phân hệ cũ) không đứng trên thanh bên; khi đang mở một tuyến
      ấy thì mục nhóm chứa báo cáo của nó sáng lên. */
   const duoc = navCho(user).filter((item) => !item.an);
@@ -92,35 +90,6 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
     return () => document.removeEventListener("keydown", phim);
   }, [ngo]);
   useEffect(() => () => window.clearTimeout(henNgo.current), []);
-  useEffect(() => {
-    if (!menuOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      lastTrigger.current?.focus();
-    };
-  }, [menuOpen]);
-
-  const openMenu = (trigger: HTMLButtonElement) => {
-    lastTrigger.current = trigger;
-    setMenuOpen(true);
-  };
-  const onDrawerKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setMenuOpen(false);
-      return;
-    }
-    if (event.key !== "Tab") return;
-    const focusable = [...(drawerRef.current?.querySelectorAll<HTMLElement>('button,[href],select,input,[tabindex]:not([tabindex="-1"])') ?? [])].filter((item) => !item.hasAttribute("disabled"));
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  };
 
   const nutThuGon = <>
     <button type="button" className="sidebar-toggle" aria-controls="thanh-ben" aria-expanded={!thuGon}
@@ -163,8 +132,9 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   </>;
 
   /*
-    `inert` cắt hẳn nhánh nền khỏi cây trợ năng khi drawer mở. Bẫy Tab bằng JS đã
-    có, nhưng nó không chặn tìm-trong-trang hay rotor của trình đọc màn hình.
+    `inert` cắt hẳn nhánh nền khỏi cây trợ năng khi drawer mở. Ngăn là Modal
+    của React Aria (bẫy Tab, Esc, khoá cuộn, trả tiêu điểm về nút mở); `inert`
+    thêm phần chặn tìm-trong-trang.
     React 18 chưa khai báo thuộc tính này nên phải spread qua một object.
   */
   const chan = menuOpen ? ({ inert: "" } as Record<string, string>) : {};
@@ -218,9 +188,15 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
         màn — như chuyên viên QL3 — sẽ không còn cách nào mở ngăn, mà MỤC CỦA
         PHÂN HỆ (Tổng quan, Danh sách NNT, KPI đăng ký) chỉ nằm trong ngăn ấy.
       */}
-      <button type="button" aria-label="Mở điều hướng" className={`menu-button${duoc.slice(4).some((i) => i.id === dangMo) ? " is-active" : ""}`} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={(event) => openMenu(event.currentTarget)}><Icon name="menu"/><span>Thêm</span></button>
+      <button type="button" aria-label="Mở điều hướng" className={`menu-button${duoc.slice(4).some((i) => i.id === dangMo) ? " is-active" : ""}`} aria-expanded={menuOpen} aria-haspopup="dialog" onClick={() => setMenuOpen(true)}><Icon name="menu"/><span>Thêm</span></button>
     </nav>
-    {menuOpen && <div className="nav-scrim" onClick={() => setMenuOpen(false)}><aside ref={drawerRef} className="mobile-drawer" role="dialog" aria-modal="true" aria-label="Điều hướng nghiệp vụ" onKeyDown={onDrawerKeyDown} onClick={(event) => event.stopPropagation()}><button ref={closeRef} type="button" className="drawer-close" onClick={() => setMenuOpen(false)} aria-label="Đóng điều hướng"><Icon name="close"/></button>{nav}</aside></div>}
+    <ModalOverlay className="nav-scrim" isOpen={menuOpen} onOpenChange={setMenuOpen} isDismissable>
+      <Modal className="mobile-drawer">
+        <Dialog className="drawer-than" aria-label="Điều hướng nghiệp vụ">
+          <AriaButton className="drawer-close" onPress={() => setMenuOpen(false)} aria-label="Đóng điều hướng" autoFocus><Icon name="close"/></AriaButton>{nav}
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   </div></MucPhanHeProvider>;
 }
 

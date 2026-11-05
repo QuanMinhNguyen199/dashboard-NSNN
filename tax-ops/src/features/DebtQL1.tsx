@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { Badge, Button, DetailGrid, Icon, Pager, PageIntro, Panel, SearchField, TableWrap, integer, money } from "@/components/ui";
+import { Badge, Button, DetailGrid, Icon, integer, money, NhomNut, PageIntro, Pager, Panel, SearchField, SelectMenu, TableWrap } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
 import { ThanhMuc, baoCaoCuaMuc, useMucPhanHe } from "@/components/MucPhanHe";
@@ -508,17 +508,9 @@ export function DebtQL1({ actor }: { actor: string }) {
       actions={<div className="inline-controls">
         <ExportButton onExport={() => exportExcel([ql1Summary(ky, chon.donVi, tabNV)], reportMeta, `${filename}_${tabNV}.xlsx`)}>Xuất bảng này</ExportButton>
         {tab === "no" && <>
-        <label className="compact-field"><span>So với kỳ</span>
-          <select value={moc} onChange={(e) => setMoc(e.target.value as MocSoSanh)}>
-            <option value="dauNam">Đầu năm</option>
-            <option value="thangTruoc">Tháng trước</option>
-            {ky.loai === "TUAN" && <option value="tuanTruoc">Tuần trước</option>}
-          </select>
-        </label>
-        <div className="bo-loc-seg" role="group" aria-label="Cách hiện số tăng giảm">
-          <button type="button" aria-pressed={dang === "abs"} onClick={() => setDang("abs")}>Số tiền</button>
-          <button type="button" aria-pressed={dang === "rel"} onClick={() => setDang("rel")}>Phần trăm</button>
-        </div>
+        <SelectMenu<MocSoSanh> className="compact-field" hienNhan kieu="o" label="So với kỳ" value={moc} onChange={setMoc}
+          options={[{ value: "dauNam", label: "Đầu năm" }, { value: "thangTruoc", label: "Tháng trước" }, ...(ky.loai === "TUAN" ? [{ value: "tuanTruoc" as const, label: "Tuần trước" }] : [])]}/>
+        <NhomNut label="Cách hiện số tăng giảm" value={dang} onChange={setDang} options={[{ value: "abs", label: "Số tiền" }, { value: "rel", label: "Phần trăm" }]}/>
         </>}
       </div>}
     >
@@ -568,12 +560,8 @@ export function DebtQL1({ actor }: { actor: string }) {
       title={cau.tieuDeDs}
       actions={<div className="inline-controls">
         <SearchField value={search} onChange={setSearch} placeholder="Tìm MST, tên hoặc đơn vị"/>
-        {locDungDuoc.map((u) => <label className="compact-field" key={String(u.khoa)}><span>{u.nhan}</span>
-          <select value={loc[u.khoa] ?? ""} onChange={(e) => setLoc((t) => ({ ...t, [u.khoa]: e.target.value }))}>
-            <option value="">Tất cả</option>
-            {u.giaTri.map((v) => <option key={v} value={v}>{v}</option>)}
-          </select>
-        </label>)}
+        {locDungDuoc.map((u) => <SelectMenu className="compact-field" hienNhan kieu="o" key={String(u.khoa)} label={u.nhan} value={loc[u.khoa] ?? ""} onChange={(v) => setLoc((t) => ({ ...t, [u.khoa]: v }))}
+          options={[{ value: "", label: "Tất cả" }, ...u.giaTri.map((v) => ({ value: v, label: v }))]}/>)}
         {coLoc && <Button kind="quiet" onClick={() => { setLoc({}); setSearch(""); }}>Đặt lại</Button>}
       </div>}
     >

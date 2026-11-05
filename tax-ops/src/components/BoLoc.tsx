@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Button, Icon } from "@/components/ui";
+import { ToggleButton, ToggleButtonGroup } from "react-aria-components";
+import { Button, Checkbox, MenuPop, SelectMenu } from "@/components/ui";
 import { KY_MAC_DINH } from "@/data/ql1";
 import { datThamSo } from "@/state/diaChi";
 import { NHAN_LOAI_KY, type LoaiKy } from "@/components/MucPhanHe";
@@ -114,25 +115,6 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
   const khoaId = useContext(KhoaNgu);
   const khoaCuaToi = useContext(KhoaCuaToi);
   const khoaTen = khoaId ? donViCo.find((d) => d.id === khoaId)?.ten ?? null : null;
-  const [mo, setMo] = useState(false);
-  const hopChon = useRef<HTMLDivElement>(null);
-
-  /*
-    Đóng danh sách khi bấm ra ngoài — bằng một người NGHE trên tài liệu, không
-    bằng một tấm màn `position: fixed` phủ toàn trang.
-
-    Tấm màn cũ là một phần tử thật nằm đè lên mọi thứ: nó ăn cú bấm đầu tiên,
-    nên bấm thẳng sang một ô lọc khác chỉ đóng danh sách chứ không mở ô kia;
-    và nó là lớp phủ cuối cùng còn sót lại sau khi cả ba hộp thoại đã bỏ.
-  */
-  useEffect(() => {
-    if (!mo) return;
-    const ngoai = (e: PointerEvent) => {
-      if (!hopChon.current?.contains(e.target as Node)) setMo(false);
-    };
-    document.addEventListener("pointerdown", ngoai);
-    return () => document.removeEventListener("pointerdown", ngoai);
-  }, [mo]);
   const ten = donViCo.map((d) => d.ten);
 
   /*
@@ -218,15 +200,14 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
                 sách viết cứng: báo cáo tổng đài có ngày/tuần/tháng, QL2-01 chỉ
                 có tháng và lũy kế. Viết cứng thì mỗi báo cáo mới lại phải sửa
                 đúng chỗ này, và quên một lần là hiện một nút không bấm được. */}
-            <div className="bo-loc-seg" role="group" aria-label="Loại kỳ">
-              {loaiCo.map((l) => <button key={l} type="button" aria-pressed={loai === l} onClick={() => doiLoai(l)}>{NHAN_LOAI_KY[l]}</button>)}
-            </div>
+            <ToggleButtonGroup className="bo-loc-seg" aria-label="Loại kỳ" selectionMode="single" disallowEmptySelection selectedKeys={[loai]}
+              onSelectionChange={(k) => { const l = [...k][0]; if (l !== undefined) doiLoai(l as LoaiKy); }}>
+              {loaiCo.map((l) => <ToggleButton key={l} id={l}>{NHAN_LOAI_KY[l]}</ToggleButton>)}
+            </ToggleButtonGroup>
           </div>}
           {loai === "TUYCHON" && kyTuyChon ? kyTuyChon : <div className="bo-loc-muc">
             <span className="bo-loc-nhan" id="bo-loc-ky-nhan">Kỳ</span>
-            <select className="bo-loc-select" aria-labelledby="bo-loc-ky-nhan" value={kyHienTai?.id ?? ""} onChange={(e) => doiKy(e.target.value)}>
-              {kyCungLoai.map((k) => <option key={k.id} value={k.id}>{k.nhan}</option>)}
-            </select>
+            <SelectMenu label="Kỳ" labelledBy="bo-loc-ky-nhan" value={kyHienTai?.id ?? ""} onChange={doiKy} options={kyCungLoai.map((k) => ({ value: k.id, label: k.nhan }))}/>
           </div>}
         </>
       : <div className="bo-loc-muc">
@@ -239,20 +220,10 @@ export function BoLocChung({ ky, kyCo, donViCo, rutGon = (v) => v, phuChu, kyTuy
       <span className="bo-loc-nhan" id="bo-loc-donvi-nhan">{oDat ? "Phạm vi" : "Đơn vị"}</span>
       {/* Hộp chọn nhiều tự dựng thay vì `<select multiple>`: select nhiều trên
           khổ hẹp cao bằng nửa màn và không cho biết đã chọn gì nếu không cuộn. */}
-      {/* Escape là đường thoát bằng bàn phím; focus vẫn ở nút mở nên người
-          dùng không bị ném về đầu trang. */}
       {khoaTen ? <strong className="bo-loc-ky" aria-labelledby="bo-loc-donvi-nhan" title="Đổi phòng: về Kết quả và chọn ở ô Phạm vi">{rutGon(khoaTen)}{khoaCuaToi ? (oDat ? "" : " · phòng của bạn") : " · chỉ xem"}</strong> :
-      <div className="bo-loc-chon" ref={hopChon} onKeyDown={(e) => { if (e.key === "Escape") setMo(false); }}>
-        <button type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" aria-labelledby="bo-loc-donvi-nhan" onClick={() => setMo((t) => !t)}>
-          <span>{tomTat}</span><Icon name="chevronDown" size={16}/>
-        </button>
-        {mo && <div className="bo-loc-menu" role="group" aria-label="Chọn đơn vị">
-          {ten.map((dv) => <label key={dv}>
-            <input type="checkbox" checked={chon.donVi.includes(dv)} onChange={() => bat(dv)}/>
-            <span>{rutGon(dv)}</span>
-          </label>)}
-        </div>}
-      </div>}
+      <MenuPop nut={<span>{tomTat}</span>} labelledBy="bo-loc-donvi-nhan" ten="Chọn đơn vị">
+        {ten.map((dv) => <Checkbox key={dv} checked={chon.donVi.includes(dv)} onChange={() => bat(dv)}><span>{rutGon(dv)}</span></Checkbox>)}
+      </MenuPop>}
     </div>
 
     {datLaiDuoc && <Button kind="quiet" onClick={() => {

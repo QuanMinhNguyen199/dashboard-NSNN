@@ -1,5 +1,5 @@
 import { Fragment, useMemo, useRef, useState } from "react";
-import { FigureLine, Icon, PageIntro, Pager, Panel, SearchField, TableWrap, integer } from "@/components/ui";
+import { FigureLine, Icon, integer, NhomNut, PageIntro, Pager, Panel, SearchField, SelectMenu, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
@@ -333,12 +333,8 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
   >
   <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · số tiền tính bằng tỷ đồng · bấm một dòng để mở hồ sơ`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-loc-cb">
-      <label className="compact-field qd-loc-tt"><span className="bo-loc-nhan">Trạng thái</span>
-        <select className="bo-loc-select" value={loc} onChange={(e) => { datLoc(e.target.value as TrangThaiDN | ""); datTrang(1); datDangMo(""); }}>
-          <option value="">Tất cả trạng thái</option>
-          {TRANG_THAI_DN.map((t) => <option key={t.id} value={t.id}>{t.ten}</option>)}
-        </select>
-      </label>
+      <SelectMenu<TrangThaiDN | ""> className="compact-field qd-loc-tt" hienNhan label="Trạng thái" value={loc} onChange={(v) => { datLoc(v); datTrang(1); datDangMo(""); }}
+        options={[{ value: "", label: "Tất cả trạng thái" }, ...TRANG_THAI_DN.map((t) => ({ value: t.id, label: t.ten }))]}/>
       <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm theo MST hoặc tên"/>
     </div>
     {vuot && <div className="notice info qd-ghi"><strong>Phạm vi quá rộng để tìm và sắp xếp</strong><span>{integer(tongLoc)} doanh nghiệp. Chọn một trạng thái hoặc thu hẹp ô Phạm vi xuống dưới {integer(GIOI_HAN_TIM)} doanh nghiệp; danh sách bên dưới vẫn theo thứ tự gốc.</span></div>}
@@ -409,10 +405,7 @@ function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId, 
 
   return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" subtitle={`${BO_TIEU_CHI.length} chỉ tiêu theo file chấm điểm tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc · bấm một dòng để xem cách tính điểm`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-loc-cb">
-      <div className="bo-loc-seg" role="group" aria-label="Lọc chỉ tiêu">
-        <button type="button" aria-pressed={!chiTheoDoi} onClick={() => datChiTheoDoi(false)}>Tất cả</button>
-        <button type="button" aria-pressed={chiTheoDoi} onClick={() => datChiTheoDoi(true)}>Đang theo dõi</button>
-      </div>
+      <NhomNut label="Lọc chỉ tiêu" value={chiTheoDoi ? "theo" : "tat"} onChange={(v) => datChiTheoDoi(v === "theo")} options={[{ value: "tat", label: "Tất cả" }, { value: "theo", label: "Đang theo dõi" }]}/>
     </div>
     <TableWrap label="bộ tiêu chí đánh giá">
       <table className="qd-bang qd-bang-tc">

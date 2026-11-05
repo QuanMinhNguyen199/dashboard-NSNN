@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { ToggleButton, ToggleButtonGroup } from "react-aria-components";
 import { useThamSo } from "@/state/diaChi";
-import { Badge, Button, Icon, PageIntro, Pager, Panel, SearchField, TableWrap, integer } from "@/components/ui";
+import { Badge, Button, Icon, PageIntro, Pager, Panel, SearchField, SelectMenu, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
 import type { Tone } from "@/domain/types";
@@ -112,16 +113,14 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
     <section className="qd-alert-summary" aria-label="Tình hình thời hạn">
     {/* Tiêu đề nhìn thấy không phải heading: trang đã có H1 cùng tên, và một
         H2 trùng chữ đọc ra hai lần cùng một tên cho trình đọc màn hình. */}
-    <div className="qd-alert-summary-head"><strong className="qd-alert-title" aria-hidden="true">Cảnh báo nhắc việc</strong><label className="qd-bao-truoc"><span className="bo-loc-nhan">Báo trước</span>
-      <select className="bo-loc-select" value={baoTruoc} onChange={(e) => datBaoTruoc(Number(e.target.value))}>
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n} ngày</option>)}
-      </select>
-    </label></div>
-    <div className="qd-the-loc" role="group" aria-label="Lọc theo mức cảnh báo">
-      <TheLoc chon={muc === ""} onChon={() => datMuc("")} nhan="Tất cả" so={theoDV.length} ghi={laCanBo ? "Việc của tôi" : pv.vai === "LD" ? "Toàn bộ đơn vị đã chọn" : nhieuDV ? "Khối thuế cơ sở" : pv.phongGoc ? `Việc của ${pv.donVi[0].ngan}` : "Việc của phòng"}/>
-      {MUC.map((m) => <TheLoc key={m} tone={TONE[m]} chon={muc === m} onChon={() => datMuc(m)} nhan={NHAN_MUC[m]} so={so[m]}
+    <div className="qd-alert-summary-head"><strong className="qd-alert-title" aria-hidden="true">Cảnh báo nhắc việc</strong><SelectMenu className="qd-bao-truoc" hienNhan label="Báo trước" value={String(baoTruoc)} onChange={(v) => datBaoTruoc(Number(v))}
+      options={Array.from({ length: 10 }, (_, i) => i + 1).map((n) => ({ value: String(n), label: `${n} ngày` }))}/></div>
+    <ToggleButtonGroup className="qd-the-loc" aria-label="Lọc theo mức cảnh báo" selectionMode="single" disallowEmptySelection selectedKeys={[muc]}
+      onSelectionChange={(k) => { const m = [...k][0]; if (m !== undefined) datMuc(String(m) as MucCanhBao | ""); }}>
+      <TheLoc id="" nhan="Tất cả" so={theoDV.length} ghi={laCanBo ? "Việc của tôi" : pv.vai === "LD" ? "Toàn bộ đơn vị đã chọn" : nhieuDV ? "Khối thuế cơ sở" : pv.phongGoc ? `Việc của ${pv.donVi[0].ngan}` : "Việc của phòng"}/>
+      {MUC.map((m) => <TheLoc key={m} id={m} tone={TONE[m]} nhan={NHAN_MUC[m]} so={so[m]}
         ghi={m === "SAP_DEN" ? `trong ${baoTruoc} ngày tới` : m === "HOM_NAY" ? "xong trước khi hết ngày" : "phải xử lý ngay"}/>)}
-    </div>
+    </ToggleButtonGroup>
     </section>
 
     <div className={tongHop ? "qd-alert-overview" : "qd-alert-results"} data-motion="content" data-motion-key={`${muc}-${donVi}-${baoTruoc}-${dauViec}-${trangHien}`}>
@@ -132,14 +131,10 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
         hàng nghìn dòng mà không ai đọc hết. */}
     {tongHop ? <TheoDauViec ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} chon={datDauViec}/> : <Panel chinh title={muc ? `Danh sách cảnh báo · ${NHAN_MUC[muc].toLowerCase()}` : "Danh sách cảnh báo"} subtitle={`${donVi ? `${tatCa.find((v) => v.dvId === donVi)?.donVi ?? "Đơn vị đã chọn"} · ` : ""}Chọn người nộp thuế để xem hồ sơ`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
       <div className="qd-loc-cb">
-      <select className="bo-loc-select" aria-label="Đầu việc" value={dauViec} onChange={(e) => datDauViec(e.target.value as DauViecId | "")}>
-        <option value="">Tất cả 10 đầu việc</option>
-        {DAU_VIEC.map((d) => <option key={d.id} value={d.id}>{d.ten}</option>)}
-      </select>
-      <select className="bo-loc-select qd-loc-tt-viec" aria-label="Trạng thái xử lý" value={ttViec} onChange={(e) => datTtViec(e.target.value as TrangThaiViec | "")}>
-        <option value="">Mọi trạng thái xử lý</option>
-        {TRANG_THAI_VIEC.map((t) => <option key={t.id} value={t.id}>{t.ten}</option>)}
-      </select>
+      <SelectMenu<DauViecId | ""> label="Đầu việc" value={dauViec} onChange={(v) => datDauViec(v)}
+        options={[{ value: "", label: "Tất cả 10 đầu việc" }, ...DAU_VIEC.map((d) => ({ value: d.id, label: d.ten }))]}/>
+      <SelectMenu<TrangThaiViec | ""> className="qd-loc-tt-viec" label="Trạng thái xử lý" value={ttViec} onChange={(v) => datTtViec(v)}
+        options={[{ value: "", label: "Mọi trạng thái xử lý" }, ...TRANG_THAI_VIEC.map((t) => ({ value: t.id, label: t.ten }))]}/>
       <SearchField value={tim} onChange={datTim} placeholder="Tìm NNT hoặc MST"/>
       {boLoc && <Button kind="quiet" onClick={xoaLoc}>Xóa bộ lọc</Button>}
       <span className="qd-alert-count" role="status">{integer(loc.length)} việc phù hợp</span>
@@ -247,14 +242,15 @@ function ChiTietHoSo({ v }: { v: CanhBao }) {
   </div>;
 }
 
-/* Một thẻ lọc — cả thẻ là nút (The Whole Row Rule), `aria-pressed` nói thẻ
-   nào đang lọc. Màu của mức đi kèm nhãn chữ, không đứng một mình. */
-function TheLoc({ nhan, so, ghi, tone, chon, onChon }: { nhan: string; so: number; ghi: string; tone?: Tone; chon: boolean; onChon: () => void }) {
-  return <button type="button" className={`qd-the-loc-o${tone ? ` tone-${tone}` : ""}${chon ? " is-chon" : ""}`} aria-pressed={chon} onClick={onChon}>
+/* Một thẻ lọc — cả thẻ là nút (The Whole Row Rule), trong nhóm chọn một của
+   React Aria (mũi tên trái/phải đi giữa thẻ). Màu của mức đi kèm nhãn chữ,
+   không đứng một mình. */
+function TheLoc({ id, nhan, so, ghi, tone }: { id: string; nhan: string; so: number; ghi: string; tone?: Tone }) {
+  return <ToggleButton id={id} className={({ isSelected }) => `qd-the-loc-o${tone ? ` tone-${tone}` : ""}${isSelected ? " is-chon" : ""}`}>
     <span className="qd-the-loc-nhan">{tone && <i aria-hidden="true"/>}{nhan}<span className="qd-alert-selected" aria-hidden="true"><Icon name="check" size={15}/></span></span>
     <strong>{integer(so)}</strong>
     <small>{ghi}</small>
-  </button>;
+  </ToggleButton>;
 }
 
 function TheoDauViec({ ds, chon }: { ds: CanhBao[]; chon: (id: DauViecId) => void }) {
