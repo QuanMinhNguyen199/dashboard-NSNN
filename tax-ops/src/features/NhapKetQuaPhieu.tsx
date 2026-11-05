@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { Badge, Button, Panel, TableWrap, money } from "@/components/ui";
+import { Cell, Column, Row, Table, TableBody, TableHeader } from "react-aria-components";
+import { Badge, Button, OChonHang, Panel, SelectMenu, TableWrap, money } from "@/components/ui";
 import { useAction } from "@/state/ActionContext";
 import { usePhieu } from "@/state/PhieuContext";
 import { rutGonTenDonVi } from "@/data/danhMuc";
-import { CAU_HINH, dsPhieu, kiemTraLoi, type DongPhieu, type LoaiPhieu } from "@/data/phieu";
+import { CAU_HINH, dsPhieu, kiemTraLoi, type LoaiPhieu } from "@/data/phieu";
 
 /*
   Nhập kết quả phiếu rà soát — §6 `design_ql2ql4`, nhánh "phòng tự tổng hợp".
@@ -58,7 +59,6 @@ export function NhapKetQuaPhieu({ loai, hatKy, donViChoPhep }: { loai: LoaiPhieu
     datLoi("");
   };
 
-  const batDong = (d: DongPhieu) => datChon((t) => t.includes(d.id) ? t.filter((x) => x !== d.id) : [...t, d.id]);
 
   /* Cột Hạn chứa ngày CỘNG một chip "quá/còn N ngày", cột Kết quả chứa cả
      gợi ý kỳ trước — hai cột này dài hơn vẻ ngoài của tên cột. */
@@ -84,18 +84,10 @@ export function NhapKetQuaPhieu({ loai, hatKy, donViChoPhep }: { loai: LoaiPhieu
     */}
     <div className="phieu-dien">
       <div className="phieu-dien-o">
-        <label>Đơn vị phản hồi
-          <select value={donVi} onChange={(e) => { datDonVi(e.target.value); datChon([]); datLoi(""); }}>
-            <option value="">Tất cả đơn vị</option>
-            {dsDonVi.map((d) => <option key={d} value={d}>{rutGonTenDonVi(d)}</option>)}
-          </select>
-        </label>
-        <label>Kết quả
-          <select value={nhap.ketQua} onChange={(e) => { datNhap((t) => ({ ...t, ketQua: e.target.value })); datLoi(""); }}>
-            <option value="">— chọn —</option>
-            {ch.ketQua.map((k) => <option key={k} value={k}>{k}</option>)}
-          </select>
-        </label>
+        <SelectMenu hienNhan kieu="o" label="Đơn vị phản hồi" value={donVi} onChange={(v) => { datDonVi(v); datChon([]); datLoi(""); }}
+          options={[{ value: "", label: "Tất cả đơn vị" }, ...dsDonVi.map((d) => ({ value: d, label: rutGonTenDonVi(d) }))]}/>
+        <SelectMenu hienNhan kieu="o" label="Kết quả" value={nhap.ketQua} onChange={(v) => { datNhap((t) => ({ ...t, ketQua: v })); datLoi(""); }}
+          options={[{ value: "", label: "— chọn —" }, ...ch.ketQua.map((k) => ({ value: k, label: k }))]}/>
         {ch.batBuocSoTien && <label>Số thuế điều chỉnh (đồng)
           <input
             inputMode="numeric"
@@ -124,62 +116,45 @@ export function NhapKetQuaPhieu({ loai, hatKy, donViChoPhep }: { loai: LoaiPhieu
     </div>
 
     <TableWrap label={`kết quả phiếu ${ch.loai}`}>
-      <table className="ql1-ds-table phieu-bang" style={{ minWidth: rong.reduce((a, b) => a + b, 0) }}>
-        <colgroup>{rong.map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>
-        <thead><tr>
-          <th scope="col" className="center">Chọn</th>
-          <th scope="col">Đơn vị</th>
-          <th scope="col">Mã phiếu</th>
-          <th scope="col">MST</th>
-          <th scope="col">Tên người nộp thuế</th>
-          <th scope="col">{ch.nhanChiTiet}</th>
-          <th scope="col">Hạn</th>
-          <th scope="col">Kết quả</th>
-          <th scope="col">{ch.batBuocSoTien ? "Số thuế điều chỉnh" : "Lý do"}</th>
-          <th scope="col">Trạng thái</th>
-        </tr></thead>
-        <tbody>
+      {/* Bảng React Aria: bấm cả hàng hoặc Space để tích (cột chọn của bảng). */}
+      <Table className="ql1-ds-table phieu-bang bang-rac" style={{ minWidth: rong.reduce((a, b) => a + b, 0) }} aria-label={`Kết quả phiếu ${ch.loai}`}
+        selectionMode="multiple" selectionBehavior="toggle" selectedKeys={chon} onSelectionChange={(s) => { if (s !== "all") datChon([...s].map(String)); }}>
+        <TableHeader>
+          {[["Chọn", "center"], ["Đơn vị"], ["Mã phiếu"], ["MST"], ["Tên người nộp thuế"], [ch.nhanChiTiet], ["Hạn"], ["Kết quả"], [ch.batBuocSoTien ? "Số thuế điều chỉnh" : "Lý do"], ["Trạng thái"]].map(([nhan, lop], i) =>
+            <Column key={i} id={String(i)} isRowHeader={i === 4} className={lop} style={{ width: rong[i] }}>{nhan}</Column>)}
+        </TableHeader>
+        <TableBody renderEmptyState={() => <div className="table-empty">Chưa giao phiếu {ch.loai} nào cho đơn vị này.</div>}>
           {dong.map((d) => {
             const t = layTraLoi(d.id);
-            return <tr
-              key={d.id}
-              className={chon.includes(d.id) ? "is-selected" : undefined}
-              onClick={(e) => { if (!(e.target instanceof HTMLInputElement)) batDong(d); }}
-            >
-              <td className="center">
-                <label className="o-chon">
-                  <input type="checkbox" aria-label={`Chọn ${d.mst}`} checked={chon.includes(d.id)} onChange={() => batDong(d)}/>
-                  <span aria-hidden="true"/>
-                </label>
-              </td>
+            return <Row key={d.id} id={d.id} className={({ isSelected }) => (isSelected ? "is-selected" : "")}>
+              <Cell className="center"><OChonHang label={`Chọn ${d.mst}`}/></Cell>
               {/* Năm cột hệ thống mang nền riêng và không sửa được — G17. */}
-              <td className="o-he-thong" title={d.donVi}>{rutGonTenDonVi(d.donVi)}</td>
-              <td className="o-he-thong">{d.maPhieu}</td>
-              <td className="o-he-thong">{d.mst}</td>
-              <td className="o-he-thong">{d.tenNNT}</td>
-              <td className="o-he-thong">{d.chiTiet}</td>
-              <td>
+              <Cell className="o-he-thong"><span title={d.donVi}>{rutGonTenDonVi(d.donVi)}</span></Cell>
+              <Cell className="o-he-thong">{d.maPhieu}</Cell>
+              <Cell className="o-he-thong">{d.mst}</Cell>
+              <Cell className="o-he-thong">{d.tenNNT}</Cell>
+              <Cell className="o-he-thong">{d.chiTiet}</Cell>
+              <Cell>
                 {d.han}{" "}
                 {d.quaHan > 0
                   ? <Badge tone="critical">quá {d.quaHan} ngày</Badge>
                   : <Badge tone="positive">còn {Math.abs(d.quaHan)} ngày</Badge>}
-              </td>
-              <td>
+              </Cell>
+              <Cell>
                 {t?.ketQua ?? (d.goiY
                   ? <span className="phieu-goiy" title="Phản hồi của kỳ trước cho cùng MST">{d.goiY} · kỳ trước</span>
                   : <span className="cell-empty">chưa có</span>)}
-              </td>
-              <td>{(ch.batBuocSoTien ? t?.soTien : t?.lyDo) || <span className="cell-empty">—</span>}</td>
-              <td>
+              </Cell>
+              <Cell>{(ch.batBuocSoTien ? t?.soTien : t?.lyDo) || <span className="cell-empty">—</span>}</Cell>
+              <Cell>
                 {t
                   ? <Badge tone="positive">Đã nhập</Badge>
                   : <Badge tone={d.quaHan > 0 ? "critical" : "warning"}>Chưa có phản hồi</Badge>}
-              </td>
-            </tr>;
+              </Cell>
+            </Row>;
           })}
-          {dong.length === 0 && <tr><td className="table-empty" colSpan={rong.length}>Chưa giao phiếu {ch.loai} nào cho đơn vị này.</td></tr>}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </TableWrap>
   </Panel>;
 }

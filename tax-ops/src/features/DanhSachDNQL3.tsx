@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { Badge, Button, DetailGrid, Pager, Panel, SearchField, TableWrap, money } from "@/components/ui";
+import { Badge, Button, DetailGrid, Pager, Panel, SearchField, SelectMenu, TableWrap, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ExportButton } from "@/components/ExportButton";
 import { rutGonTenDonVi } from "@/data/danhMuc";
@@ -194,25 +194,12 @@ export function DanhSachDNQL3({ trongPhamVi, hatKy, ky, meta, tenTep }: {
           CQT là BỘ LỌC, không phải cột. Nó đứng đầu hàng điều khiển vì nó thu
           hẹp mạnh nhất: một đơn vị vài trăm dòng, toàn ngành vài nghìn.
         */}
-        <label className="compact-field"><span>CQT</span>
-          <select value={cqt} onChange={(e) => doiLoc(() => datCqt(e.target.value))}>
-            <option value="">Tất cả đơn vị</option>
-            {trongPhamVi.map((dv) => <option key={dv.id} value={dv.id}>{rutGonTenDonVi(dv.ten)}</option>)}
-          </select>
-        </label>
-        <label className="compact-field"><span>Trong kế hoạch</span>
-          <select value={keHoach} onChange={(e) => doiLoc(() => datKeHoach(e.target.value as "co" | "khong" | ""))}>
-            <option value="co">Có</option>
-            <option value="khong">Không</option>
-            <option value="">Tất cả</option>
-          </select>
-        </label>
-        <label className="compact-field"><span>Trạng thái</span>
-          <select value={trangThai} onChange={(e) => doiLoc(() => datTrangThai(e.target.value))}>
-            <option value="">Tất cả</option>
-            {TRANG_THAI.map((t) => <option key={t.khoa} value={t.khoa}>{t.nhan}</option>)}
-          </select>
-        </label>
+        <SelectMenu className="compact-field" hienNhan kieu="o" label="CQT" value={cqt} onChange={(v) => doiLoc(() => datCqt(v))}
+          options={[{ value: "", label: "Tất cả đơn vị" }, ...trongPhamVi.map((dv) => ({ value: dv.id, label: rutGonTenDonVi(dv.ten) }))]}/>
+        <SelectMenu className="compact-field" hienNhan kieu="o" label="Trong kế hoạch" value={keHoach} onChange={(v) => doiLoc(() => datKeHoach(v))}
+          options={[{ value: "co", label: "Có" }, { value: "khong", label: "Không" }, { value: "", label: "Tất cả" }]}/>
+        <SelectMenu className="compact-field" hienNhan kieu="o" label="Trạng thái" value={trangThai} onChange={(v) => doiLoc(() => datTrangThai(v))}
+          options={[{ value: "", label: "Tất cả" }, ...TRANG_THAI.map((t) => ({ value: t.khoa, label: t.nhan }))]}/>
         {coLoc && <Button kind="quiet" onClick={() => doiLoc(() => { datTim(""); datCqt(""); datKeHoach("co"); datTrangThai(""); })}>Đặt lại</Button>}
       </div>}
     >

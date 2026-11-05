@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { CaseLayout } from "@/components/CaseLayout";
 import { HoSoDN } from "@/features/qldn/HoSoDN";
 import { dnTuDanhSach } from "@/data/hoSoQLDN";
-import { Badge, Button, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { Cell, Column, Row, Table, TableBody, TableHeader } from "react-aria-components";
+import { Badge, Button, OChonHang, Pager, Panel, SearchField, Segmented, SelectMenu, TableWrap, money } from "@/components/ui";
 import { theoDonVi, useBoLoc, useKhoaDonVi } from "@/components/BoLoc";
 import { useAction } from "@/state/ActionContext";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
@@ -228,13 +229,8 @@ export function BangQL2_01({ ky, loaiTK, onMoDanhSach }: {
   return <Panel chinh
     title={`Tổng hợp ${loaiTK === "01" ? "01GTGT" : "03, 04GTGT"}`}
     subtitle={`${nhanLuyKe(ky)} · tờ khai ${loaiTK === "01" ? "01/GTGT" : "03, 04/GTGT"} · đơn vị tiền: triệu đồng · nguồn: hddtbaocao`}
-    actions={<label className="compact-field"><span>Nhóm chỉ tiêu</span>
-      <select value={nhomMo} onChange={(e) => datNhomMo(e.target.value)}>
-        <option value="tomtat">Tóm tắt</option>
-        {nhomDay.map((n, i) => <option key={n.nhan} value={`n${i}`}>{n.nhan}</option>)}
-        <option value="tatca">Tất cả {cotTatCa} chỉ tiêu</option>
-      </select>
-    </label>}
+    actions={<SelectMenu className="compact-field" hienNhan kieu="o" label="Nhóm chỉ tiêu" value={nhomMo} onChange={(v) => datNhomMo(v)}
+      options={[{ value: "tomtat", label: "Tóm tắt" }, ...nhomDay.map((n, i) => ({ value: `n${i}`, label: n.nhan })), { value: "tatca", label: `Tất cả ${cotTatCa} chỉ tiêu` }]}/>}
   >
     <TableWrap label={`tổng hợp ${loaiTK}`}>
       <table
@@ -351,6 +347,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
 
   const chuaGiao = loc.filter((r) => thieuR31.includes(r.dv.id) && r.ketQua === "Chưa có kết quả" && !r.phieu);
   const khoaDong = (r: (typeof tatCa)[number]) => `${ky.hat}-${r.mst}-${r.chieu}`;
+  const choChonDong = (r: (typeof tatCa)[number]) => choGiao && thieuR31.includes(r.dv.id) && r.ketQua === "Chưa có kết quả" && !r.phieu;
   const giaoDuoc = chuaGiao.filter((r) => daChon.includes(khoaDong(r))).length;
 
   return <><CaseLayout
@@ -377,15 +374,10 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
         onChange={(v) => { datChuaCo(v); datTrang(1); }}
         options={[{ value: "tatca" as const, label: "Tất cả" }, { value: "chuaco" as const, label: "Chưa có kết quả" }]}
       />
-      <label className="compact-field"><span>Cờ</span>
-        <select value={co} onChange={(e) => { datCo(e.target.value); datTrang(1); }}>
-          <option value="">Tất cả</option>
-          {CO_CHENH.map((c) => <option key={c.id} value={c.id}>{c.nhan}</option>)}
-        </select>
-      </label>
-      <label className="compact-field"><span>Loại tờ khai</span><select value={loai} onChange={(e) => { datLoai(e.target.value); datTrang(1); }}>
-        <option value="">Tất cả</option><option value="01">01/GTGT</option><option value="0304">03, 04/GTGT</option>
-      </select></label>
+      <SelectMenu className="compact-field" hienNhan kieu="o" label="Cờ" value={co} onChange={(v) => { datCo(v); datTrang(1); }}
+        options={[{ value: "", label: "Tất cả" }, ...CO_CHENH.map((c) => ({ value: c.id, label: c.nhan }))]}/>
+      <SelectMenu className="compact-field" hienNhan kieu="o" label="Loại tờ khai" value={loai} onChange={(v) => { datLoai(v); datTrang(1); }}
+        options={[{ value: "", label: "Tất cả" }, { value: "01", label: "01/GTGT" }, { value: "0304", label: "03, 04/GTGT" }]}/>
       {ketqua && <Button kind="quiet" onClick={() => datKetQua("")}>Bỏ lọc: {ketqua}</Button>}
       <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm MST, tên NNT hoặc cán bộ"/>
     </div>}
@@ -422,72 +414,52 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
           lý thêm theo MoM 15/10 (lập danh sách theo từng cán bộ). Khi có dòng
           dự phòng PRS-03, hai cột chọn và phiếu đẩy bảng lên 1.305px và cuộn
           ngang — chấp nhận, vì đó là chế độ xử lý ngoại lệ, không phải mặc định. */}
-      <table className="ql1-ds-table" style={{ minWidth: duPhong ? 1305 : 1119 }}>
-        <colgroup>
-          {[...(choGiao ? [56] : []), 136, 188, 180, 160, 150, 130, 175, ...(duPhong ? [130] : [])].map((w, i) => <col key={i} style={{ width: w }}/>)}
-        </colgroup>
-        <thead><tr>
-          {choGiao && <th scope="col" className="center">Chọn</th>}
-          <th scope="col">MST</th>
-          <th scope="col">Tên người nộp thuế</th>
-          <th scope="col">Đơn vị quản lý</th>
-          <th scope="col">Cán bộ quản lý</th>
-          <th scope="col">Loại tờ khai</th>
-          <th scope="col" className="num">Chênh lệch (trđ)</th>
-          <th scope="col">Kết quả rà soát</th>
-          {duPhong && <th scope="col">Phiếu PRS-03</th>}
-        </tr></thead>
-        <tbody>
-          {/*
-            CẢ HÀNG bấm được, không riêng ô vuông 16px — quy ước đã đặt cho mọi
-            thiết kế trong hệ. Ô tích vẫn là control thật cho bàn phím và cho
-            trình đọc màn hình; cú bấm trên hàng chỉ là đường tắt cho chuột,
-            nên nó bỏ qua khi người dùng bấm thẳng vào chính ô tích.
-          */}
-          {hien.map((r) => {
-            const khoa = khoaDong(r);
-            const choChon = choGiao && thieuR31.includes(r.dv.id) && r.ketQua === "Chưa có kết quả" && !r.phieu;
-            const bat = () => {
-              if (!choChon) return;
-              datDaChon((truoc) => truoc.includes(khoa) ? truoc.filter((x) => x !== khoa) : [...truoc, khoa]);
-            };
-            return <tr
-              key={khoa}
-              className={`qd-viec${daChon.includes(khoa) || r.mst === nntMo ? " is-selected" : ""}`}
-              onClick={(e) => {
-                if (e.target instanceof Element && e.target.closest(".o-chon")) return;
-                if (choChon) bat(); else moHoSo(r, e.currentTarget.querySelector<HTMLElement>(".row-select"));
-              }}
-            >
-            {choGiao && <td className="center">
-              {/* Ô tích THẬT nằm dưới, trong suốt và trải hết ô; hình vuông
-                  nhìn thấy do `<span>` vẽ. Nhờ thế vùng bấm bằng cả ô (≥44px ở
-                  khổ chạm) mà vẫn là một `<input type="checkbox">` cho bàn
-                  phím và cho trình đọc màn hình. */}
-              <label className="o-chon">
-                <input type="checkbox" aria-label={`Chọn ${r.mst} · ${CHIEU_CHENH.find((c) => c.id === r.chieu)?.nhan}`} disabled={!choChon} checked={daChon.includes(khoa)} onChange={bat}/>
-                <span aria-hidden="true"/>
-              </label>
-            </td>}
-            <td>{r.mst}</td>
-            <td><button type="button" className="row-select" aria-haspopup="dialog" aria-label={`${r.ten}: mở hồ sơ`} onClick={(e) => { e.stopPropagation(); moHoSo(r, e.currentTarget); }}>
-              <span>{r.ten}</span>{r.khongNopTK && <Badge tone="warning">Không nộp TK</Badge>}
-            </button></td>
-            <td title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</td>
-            <td>{r.canBo}</td>
-            <td>{CHIEU_CHENH.find((c) => c.id === r.chieu)?.nhan}</td>
-            <td className="num">{money(r.chenhLech)}</td>
-            <td>
+      {/*
+        Bảng React Aria (04/11/2026). CẢ HÀNG bấm được — quy ước của hệ:
+        dòng chọn được (thiếu r31, chưa có kết quả, chưa giao phiếu) thì bấm
+        hàng là tích; dòng khác thì bấm hàng mở hồ sơ. Ô tích là cột chọn của
+        bảng (Space), Enter mở hồ sơ hoặc tích; mũi tên lên xuống đi giữa dòng.
+        `disabledBehavior="selection"`: dòng không chọn được vẫn mở hồ sơ.
+      */}
+      <Table className="ql1-ds-table bang-rac" style={{ minWidth: duPhong ? 1305 : 1119 }} aria-label="Danh sách NNT chênh lệch"
+        selectionMode={choGiao ? "multiple" : "none"} selectionBehavior="toggle" disabledBehavior="selection"
+        selectedKeys={daChon} disabledKeys={hien.filter((r) => !choChonDong(r)).map(khoaDong)}
+        onSelectionChange={(s) => { if (s !== "all") datDaChon([...s].map(String)); }}
+        onRowAction={(k) => {
+          const r = hien.find((x) => khoaDong(x) === k);
+          if (!r) return;
+          if (choChonDong(r)) datDaChon((truoc) => truoc.includes(String(k)) ? truoc.filter((x) => x !== k) : [...truoc, String(k)]);
+          else moHoSo(r, document.querySelector<HTMLElement>(`.bang-rac tr[data-key="${CSS.escape(String(k))}"]`));
+        }}>
+        <TableHeader>
+          {choGiao && <Column className="center" style={{ width: 56 }}>Chọn</Column>}
+          <Column style={{ width: 136 }}>MST</Column>
+          <Column isRowHeader style={{ width: 188 }}>Tên người nộp thuế</Column>
+          <Column style={{ width: 180 }}>Đơn vị quản lý</Column>
+          <Column style={{ width: 160 }}>Cán bộ quản lý</Column>
+          <Column style={{ width: 150 }}>Loại tờ khai</Column>
+          <Column className="num" style={{ width: 130 }}>Chênh lệch (trđ)</Column>
+          <Column style={{ width: 175 }}>Kết quả rà soát</Column>
+          {duPhong && <Column style={{ width: 130 }}>Phiếu PRS-03</Column>}
+        </TableHeader>
+        <TableBody renderEmptyState={() => <div className="table-empty">Không có dòng nào khớp bộ lọc.</div>}>
+          {hien.map((r) => <Row key={khoaDong(r)} id={khoaDong(r)} className={({ isSelected }) => `qd-viec${isSelected || r.mst === nntMo ? " is-selected" : ""}`}>
+            {choGiao && <Cell className="center"><OChonHang label={`Chọn ${r.mst} · ${CHIEU_CHENH.find((c) => c.id === r.chieu)?.nhan}`}/></Cell>}
+            <Cell>{r.mst}</Cell>
+            <Cell><span className="row-select"><span>{r.ten}</span>{r.khongNopTK && <Badge tone="warning">Không nộp TK</Badge>}</span></Cell>
+            <Cell><span title={r.dv.ten}>{rutGonTenDonVi(r.dv.ten)}</span></Cell>
+            <Cell>{r.canBo}</Cell>
+            <Cell>{CHIEU_CHENH.find((c) => c.id === r.chieu)?.nhan}</Cell>
+            <Cell className="num">{money(r.chenhLech)}</Cell>
+            <Cell>
               {thieuR31.includes(r.dv.id) ? <Badge tone="warning">Thiếu dữ liệu r31</Badge> : <Badge tone={r.ketQua === "Chưa có kết quả" ? "warning" : r.ketQua === "Đã chuyển Công an" ? "critical" : "positive"}>
                 {r.ketQua}
               </Badge>}
-            </td>
-            {duPhong && <td>{thieuR31.includes(r.dv.id) ? r.phieu || <span className="cell-empty">chưa giao</span> : "—"}</td>}
-          </tr>;
-          })}
-          {hien.length === 0 && <tr><td className="table-empty" colSpan={7 + Number(choGiao) + Number(duPhong)}>Không có dòng nào khớp bộ lọc.</td></tr>}
-        </tbody>
-      </table>
+            </Cell>
+            {duPhong && <Cell>{thieuR31.includes(r.dv.id) ? r.phieu || <span className="cell-empty">chưa giao</span> : "—"}</Cell>}
+          </Row>)}
+        </TableBody>
+      </Table>
     </TableWrap>
     <Pager trang={t} soTrang={soTrang} onChange={datTrang}/>
   </Panel></CaseLayout>

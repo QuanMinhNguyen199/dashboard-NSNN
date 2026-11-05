@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Badge, DetailGrid, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
+import { Badge, DetailGrid, Pager, Panel, SearchField, Segmented, SelectMenu, TableWrap, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
 import { theoDonVi, useBoLoc } from "@/components/BoLoc";
@@ -50,11 +50,8 @@ const KHOI = [
 type MaKhoi = (typeof KHOI)[number]["id"];
 
 function OChonKhoi({ khoi, datKhoi }: { khoi: MaKhoi; datKhoi: (v: MaKhoi) => void }) {
-  return <label className="compact-field"><span>Khối</span>
-    <select value={khoi} onChange={(e) => datKhoi(e.target.value as MaKhoi)}>
-      {KHOI.map((k) => <option key={k.id} value={k.id}>{k.nhan}</option>)}
-    </select>
-  </label>;
+  return <SelectMenu<MaKhoi> className="compact-field" hienNhan kieu="o" label="Khối" value={khoi} onChange={datKhoi}
+    options={KHOI.map((k) => ({ value: k.id, label: k.nhan }))}/>;
 }
 
 export function BangXacMinh({ ky }: { ky: KyQL2 }) {

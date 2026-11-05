@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
-import { Button, Pager, Panel, TableWrap, integer } from "@/components/ui";
+import { Button, integer, NhomNut, Pager, Panel, SelectMenu, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
 import type { ReportSheet, ReportValue } from "@/domain/reportExport";
@@ -87,13 +87,8 @@ function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, on
 
   return <Panel chinh title={title} subtitle={subtitle}
     actions={<div className="inline-controls kt-dieu-khien">
-      {haiKhoi && <label className="kt-loc-khoi"><span className="sr-only">Hiển thị đơn vị</span>
-        <select className="bo-loc-select" value={locKhoi} onChange={(e) => { datLoc(e.target.value as "" | Khoi); datTrang(1); }}>
-          <option value="">Tất cả đơn vị</option>
-          <option value="VP">{NHAN_KHOI.VP}</option>
-          <option value="TCS">{NHAN_KHOI.TCS}</option>
-        </select>
-      </label>}
+      {haiKhoi && <SelectMenu<"" | Khoi> className="kt-loc-khoi" label="Hiển thị đơn vị" value={locKhoi} onChange={(v) => { datLoc(v); datTrang(1); }}
+        options={[{ value: "", label: "Tất cả đơn vị" }, { value: "VP", label: NHAN_KHOI.VP }, { value: "TCS", label: NHAN_KHOI.TCS }]}/>}
       <ExportButton onExport={onXuat}>Xuất Excel</ExportButton>
     </div>}>
     <TableWrap label={label}>
@@ -258,12 +253,8 @@ export function ToKhaiTonTruc({ pv, actor }: { pv: PhamVi; actor: string }) {
     <Panel title={`Danh sách tờ khai${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} tờ khai · tồn lâu nhất trên đầu`}
       actions={<div className="inline-controls kt-dieu-khien">
         {dvChon && <Button kind="quiet" onClick={() => { datChon(""); datTrang(1); }}>Bỏ lọc đơn vị</Button>}
-        <label className="kt-loc-khoi kt-xep-theo"><span className="sr-only">Trạng thái</span>
-          <select className="bo-loc-select" value={loc} onChange={(e) => { datLoc(e.target.value as LocTT); datTrang(1); }}>
-            <option value="">Mọi trạng thái</option>
-            {TRANG_THAI_TK.map((t) => <option key={t.id} value={t.id}>{t.id} · {t.nhan}</option>)}
-          </select>
-        </label>
+        <SelectMenu<LocTT> className="kt-loc-khoi kt-xep-theo" label="Trạng thái" value={loc} onChange={(v) => { datLoc(v); datTrang(1); }}
+          options={[{ value: "", label: "Mọi trạng thái" }, ...TRANG_THAI_TK.map((t) => ({ value: t.id, label: `${t.id} · ${t.nhan}` }))]}/>
       </div>}>
       {ds.length ? <TableWrap label="Danh sách tờ khai cần xử lý">
         <table className="qd-bang kt-bang">
@@ -378,17 +369,10 @@ export function NopThua({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: string 
     <Panel title={`Danh sách NNT nộp thừa${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} NNT · tổng thừa lớn nhất trên đầu · triệu đồng`}
       actions={<div className="inline-controls kt-dieu-khien">
         {dvChon && <Button kind="quiet" onClick={() => { datChon(""); datTrang(1); }}>Bỏ lọc đơn vị</Button>}
-        <div className="bo-loc-seg" role="group" aria-label="Ngưỡng">
-          <button type="button" aria-pressed={nhanh === "ty"} onClick={() => { datNhanh("ty"); datTrang(1); }}>Trên 1 tỷ</button>
-          <button type="button" aria-pressed={nhanh === "muoiTrieu"} onClick={() => { datNhanh("muoiTrieu"); datTrang(1); }}>Trên 10 triệu</button>
-        </div>
-        <label className="kt-loc-khoi"><span className="sr-only">Nhận xét</span>
-          <select className="bo-loc-select" value={nxLoc} disabled={nhanh !== "ty"} title={nhanh !== "ty" ? "Nhận xét chỉ có ở danh sách trên 1 tỷ" : undefined}
-            onChange={(e) => { datLocNX(e.target.value as LocNX); datTrang(1); }}>
-            <option value="">Mọi nhận xét</option>
-            {(["NEW", "UNFINISHED", "COMPLETED"] as NhanXet[]).map((k) => <option key={k} value={k}>{NHAN_NX[k]} ({nx.dem[k]})</option>)}
-          </select>
-        </label>
+        <NhomNut label="Ngưỡng" value={nhanh} onChange={(v) => { datNhanh(v); datTrang(1); }} options={[{ value: "ty", label: "Trên 1 tỷ" }, { value: "muoiTrieu", label: "Trên 10 triệu" }]}/>
+        <SelectMenu<LocNX> className="kt-loc-khoi" label="Nhận xét" value={nxLoc} disabled={nhanh !== "ty"} title={nhanh !== "ty" ? "Nhận xét chỉ có ở danh sách trên 1 tỷ" : undefined}
+          onChange={(v) => { datLocNX(v); datTrang(1); }}
+          options={[{ value: "", label: "Mọi nhận xét" }, ...(["NEW", "UNFINISHED", "COMPLETED"] as NhanXet[]).map((k) => ({ value: k, label: `${NHAN_NX[k]} (${nx.dem[k]})` }))]}/>
       </div>}>
       {ds.length ? <TableWrap label="Danh sách NNT nộp thừa">
         <table className="qd-bang kt-bang">

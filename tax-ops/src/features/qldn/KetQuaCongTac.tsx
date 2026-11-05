@@ -1,11 +1,12 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Button as AriaButton, Disclosure, DisclosurePanel } from "react-aria-components";
 import { XepHangCanBo } from "@/features/qldn/XepHangCanBo";
 import { NNTCanBo } from "@/features/qldn/NNTCanBo";
 import { CaseLayout } from "@/components/CaseLayout";
 import { soNNTCanBo } from "@/data/hoSoQLDN";
 import { DIEM_QLDN, KY_XEP_HANG, NHOM_DIEM, PHONG_XEP, type NhomDiem } from "@/data/xepHangQLDN";
 import { congThucNgan, congThucSTT, ketQuaGoc, tenSTT, tieuChiCuaThe } from "@/data/tieuChiQLDN";
-import { Icon, PageIntro, Pager, Panel, TableWrap, integer } from "@/components/ui";
+import { Icon, integer, NhomNut, PageIntro, Pager, Panel, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
@@ -541,11 +542,12 @@ function ChiTieuNhom({ nhom, theo, tenCua }: { nhom: (typeof NHOM_DIEM)[number];
   const [mo, datMo] = useState(false);
   const iTheo = theo ? PHONG_XEP.indexOf(theo) : -1;
   const id = `xhp-ct-${nhom.id}`;
-  return <div className="xhp-ct">
-    <button type="button" className="xhp-mo" aria-expanded={mo} aria-controls={id} onClick={() => datMo((x) => !x)}>
+  /* Disclosure của React Aria: nút nối với vùng (aria-controls/expanded), Enter/Space do thư viện lo. */
+  return <Disclosure className="xhp-ct" isExpanded={mo} onExpandedChange={datMo}>
+    <AriaButton slot="trigger" className="xhp-mo">
       <span>{mo ? "Ẩn" : "Xem"} {nhom.chiTieu.length} chỉ tiêu</span><Icon name="chevronDown" size={15}/>
-    </button>
-    {mo && <div id={id} className="xhp-ct-than" data-motion="detail">
+    </AriaButton>
+    <DisclosurePanel>{mo && <div id={id} className="xhp-ct-than" data-motion="detail">
       <div className="xhp-ct-dau" aria-hidden="true">
         <span>{iTheo >= 0 ? `Giá trị của ${tenCua(theo!)}` : "Bấm một phòng để xem giá trị"}</span>
         <span className="xhp-o-hang">{PHONG_XEP.map((p, i) => <em key={p} className={i === iTheo ? "is-theo" : undefined} title={tenCua(p)}>{i + 1}</em>)}</span>
@@ -567,8 +569,8 @@ function ChiTieuNhom({ nhom, theo, tenCua }: { nhom: (typeof NHOM_DIEM)[number];
           {c.ghi && <small className="xhp-ct-ghi">{c.ghi}</small>}
         </li>)}
       </ol>
-    </div>}
-  </div>;
+    </div>}</DisclosurePanel>
+  </Disclosure>;
 }
 
 /* ---------- Chi tiết một thẻ ---------- */
@@ -622,17 +624,15 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
          `title` — chú thích trỏ chuột không tới được bằng bàn phím hay cảm ứng. */
       subtitle={pv.canBo ? `DN được phân công · ${ct.dvt}` : `${info.ten} · ${ct.dvt}${motDonVi ? "" : " · Theo cán bộ: chọn một đơn vị ở ô Phạm vi"}`}
       actions={<div className="inline-controls">
-        {!pv.canBo && <div className="bo-loc-seg" role="group" aria-label="Xem theo">
-          <button type="button" aria-pressed={theo === "DONVI" || !motDonVi} onClick={() => datTheo("DONVI")}>Theo đơn vị</button>
-          <button type="button" aria-pressed={theo === "CANBO" && motDonVi} disabled={!motDonVi} title={motDonVi ? undefined : "Chọn một đơn vị để xem theo cán bộ"} onClick={() => datTheo("CANBO")}>Theo cán bộ</button>
-        </div>}
+        {!pv.canBo && <NhomNut label="Xem theo" value={theo === "CANBO" && motDonVi ? "CANBO" : "DONVI"} onChange={datTheo} options={[
+          { value: "DONVI", label: "Theo đơn vị" },
+          { value: "CANBO", label: "Theo cán bộ", disabled: !motDonVi, title: motDonVi ? undefined : "Chọn một đơn vị để xem theo cán bộ" },
+        ]}/>}
         <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
       </div>}
     >
       {ds.length > 1 && <div className="qd-cong-tac">
-        <div className="bo-loc-seg" role="group" aria-label="Chỉ tiêu">
-          {ds.map((x) => <button key={x.id} type="button" aria-pressed={x.id === ct.id} onClick={() => datCtId(x.id)}>{x.ngan ?? x.ten}</button>)}
-        </div>
+        <NhomNut label="Chỉ tiêu" value={ct.id} onChange={datCtId} options={ds.map((x) => ({ value: x.id, label: x.ngan ?? x.ten }))}/>
       </div>}
       {/* Dải số tóm tắt CHỈ cho lãnh đạo (gọn 28/10/2026): bảng của lãnh đạo
           là các đơn vị con, không có dòng nào là số của cả phạm vi đang chọn.
@@ -713,10 +713,10 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
   return <Panel title="Theo bộ tiêu chí đánh giá" subtitle={`Cấu trúc sheet II. Khối QLDN · số gốc ở trước, kết quả ở cột cuối mỗi cụm · lũy kế đến hết tháng ${ky.thang}/2026`}>
     <div ref={hop}>
       {cuaNhom.length > 1 && <div className="qd-cong-tac">
-        <div className="bo-loc-seg qd-loc-tc" role="group" aria-label="Lọc theo tiêu chí">
-          <button type="button" aria-pressed={!dangLoc} onClick={() => datTc("")}>Tất cả {cuaNhom.length} tiêu chí</button>
-          {cuaNhom.map((t) => <button key={t.stt} type="button" aria-pressed={dangLoc?.stt === t.stt} title={`Tiêu chí ${t.stt} · ${tenSTT(t.stt)}`} onClick={() => datTc(String(t.stt))}>{t.ten}</button>)}
-        </div>
+        <NhomNut className="qd-loc-tc" label="Lọc theo tiêu chí" value={dangLoc ? String(dangLoc.stt) : ""} onChange={datTc} options={[
+          { value: "", label: `Tất cả ${cuaNhom.length} tiêu chí` },
+          ...cuaNhom.map((t) => ({ value: String(t.stt), label: t.ten, title: `Tiêu chí ${t.stt} · ${tenSTT(t.stt)}` })),
+        ]}/>
       </div>}
       <div data-motion="content" data-motion-key={`${the}-${dangLoc?.stt ?? "all"}`}>
       <TableWrap label={`số gốc theo bộ tiêu chí · ${THE_Q.find((x) => x.id === the)?.ten ?? ""}`}>
@@ -891,17 +891,11 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
   <div className="qd-khoi-xep">
     {haiKhoi && theo === "DONVI" && <>
       <span className="bo-loc-nhan">Xếp hạng trong</span>
-      <div className="bo-loc-seg" role="group" aria-label="Khối xếp hạng">
-        {(["VP", "TCS"] as Khoi[]).map((k) => <button key={k} type="button" aria-pressed={khoiXem === k} onClick={() => { datKhoiXem(k); datTrang(1); }}>
-          {NHAN_KHOI[k]} · {pv.donVi.filter((d) => d.khoi === k).length}
-        </button>)}
-      </div>
+      <NhomNut label="Khối xếp hạng" value={khoiXem} onChange={(k) => { datKhoiXem(k); datTrang(1); }}
+        options={(["VP", "TCS"] as Khoi[]).map((k) => ({ value: k, label: `${NHAN_KHOI[k]} · ${pv.donVi.filter((d) => d.khoi === k).length}` }))}/>
     </>}
     <span className="bo-loc-nhan">Thứ tự</span>
-    <div className="bo-loc-seg" role="group" aria-label="Thứ tự xếp hạng">
-      <button type="button" aria-pressed={!kemTruoc} onClick={() => { datKemTruoc(false); datTrang(1); }}>Tốt nhất trước</button>
-      <button type="button" aria-pressed={kemTruoc} onClick={() => { datKemTruoc(true); datTrang(1); }}>Kém nhất trước</button>
-    </div>
+    <NhomNut label="Thứ tự xếp hạng" value={kemTruoc ? "kem" : "tot"} onChange={(v) => { datKemTruoc(v === "kem"); datTrang(1); }} options={[{ value: "tot", label: "Tốt nhất trước" }, { value: "kem", label: "Kém nhất trước" }]}/>
     <span className="qd-khoi-dem">{integer(hang.length)} {theo === "CANBO" ? "cán bộ" : "đơn vị"} · xếp theo tỷ lệ{coNNT ? " · bấm một cán bộ để xem NNT" : ""}</span>
   </div>
   <TableWrap label={`${ct.ten} theo ${theo === "CANBO" ? "cán bộ" : "đơn vị"}`}>
@@ -1013,9 +1007,7 @@ function UocThu({ pv }: { pv: PhamVi }) {
   const tl = u.uoc ? u.thuc / u.uoc : 0;
   const coTyLe = duocXem(pv.vai, "tyLe") || pv.vai === "CB";
   return <Panel title="Ước thu" subtitle="Số ước đặt đầu tháng 10/2026 · cách chia ước tháng ra ngày và tuần chờ nghiệp vụ xác nhận" actions={
-    <div className="bo-loc-seg" role="group" aria-label="Nhịp ước thu">
-      {(["NGAY", "TUAN", "THANG"] as NhipUoc[]).map((n) => <button key={n} type="button" aria-pressed={nhip === n} onClick={() => datNhip(n)}>{NHAN_NHIP[n]}</button>)}
-    </div>}>
+    <NhomNut label="Nhịp ước thu" value={nhip} onChange={datNhip} options={(["NGAY", "TUAN", "THANG"] as NhipUoc[]).map((n) => ({ value: n, label: NHAN_NHIP[n] }))}/>}>
     <div className="qd-uoc">
       <div><span>Ước thu {NHAN_NHIP[nhip].toLowerCase()}</span><strong>{so(u.uoc, "tỷ đồng")}</strong><small>tỷ đồng</small></div>
       <div><span>Đã thu</span><strong>{so(u.thuc, "tỷ đồng")}</strong><small>tỷ đồng</small></div>

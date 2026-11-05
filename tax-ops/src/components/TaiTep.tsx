@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { FileTrigger } from "react-aria-components";
 import { Button, Icon, Panel } from "@/components/ui";
 import { useAction } from "@/state/ActionContext";
 
@@ -23,7 +24,6 @@ const DINH_DANG = ".xlsx,.xls,.csv,.zip";
 
 export function KhoiTaiTep({ onDong }: { onDong: () => void }) {
   const khoi = useRef<HTMLElement>(null);
-  const file = useRef<HTMLInputElement>(null);
   const [ten, setTen] = useState<string[]>([]);
   const [loi, setLoi] = useState("");
   const notify = useAction();
@@ -58,17 +58,16 @@ export function KhoiTaiTep({ onDong }: { onDong: () => void }) {
     >
       <form onSubmit={nhap} className="tai-tep-form">
         {/* Ô chọn tệp gốc của trình duyệt in nhãn theo ngôn ngữ trình duyệt
-            ("Choose Files / No file chosen") và không đổi được. Ở một màn hoàn
-            toàn tiếng Việt thì đó là hai chữ lạc; nên ô gốc bị ẩn khỏi cả luồng
-            Tab lẫn cây trợ năng, còn nút tiếng Việt bên dưới là control thật. */}
+            ("Choose Files / No file chosen") và không đổi được. FileTrigger của
+            React Aria giấu ô gốc; nút tiếng Việt bên dưới là control thật. */}
         <div className="file-field">
           <span id="file-field-label">File kết xuất <small>Excel, CSV hoặc ZIP</small></span>
           <div className="file-pick">
-            <Button kind="secondary" type="button" icon="file" aria-describedby="file-field-label" onClick={() => file.current?.click()}>Chọn file</Button>
+            <FileTrigger allowsMultiple acceptedFileTypes={DINH_DANG.split(",")} onSelect={(ds) => { setTen([...(ds ?? [])].map((f) => f.name)); setLoi(""); }}>
+              <Button kind="secondary" icon="file" aria-describedby="file-field-label">Chọn file</Button>
+            </FileTrigger>
             <span>{ten.length ? `Đã chọn ${ten.length} file` : "Chưa chọn file nào"}</span>
           </div>
-          <input ref={file} className="sr-only" type="file" multiple accept={DINH_DANG} tabIndex={-1} aria-hidden="true"
-            onChange={(e) => { setTen([...(e.target.files ?? [])].map((f) => f.name)); setLoi(""); }}/>
         </div>
         {ten.length > 0 && <p className="file-chosen" role="status">{ten.join(", ")}</p>}
         {loi && <p className="quality-note" role="alert">{loi}</p>}

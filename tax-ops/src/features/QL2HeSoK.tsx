@@ -203,7 +203,7 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
                 {k === null ? <span className="cell-empty" title="Chưa tính được K: mua vào lũy kế cộng hàng tồn kho không lớn hơn 0, chờ Q-14">—</span> : k.toFixed(3).replace(".", ",")}
                 {coCoK(r) && <> <Badge tone="warning">Cờ</Badge></>}
               </td>
-              {vaiTro === "CV" && <td><Button kind="quiet" onClick={(e) => { e.stopPropagation(); danhDau(ky.id, r.mst); }}>{nhom === "vuong" ? "Gỡ đánh dấu" : "Đánh dấu gửi QLRR"}</Button></td>}
+              {vaiTro === "CV" && <td><Button kind="quiet" onClick={() => danhDau(ky.id, r.mst)}>{nhom === "vuong" ? "Gỡ đánh dấu" : "Đánh dấu gửi QLRR"}</Button></td>}
             </tr>;
           })}
           {hien.length === 0 && <tr><td className="table-empty" colSpan={vaiTro === "CV" ? 7 : 6}>Không có lượt nào khớp bộ lọc.</td></tr>}

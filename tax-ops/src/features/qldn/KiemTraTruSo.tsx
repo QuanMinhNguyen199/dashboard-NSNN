@@ -1,6 +1,7 @@
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useState, type ReactNode } from "react";
+import { Button as AriaButton, Disclosure, DisclosurePanel } from "react-aria-components";
 import { useThamSo } from "@/state/diaChi";
-import { Button, Icon, Panel, Segmented, TableWrap, integer } from "@/components/ui";
+import { Button, Checkbox, Icon, integer, MenuPop, NhomNut, Panel, SelectMenu, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
 import { xuatWordKiemTra } from "@/domain/baoCaoKiemTraWord";
@@ -66,10 +67,7 @@ export function KiemTraTruSo({ ky, actor, dd, datLoai }: { ky: KyQ; actor: strin
 export function OSoLieuKT({ dd, dat, lop }: { dd: boolean; dat: (l: Loai) => void; lop: string }) {
   return <div className={`bo-loc-muc kt-o-loai ${lop}`}>
     <span className="bo-loc-nhan" id={`${lop}-nhan`}>Số liệu</span>
-    <div className="bo-loc-seg" role="group" aria-labelledby={`${lop}-nhan`}>
-      <button type="button" aria-pressed={!dd} onClick={() => dat("")}>Toàn ngành</button>
-      <button type="button" aria-pressed={dd} onClick={() => dat("dd")}>Đích danh</button>
-    </div>
+    <NhomNut labelledBy={`${lop}-nhan`} value={dd ? "dd" : ""} onChange={(v) => dat(v as Loai)} options={[{ value: "", label: "Toàn ngành" }, { value: "dd", label: "Đích danh" }]}/>
   </div>;
 }
 
@@ -134,8 +132,10 @@ function SoCungKy({ ty: t, truoc }: { ty: number | null; truoc: string }) {
   The Formula Rule). `tt` là cột trọng tâm của biên bản 02/11 — hiện mặc
   định; cột khác người xem tích ở "Chọn cột". Phần chung có thêm cột "Tỷ lệ
   đích danh" (Z của phần đích danh) vì biên bản xếp nó vào nhóm trọng tâm.
+  `dvt` là đơn vị của CỘT, không của nhóm (05/11/2026): một nhóm trộn cột
+  tiền với cột tỷ lệ, nên nhóm ghi "tỷ đồng" thì cột tỷ lệ đứng dưới thành sai.
 */
-interface Cot { nhan: string; ma: string; tt?: boolean; o: (c: ChiSoKT, s: SoLieuKT) => ReactNode }
+interface Cot { nhan: string; ma: string; dvt?: string; tt?: boolean; o: (c: ChiSoKT, s: SoLieuKT) => ReactNode }
 interface NhomCot { nhan: string; cot: Cot[] }
 const so = (x: number) => (x ? integer(x) : <span className="cell-empty">0</span>);
 const ssO = (t: number | null, truoc: string) => <>{pt(t)}<small>2025: {truoc}</small></>;
@@ -149,16 +149,16 @@ const NHOM_CHUNG: NhomCot[] = [
     { nhan: "Tỷ lệ đích danh", ma: "Z = V/T", tt: true, o: (_c, s) => <strong>{pt(tyLeHT(s.dichDanh))}</strong> },
     { nhan: "Có số truy thu, xử phạt", ma: "H", o: (c) => so(c.coTruyThu) },
   ] },
-  { nhan: "Kết quả sau TTKT · tỷ đồng", cot: [
-    { nhan: "Truy thu, truy hoàn và phạt 2026", ma: "L", tt: true, o: (c) => ty(c.thuNay) },
+  { nhan: "Kết quả sau TTKT", cot: [
+    { nhan: "Truy thu, truy hoàn và phạt 2026", ma: "L", dvt: "tỷ đồng", tt: true, o: (c) => ty(c.thuNay) },
     { nhan: "So cùng kỳ", ma: "P = L/K", o: (c) => ssO(ssCungKyThu(c), ty(c.thuTruoc)) },
-    { nhan: "Giảm thuế GTGT còn khấu trừ", ma: "M", o: (c) => ty(c.giamKT) },
-    { nhan: "Giảm lỗ", ma: "N", o: (c) => ty(c.giamLo) },
-    { nhan: "Bình quân / cuộc", ma: "O = L/G", tt: true, o: (c) => tyBQ(binhQuan(c)) },
+    { nhan: "Giảm thuế GTGT còn khấu trừ", ma: "M", dvt: "tỷ đồng", o: (c) => ty(c.giamKT) },
+    { nhan: "Giảm lỗ", ma: "N", dvt: "tỷ đồng", o: (c) => ty(c.giamLo) },
+    { nhan: "Bình quân / cuộc", ma: "O = L/G", dvt: "tỷ đồng", tt: true, o: (c) => tyBQ(binhQuan(c)) },
   ] },
-  { nhan: "Sau kiểm tra · tỷ đồng", cot: [
-    { nhan: "Số nộp", ma: "Q", o: (c) => ty(c.nop) },
-    { nhan: "Nợ đọng", ma: "R = L − Q", o: (c) => ty(noDong(c)) },
+  { nhan: "Sau kiểm tra", cot: [
+    { nhan: "Số nộp", ma: "Q", dvt: "tỷ đồng", o: (c) => ty(c.nop) },
+    { nhan: "Nợ đọng", ma: "R = L − Q", dvt: "tỷ đồng", o: (c) => ty(noDong(c)) },
     { nhan: "Tỷ lệ đôn đốc", ma: "S = Q/L", tt: true, o: (c) => pt(tyLeDonDoc(c)) },
   ] },
 ];
@@ -169,15 +169,15 @@ const NHOM_DD: NhomCot[] = [
     { nhan: "So cùng kỳ", ma: "AC = V/AA", o: (c) => ssO(ssCungKySo(c), integer(c.htTruoc)) },
     { nhan: "Tỷ lệ đích danh", ma: "Z = V/T", tt: true, o: (c) => <strong>{pt(tyLeHT(c))}</strong> },
   ] },
-  { nhan: "Kết quả · tỷ đồng", cot: [
-    { nhan: "Truy thu, thu hồi hoàn và phạt", ma: "W", tt: true, o: (c) => ty(c.thuNay) },
-    { nhan: "Giảm thuế GTGT còn khấu trừ", ma: "X", o: (c) => ty(c.giamKT) },
-    { nhan: "Giảm lỗ", ma: "Y", o: (c) => ty(c.giamLo) },
-    { nhan: "Bình quân / cuộc", ma: "AB = W/V", tt: true, o: (c) => tyBQ(binhQuan(c)) },
+  { nhan: "Kết quả", cot: [
+    { nhan: "Truy thu, thu hồi hoàn và phạt", ma: "W", dvt: "tỷ đồng", tt: true, o: (c) => ty(c.thuNay) },
+    { nhan: "Giảm thuế GTGT còn khấu trừ", ma: "X", dvt: "tỷ đồng", o: (c) => ty(c.giamKT) },
+    { nhan: "Giảm lỗ", ma: "Y", dvt: "tỷ đồng", o: (c) => ty(c.giamLo) },
+    { nhan: "Bình quân / cuộc", ma: "AB = W/V", dvt: "tỷ đồng", tt: true, o: (c) => tyBQ(binhQuan(c)) },
   ] },
-  { nhan: "Sau kiểm tra · tỷ đồng", cot: [
-    { nhan: "Số nộp", ma: "AD", o: (c) => ty(c.nop) },
-    { nhan: "Nợ đọng", ma: "AE", o: (c) => ty(noDong(c)) },
+  { nhan: "Sau kiểm tra", cot: [
+    { nhan: "Số nộp", ma: "AD", dvt: "tỷ đồng", o: (c) => ty(c.nop) },
+    { nhan: "Nợ đọng", ma: "AE", dvt: "tỷ đồng", o: (c) => ty(noDong(c)) },
     { nhan: "Tỷ lệ đôn đốc", ma: "AF = AD/W", tt: true, o: (c) => pt(tyLeDonDoc(c)) },
   ] },
 ];
@@ -251,7 +251,7 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
             <th scope="col" rowSpan={2} className="qd-goc-dv">Đơn vị</th>
             {nhom.map((n) => <th key={n.nhan} scope="colgroup" colSpan={n.cot.length} className="qd-goc-nhom qd-goc-dau">{n.nhan}</th>)}
           </tr>
-          <tr>{cot.map(({ k, dau }) => <th key={k.ma} scope="col" className={`num${dau ? " qd-goc-dau" : ""}`} title={`Cột ${k.ma} của mẫu`}>{k.nhan}</th>)}</tr>
+          <tr>{cot.map(({ k, dau }) => <th key={k.ma} scope="col" className={`num${dau ? " qd-goc-dau" : ""}`} title={`Cột ${k.ma} của mẫu`}><span>{k.nhan}</span>{k.dvt && <small className="qd-ct">{k.dvt}</small>}</th>)}</tr>
         </thead>
         <tbody>
           {dong("TN", "Toàn ngành", 0)}
@@ -273,20 +273,11 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
 
 /*
   "Chọn cột" (biên bản 02/11: cột ngoài nhóm trọng tâm "biểu thị dưới dạng
-  flex, tích chọn hiển thị"). Danh sách theo phần "Số liệu" đang xem. Đóng khi
-  bấm ra ngoài (`pointerdown`, xem whole-row rule) hoặc Escape; tiêu điểm về
-  nút mở.
+  flex, tích chọn hiển thị"). Danh sách theo phần "Số liệu" đang xem. Hộp
+  nổi của React Aria (`MenuPop`): đóng khi bấm ra ngoài hoặc Esc, tiêu điểm
+  về nút mở.
 */
 function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hien: Set<string>; datHien: (s: Set<string>) => void }) {
-  const [mo, datMo] = useState(false);
-  const hop = useRef<HTMLDivElement>(null);
-  const nut = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!mo) return;
-    const ngoai = (e: PointerEvent) => { if (!hop.current?.contains(e.target as Node)) datMo(false); };
-    document.addEventListener("pointerdown", ngoai);
-    return () => document.removeEventListener("pointerdown", ngoai);
-  }, [mo]);
   const tat = nhom.flatMap((n) => n.cot);
   const dem = tat.filter((k) => hien.has(khoaCot(dd, k))).length;
   const bat = (k: Cot) => {
@@ -300,21 +291,16 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
     tat.filter((k) => k.tt).forEach((k) => moi.add(khoaCot(dd, k)));
     datHien(moi);
   };
-  return <div className="bo-loc-chon kt-chon-cot" ref={hop} onKeyDown={(e) => { if (e.key === "Escape" && mo) { datMo(false); nut.current?.focus(); } }}>
-    <button ref={nut} type="button" className="bo-loc-nut" aria-expanded={mo} aria-haspopup="true" onClick={() => datMo((t) => !t)}>
-      <span>Chọn cột</span><small className="kt-dem-cot">{dem}/{tat.length}</small><Icon name="chevronDown" size={16}/>
-    </button>
-    {mo && <div className="bo-loc-menu kt-menu-cot" role="group" aria-label="Cột hiển thị trong bảng">
-      {nhom.map((n) => <fieldset key={n.nhan}>
-        <legend>{n.nhan}</legend>
-        {n.cot.map((k) => <label key={k.ma}>
-          <input type="checkbox" checked={hien.has(khoaCot(dd, k))} disabled={dem === 1 && hien.has(khoaCot(dd, k))} onChange={() => bat(k)}/>
-          <span>{k.nhan}</span>{k.tt && <em className="kt-tt">Trọng tâm</em>}
-        </label>)}
-      </fieldset>)}
-      <Button kind="quiet" onClick={veTrongTam}>Chỉ hiện cột trọng tâm</Button>
-    </div>}
-  </div>;
+  return <MenuPop className="kt-chon-cot" menuClassName="kt-menu-cot" placement="bottom end" ten="Cột hiển thị trong bảng"
+    nut={<><span>Chọn cột</span><small className="kt-dem-cot">{dem}/{tat.length}</small></>}>
+    {nhom.map((n) => <fieldset key={n.nhan}>
+      <legend>{n.nhan}</legend>
+      {n.cot.map((k) => <Checkbox key={k.ma} checked={hien.has(khoaCot(dd, k))} disabled={dem === 1 && hien.has(khoaCot(dd, k))} onChange={() => bat(k)}>
+        <span>{k.nhan}</span>{k.tt && <em className="kt-tt">Trọng tâm</em>}
+      </Checkbox>)}
+    </fieldset>)}
+    <Button kind="quiet" onClick={veTrongTam}>Chỉ hiện cột trọng tâm</Button>
+  </MenuPop>;
 }
 
 /* =====================================================================
@@ -336,13 +322,15 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
   nhãn chữ "Cuối bảng".
 */
 type XepTheo = "" | "so" | "thu" | "bq" | "dondoc";
-type NhomXH = "" | "nt" | "ngt";
-const SO_CUOI: Record<NhomXH, number> = { "": 1, nt: 3, ngt: 3 };
+type NhomXH = "" | "tcs" | "nt" | "ngt";
+/* "tcs" = cả 25 Thuế cơ sở (gộp hai cụm, người dùng yêu cầu 04/11/2026): bôi
+   đỏ 6 = 3 + 3 của hai cụm — GIẢ ĐỊNH, chờ Phòng Kiểm tra xác nhận. */
+const SO_CUOI: Record<NhomXH, number> = { "": 1, tcs: 6, nt: 3, ngt: 3 };
 
 function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
-  const [nhom, datNhom] = useThamSo<NhomXH>("nhomk", "", ["", "nt", "ngt"]);
+  const [nhom, datNhom] = useThamSo<NhomXH>("nhomk", "", ["", "tcs", "nt", "ngt"]);
   const [xep, datXep] = useThamSo<XepTheo>("xep", "", ["", "so", "thu", "bq", "dondoc"]);
-  const dv = nhom === "" ? PHONG_KT : DON_VI_KT.filter((d) => d.cum === (nhom === "nt" ? "NT" : "NGT"));
+  const dv = nhom === "" ? PHONG_KT : nhom === "tcs" ? DON_VI_KT.filter((d) => d.khoi === "TCS") : DON_VI_KT.filter((d) => d.cum === (nhom === "nt" ? "NT" : "NGT"));
   const nhanTyLe = dd ? "Tỷ lệ đích danh" : "Tỷ lệ hoàn thành";
   const tieuChi: Record<XepTheo, { nhan: string; gia: (c: ChiSoKT) => number | null; hien: (c: ChiSoKT) => string }> = {
     "": { nhan: nhanTyLe, gia: tyLeHT, hien: (c) => pt(tyLeHT(c)) },
@@ -365,20 +353,25 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
     ? <em className="kt-cuc is-cao" title="Cao nhất trong nhóm"><Icon name="chevronUp" size={14}/><span className="sr-only">Cao nhất</span></em>
     : cucTri[k]?.thap === id ? <em className="kt-cuc is-thap" title="Thấp nhất trong nhóm"><Icon name="chevronDown" size={14}/><span className="sr-only">Thấp nhất</span></em> : null;
   const soCuoi = SO_CUOI[nhom];
-  const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
+  const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : nhom === "tcs" ? `Nội thành và ngoại thành · ${dv.length} Thuế cơ sở` : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
   return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} · ${chinh.nhan}, cao nhất trên đầu · bôi đỏ ${soCuoi} đơn vị cuối bảng · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
-      <label className="kt-loc-khoi kt-xep-theo"><span className="sr-only">Xếp theo</span>
-        <select className="bo-loc-select" value={xep} onChange={(e) => datXep(e.target.value as XepTheo)}>
-          <option value="">Xếp theo {nhanTyLe.toLowerCase()}</option>
-          <option value="so">Xếp theo số cuộc</option>
-          <option value="thu">Xếp theo truy thu, truy hoàn và phạt</option>
-          <option value="bq">Xếp theo bình quân / cuộc</option>
-          <option value="dondoc">Xếp theo tỷ lệ đôn đốc</option>
-        </select>
-      </label>
-      <Segmented label="So trong" value={nhom} onChange={datNhom} options={[{ value: "", label: "Phòng Kiểm tra" }, { value: "nt", label: "TCS nội thành" }, { value: "ngt", label: "TCS ngoại thành" }]}/>
+      <SelectMenu label="Xếp theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
+        { value: "", label: `Xếp theo ${nhanTyLe.toLowerCase()}` },
+        { value: "so", label: "Xếp theo số cuộc" },
+        { value: "thu", label: "Xếp theo truy thu, truy hoàn và phạt" },
+        { value: "bq", label: "Xếp theo bình quân / cuộc" },
+        { value: "dondoc", label: "Xếp theo tỷ lệ đôn đốc" },
+      ]}/>
+      {/* Phạm vi so (04/11/2026): "Thuế cơ sở" chọn được (tổng hai cụm); hai
+          cụm thụt lề bên dưới, ô đóng ghi đủ "Thuế cơ sở · Nội thành". */}
+      <SelectMenu label="Phạm vi" className="kt-loc-khoi kt-xh-pham-vi" value={nhom} onChange={datNhom} options={[
+        { value: "", label: "Phòng kiểm tra" },
+        { value: "tcs", label: "Thuế cơ sở" },
+        { value: "nt", label: "Nội thành", nhanDong: "Thuế cơ sở · Nội thành", cap: 1 },
+        { value: "ngt", label: "Ngoại thành", nhanDong: "Thuế cơ sở · Ngoại thành", cap: 1 },
+      ]}/>
     </div>}>
     <TableWrap label={`Xếp hạng đơn vị theo ${chinh.nhan.toLowerCase()}`}>
       <table className="qd-bang kt-dg-bang">
@@ -432,13 +425,14 @@ function TheoLoaiHinh({ ky, chon }: { ky: KyQ; chon: PhamViKT }) {
   const [moBang, datMoBang] = useState(false);
   const loai = soLieuKT(chon, ky.thang).loai;
   const phan = PHAN_LOAI.map((p) => p.loai.reduce((a, l) => a + loai[l], 0));
-  return <Panel title="Số cuộc hoàn thành theo loại hình" subtitle={`${tenPhamViKT(chon)} · lũy kế đến ${ngayCuoi(ky)}`}
-    actions={<Button kind="quiet" className="kt-mo-bang" aria-expanded={moBang} aria-controls="kt-bang-loai" onClick={() => datMoBang((m) => !m)}>
+  /* Disclosure bọc cả khối: nút ở đầu khối, bảng ở thân khối — thư viện nối hai bên. */
+  return <Disclosure className="kt-loai-mo-rong" isExpanded={moBang} onExpandedChange={datMoBang}><Panel title="Số cuộc hoàn thành theo loại hình" subtitle={`${tenPhamViKT(chon)} · lũy kế đến ${ngayCuoi(ky)}`}
+    actions={<AriaButton slot="trigger" className="button is-quiet kt-mo-bang">
       <span>{moBang ? "Ẩn bảng theo phòng" : "Xem bảng theo phòng"}</span><Icon name={moBang ? "chevronUp" : "chevronDown"} size={16}/>
-    </Button>}>
+    </AriaButton>}>
     <DonutLoaiHinh phan={phan}/>
-    {moBang && <div id="kt-bang-loai" className="kt-bang-loai-mo"><BangLoaiHinh ky={ky} chon={chon}/></div>}
-  </Panel>;
+    <DisclosurePanel>{moBang && <div id="kt-bang-loai" className="kt-bang-loai-mo"><BangLoaiHinh ky={ky} chon={chon}/></div>}</DisclosurePanel>
+  </Panel></Disclosure>;
 }
 
 function DonutLoaiHinh({ phan }: { phan: number[] }) {
