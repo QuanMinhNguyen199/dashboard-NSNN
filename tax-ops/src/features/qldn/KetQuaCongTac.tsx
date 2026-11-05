@@ -22,7 +22,7 @@ import { HangTab, mucNhung } from "@/components/MucPhanHe";
 import { ODatBoLoc } from "@/components/BoLoc";
 import { BAO_CAO_CUA_THE, BaoCaoPhanHe, coBaoCao } from "@/features/qldn/BaoCaoPhanHe";
 import { KiemTraTruSo, OSoLieuKT } from "@/features/qldn/KiemTraTruSo";
-import { CuocKiemTra, DoiSoatKT, NhapDuLieuKT } from "@/features/qldn/PhongKiemTra";
+import { CuocKiemTra, DoiSoatKT } from "@/features/qldn/PhongKiemTra";
 import { HoanGTGT, OHanHoan } from "@/features/qldn/HoanGTGT";
 import { DongMSTDonVi, NopThua, ToKhaiTonTruc, XuPhatDonVi } from "@/features/qldn/QuanLyKeKhai";
 import { NHAN_NGAY_KEO_TK } from "@/data/ql5";
@@ -226,7 +226,6 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
          dữ liệu không theo kỳ — ô Kỳ nói giá trị đang áp dụng bằng chữ. */
       : the === "ktdoisoat" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Các Phòng Kiểm tra"/>
       : the === "ktcuoc" ? <ThanhPhamVi pv={pv} kyChu="Năm 2026" phamViChu="Các Phòng Kiểm tra"/>
-      : the === "ktnhap" ? <ThanhPhamVi pv={pv} kyChu="Không theo kỳ" phamViChu="Toàn ngành"/>
       /* Hoàn GTGT là báo cáo toàn ngành theo tháng của ngày quyết định hoàn. */
       : the === "hoangtgt" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
       /* Tờ khai tồn trục là ảnh chụp lần kéo gần nhất, không theo tháng: ô Kỳ nói ngày kéo. */
@@ -279,7 +278,6 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         : the === "ktnnt" ? <KiemTraTruSo ky={ky} actor={user.name} dd={loaiKT === "dd"} datLoai={datLoaiKT}/>
         : the === "ktcuoc" ? <CuocKiemTra actor={user.name}/>
         : the === "ktdoisoat" ? <DoiSoatKT ky={ky} actor={user.name}/>
-        : the === "ktnhap" ? <NhapDuLieuKT user={user}/>
         : the === "hoangtgt" ? <HoanGTGT ky={ky} actor={user.name}/>
         : the === "tktt" ? <ToKhaiTonTruc pv={pv} actor={user.name}/>
         : the === "nopthua" ? <NopThua pv={pv} ky={ky} actor={user.name}/>

@@ -135,7 +135,7 @@ const hatKy = (thang: number, nam = 2026) => nam * 100 + thang;
   • THAP — tỷ lệ thấp là tốt (tồn quá hạn / tổng hồ sơ).
   • TANG — tốc độ tăng của tử so với mẫu, thấp là tốt (nợ nay so nợ đầu năm).
 */
-export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "ktcuoc" | "ktdoisoat" | "ktnhap" | "hoan" | "hoangtgt" | "tktt" | "nopthua";
+export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "ktcuoc" | "ktdoisoat" | "hoan" | "hoangtgt" | "tktt" | "nopthua";
 export type Kieu = "CAO" | "THAP" | "TANG";
 
 export interface ChiTieuQ {
@@ -190,7 +190,6 @@ export const THE_Q: TheQ[] = [
      Không có chỉ tiêu — xem `PhongKiemTra`. */
   { id: "ktcuoc", ten: "Cuộc kiểm tra", ngan: "Cuộc kiểm tra" },
   { id: "ktdoisoat", ten: "Báo cáo đối soát", ngan: "Đối soát" },
-  { id: "ktnhap", ten: "Nhập dữ liệu", ngan: "Nhập dữ liệu" },
   { id: "hoan", ten: "Hồ sơ hoàn thuế", ngan: "Hoàn thuế" },
   /* Báo cáo tháng hồ sơ hoàn trước – kiểm sau thuế GTGT (folder HoanGTGT,
      biên bản 28/10/2026). Không có chỉ tiêu — xem `HoanGTGT`. */
@@ -219,7 +218,7 @@ export const NHOM_Q: NhomQ[] = [
      file chấm điểm: STT 24 rồi 25, 26 — đứng sau nhóm quản lý, hỗ trợ DN. */
   /* Kiểm tra tại trụ sở NNT đứng TRÁI Kiểm tra tại bàn và là tab mở mặc định —
      đúng chỗ của tab "Tổng quan" đã bỏ (03/11/2026). */
-  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["ktnnt", "kttb", "ktcuoc", "ktdoisoat", "ktnhap"] },
+  { id: "kttb", ten: "Phòng kiểm tra", ngan: "Phòng kiểm tra", the: ["ktnnt", "kttb", "ktcuoc", "ktdoisoat"] },
   { id: "hoan", ten: "Công tác hoàn thuế", ngan: "Hoàn thuế", the: ["hoan", "hoangtgt"] },
 ];
 export const nhomCuaThe = (the: TheId) => NHOM_Q.find((n) => n.the.includes(the))!;
