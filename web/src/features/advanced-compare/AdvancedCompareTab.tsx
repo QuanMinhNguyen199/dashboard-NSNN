@@ -340,7 +340,7 @@ function CompareBody({ data }: { data: AdvancedComparisonData }) {
               id: "trend",
               span: 12,
               render: () => (
-                <Card title="Xu hướng hai vế" subtitle="12 tháng, cùng thang đo">
+                <Card title="Xu hướng hai vế">
                   <TrendChart
                     points={data.trendB.map((point, index) => ({
                       ...point,

@@ -328,7 +328,7 @@ function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string
   */
   const coChenh = coTyLe || coBQ;
   let thuTu = 0;
-  return <Panel chinh title="Kết quả các mặt công tác" subtitle={nhanPhamVi(pv)} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Kết quả các mặt công tác" actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     {/* Nhãn mốc trên ô ghi bằng chữ ("Bình quân", "Tháng 8", "Cùng kỳ"), không
         viết tắt (29/10/2026) — dòng này chỉ còn nói đơn vị của chênh lệch. */}
     <div className="qd-overview-guide is-chu-giai"><span>{coBQ ? (pv.vai === "LD" && pv.donVi.length === DON_VI_Q.length ? "Bình quân (BQ): số đơn vị dưới bình quân toàn thuế · tháng trước (T" + (ky.thang - 1) + ") · cùng kỳ 2025 (CK)" : "So với bình quân toàn thuế (BQ), tháng trước (T" + (ky.thang - 1) + ") và cùng kỳ 2025 (CK)") : "So với tháng trước (T" + (ky.thang - 1) + ") và cùng kỳ 2025 (CK)"} · <b>{coChenh ? "chênh lệch tính bằng điểm phần trăm" : "chênh lệch tính bằng số tuyệt đối"}</b></span></div>
@@ -479,7 +479,7 @@ function XepHangPhong({ pv, actor }: { pv: PhamVi; actor: string }) {
     rows: xepTheo("tong").map((d) => [hangCua(d, "tong"), d.ten, ...NHOM_DIEM.map((n) => d.diem[n.id]), d.tong]),
   }], { period: KY_XEP_HANG, scope: "Khối phòng QLDN", actor, status: "DRAFT" as const }, "xep-hang-phong-qldn_bcgb-thang-10.xlsx");
 
-  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG} · theo bộ tiêu chí đánh giá các chỉ tiêu`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG}`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-overview-guide xhp-guide"><span>Bấm một phòng để theo phòng đó qua các chủ đề</span><span>{tenTheo ? <>Đang theo: <b>{tenTheo}</b></> : "Chưa chọn phòng"}</span></div>
     <p className="qd-ghi-mot xhp-nguon">
       <b>Số của file chấm điểm, không phải số mô phỏng.</b> Lấy từ sheet “II. Khối QLDN”. Điểm mỗi chỉ tiêu từ −1 đến +1. Điểm nhóm là trung bình điểm các chỉ tiêu trong nhóm. Bốn nhóm theo file chấm: Kiểm tra tại bàn và Hoàn thuế nằm trong nhóm Quản lý, hỗ trợ DN. Đồng điểm thì phòng có tổng điểm cao hơn xếp trên, nên không có hai phòng cùng hạng. Giữ đúng như file: TTHC vẫn tính tỷ lệ hài lòng dù biên bản 09/10 đã bỏ.
@@ -708,7 +708,7 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
     <td className="num qd-goc-kq"><strong>{pt(ketQuaGoc(t, v), t.phep === "TANG")}</strong></td>
   </>;
 
-  return <Panel title="Theo bộ tiêu chí đánh giá" subtitle={`Cấu trúc sheet II. Khối QLDN · số gốc ở trước, kết quả ở cột cuối mỗi cụm · lũy kế đến hết tháng ${ky.thang}/2026`}>
+  return <Panel title="Theo bộ tiêu chí đánh giá" subtitle={`Lũy kế đến hết tháng ${ky.thang}/2026`}>
     <div ref={hop}>
       {cuaNhom.length > 1 && <div className="qd-cong-tac">
         <NhomNut className="qd-loc-tc" label="Lọc theo tiêu chí" value={dangLoc ? String(dangLoc.stt) : ""} onChange={datTc} options={[

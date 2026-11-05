@@ -97,7 +97,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
     ]}/>
 
     <div className="qd-luoi-2">
-      <Panel title="Trạng thái doanh nghiệp" subtitle={`${integer(tongTT)} doanh nghiệp · bấm một dòng để mở danh sách`}>
+      <Panel title="Trạng thái doanh nghiệp" subtitle={`${integer(tongTT)} doanh nghiệp`}>
         <ul className="qd-thanh-ds">
           {TRANG_THAI_DN.map((t) => <li key={t.id}>
             <button type="button" onClick={() => moDanhSach(t.id)}>
@@ -140,7 +140,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
       </Panel>
     </div>
 
-    <Panel title="Tình hình nợ thuế" subtitle="Nợ tổng thể của nhóm đối tượng · chi tiết ở Kết quả công tác, tab Nợ thuế">
+    <Panel title="Tình hình nợ thuế">
       <div className="qd-o-so">
         <div><span>Doanh nghiệp đang nợ thuế</span><strong>{integer(o.no.soDN)}</strong><small>{phanTram(o.no.soDN, o.soDN)} số DN</small></div>
         <div><span>Tổng số nợ</span><strong>{tyDong(o.no.tongNo)}</strong><small>tỷ đồng · <span className={o.no.tongNo > o.no.tongNoDauNam ? "qd-chenh is-xau" : "qd-chenh is-tot"}><i className="qd-cham" aria-hidden="true"/>{o.no.tongNo > o.no.tongNoDauNam ? "tăng" : "giảm"} {phanTram(Math.abs(o.no.tongNo - o.no.tongNoDauNam), o.no.tongNoDauNam)}</span> so với đầu năm</small></div>
@@ -191,7 +191,7 @@ function PhanTichRuiRo({ pv }: { pv: PhamVi }) {
   const rr = useMemo(() => ruiRoPhamVi(pv), [pv]);
   const lop = { CAO: "is-do", TB: "is-vang", THAP: "is-tot" } as const;
   const maxDH = Math.max(...rr.dauHieu.map((x) => x.so), 1);
-  return <Panel title="Phân tích rủi ro" subtitle={`${integer(rr.tong)} doanh nghiệp đang hoạt động · phân loại theo ba mức rủi ro`}>
+  return <Panel title="Phân tích rủi ro" subtitle={`${integer(rr.tong)} doanh nghiệp đang hoạt động`}>
     <p className="qd-ghi-mot">Bản đề xuất, chờ chốt nội dung hiển thị (biên bản 22/10/2026, việc số 4). Một doanh nghiệp có thể mang nhiều dấu hiệu. Số liệu mô phỏng.</p>
     <div className="qd-rr">
       <div className="qd-rr-muc">
@@ -331,7 +331,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
     onClose={dong}
     detail={chon ? <HoSoDN d={chon}/> : null}
   >
-  <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · số tiền tính bằng tỷ đồng · bấm một dòng để mở hồ sơ`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · tỷ đồng`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-loc-cb">
       <SelectMenu<TrangThaiDN | ""> className="compact-field qd-loc-tt" hienNhan label="Trạng thái" value={loc} onChange={(v) => { datLoc(v); datTrang(1); datDangMo(""); }}
         options={[{ value: "", label: "Tất cả trạng thái" }, ...TRANG_THAI_DN.map((t) => ({ value: t.id, label: t.ten }))]}/>
@@ -403,7 +403,7 @@ function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId, 
     rows: BO_TIEU_CHI.map((t) => [t.stt, t.linhVuc, t.ten, t.phong, t.congThuc, t.ky, t.tinhDiem, t.doiTuong, t.ghiChu, t.bo ? "Đã bỏ" : t.the ? nhanNhom(t.the) : "Chưa có trong khối QLDN"]),
   }], { period: "Tháng 10/2026", scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "bo-tieu-chi-danh-gia.xlsx");
 
-  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" subtitle={`${BO_TIEU_CHI.length} chỉ tiêu theo file chấm điểm tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc · bấm một dòng để xem cách tính điểm`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" subtitle={`${BO_TIEU_CHI.length} chỉ tiêu · tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-loc-cb">
       <NhomNut label="Lọc chỉ tiêu" value={chiTheoDoi ? "theo" : "tat"} onChange={(v) => datChiTheoDoi(v === "theo")} options={[{ value: "tat", label: "Tất cả" }, { value: "theo", label: "Đang theo dõi" }]}/>
     </div>

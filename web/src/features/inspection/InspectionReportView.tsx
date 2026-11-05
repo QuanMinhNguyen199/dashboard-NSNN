@@ -111,7 +111,6 @@ function InspectionBody({ data, status }: { data: InspectionData; status: Inspec
           <div className="dinspection-trend">
             <Card
               title={data.cycle === "week" ? "Diễn biến theo tuần" : "Diễn biến theo tháng"}
-              subtitle="Số cuộc hoàn thành và số tiền xử lý qua từng kỳ"
               unit={unit}
             >
               <InspectionSummary points={data.trend} unit={unit} />

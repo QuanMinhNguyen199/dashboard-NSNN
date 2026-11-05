@@ -48,7 +48,7 @@ export function LoginScreen({ onLogin, dashboard = false }: { onLogin: (user: De
 
     <section className="login-panel">
       <div className="login-form-wrap">
-        <div className="login-heading"><h1>Đăng nhập</h1><p>Bản demo. Chọn một vai để xem phần màn hình của vai đó.</p></div>
+        <div className="login-heading"><h1>Đăng nhập</h1><p>Bản demo</p></div>
 
         {/*
           Lối đăng nhập một lần. Nút này là TƯỢNG TRƯNG: Keycloak là hướng đã

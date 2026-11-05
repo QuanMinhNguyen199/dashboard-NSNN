@@ -63,7 +63,7 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
   return <Panel
     chinh
     title="Chênh lệch tờ khai – hóa đơn"
-    subtitle={`${nhanLuyKe(kyQ)} · triệu đồng · cùng nguồn với Báo cáo › DS NNT chênh lệch`}
+    subtitle={`${nhanLuyKe(kyQ)} · triệu đồng`}
     actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}
   >
     <TableWrap label="Chênh lệch tờ khai – hóa đơn theo đơn vị">

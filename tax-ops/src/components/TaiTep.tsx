@@ -53,7 +53,7 @@ export function KhoiTaiTep({ onDong }: { onDong: () => void }) {
   >
     <Panel
       title="Tải tay (dự phòng)"
-      subtitle="Dùng khi hệ thống chưa kéo được nguồn về. Nhận bản kết xuất từ TMS, TTR, ứng dụng hóa đơn điện tử, ứng dụng xác minh hóa đơn hoặc tổng đài. Nộp được cả file nén gồm nhiều đơn vị của cùng một kỳ."
+      subtitle="Nhận tệp kết xuất hoặc ZIP gồm nhiều đơn vị cùng kỳ."
       actions={<Button kind="quiet" onClick={dong}><Icon name="close" size={16}/><span>Đóng</span></Button>}
     >
       <form onSubmit={nhap} className="tai-tep-form">

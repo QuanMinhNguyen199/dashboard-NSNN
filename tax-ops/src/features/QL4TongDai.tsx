@@ -173,7 +173,7 @@ export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
   >
     <Panel chinh
       title="Báo cáo sản lượng cuộc gọi"
-      subtitle={`${ky.nhan} · nguồn: Viettel, kéo 18:00 · bấm một dòng để xem đủ số theo mẫu`}
+      subtitle={`${ky.nhan} · nguồn: Viettel, kéo 18:00`}
       actions={<Segmented
         label="Mức gộp"
         value={mo}
@@ -363,7 +363,7 @@ export function SaiHan({ ky }: { ky: KyQL4 }) {
           </TableWrap>}
     </Panel>
 
-    {sai.length > 0 && <Panel title="Danh sách phiếu sai hạn" subtitle="Để đối chiếu lại với nguồn Viettel">
+    {sai.length > 0 && <Panel title="Danh sách phiếu sai hạn">
       <TableWrap label="danh sách phiếu sai hạn">
         <table className="ql1-ds-table" style={{ minWidth: 1070 }}>
           <colgroup>{[150, 190, 160, 260, 150, 160].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>

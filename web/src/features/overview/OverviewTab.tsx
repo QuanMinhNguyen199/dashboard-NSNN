@@ -89,14 +89,14 @@ function OverviewBody({ data, dispatch }: {
     <GridRows rows={[
       [
         { id: "trend", span: 7, render: () => <Card title="Xu hướng thu ngân sách" subtitle={`Lũy kế ${filters.year} và cùng kỳ ${filters.year - 1}`} actions={<button type="button" className="dlink" onClick={() => setShowTrendTable((value) => !value)}>{showTrendTable ? "Xem biểu đồ" : "Xem bảng số liệu"}</button>}>{showTrendTable ? <TrendTable points={data.trend} year={filters.year} /> : <TrendChart points={data.trend} year={filters.year} />}</Card> },
-        { id: "budget", span: 5, hidden: data.budgetLevels.length === 0, render: () => <Card title="Cơ cấu theo cấp ngân sách" subtitle="Phần Trung ương và phần Hà Nội được hưởng" unit={budgetDetailUnit}>
+        { id: "budget", span: 5, hidden: data.budgetLevels.length === 0, render: () => <Card title="Cơ cấu theo cấp ngân sách" unit={budgetDetailUnit}>
           <DonutChart rows={data.budgetLevels} centerLabel="NSNN" selectedId={selectedBudgetLevel} onSelect={(id) => setSelectedBudgetLevel(id as "NSTW" | "NSDP")} />
           <section className="dbudget-local" aria-live="polite"><h3>{selectedBudgetLevel === "NSTW" ? "Trong ngân sách trung ương" : "Trong ngân sách địa phương"}</h3><ul>{budgetDetailRows.map((row) => <li key={row.id}><div><span>{row.name}</span><strong className="dbudget-value"><BudgetMoney value={row.amount} /></strong></div><span className="dbudget-track" aria-hidden="true"><i style={{ width: `${Math.max(Math.abs(row.amount) / budgetDetailMax * 100, 0.8)}%` }} /></span></li>)}</ul></section>
           <p className="dhint">{MILLION_NOTE}</p>
         </Card> },
       ],
       [
-        { id: "sources", span: 12, render: () => <Card className="doverview-sources-card" title="Cơ cấu 4 nhóm nguồn thu" subtitle="Chọn một nhóm để xem tóm tắt và đi tới phân tích liên quan" unit={sourceUnit}>
+        { id: "sources", span: 12, render: () => <Card className="doverview-sources-card" title="Cơ cấu 4 nhóm nguồn thu" unit={sourceUnit}>
           <div className="doverview-sources">
             {data.sources.map((row) => <button
               key={row.id}
@@ -118,7 +118,7 @@ function OverviewBody({ data, dispatch }: {
         </Card> },
       ],
       [
-        { id: "management", span: 6, render: () => <Card title="Theo dõi quản lý nhà nước" subtitle="Xếp hạng thực hiện theo đơn vị thuế hoặc địa bàn" actions={<Segmented label="Góc nhìn quản lý" value={managementView} options={[{ value: "taxOffice", label: "Theo cơ quan thuế" }, { value: "location", label: "Theo địa bàn" }]} onChange={setManagementView} />}>
+        { id: "management", span: 6, render: () => <Card title="Theo dõi quản lý nhà nước" actions={<Segmented label="Góc nhìn quản lý" value={managementView} options={[{ value: "taxOffice", label: "Theo cơ quan thuế" }, { value: "location", label: "Theo địa bàn" }]} onChange={setManagementView} />}>
           {managementView === "location" && <div className="doverview-inline-control"><Segmented label="Chỉ số địa bàn" value={locationMetric} options={[{ value: "completion", label: "% đạt dự toán" }, { value: "amount", label: "Quy mô dòng tiền" }]} onChange={setLocationMetric} /><span className="dtag is-review">Dự toán mô phỏng</span></div>}
           <ExecutionList rows={managementView === "taxOffice" ? taxOfficeProgress : locationProgress} mode={managementView === "location" && locationMetric === "amount" ? "amount" : "completion"} onSelect={(row) => managementView === "taxOffice" ? openTaxOffice(row.id) : dispatch({ type: "OPEN_LOCATION_DETAIL", locationId: row.id })} />
         </Card> },

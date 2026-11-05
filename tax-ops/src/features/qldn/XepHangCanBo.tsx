@@ -72,7 +72,7 @@ export function XepHangCanBo({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: st
     onClose={dong}
     detail={chon ? <ChiTietCanBo d={chon} tong={ds.length}/> : null}
   >
-  <Panel chinh title="Xếp hạng cán bộ" subtitle={`${ten} · ${KY.nhan} · ${integer(ds.length)} cán bộ · bấm một dòng để xem từng chỉ tiêu`} actions={<div className="inline-controls">
+  <Panel chinh title="Xếp hạng cán bộ" subtitle={`${ten} · ${KY.nhan} · ${integer(ds.length)} cán bộ`} actions={<div className="inline-controls">
     {DS_DV.length > 1 && <SelectMenu className="compact-field" hienNhan kieu="o" label="Đơn vị" value={phong} onChange={(v) => { datPhong(v === DS_DV[0].id ? "" : v); datDangMo(""); }}
       options={DS_DV.map((p) => ({ value: p.id, label: `${p.ngan}${p.id === cuaToi?.id ? " (của tôi)" : ""}` }))}/>}
     <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
