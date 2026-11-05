@@ -304,7 +304,7 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
 }
 
 /* =====================================================================
-   Xếp hạng đơn vị — thanh ngang, cao nhất trên đầu
+   Xếp hạng đơn vị — thanh ngang, hàng theo thứ tự đơn vị, cột Hạng theo chỉ số
    ===================================================================== */
 
 /*
@@ -316,10 +316,10 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
   theo tỷ lệ hoàn thành và tỷ lệ đôn đốc). Ghi chú PKT 03/11/2026 thêm xếp theo
   truy thu, truy hoàn và phạt.
 
-  CUỐI BẢNG bôi đỏ để lãnh đạo nhận ra khi giao ban: một đơn vị cuối với năm
-  Phòng Kiểm tra, ba đơn vị cuối với mỗi cụm (12–13 đơn vị). Số đơn vị bôi đỏ
+  HẠNG CUỐI bôi đỏ để lãnh đạo nhận ra khi giao ban: một đơn vị hạng cuối với
+  năm Phòng Kiểm tra, ba đơn vị với mỗi cụm (12–13 đơn vị). Số đơn vị bôi đỏ
   là GIẢ ĐỊNH, chờ Phòng Kiểm tra xác nhận. Màu không nói một mình: dòng có
-  nhãn chữ "Cuối bảng".
+  nhãn chữ "Hạng cuối". Hàng không đảo theo hạng (05/11/2026), xem `ds`.
 */
 type XepTheo = "" | "so" | "thu" | "bq" | "dondoc";
 type NhomXH = "" | "tcs" | "nt" | "ngt";
@@ -340,8 +340,17 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
     dondoc: { nhan: "Tỷ lệ đôn đốc", gia: tyLeDonDoc, hien: (c) => pt(tyLeDonDoc(c)) },
   };
   const chinh = tieuChi[xep];
-  const ds = dv.map((d) => ({ d, c: dd ? soLieuKT(d.id, ky.thang).dichDanh : soLieuKT(d.id, ky.thang).chung }))
-    .sort((a, b) => (chinh.gia(b.c) ?? -1) - (chinh.gia(a.c) ?? -1));
+  /*
+    Hàng đứng theo THỨ TỰ ĐƠN VỊ — Phòng Kiểm tra số 1 luôn ở đầu (người dùng
+    chốt 05/11/2026), không đảo theo chỉ số. Hạng vẫn tính theo tiêu chí ô
+    "Xếp theo"; đơn vị hạng thấp nhất mới bôi đỏ, đứng ở đâu cũng vậy.
+  */
+  /* Thuế cơ sở theo số (1, 2, 3…), không theo mã CQT của danh mục (TCS 2, 7, 1…). */
+  const soTCS = (ten: string) => Number(ten.match(/Thuế cơ sở (\d+)/)?.[1] ?? 0);
+  const ds = [...dv].sort((a, b) => (a.so ?? soTCS(a.ten)) - (b.so ?? soTCS(b.ten)))
+    .map((d) => ({ d, c: dd ? soLieuKT(d.id, ky.thang).dichDanh : soLieuKT(d.id, ky.thang).chung }));
+  const theoHang = [...ds].sort((a, b) => (chinh.gia(b.c) ?? -1) - (chinh.gia(a.c) ?? -1));
+  const hangCua = new Map(theoHang.map((x, i) => [x.d.id, i + 1]));
   const thang = xep === "" || xep === "dondoc" ? 1 : Math.max(1e-9, ...ds.map((x) => chinh.gia(x.c) ?? 0));
   const phu = (["", "so", "thu", "bq", "dondoc"] as XepTheo[]).filter((k) => k !== xep);
   /* Cao nhất / thấp nhất của các tiêu chí bên, tính trên CẢ nhóm. */
@@ -355,7 +364,7 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
   const soCuoi = SO_CUOI[nhom];
   const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : nhom === "tcs" ? `Nội thành và ngoại thành · ${dv.length} Thuế cơ sở` : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
-  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} · ${chinh.nhan}, cao nhất trên đầu · bôi đỏ ${soCuoi} đơn vị cuối bảng · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} theo thứ tự đơn vị · hạng theo ${chinh.nhan.toLowerCase()} · bôi đỏ ${soCuoi} đơn vị hạng cuối · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
       <SelectMenu label="Xếp theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
         { value: "", label: `Xếp theo ${nhanTyLe.toLowerCase()}` },
@@ -381,11 +390,12 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
           <th scope="col" className="kt-dg-cot-thanh">{chinh.nhan}</th>
           {phu.map((k) => <th key={k} scope="col" className="num">{tieuChi[k].nhan}</th>)}
         </tr></thead>
-        <tbody>{ds.map((x, i) => {
-          const cuoi = i >= ds.length - soCuoi && chinh.gia(x.c) !== null;
+        <tbody>{ds.map((x) => {
+          const hang = hangCua.get(x.d.id)!;
+          const cuoi = hang > ds.length - soCuoi && chinh.gia(x.c) !== null;
           return <tr key={x.d.id} className={cuoi ? "is-cuoi" : undefined}>
-            <td className="num kt-dg-hang">{i + 1}</td>
-            <th scope="row"><span className="kt-dg-ten">{x.d.ten}{cuoi && <em className="kt-cuoi">Cuối bảng</em>}</span></th>
+            <td className="num kt-dg-hang">{hang}</td>
+            <th scope="row"><span className="kt-dg-ten">{x.d.ten}{cuoi && <em className="kt-cuoi">Hạng cuối</em>}</span></th>
             <td className="kt-dg-cot-thanh">
               <span className="kt-dg-thanh">
                 <span className="kt-thanh is-ngang" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, Math.max(0, (chinh.gia(x.c) ?? 0) / thang))})` }}/></span>
