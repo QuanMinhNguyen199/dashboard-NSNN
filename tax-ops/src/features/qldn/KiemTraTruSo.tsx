@@ -5,6 +5,7 @@ import { Button, Checkbox, Icon, integer, MenuPop, NhomNut, Panel, SelectMenu, T
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
 import { xuatWordKiemTra } from "@/domain/baoCaoKiemTraWord";
+import { xepHangGiaTri } from "@/domain/xepHangKiemTra";
 import type { ReportSheet, ReportValue } from "@/domain/reportExport";
 import type { KyQ } from "@/data/qldn";
 import {
@@ -33,7 +34,7 @@ import {
 
   Mẫu có hai phần cột — chung và kế hoạch đích danh KH2026 — nên đó là MỘT
   lựa chọn "Tất cả các cuộc | Kế hoạch đích danh" của bảng, không phải hai
-  bảng. Tệp Excel đủ 32 cột (The Wide Report Shows One Comparison Rule).
+  bảng. Báo cáo xuất theo các cột được chọn của phần đang xem.
 
   Bảng không theo phạm vi phòng QLDN: đây là báo cáo toàn ngành của khối
   kiểm tra. Bấm một dòng để bốn ô và biểu đồ loại hình đọc số của dòng ấy.
@@ -59,7 +60,7 @@ export function KiemTraTruSo({ ky, actor, dd, datLoai }: { ky: KyQ; actor: strin
     <ChiSoChinh ky={ky} dd={dd} chon={chon} boChon={() => datChon("TN")}/>
     <XepHang ky={ky} dd={dd}/>
     <BangChiTiet ky={ky} dd={dd} chon={chon} datChon={datChon} actor={actor}/>
-    <TheoLoaiHinh ky={ky} chon={chon}/>
+    {!dd && <TheoLoaiHinh ky={ky} chon={chon}/>}
   </>;
 }
 
@@ -216,7 +217,15 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
     else { moi.add(nh); datChon(nh); }
     datMo(moi);
   };
-  const moHet = MOI_NHANH.every((n) => mo.has(n));
+  const moHet = MOI_NHANH.every((n) => mo.has(n)) && nhomGoc.every((n) => n.cot.every((k) => hien.has(khoaCot(dd, k))));
+  const doiMoHet = () => {
+    datMo(moHet ? new Set() : new Set(MOI_NHANH));
+    const moi = new Set([...hien].filter((x) => !x.startsWith(dd ? "d:" : "c:")));
+    nhomGoc.flatMap((n) => n.cot).filter((k) => !moHet || k.tt).forEach((k) => moi.add(khoaCot(dd, k)));
+    datHien(moi);
+    if (moHet) datChon("TN");
+  };
+  const baoCao = () => bangXuat(ky, dd, nhom);
 
   const dong = (id: PhamViKT, ten: ReactNode, cap: number, d?: DonViKT) => {
     const s = lay(id);
@@ -239,10 +248,10 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
   return <Panel chinh title="Chi tiết theo đơn vị" subtitle={`Kiểm tra tại trụ sở NNT · mẫu Chi tiết TTKT · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)} · so với cùng kỳ 2025`}
     actions={<div className="inline-controls kt-dieu-khien">
       <ChonCot nhom={nhomGoc} dd={dd} hien={hien} datHien={datHien}/>
-      <Button kind="secondary" className="kt-mo-het" onClick={() => datMo(moHet ? new Set() : new Set(MOI_NHANH))}>{moHet ? "Thu gọn tất cả" : "Mở tất cả"}</Button>
-      <ExportButton onExport={() => xuatExcel(ky, actor)}>Xuất Excel</ExportButton>
+      <Button kind="secondary" className="kt-mo-het" onClick={doiMoHet}>{moHet ? "Thu gọn tất cả" : "Mở tất cả"}</Button>
+      <ExportButton onExport={() => xuatExcel(ky, actor, baoCao())}>Xuất Excel</ExportButton>
       {/* Báo cáo lời văn theo mẫu "Báo cáo tuần bc Trưởng Thuế TP" (thư mục 03-11); bảng Excel là Phụ lục 1 của nó. */}
-      <ExportButton dinhDang="word" onExport={() => xuatWordKiemTra(ky, actor)}>Xuất Word</ExportButton>
+      <ExportButton dinhDang="word" onExport={() => xuatWordKiemTra(ky, actor, baoCao())}>Xuất Word</ExportButton>
     </div>}>
     <TableWrap label="Kết quả kiểm tra tại trụ sở theo đơn vị">
       <table className="qd-bang qd-bang-goc kt-bang">
@@ -266,7 +275,7 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
       </table>
     </TableWrap>
     <div className="table-footer">
-      <span>Bấm một khối hoặc cụm để mở đơn vị bên trong. Cụm nội thành / ngoại thành chia tạm theo quận / huyện, chờ danh mục của Phòng Kiểm tra. Tệp Excel đủ 32 cột và mọi đơn vị. Phòng QLHKD không có chỉ tiêu và kế hoạch đích danh.</span>
+      <span>Bấm một khối hoặc cụm để mở đơn vị bên trong. Cụm nội thành / ngoại thành chia tạm theo quận / huyện, chờ danh mục của Phòng Kiểm tra. Báo cáo xuất theo các cột đã chọn và gồm mọi đơn vị. Phòng QLHKD không có chỉ tiêu và kế hoạch đích danh.</span>
     </div>
   </Panel>;
 }
@@ -304,7 +313,7 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
 }
 
 /* =====================================================================
-   Xếp hạng đơn vị — thanh ngang, hàng theo thứ tự đơn vị, cột Hạng theo chỉ số
+   Xếp hạng đơn vị — thanh ngang, hàng theo hạng của tiêu chí đang chọn
    ===================================================================== */
 
 /*
@@ -319,7 +328,7 @@ function ChonCot({ nhom, dd, hien, datHien }: { nhom: NhomCot[]; dd: boolean; hi
   HẠNG CUỐI bôi đỏ để lãnh đạo nhận ra khi giao ban: một đơn vị hạng cuối với
   năm Phòng Kiểm tra, ba đơn vị với mỗi cụm (12–13 đơn vị). Số đơn vị bôi đỏ
   là GIẢ ĐỊNH, chờ Phòng Kiểm tra xác nhận. Màu không nói một mình: dòng có
-  nhãn chữ "Hạng cuối". Hàng không đảo theo hạng (05/11/2026), xem `ds`.
+  nhãn chữ "Hạng cuối". Hàng sắp từ hạng cao xuống thấp theo tiêu chí đang chọn.
 */
 type XepTheo = "" | "so" | "thu" | "bq" | "dondoc";
 type NhomXH = "" | "tcs" | "nt" | "ngt";
@@ -340,38 +349,35 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
     dondoc: { nhan: "Tỷ lệ đôn đốc", gia: tyLeDonDoc, hien: (c) => pt(tyLeDonDoc(c)) },
   };
   const chinh = tieuChi[xep];
-  /*
-    Hàng đứng theo THỨ TỰ ĐƠN VỊ — Phòng Kiểm tra số 1 luôn ở đầu (người dùng
-    chốt 05/11/2026), không đảo theo chỉ số. Hạng vẫn tính theo tiêu chí ô
-    "Xếp theo"; đơn vị hạng thấp nhất mới bôi đỏ, đứng ở đâu cũng vậy.
-  */
-  /* Thuế cơ sở theo số (1, 2, 3…), không theo mã CQT của danh mục (TCS 2, 7, 1…). */
+  /* Khi đồng hạng, giữ thứ tự số phòng / Thuế cơ sở để vị trí ổn định. */
   const soTCS = (ten: string) => Number(ten.match(/Thuế cơ sở (\d+)/)?.[1] ?? 0);
   const ds = [...dv].sort((a, b) => (a.so ?? soTCS(a.ten)) - (b.so ?? soTCS(b.ten)))
     .map((d) => ({ d, c: dd ? soLieuKT(d.id, ky.thang).dichDanh : soLieuKT(d.id, ky.thang).chung }));
-  const theoHang = [...ds].sort((a, b) => (chinh.gia(b.c) ?? -1) - (chinh.gia(a.c) ?? -1));
-  const hangCua = new Map(theoHang.map((x, i) => [x.d.id, i + 1]));
+  const soCuoi = SO_CUOI[nhom];
+  const xepHang = (k: XepTheo) => xepHangGiaTri(ds.map((x) => ({ id: x.d.id, gia: tieuChi[k].gia(x.c) })), soCuoi);
+  const hangChinh = xepHang(xep);
+  const dongXepHang = [...ds].sort((a, b) =>
+    (hangChinh.hang.get(a.d.id) ?? Infinity) - (hangChinh.hang.get(b.d.id) ?? Infinity));
   const thang = xep === "" || xep === "dondoc" ? 1 : Math.max(1e-9, ...ds.map((x) => chinh.gia(x.c) ?? 0));
   const phu = (["", "so", "thu", "bq", "dondoc"] as XepTheo[]).filter((k) => k !== xep);
   /* Cao nhất / thấp nhất của các tiêu chí bên, tính trên CẢ nhóm. */
-  const cucTri = Object.fromEntries(phu.map((k) => {
-    const xepK = ds.filter((x) => tieuChi[k].gia(x.c) !== null).sort((a, b) => tieuChi[k].gia(b.c)! - tieuChi[k].gia(a.c)!);
-    return [k, { cao: xepK[0]?.d.id, thap: xepK[xepK.length - 1]?.d.id }];
-  })) as Record<XepTheo, { cao?: string; thap?: string }>;
-  const nhan = (k: XepTheo, id: string) => cucTri[k]?.cao === id
-    ? <em className="kt-cuc is-cao" title="Cao nhất trong nhóm"><Icon name="chevronUp" size={14}/><span className="sr-only">Cao nhất</span></em>
-    : cucTri[k]?.thap === id ? <em className="kt-cuc is-thap" title="Thấp nhất trong nhóm"><Icon name="chevronDown" size={14}/><span className="sr-only">Thấp nhất</span></em> : null;
-  const soCuoi = SO_CUOI[nhom];
+  const cucTri = Object.fromEntries(phu.map((k) => [k, xepHang(k)])) as Record<XepTheo, ReturnType<typeof xepHangGiaTri>>;
+  const nhan = (k: XepTheo, id: string) => {
+    const { cao, thap } = cucTri[k];
+    if (cao.has(id) && thap.has(id)) return <em className="kt-cuc" title="Các đơn vị có số liệu đều bằng nhau ở chỉ số này">Bằng nhau</em>;
+    const muc = cao.has(id) ? "Cao nhất" : thap.has(id) ? "Thấp nhất" : null;
+    return muc ? <em className={`kt-cuc ${cao.has(id) ? "is-cao" : "is-thap"}`} title={`${muc} trong nhóm về ${tieuChi[k].nhan.toLowerCase()}`}>{muc}<span className="sr-only"> trong nhóm về {tieuChi[k].nhan.toLowerCase()}</span></em> : null;
+  };
   const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : nhom === "tcs" ? `Nội thành và ngoại thành · ${dv.length} Thuế cơ sở` : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
-  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} theo thứ tự đơn vị · hạng theo ${chinh.nhan.toLowerCase()} · bôi đỏ ${soCuoi} đơn vị hạng cuối · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} · hạng theo ${chinh.nhan.toLowerCase()}, từ cao xuống thấp · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
-      <SelectMenu label="Xếp theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
-        { value: "", label: `Xếp theo ${nhanTyLe.toLowerCase()}` },
-        { value: "so", label: "Xếp theo số cuộc" },
-        { value: "thu", label: "Xếp theo truy thu, truy hoàn và phạt" },
-        { value: "bq", label: "Xếp theo bình quân / cuộc" },
-        { value: "dondoc", label: "Xếp theo tỷ lệ đôn đốc" },
+      <SelectMenu label="Xếp hạng theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
+        { value: "", label: `Xếp hạng theo ${nhanTyLe.toLowerCase()}` },
+        { value: "so", label: "Xếp hạng theo số cuộc" },
+        { value: "thu", label: "Xếp hạng theo truy thu, truy hoàn và phạt" },
+        { value: "bq", label: "Xếp hạng theo bình quân / cuộc" },
+        { value: "dondoc", label: "Xếp hạng theo tỷ lệ đôn đốc" },
       ]}/>
       {/* Phạm vi so (04/11/2026): "Thuế cơ sở" chọn được (tổng hai cụm); hai
           cụm thụt lề bên dưới, ô đóng ghi đủ "Thuế cơ sở · Nội thành". */}
@@ -390,23 +396,29 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
           <th scope="col" className="kt-dg-cot-thanh">{chinh.nhan}</th>
           {phu.map((k) => <th key={k} scope="col" className="num">{tieuChi[k].nhan}</th>)}
         </tr></thead>
-        <tbody>{ds.map((x) => {
-          const hang = hangCua.get(x.d.id)!;
-          const cuoi = hang > ds.length - soCuoi && chinh.gia(x.c) !== null;
+        <tbody>{dongXepHang.map((x) => {
+          const hang = hangChinh.hang.get(x.d.id);
+          const cuoi = hangChinh.cuoi.has(x.d.id);
           return <tr key={x.d.id} className={cuoi ? "is-cuoi" : undefined}>
-            <td className="num kt-dg-hang">{hang}</td>
-            <th scope="row"><span className="kt-dg-ten">{x.d.ten}{cuoi && <em className="kt-cuoi">Hạng cuối</em>}</span></th>
+            <td className="num kt-dg-hang" title={hang === undefined ? "Chưa tính được chỉ số, không xếp hạng" : `Hạng ${hang} theo ${chinh.nhan.toLowerCase()}`}>{hang ?? "—"}</td>
+            <th scope="row"><span className="kt-dg-ten">{x.d.ten}{cuoi && <em className="kt-cuoi" title={`Thuộc nhóm thấp nhất theo ${chinh.nhan.toLowerCase()}`}>{soCuoi === 1 ? "Hạng cuối" : "Nhóm cuối"}</em>}</span></th>
             <td className="kt-dg-cot-thanh">
               <span className="kt-dg-thanh">
                 <span className="kt-thanh is-ngang" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, Math.max(0, (chinh.gia(x.c) ?? 0) / thang))})` }}/></span>
                 <b>{chinh.hien(x.c)}</b>
               </span>
             </td>
-            {phu.map((k) => <td key={k} className="num"><span className="kt-dg-o">{nhan(k, x.d.id)}{tieuChi[k].hien(x.c)}</span></td>)}
+            {phu.map((k) => <td key={k} className="num"><span className="kt-dg-o"><span>{tieuChi[k].hien(x.c)}</span><span className="kt-dg-nhan">{nhan(k, x.d.id)}</span></span></td>)}
           </tr>;
         })}</tbody>
       </table>
     </TableWrap>
+    <div className="table-footer"><span>
+      Hạng 1 đứng đầu; các dòng sắp từ cao xuống thấp theo tiêu chí đang chọn, không phải điểm tổng hợp.
+      {" "}Nhãn “Cao nhất / Thấp nhất” so riêng từng cột trong nhóm đang xem.
+      {" "}Đồng giá trị cùng hạng (1, 1, 3); xếp theo số chưa làm tròn. Giá trị “—” không xếp hạng.
+      {" "}Tô đỏ {hangChinh.cuoi.size} đơn vị thuộc nhóm cuối theo tiêu chí đang chọn, gồm cả đồng hạng ở ngưỡng cuối.
+    </span></div>
   </Panel>;
 }
 
@@ -507,7 +519,7 @@ function BangLoaiHinh({ ky, chon }: { ky: KyQ; chon: PhamViKT }) {
 }
 
 /* =====================================================================
-   Xuất Excel — đủ 32 cột của sheet Chi tiết TTKT
+   Xuất báo cáo — chọn từ 32 cột nguồn theo các cột đang hiển thị
    ===================================================================== */
 
 const DAU_32 = [
@@ -537,18 +549,28 @@ function hang32(stt: string, ma: string, ten: string, id: PhamViKT, thang: numbe
   ];
 }
 
-async function xuatExcel(ky: KyQ, actor: string) {
+function bangXuat(ky: KyQ, dd: boolean, nhom: NhomCot[]): ReportSheet {
   const rows: ReportValue[][] = [hang32("A", "", "Toàn ngành", "TN", ky.thang, true)];
   (["VP", "TCS"] as KhoiKT[]).forEach((k, i) => {
     rows.push(hang32(i ? "II" : "I", "", NHAN_KHOI_KT[k], k, ky.thang, true));
     DON_VI_KT.filter((d) => d.khoi === k).forEach((d, j) => rows.push(hang32(String(j + 1), d.ma, d.ten, d.id, ky.thang, d.coChiTieu)));
   });
-  const loai: ReportSheet = {
-    name: "Loai_hinh", title: "SỐ LƯỢNG HOÀN THÀNH THEO LOẠI HÌNH", headers: ["Phòng kiểm tra", ...LOAI_HINH.map((l) => l.nhan), "Tổng"],
-    rows: PHONG_KT.map((p) => { const s = soLieuKT(p.id, ky.thang); return [p.ten, ...LOAI_HINH.map((l) => s.loai[l.id]), LOAI_HINH.reduce((a, l) => a + s.loai[l.id], 0)]; }),
+  const cot = nhom.flatMap((n) => n.cot.map((k) => {
+    const ma = k.ma.split(" ")[0];
+    const index = [...ma].reduce((a, c) => a * 26 + c.charCodeAt(0) - 64, 0) - 1;
+    return { index, nhan: `${n.nhan} – ${k.nhan}${k.dvt ? ` (${k.dvt})` : ""}`, tien: Boolean(k.dvt) };
+  }));
+  return {
+    name: "Chi_tiet_TTKT", title: `KẾT QUẢ KIỂM TRA TẠI TRỤ SỞ NNT · ${dd ? "ĐÍCH DANH" : "TOÀN NGÀNH"} · LŨY KẾ ĐẾN ${ngayCuoi(ky)}`,
+    unit: "số tiền: tỷ đồng", headers: [...DAU_32.slice(0, 3), ...cot.map((k) => k.nhan)],
+    rows: rows.map((row) => [...row.slice(0, 3), ...cot.map((k) => {
+      const value = row[k.index];
+      return k.tien && typeof value === "number" ? value / 1000 : value;
+    })]),
+    percent: cot.flatMap((k, i) => PHAN_TRAM_32.includes(k.index) ? [i + 3] : []),
   };
-  await exportExcel([
-    { name: "Chi_tiet_TTKT", title: `KẾT QUẢ THỰC HIỆN CÔNG TÁC KIỂM TRA TẠI TRỤ SỞ NNT TOÀN NGÀNH · LŨY KẾ ĐẾN ${ngayCuoi(ky)}`, unit: "số tiền: triệu đồng", headers: DAU_32, rows, percent: PHAN_TRAM_32 },
-    loai,
-  ], { period: `Lũy kế từ 01/01 đến ${ngayCuoi(ky)}`, scope: "Toàn ngành · Phòng Kiểm tra và Thuế cơ sở", actor, status: "DRAFT" }, `kiem-tra-tai-tru-so_2026-${String(ky.thang).padStart(2, "0")}.xlsx`);
+}
+
+async function xuatExcel(ky: KyQ, actor: string, bang: ReportSheet) {
+  await exportExcel([bang], { period: `Lũy kế từ 01/01 đến ${ngayCuoi(ky)}`, scope: "Toàn ngành · Phòng Kiểm tra và Thuế cơ sở", actor, status: "DRAFT" }, `kiem-tra-tai-tru-so_2026-${String(ky.thang).padStart(2, "0")}.xlsx`);
 }

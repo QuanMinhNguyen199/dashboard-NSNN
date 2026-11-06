@@ -1,4 +1,5 @@
 import type { KyQ } from "@/data/qldn";
+import type { ReportSheet } from "@/domain/reportExport";
 import {
   DON_VI_KT, PHONG_KT, binhQuan, soLieuKT, tyLeDonDoc, tyLeHT,
   type ChiSoKT, type DonViKT, type PhamViKT,
@@ -43,7 +44,7 @@ const tangGiam = (nay: number, truoc: number | null, donVi: string, dinhDang: (x
 
 type Phan = "chung" | "dichDanh";
 
-export async function xuatWordKiemTra(ky: KyQ, actor: string) {
+export async function xuatWordKiemTra(ky: KyQ, actor: string, bang?: ReportSheet) {
   const d = await import("docx");
   const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, LevelFormat, Header, Footer, PageNumber } = d;
 
@@ -89,6 +90,24 @@ export async function xuatWordKiemTra(ky: KyQ, actor: string) {
   const bq = (c: ChiSoKT) => bqCuoc(binhQuan(c));
   const nhan = (t: string) => doan([t], { b: true, i: true });
   const y = (t: string) => doan([t]);
+
+  // Cùng bộ cột và số liệu với Excel; mỗi đơn vị đọc theo chiều dọc để
+  // báo cáo vẫn vừa trang A4 khi người xem chọn nhiều cột.
+  const theoCotDaChon = () => bang ? [
+    doan([bang.title], { b: true, thut: 0 }),
+    doan(["Dữ liệu mô phỏng. Báo cáo gồm các cột đã chọn và mọi đơn vị; số tiền tính bằng tỷ đồng."], { i: true }),
+    ...bang.rows.flatMap((row) => [
+      doan([String(row[2])], { b: true, thut: 0 }),
+      ...bang.headers.slice(3).map((header, i) => {
+        const value = row[i + 3];
+        const text = value === null ? "—" : typeof value !== "number" ? value
+          : bang.percent?.includes(i + 3)
+            ? `${(value * 100).toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`
+            : value.toLocaleString("vi-VN", { maximumFractionDigits: 2 });
+        return doan([{ t: `${header}: `, b: true }, `${text}.`], { thut: 0 });
+      }),
+    ]),
+  ] : [];
 
   const khoi = (phan: Phan) => {
     const dichDanh = phan === "dichDanh";
@@ -167,10 +186,12 @@ export async function xuatWordKiemTra(ky: KyQ, actor: string) {
         doan([`Hà Nội, ngày ${dd} tháng ${mm} năm 2026`], { i: true, phai: true, cach: false }),
         new Paragraph({ children: [] }),
         doan([`BÁO CÁO KẾT QUẢ KIỂM TRA ĐẾN NGÀY ${dd}/${mm}/2026`], { b: true, giua: true }),
-        doan(["I- Công tác kiểm tra toàn ngành:"], { b: true, thut: 567, cach: false }),
-        ...khoi("chung"),
-        new Paragraph({ children: [] }),
-        ...khoi("dichDanh"),
+        ...(bang ? theoCotDaChon() : [
+          doan(["I- Công tác kiểm tra toàn ngành:"], { b: true, thut: 567, cach: false }),
+          ...khoi("chung"),
+          new Paragraph({ children: [] }),
+          ...khoi("dichDanh"),
+        ]),
         new Paragraph({ children: [] }),
         new Paragraph({ alignment: AlignmentType.RIGHT, indent: { right: 400 }, children: [new TextRun({ text: "PHÒNG KIỂM TRA SỐ 1.", bold: true })] }),
       ],
