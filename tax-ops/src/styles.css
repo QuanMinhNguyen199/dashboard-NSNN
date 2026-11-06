@@ -3153,12 +3153,11 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .kt-dg-thanh > b { color: var(--ink); font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; }
 .kt-thanh.is-ngang { height: 12px; border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
 .kt-thanh.is-ngang > i { border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
-.kt-dg-o { display: inline-flex; align-items: center; justify-content: flex-end; gap: 8px; }
-/* Nhãn cao / thấp: chữ và biểu tượng, nền trung tính — màu trạng thái để dành cho trạng thái. */
-/* Cao nhất / thấp nhất của cột phụ: chỉ một mũi tên 14px cạnh số (tên đầy đủ
-   ở title và cho trình đọc màn hình). Bản trước là tám nhãn viền trên năm
-   dòng — ồn hơn chính con số, và đẩy bảng tràn khung ở 1440px (taste 03/11). */
-.kt-cuc { display: inline-flex; vertical-align: -2px; margin-right: 4px; color: var(--ink-3); font-style: normal; }
+.kt-dg-o { display: inline-grid; justify-items: end; gap: 2px; }
+/* Cùng một chỗ cho nhãn ở mọi ô để các số luôn thẳng hàng. Nhãn nói
+   thứ hạng trong nhóm, không dùng mũi tên vốn dễ hiểu thành xu hướng. */
+.kt-dg-nhan { min-height: 16px; font-size: 11px; line-height: 1.35; }
+.kt-cuc { color: var(--ink-3); font-style: normal; font-weight: 600; white-space: nowrap; }
 .kt-cuc.is-cao { color: var(--positive); }
 .kt-cuc.is-thap { color: var(--warning); }
 
