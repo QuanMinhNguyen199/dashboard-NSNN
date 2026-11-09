@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { animate } from "motion/mini";
 import { installWebMotion } from "../../shared/webMotion";
+import { departWorkspace } from "../../shared/portalTransition";
 import { NSNN_LINK, Shell } from "@/components/Shell";
 import { NAV, navCho } from "@/components/nav";
 import { TaxLogo } from "@/components/TaxLogo";
@@ -168,10 +169,11 @@ export function App() {
       setViewState(next.phong === "QL3" ? "risk" : "debt");
     }
   };
-  const logout = () => {
+  /* Đăng xuất chạy ngược hiệu ứng đăng nhập: khép về logo rồi mới đổi màn. */
+  const logout = () => void departWorkspace(() => {
     writeDemoSession(null);
     setUser(null);
-  };
+  });
 
   if (!user) return <LoginScreen onLogin={login} dashboard={dashboardLogin}/>;
 

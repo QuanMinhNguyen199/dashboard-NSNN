@@ -1,3 +1,4 @@
+import { departWorkspace } from "../../../shared/portalTransition";
 import { readDemoSession, writeDemoSession } from "../../../tax-ops/src/auth/demoAuth";
 
 export const isPortal = import.meta.env.VITE_PORTAL === "true";
@@ -13,6 +14,8 @@ export function canOpenDashboard() {
 }
 
 export function logoutPortal() {
-  writeDemoSession(null);
-  window.location.replace(dashboardLogin);
+  void departWorkspace(() => {
+    writeDemoSession(null);
+    window.location.replace(dashboardLogin);
+  });
 }
