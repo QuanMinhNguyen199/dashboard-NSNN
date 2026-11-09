@@ -1,0 +1,26 @@
+html[data-portal-entering] #root { opacity: 0; }
+/* Main receives reading focus after login; do not add a new border/radius to
+   the whole workspace at handoff. Interactive controls keep their focus rings. */
+main[data-portal-focus]:focus { outline: none; border-radius: 0; }
+.portal-flight { position: fixed; inset: 0; z-index: 10000; overflow: hidden; color: #d3e1f0; }
+.portal-flight-backdrop { position: absolute; inset: 0; display: block; }
+.portal-flight-mark { position: absolute; width: 96px; height: 96px; left: calc(50% - 48px); top: calc(50% - 48px); transform-origin: center; }
+.portal-flight-mark img { display: block; width: 100%; height: 100%; object-fit: cover; clip-path: circle(42.5% at 50% 50%); }
+.portal-flight-title { position: absolute; top: calc(50% + 72px); left: 20px; right: 20px; width: min(420px, calc(100% - 40px)); margin-inline: auto; color: #fff; text-align: center; font: 650 clamp(20px, 2vw, 26px)/1.4 'Public Sans', sans-serif; text-wrap: balance; }
+.portal-flight p { position: absolute; top: calc(50% + 142px); left: 20px; right: 20px; text-align: center; font: 400 14px/1.8 'Public Sans', sans-serif; opacity: 0; }
+.portal-flight p > span { display: inline-flex; align-items: center; gap: 8px; }
+.portal-loading-dot { display: block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.portal-flight.is-loading .portal-loading-dot { animation: portal-dot-wave 1200ms ease-in-out infinite; }
+.portal-flight.is-loading p { opacity: 1; }
+.portal-flight.is-arriving p { opacity: 0 !important; transition: opacity 140ms ease-out; }
+@keyframes portal-dot-wave { 0%, 40%, 100% { transform: translateY(0); } 20% { transform: translateY(-5px); } }
+@media (prefers-reduced-motion: no-preference) { .portal-flight p > span { padding-block: 6px; } }
+:is(.dtabs button, .muc-tab, .muc-tab-con, .dseg button, .dinspector-tabs button, [role='tab'], .mobile-nav button) { transition: color 160ms ease-out, background-color 160ms ease-out, border-color 200ms ease-out, box-shadow 160ms ease-out; }
+@media (hover: hover) {
+  :is(.dtabs button, .muc-tab, .muc-tab-con, .dseg button, .dinspector-tabs button, [role='tab']):not(:disabled):hover { background-color: var(--surface-soft, #e7edf5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portal-flight.is-loading .portal-loading-dot { animation: none; }
+  :is(.dtabs button, .muc-tab, .muc-tab-con, .dseg button, .dinspector-tabs button, [role='tab'], .mobile-nav button) { transition-duration: 80ms; }
+}
+

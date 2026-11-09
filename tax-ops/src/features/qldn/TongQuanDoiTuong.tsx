@@ -5,7 +5,7 @@ import type { DemoUser } from "@/auth/demoAuth";
 import { exportExcel } from "@/domain/reportFiles";
 import { useThamSo } from "@/state/diaChi";
 import {
-  CHI_TIEU_Q, KY_Q, NAM_THANH_LAP, NHOM_Q, QUY_MO_VON, SAC_THUE, THE_Q, TRANG_THAI_DN, dnTheoKhoa, duocXem, doiTuongPhamVi, ketQuaChiTieu, nhanPhamVi, nhomCuaThe, trangDN,
+  CHI_TIEU_Q, KY_Q, KY_Q_MAC_DINH, NHOM_Q, THE_Q, TRANG_THAI_DN, dnTheoKhoa, duocXem, doiTuongPhamVi, ketQuaChiTieu, nhanPhamVi, nhomCuaThe, trangDN,
   type NhomId, type PhamVi, type TheId, type TrangThaiDN,
 } from "@/data/qldn";
 import { BO_TIEU_CHI } from "@/data/boTieuChi";
@@ -35,13 +35,6 @@ import { HoSoDN } from "@/features/qldn/HoSoDN";
 type Tab = "tongquan" | "danhsach" | "tieuchi";
 const TAB: { id: Tab; nhan: string }[] = [{ id: "tongquan", nhan: "Tổng quan" }, { id: "danhsach", nhan: "Danh sách doanh nghiệp" }, { id: "tieuchi", nhan: "Bộ tiêu chí đánh giá" }];
 const TRANG_THAI_ID = TRANG_THAI_DN.map((t) => t.id);
-
-/*
-  Năm màu sắc thuế là bộ PHÂN LOẠI — đã chạy `validate_palette.js`: đạt tách
-  màu cho người mù màu và người nhìn thường. Cam dưới tương phản 3:1 nên chú
-  giải luôn mang số phần trăm, không để màu nói một mình.
-*/
-const MAU_SAC_THUE = ["var(--cat-1)", "var(--cat-2)", "var(--cat-3)", "var(--cat-4)", "var(--cat-5)"];
 
 const phanTram = (x: number, tong: number) => tong ? `${((x / tong) * 100).toLocaleString("vi-VN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%` : "—";
 const tyDong = (x: number) => x.toLocaleString("vi-VN", { maximumFractionDigits: 1 });
@@ -74,7 +67,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
   const o = useMemo(() => doiTuongPhamVi(pv), [pv]);
   /* Thu NSNN lũy kế của tháng gần nhất, cùng nguồn với thẻ Thu NSNN ở Quản trị
      công việc — hai chỗ không được ra hai con số. */
-  const thu = useMemo(() => ketQuaChiTieu(CHI_TIEU_Q[0], pv, KY_Q[0]).nay, [pv]);
+  const thu = useMemo(() => ketQuaChiTieu(CHI_TIEU_Q[0], pv, KY_Q.find((k) => k.id === KY_Q_MAC_DINH)!).nay, [pv]);
   const tongTT = o.soDN;
   const maxTT = Math.max(...TRANG_THAI_DN.map((t) => o.trangThai[t.id]));
   const tongKK = o.keKhai.dungHan + o.keKhai.muon + o.keKhai.chua;
@@ -114,18 +107,9 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
         <Cot du={o.thuNam}/>
       </Panel>
 
-      <Panel title="Theo số năm thành lập" subtitle="Số doanh nghiệp">
-        <ThanhNgang nhan={NAM_THANH_LAP} so={o.namThanhLap}/>
-      </Panel>
-
-      <Panel title="Theo quy mô vốn điều lệ" subtitle="Số doanh nghiệp">
-        <ThanhNgang nhan={QUY_MO_VON} so={o.quyMoVon}/>
-      </Panel>
-
-      <Panel title="Cơ cấu thu theo sắc thuế" subtitle="Tỷ trọng trên số thu 9 tháng 2026">
-        <DonutSacThue phan={o.sacThue}/>
-      </Panel>
-
+      {/* Gỡ 09/11/2026 (người dùng chốt gọn thông tin): "Theo số năm thành
+          lập", "Theo quy mô vốn điều lệ", "Cơ cấu thu theo sắc thuế" — không
+          nằm trong bốn nội dung biên bản 09/10 §5 yêu cầu cho mô-đun này. */}
       <Panel title="Tình hình kê khai" subtitle={`Doanh nghiệp đang hoạt động · kỳ kê khai tháng 9/2026 · ${integer(tongKK)} DN`}>
         <div className="qd-chong" aria-hidden="true">
           <i className="is-tot" style={{ width: phanTram(o.keKhai.dungHan, tongKK).replace(",", ".") }}/>
@@ -192,7 +176,7 @@ function PhanTichRuiRo({ pv }: { pv: PhamVi }) {
   const lop = { CAO: "is-do", TB: "is-vang", THAP: "is-tot" } as const;
   const maxDH = Math.max(...rr.dauHieu.map((x) => x.so), 1);
   return <Panel title="Phân tích rủi ro" subtitle={`${integer(rr.tong)} doanh nghiệp đang hoạt động`}>
-    <p className="qd-ghi-mot">Bản đề xuất, chờ chốt nội dung hiển thị (biên bản 22/10/2026, việc số 4). Một doanh nghiệp có thể mang nhiều dấu hiệu. Số liệu mô phỏng.</p>
+    <p className="qd-ghi-mot">Bản đề xuất, chờ chốt nội dung hiển thị (biên bản 22/10/2026, việc số 4). Một doanh nghiệp có thể mang nhiều dấu hiệu.</p>
     <div className="qd-rr">
       <div className="qd-rr-muc">
         <div className="qd-chong" aria-hidden="true">
@@ -225,39 +209,6 @@ function Cot({ du }: { du: { nam: string; so: number }[] }) {
       <span className="qd-cot-ray"><i className={i === du.length - 1 ? "is-do-dang" : undefined} style={{ height: `${(d.so / max) * 100}%` }}/></span>
       <small>{d.nam}</small>
     </div>)}
-  </div>;
-}
-
-function ThanhNgang({ nhan, so }: { nhan: string[]; so: number[] }) {
-  const max = Math.max(...so), tong = so.reduce((a, b) => a + b, 0);
-  return <ul className="qd-thanh-ds is-tinh">{nhan.map((n, i) => <li key={n} title={`${n}: ${integer(so[i])} DN`}>
-    <span className="qd-thanh-ten">{n}</span>
-    <span className="qd-thanh-ray"><i style={{ width: `${(so[i] / max) * 100}%` }}/></span>
-    <span className="qd-thanh-so"><b>{integer(so[i])}</b><small>{phanTram(so[i], tong)}</small></span>
-  </li>)}</ul>;
-}
-
-function DonutSacThue({ phan }: { phan: number[] }) {
-  const [tro, datTro] = useState<number | null>(null);
-  const tong = phan.reduce((a, b) => a + b, 0);
-  const R = 62, C = 2 * Math.PI * R, KHE = 2;
-  let dau = 0;
-  return <div className="qd-donut">
-    <svg viewBox="0 0 160 160" role="img" aria-label={SAC_THUE.map((s, i) => `${s} ${phanTram(phan[i], tong)}`).join(", ")}>
-      <g transform="rotate(-90 80 80)">{phan.map((p, i) => {
-        const dai = (C * p) / tong;
-        const cung = <circle key={i} cx="80" cy="80" r={R} fill="none" style={{ stroke: MAU_SAC_THUE[i] }} strokeWidth={tro === i ? 22 : 18}
-          strokeDasharray={`${Math.max(dai - KHE, 0.5)} ${C}`} strokeDashoffset={-dau}
-          onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)}><title>{`${SAC_THUE[i]}: ${phanTram(p, tong)}`}</title></circle>;
-        dau += dai;
-        return cung;
-      })}</g>
-      <text x="80" y="78" textAnchor="middle" className="qd-donut-so">{tro === null ? phanTram(phan[0], tong) : phanTram(phan[tro], tong)}</text>
-      <text x="80" y="96" textAnchor="middle" className="qd-donut-phu">{tro === null ? SAC_THUE[0] : SAC_THUE[tro]}</text>
-    </svg>
-    <ul className="qd-chu-giai">{SAC_THUE.map((s, i) => <li key={s} className={tro === i ? "is-tro" : undefined} tabIndex={0} onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)} onFocus={() => datTro(i)} onBlur={() => datTro(null)}>
-      <i style={{ background: MAU_SAC_THUE[i] }}/><span>{s}</span><b>{phanTram(phan[i], tong)}</b>
-    </li>)}</ul>
   </div>;
 }
 
@@ -374,7 +325,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
         </tbody>
       </table>
     </TableWrap>
-    <div className="table-footer"><span>Số liệu mô phỏng</span><Pager trang={trang} soTrang={soTrang} onChange={(n) => { datTrang(n); datDangMo(""); }}/></div>
+    <div className="table-footer"><span/><Pager trang={trang} soTrang={soTrang} onChange={(n) => { datTrang(n); datDangMo(""); }}/></div>
   </Panel>
   </CaseLayout>;
 }

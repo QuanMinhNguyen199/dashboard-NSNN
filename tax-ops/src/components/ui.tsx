@@ -120,14 +120,14 @@ export function XuatProvider({ nut, children }: { nut: ReactNode; children: Reac
   return <XuatNgu.Provider value={nut}>{children}</XuatNgu.Provider>;
 }
 
-export function Panel({ title, subtitle, actions, children, className = "", chinh = false }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode; className?: string; chinh?: boolean }) {
+export function Panel({ title, subtitle, actions, children, className = "", chinh = false, tieuDeKem }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode; className?: string; chinh?: boolean; /** Đứng NGAY SAU tên khối: nhãn trạng thái, "Cách tính ⓘ". */ tieuDeKem?: ReactNode }) {
   const xuat = useContext(XuatNgu);
   /* Nút xuất đứng TRƯỚC thao tác của khối, và thứ tự ấy do đây quyết định
      chứ không do nơi gọi — hai màn cạnh nhau phải xếp giống nhau. */
   const hanhDong = chinh && xuat ? <>{xuat}{actions}</> : actions;
   return <section className={`panel ${className}`.trim()}>
     <header className="panel-head">
-      <div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div>
+      <div><h2>{title}{tieuDeKem}</h2>{subtitle && <p>{subtitle}</p>}</div>
       {hanhDong && <div className="panel-actions">{hanhDong}</div>}
     </header>
     <div className="panel-body">{children}</div>

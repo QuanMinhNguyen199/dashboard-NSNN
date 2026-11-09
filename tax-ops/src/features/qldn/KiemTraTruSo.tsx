@@ -245,7 +245,7 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
   };
   const donVi = (loc: (d: DonViKT) => boolean, cap: number) => DON_VI_KT.filter(loc).map((d) => dong(d.id, d.ten, cap, d));
 
-  return <Panel chinh title="Chi tiết theo đơn vị" subtitle={`Kiểm tra tại trụ sở NNT · mẫu Chi tiết TTKT · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)} · so với cùng kỳ 2025`}
+  return <Panel chinh title="Chi tiết theo đơn vị" subtitle={`${dd ? "Kế hoạch đích danh" : "Tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
       <ChonCot nhom={nhomGoc} dd={dd} hien={hien} datHien={datHien}/>
       <Button kind="secondary" className="kt-mo-het" onClick={doiMoHet}>{moHet ? "Thu gọn tất cả" : "Mở tất cả"}</Button>
@@ -275,7 +275,7 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
       </table>
     </TableWrap>
     <div className="table-footer">
-      <span>Bấm một khối hoặc cụm để mở đơn vị bên trong. Cụm nội thành / ngoại thành chia tạm theo quận / huyện, chờ danh mục của Phòng Kiểm tra. Báo cáo xuất theo các cột đã chọn và gồm mọi đơn vị. Phòng QLHKD không có chỉ tiêu và kế hoạch đích danh.</span>
+      <span>Bấm một khối hoặc cụm để mở đơn vị bên trong. Cụm nội thành / ngoại thành đang chia tạm theo quận, huyện.</span>
     </div>
   </Panel>;
 }
@@ -360,17 +360,12 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
     (hangChinh.hang.get(a.d.id) ?? Infinity) - (hangChinh.hang.get(b.d.id) ?? Infinity));
   const thang = xep === "" || xep === "dondoc" ? 1 : Math.max(1e-9, ...ds.map((x) => chinh.gia(x.c) ?? 0));
   const phu = (["", "so", "thu", "bq", "dondoc"] as XepTheo[]).filter((k) => k !== xep);
-  /* Cao nhất / thấp nhất của các tiêu chí bên, tính trên CẢ nhóm. */
-  const cucTri = Object.fromEntries(phu.map((k) => [k, xepHang(k)])) as Record<XepTheo, ReturnType<typeof xepHangGiaTri>>;
-  const nhan = (k: XepTheo, id: string) => {
-    const { cao, thap } = cucTri[k];
-    if (cao.has(id) && thap.has(id)) return <em className="kt-cuc" title="Các đơn vị có số liệu đều bằng nhau ở chỉ số này">Bằng nhau</em>;
-    const muc = cao.has(id) ? "Cao nhất" : thap.has(id) ? "Thấp nhất" : null;
-    return muc ? <em className={`kt-cuc ${cao.has(id) ? "is-cao" : "is-thap"}`} title={`${muc} trong nhóm về ${tieuChi[k].nhan.toLowerCase()}`}>{muc}<span className="sr-only"> trong nhóm về {tieuChi[k].nhan.toLowerCase()}</span></em> : null;
-  };
+  /* Nhãn "Cao nhất / Thấp nhất" dưới từng ô của các cột phụ đã gỡ (09/11/2026,
+     gọn thông tin): tám nhãn rải khắp bảng trong khi hạng và dòng tô đỏ đã nói
+     điều chính. Muốn biết đơn vị nào cao nhất ở cột khác thì chọn "Xếp hạng theo". */
   const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : nhom === "tcs" ? `Nội thành và ngoại thành · ${dv.length} Thuế cơ sở` : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
-  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} · hạng theo ${chinh.nhan.toLowerCase()}, từ cao xuống thấp · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
       <SelectMenu label="Xếp hạng theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
         { value: "", label: `Xếp hạng theo ${nhanTyLe.toLowerCase()}` },
@@ -408,17 +403,12 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
                 <b>{chinh.hien(x.c)}</b>
               </span>
             </td>
-            {phu.map((k) => <td key={k} className="num"><span className="kt-dg-o"><span>{tieuChi[k].hien(x.c)}</span><span className="kt-dg-nhan">{nhan(k, x.d.id)}</span></span></td>)}
+            {phu.map((k) => <td key={k} className="num">{tieuChi[k].hien(x.c)}</td>)}
           </tr>;
         })}</tbody>
       </table>
     </TableWrap>
-    <div className="table-footer"><span>
-      Hạng 1 đứng đầu; các dòng sắp từ cao xuống thấp theo tiêu chí đang chọn, không phải điểm tổng hợp.
-      {" "}Nhãn “Cao nhất / Thấp nhất” so riêng từng cột trong nhóm đang xem.
-      {" "}Đồng giá trị cùng hạng (1, 1, 3); xếp theo số chưa làm tròn. Giá trị “—” không xếp hạng.
-      {" "}Tô đỏ {hangChinh.cuoi.size} đơn vị thuộc nhóm cuối theo tiêu chí đang chọn, gồm cả đồng hạng ở ngưỡng cuối.
-    </span></div>
+    <div className="table-footer"><span>Tô đỏ {hangChinh.cuoi.size} đơn vị nhóm cuối. Đồng giá trị thì cùng hạng; “—” không xếp hạng.</span></div>
   </Panel>;
 }
 

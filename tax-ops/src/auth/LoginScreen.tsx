@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { departLogin } from "../../../shared/portalTransition";
 import { authenticate, DEMO_ACCOUNTS, type DemoUser } from "@/auth/demoAuth";
 import { Icon } from "@/components/ui";
 import { TaxLogo } from "@/components/TaxLogo";
@@ -22,18 +23,28 @@ import { TaxLogo } from "@/components/TaxLogo";
 */
 export function LoginScreen({ onLogin, dashboard = false }: { onLogin: (user: DemoUser) => void; dashboard?: boolean }) {
   const [sso, setSso] = useState(false);
+  const [entering, setEntering] = useState(false);
+  const loginRef = useRef<HTMLElement>(null);
+  const selected = useRef(false);
   const portal = import.meta.env.VITE_PORTAL === "true";
   const accounts = portal ? DEMO_ACCOUNTS.filter(tk => tk.permissions.includes(dashboard ? "NSNN_VIEW" : "TAX_OPS_VIEW")) : DEMO_ACCOUNTS;
 
-  /* Bấm là vào thẳng. Vẫn đi qua `authenticate` chứ không dựng thẳng đối tượng
+  /* Chọn vai rồi chuyển logo qua trạng thái chờ trước khi mở không gian làm việc.
+     Vẫn đi qua `authenticate` chứ không dựng thẳng đối tượng
      người dùng: đó là chỗ duy nhất quyết định một phiên hợp lệ trông thế nào,
      và khi nối Keycloak thật thì chỉ một chỗ ấy phải đổi. */
   const vao = (tenDangNhap: string, matKhau: string) => {
+    if (selected.current) return;
     const user = authenticate(tenDangNhap, matKhau);
-    if (user) onLogin(user);
+    if (!user) return;
+    selected.current = true;
+    setEntering(true);
+    const logo = loginRef.current?.querySelector<HTMLImageElement>('.tax-logo');
+    if (logo) void departLogin(logo, () => onLogin(user)).catch(() => { selected.current = false; setEntering(false); });
+    else onLogin(user);
   };
 
-  return <main className="login-page">
+  return <main className="login-page" ref={loginRef} aria-busy={entering}>
     {/* Cột nhận diện. Một khối duy nhất: con dấu, tên hệ, vạch vàng, tên cơ
         quan — đặt ở giữa chiều cao. Không tiêu đề, không nút, không đường dẫn.
         Vạch vàng là lần dùng sắc vàng con dấu duy nhất trên màn này. */}
@@ -72,7 +83,7 @@ export function LoginScreen({ onLogin, dashboard = false }: { onLogin: (user: De
         */}
         <ul className="demo-accounts-list" aria-label="Tài khoản trình diễn">
           {accounts.map((tk) => <li key={tk.username}>
-            <button type="button" onClick={() => vao(tk.username, tk.password)}>
+            <button type="button" disabled={entering} onClick={() => vao(tk.username, tk.password)}>
               <span className="demo-vai">{tk.vaiTroLabel}</span>
               <small>{tk.unit}</small>
               <code>{tk.username}</code>

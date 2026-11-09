@@ -461,3 +461,70 @@ export function dnTuDanhSach(nnt: { mst: string; ten: string; donVi: string; can
     no: r() < 0.14 ? Math.round(r() * 40 * 100) / 100 : 0,
   };
 }
+
+/* =====================================================================
+   8. Quan hệ ngân sách của một doanh nghiệp (biên bản 05/11/2026, việc 1)
+   ===================================================================== */
+
+/*
+  "Bảng quan hệ ngân sách đến thời điểm hiện tại của từng doanh nghiệp, kèm
+  kết quả rà soát dữ liệu nộp thừa" — ưu tiên cao nhất của buổi demo AI 360:
+  cán bộ đang đối chiếu thừa, thiếu bằng tay.
+
+  Một dòng một tiểu mục, theo đẳng thức của sổ S1/KTT:
+      nợ đầu năm + phát sinh phải nộp − đã nộp = còn nợ − nộp thừa
+  (một trong hai vế cuối bằng 0). Tổng "đã nộp" khớp số thu lũy kế của hồ sơ,
+  tổng "còn nợ" khớp nợ hiện tại — để ba khối của hồ sơ không nói ba số khác.
+
+  CHỜ NGHIỆP VỤ (anh Tân, chị Ngọc, anh Hòa) chốt cột và cách rà soát; ba nhãn
+  rà soát dưới đây mượn cột D, E của báo cáo trung gian nộp thừa (QL5). Mã
+  tiểu mục dùng đúng bộ mã của danh sách nộp thừa (`ql5.ts`). Hạt 93.
+*/
+export type RaSoatThua = "CHUA" | "DUNG" | "DIEU_CHINH";
+export const NHAN_RA_SOAT: Record<RaSoatThua, string> = {
+  CHUA: "Chưa rà soát", DUNG: "Đã xác nhận thừa đúng", DIEU_CHINH: "Sai hạch toán, đã điều chỉnh",
+};
+export interface DongNganSach {
+  tieuMuc: string; ten: string;
+  /** Triệu đồng. */
+  noDauNam: number; phatSinh: number; daNop: number; conNo: number; thua: number;
+  raSoat: RaSoatThua | null;
+}
+
+const KHOAN_NS: { tieuMuc: string; ten: string; w: number }[] = [
+  { tieuMuc: "1701", ten: "Thuế GTGT", w: 0.48 },
+  { tieuMuc: "1052", ten: "Thuế TNDN", w: 0.3 },
+  { tieuMuc: "1001", ten: "Thuế TNCN", w: 0.14 },
+  { tieuMuc: "1757", ten: "Thuế TTĐB", w: 0.08 },
+];
+
+export function quanHeNganSach(d: DongDN): DongNganSach[] {
+  const r = prng(hatCua(93, "qhns", d.khoa));
+  const daNopTong = Math.round(d.thu2026 * 1000);
+  const noTong = Math.round(d.no * 1000);
+  /* DN không nộp TTĐB thì không có dòng TTĐB. */
+  const khoan = KHOAN_NS.filter((k) => k.tieuMuc !== "1757" || r() < 0.25);
+  const tw = khoan.reduce((a, k) => a + k.w, 0);
+  const chia = (tong: number, w: number[]) => {
+    const s = w.reduce((a, b) => a + b, 0) || 1;
+    const ra = w.map((x) => Math.floor((tong * x) / s));
+    ra[0] += tong - ra.reduce((a, b) => a + b, 0);
+    return ra;
+  };
+  const daNop = chia(daNopTong, khoan.map((k) => (k.w / tw) * (0.7 + r() * 0.6)));
+  /* Nợ dồn vào một hoặc hai tiểu mục, không rải đều. */
+  const coNo = khoan.map((_, i) => noTong > 0 && (i === 0 || r() < 0.3));
+  const conNo = chia(noTong, coNo.map((c) => (c ? 0.4 + r() : 0)));
+  /* Nộp thừa: khoảng một phần tư DN có một tiểu mục thừa, ở tiểu mục không nợ. */
+  const iThua = r() < 0.28 ? khoan.findIndex((_, i) => !coNo[i] && i > 0) : -1;
+  return khoan.map((k, i) => {
+    /* Không thừa quá số đã nộp — giữ vế trái của đẳng thức không âm. */
+    const thua = i === iThua ? Math.min(daNop[i], Math.round(daNop[i] * (0.04 + r() * 0.25)) + nguyen(r, 5, 400)) : 0;
+    const noDauNam = conNo[i] ? Math.round(conNo[i] * (0.3 + r() * 0.9)) : 0;
+    /* Đẳng thức sổ: phát sinh = đã nộp + còn nợ − nộp thừa − nợ đầu năm (không âm). */
+    const phatSinh = Math.max(0, daNop[i] + conNo[i] - thua - noDauNam);
+    const noDau = daNop[i] + conNo[i] - thua - phatSinh;
+    const raSoat: RaSoatThua | null = thua ? (["CHUA", "DUNG", "DIEU_CHINH"] as const)[nguyen(r, 0, 2)] : null;
+    return { tieuMuc: k.tieuMuc, ten: k.ten, noDauNam: noDau, phatSinh, daNop: daNop[i], conNo: conNo[i], thua, raSoat };
+  });
+}

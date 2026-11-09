@@ -118,7 +118,7 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
       {moDanhSach ? "Bấm một phòng để mở danh sách NNT của phòng đó ở tab Báo cáo. " : ""}
       Số NNT đếm mỗi MST một lần trong từng chiều; một NNT lệch cả bán ra lẫn mua vào nằm ở cả hai nhóm cột.
     </span></div>
-    <p className="quality-note">Số liệu mô phỏng. Chưa nối nguồn đối chiếu tờ khai – hóa đơn điện tử.</p>
+    <p className="quality-note">Chưa nối nguồn đối chiếu tờ khai – hóa đơn điện tử.</p>
   </Panel>;
 }
 
