@@ -91,7 +91,7 @@ export async function departLogin(logo: HTMLImageElement, commit: () => void) {
   if (flight) return;
   const source = logo.getBoundingClientRect();
   const heading = logo.closest('.login-mark')?.querySelector<HTMLElement>('strong');
-  remember({ src: logo.src, time: Date.now(), title: heading?.textContent ?? 'Quản lý nghiệp vụ Thuế' });
+  remember({ src: logo.src, time: Date.now(), title: heading?.textContent ?? 'Quản lý Thuế' });
   const layer = stage(logo.src, flight!.title);
   const mark = layer.querySelector<HTMLElement>('.portal-flight-mark')!;
   const title = layer.querySelector<HTMLElement>('.portal-flight-title')!;

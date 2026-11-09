@@ -34,7 +34,7 @@ const font = fs.readFileSync(path.join(root,'src/fonts/public-sans-latin.woff2')
 const viet = fs.readFileSync(path.join(root,'src/fonts/public-sans-vietnamese.woff2')).toString('base64');
 const svg = name=>`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
 const swatches = Object.entries(colors).map(([k,v])=>`<div class="swatch"><div style="background:${v}" class="paint"></div><strong>${k}</strong><code>${v}</code></div>`).join('');
-const typeRows=typography.map(t=>`<div class="type-row"><code>${t.name}<small>${t.size}px / ${t.weight} / ${t.lineHeight}px</small></code><span style="font-size:${t.size}px;font-weight:${t.weight};line-height:${t.lineHeight}px;letter-spacing:${t.letterSpacing}px">Quản lý nghiệp vụ Thuế</span></div>`).join('');
+const typeRows=typography.map(t=>`<div class="type-row"><code>${t.name}<small>${t.size}px / ${t.weight} / ${t.lineHeight}px</small></code><span style="font-size:${t.size}px;font-weight:${t.weight};line-height:${t.lineHeight}px;letter-spacing:${t.letterSpacing}px">Quản lý Thuế</span></div>`).join('');
 const iconRows=Object.keys(icons).map(k=>`<div class="icon-item">${svg(k)}<code>${k}</code></div>`).join('');
 const badge=(tone,label)=>`<span class="badge tone-${tone}">${label}</span>`;
 const btn=(kind,text,extra='')=>`<button type="button" class="button is-${kind}" ${extra}>${svg('report')}<span>${text}</span></button>`;

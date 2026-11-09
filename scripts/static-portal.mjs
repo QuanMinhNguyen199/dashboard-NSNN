@@ -12,7 +12,7 @@ export async function writePortalEntries(dist, base) {
   const target = `${base}quan-ly/`;
   const safeTarget = JSON.stringify(target).replaceAll("<", "\\u003c");
   await writeFile(resolve(dist, "index.html"), `<!doctype html>
-<html lang="vi"><head><meta charset="utf-8"><title>Quản lý nghiệp vụ Thuế</title></head>
+<html lang="vi"><head><meta charset="utf-8"><title>Quản lý Thuế</title></head>
 <body><script>location.replace(${safeTarget} + location.search + location.hash);</script></body></html>
 `);
 }

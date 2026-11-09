@@ -1,5 +1,5 @@
 ---
-name: Quản lý nghiệp vụ Thuế TP Hà Nội
+name: Quản lý Thuế TP Hà Nội
 description: Bàn làm việc nghiệp vụ dùng chung bảng màu navy, xanh dữ liệu và trung tính của Dashboard Thu NSNN.
 colors:
   canvas: "#f2f5f9"
@@ -237,7 +237,7 @@ components:
     height: "46px"
 ---
 
-# Design System: Quản lý nghiệp vụ Thuế TP Hà Nội
+# Design System: Quản lý Thuế TP Hà Nội
 
 ## Overview
 
@@ -574,7 +574,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 
 ### Named Rules
 
-**The Emblem Not Lettermark Rule.** Khối nhận diện luôn là ảnh con dấu cộng hai dòng chữ ("Quản lý nghiệp vụ Thuế" / "Thuế TP Hà Nội"). Không thay con dấu bằng ký tự lồng hay ký hiệu viết tắt, không vẽ lại con dấu bằng SVG suy diễn, không đặt chữ đè lên nó.
+**The Emblem Not Lettermark Rule.** Khối nhận diện luôn là ảnh con dấu cộng hai dòng chữ ("Quản lý Thuế" / "Thuế TP Hà Nội"). Không thay con dấu bằng ký tự lồng hay ký hiệu viết tắt, không vẽ lại con dấu bằng SVG suy diễn, không đặt chữ đè lên nó.
 
 **The Circle Means Step Rule.** Hình tròn trong hệ này luôn có nghĩa "một bước trong chuỗi" hoặc "một chấm trạng thái". Không bo tròn nút, không dựng avatar tròn, không dùng dáng viên thuốc cho chip.
 

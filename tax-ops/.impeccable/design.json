@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-09-29T00:00:00.000Z",
-  "title": "Design System: Quản lý nghiệp vụ Thuế TP Hà Nội",
+  "title": "Design System: Quản lý Thuế TP Hà Nội",
   "extensions": {
     "colorMeta": {
       "seal": {
@@ -706,7 +706,7 @@
       },
       {
         "name": "The Emblem Not Lettermark Rule",
-        "body": "Khối nhận diện luôn là ảnh con dấu cộng hai dòng chữ (\"Quản lý nghiệp vụ Thuế\" / \"Thuế TP Hà Nội\"). Không thay con dấu bằng ký tự lồng hay ký hiệu viết tắt, không vẽ lại con dấu bằng SVG suy diễn, không đặt chữ đè lên nó.",
+        "body": "Khối nhận diện luôn là ảnh con dấu cộng hai dòng chữ (\"Quản lý Thuế\" / \"Thuế TP Hà Nội\"). Không thay con dấu bằng ký tự lồng hay ký hiệu viết tắt, không vẽ lại con dấu bằng SVG suy diễn, không đặt chữ đè lên nó.",
         "section": "shapes"
       },
       {
