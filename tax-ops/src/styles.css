@@ -1288,15 +1288,13 @@ td code, td strong, td span { overflow-wrap: anywhere; }
 .chon-muc[data-selected] .chon-dau { visibility: visible; }
 @media (prefers-reduced-motion: no-preference) {
   .chon-nut .icon { transition: transform 160ms var(--ease-out); }
-  .chon-menu[data-entering], .menu-pop[data-entering] { animation: chon-vao 140ms var(--ease-out); }
-  .chon-menu[data-exiting], .menu-pop[data-exiting] { animation: chon-vao 100ms var(--ease-out) reverse; }
   .case-scrim[data-entering] { animation: nen-vao 180ms var(--ease-out); }
   .case-scrim[data-entering] .case-drawer { animation: ngan-vao 220ms var(--ease-out); }
   .case-scrim[data-exiting] { animation: nen-vao 140ms var(--ease-out) reverse; }
 }
-@keyframes chon-vao { from { opacity: 0; transform: translateY(-4px); } }
 @keyframes nen-vao { from { opacity: 0; } }
-@keyframes ngan-vao { from { transform: translateX(24px); opacity: .6; } }
+/* Ngăn trượt vào, KHÔNG mờ (09/11/2026 — bỏ mọi fade-in trên nội dung). */
+@keyframes ngan-vao { from { transform: translateX(24px); } }
 /* MenuPop: hộp do React Aria đặt chỗ (top/left nội tuyến), bỏ định vị tương đối của .bo-loc-menu cũ. */
 .bo-loc-menu.menu-pop { top: auto; right: auto; z-index: 70; width: max(240px, var(--trigger-width)); max-width: calc(100vw - 32px); max-height: min(420px, 70vh); outline: none; }
 .bo-loc-menu.menu-pop.qd-menu { width: 300px; }
@@ -2317,18 +2315,14 @@ td.o-nong { color: var(--critical); font-weight: 700; }
 @media (prefers-reduced-motion: no-preference) {
   /* Đổi kỳ: thanh và vạch TRƯỢT từ số cũ sang số mới — khoảnh khắc chính. */
   .qd-sc-thanh > i, .qd-sc-bq { transition: transform 420ms var(--ease-out); }
-  /* Vào màn: ô hiện dần, thanh mọc từ 0, vạch bình quân hiện sau; trễ theo
-     thứ tự ô, tổng trễ chặn ở 200ms. `backwards` chứ không `both`: giữ giá
-     trị cuối sẽ đè lên transition và thanh hết trượt khi đổi kỳ. */
-  .qd-kq-o { animation: qd-kq-hien 260ms ease-out backwards; animation-delay: calc(min(var(--i, 0), 10) * 20ms); }
-  .qd-kq-o .qd-sc-thanh > i { animation: qd-kq-moc 560ms var(--ease-out) backwards; animation-delay: calc(min(var(--i, 0), 10) * 20ms + 60ms); }
-  .qd-kq-o .qd-sc-bq > b { animation: qd-kq-hien 240ms ease-out backwards; animation-delay: calc(min(var(--i, 0), 10) * 20ms + 320ms); }
-  /* Số của kỳ mới hiện dần — `key` theo kỳ dựng lại đúng ô số. */
-  .qd-kq-so > b, .qd-kq-tl > b { animation: qd-kq-hien 200ms ease-out; }
+  /* Vào màn (09/11/2026, tĩnh hơn): ô, số và vạch bình quân đứng sẵn — không
+     hiện dần, không trễ lần lượt. Chỉ thanh mọc từ 0, một lần, cùng lúc.
+     `backwards` chứ không `both`: giữ giá trị cuối sẽ đè lên transition và
+     thanh hết trượt khi đổi kỳ. */
+  .qd-kq-o .qd-sc-thanh > i { animation: qd-kq-moc 380ms var(--ease-out) backwards; }
   .qd-kq-o:hover .qd-kq-ten .icon { transform: translateX(3px); }
 }
 @keyframes qd-kq-moc { from { transform: scaleX(0); } }
-@keyframes qd-kq-hien { from { opacity: 0; } }
 
 /* Khổ vừa: hai cột — Thu và TTHC cạnh nhau, Quản lý nợ một hàng, Quản lý
    hỗ trợ DN ba ô × hai hàng. */
@@ -2609,7 +2603,7 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
   .xhp-mo .icon { transition: transform 200ms var(--ease-out); }
   .xhp-mo { transition: background-color 140ms ease-out; }
   /* Mở tab: thanh mọc từ vạch 0 — một lần, trả lời đúng cú bấm vào tab. */
-  .xhp-thanh i { animation: xhp-moc 520ms var(--ease-out) both; }
+  .xhp-thanh i { animation: xhp-moc 380ms var(--ease-out) both; }
   @keyframes xhp-moc { from { transform: scaleX(0); } }
 }
 
@@ -2730,9 +2724,6 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
 .qd-dn-khoi { display: grid; gap: 10px; }
 .qd-dn-khoi h3 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0; font-size: 14px; font-weight: 700; color: var(--ink); }
 .qd-dn-khoi h3 small { color: var(--ink-3); font-size: 12px; font-weight: 400; }
-.qd-dn-cho { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; padding: 12px 14px; border: 1px dashed var(--control-line); border-radius: var(--radius-control); background: var(--surface); color: var(--ink-3); }
-.qd-dn-cho p { display: grid; gap: 3px; margin: 0; font-size: 13px; line-height: 1.5; }
-.qd-dn-cho strong { color: var(--ink); font-weight: 650; }
 .qd-dn-dau-hieu { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .qd-dn-dau-hieu li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; align-items: start; padding: 8px 10px; border-radius: var(--radius-control); background: var(--warning-bg); color: var(--ink); font-size: 13px; }
 .qd-dn-dau-hieu li .icon { margin-top: 1px; color: var(--warning); }
@@ -2793,9 +2784,6 @@ th[aria-sort="ascending"] .qd-th-xep .icon { transform: rotate(180deg); }
 
 /* Cách tính các cột — công thức rời khỏi đầu cột, đứng ngay dưới bảng. */
 /* Cách tính: một dòng chữ nhỏ dưới bảng (gọn 28/10/2026). */
-.qd-cach-tinh { margin: 10px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.55; overflow-wrap: anywhere; }
-.qd-cach-tinh b { color: var(--ink-2); font-weight: 600; }
-.qd-cach-tinh i { color: var(--ink-2); font-style: normal; font-weight: 600; }
 
 /* Chữ phụ trên nền hàng đang chọn đạt AA. Ghi đè biến, nên mọi chữ dùng
    `--ink-3` bên trong hàng — dòng phụ, nhãn "đơn vị của tôi", điểm 0 — cùng
@@ -2969,16 +2957,10 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
    chữ của thanh mở rộng hiện dần, icon của rãnh hiện dần — một lần, đúng lúc
    người dùng vừa bấm, không phát lại khi đổi màn. */
 @media (prefers-reduced-motion: no-preference) {
-  .ops-app.is-vua-doi:not(.is-thu-gon) .sidebar .nav-item > span,
-  .ops-app.is-vua-doi:not(.is-thu-gon) .sidebar .brand > div,
-  .ops-app.is-vua-doi:not(.is-thu-gon) .sidebar-user { animation: tb-hien 220ms var(--ease-out) backwards; }
-  .nhan-noi { animation: tb-nhan 120ms ease-out; }
   /* Hé: lộ dần từ cột của nút ra — nút luôn nằm trong phần đã lộ. */
   .ops-app.is-thu-gon.is-ngo .sidebar { animation: tb-ngo 180ms var(--ease-out); }
 }
 @keyframes tb-ngo { from { clip-path: inset(0 calc(100% - 56px) 0 0); } to { clip-path: inset(0 -40px 0 0); } }
-@keyframes tb-hien { from { opacity: 0; transform: translateX(-6px); } }
-@keyframes tb-nhan { from { opacity: 0; transform: translate(-4px, -50%); } }
 
 /* =====================================================================
    Thu NSNN · Theo cán bộ → NNT → hồ sơ (28/10/2026)
@@ -3153,13 +3135,6 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .kt-dg-thanh > b { color: var(--ink); font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; }
 .kt-thanh.is-ngang { height: 12px; border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
 .kt-thanh.is-ngang > i { border-radius: 0 var(--radius-chip) var(--radius-chip) 0; }
-.kt-dg-o { display: inline-grid; justify-items: end; gap: 2px; }
-/* Cùng một chỗ cho nhãn ở mọi ô để các số luôn thẳng hàng. Nhãn nói
-   thứ hạng trong nhóm, không dùng mũi tên vốn dễ hiểu thành xu hướng. */
-.kt-dg-nhan { min-height: 16px; font-size: 11px; line-height: 1.35; }
-.kt-cuc { color: var(--ink-3); font-style: normal; font-weight: 600; white-space: nowrap; }
-.kt-cuc.is-cao { color: var(--positive); }
-.kt-cuc.is-thap { color: var(--warning); }
 
 /* Điều khiển của bảng chính: Số liệu · Hiển thị · Xuất Excel trên một hàng. Ô lọc rộng cố định — đổi lựa chọn không xô nút bên cạnh. */
 .kt-dieu-khien { flex-wrap: wrap; justify-content: flex-end; }
@@ -3231,12 +3206,8 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 @media (prefers-reduced-motion: no-preference) {
   .kt-thanh > i { transition: transform 420ms var(--ease-out); }
   .kt-nhanh .icon { transition: transform 200ms var(--ease-out), color 200ms var(--ease-out); }
-  /* Dòng vừa mở trượt nhẹ từ dòng cha xuống — chỉ dòng con, chỉ lúc mở. */
-  .kt-bang tr:is(.kt-cap-2, .kt-cap-3) > * { animation: kt-dong-mo 260ms var(--ease-out) both; }
-  .kt-bang-loai-mo { animation: kt-dong-mo 260ms var(--ease-out) both; }
   .kt-donut circle { transition: stroke-width 120ms var(--ease-out), stroke-dasharray 480ms var(--ease-out), stroke-dashoffset 480ms var(--ease-out); }
 }
-@keyframes kt-dong-mo { from { opacity: 0; transform: translateY(-4px); } }
 @media (max-width: 1180px) {
   .kt-o-so { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -3390,3 +3361,220 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
   .kt-donut .qd-chu-giai li { grid-template-columns: 12px minmax(0, 1fr) auto auto; }
   .kt-cg-thanh { display: none; }
 }
+
+/* Quan hệ ngân sách của một DN (biên bản 05/11/2026, việc 1). Dòng tóm tắt
+   trả lời trước — còn nợ, nộp thừa, đã rà chưa — rồi mới tới bảng tiểu mục.
+   Sáu cột số: bảng giữ bề rộng tối thiểu và cuộn ngang TRONG khung bảng ở
+   ngăn hẹp, không ép chữ số xuống dòng. */
+.qd-ns-tom { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 24px; margin: 0; color: var(--ink-2); font-size: 14px; }
+.qd-ns-tom b { margin-left: 6px; color: var(--ink); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.qd-ns-tom b.is-xau { color: var(--critical); }
+.qd-ns-tom small { margin-left: 8px; font-size: 12px; font-weight: 600; }
+.qd-ns-tom small.is-cho { color: var(--warning); }
+.qd-ns-tom small.is-tot { color: var(--positive); }
+.qd-ns-bang { min-width: 560px; }
+.qd-ns-bang thead th:first-child { width: 24%; }
+.qd-ns-bang th[scope="row"] small { display: block; color: var(--ink-3); font-size: 12px; font-weight: 400; }
+.qd-ns-bang strong.is-xau { color: var(--critical); }
+.qd-ns-bang tfoot th, .qd-ns-bang tfoot td { border-top: 1px solid var(--line); color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+.qd-ns-rs { display: block; font-size: 11px; font-weight: 600; white-space: normal; }
+.qd-ns-rs.is-chua { color: var(--warning); }
+.qd-ns-rs.is-dung, .qd-ns-rs.is-dieu_chinh { color: var(--ink-3); }
+/* "Chưa so" của kỳ đầu tháng (biên bản 05/11/2026): chữ nhạt, không chấm màu. */
+.qd-chenh.is-dem.is-chua { color: var(--ink-3); font-weight: 500; }
+/* Trưởng phòng (05/11/2026): bảng theo cán bộ TRƯỚC, đủ bề ngang; bảng theo
+   đầu việc bên dưới — đặt cạnh nhau thì bảng đầu việc bị bóp, "Không phát
+   sinh trong ngày" vỡ thành năm dòng. */
+.qd-alert-overview.is-doc { grid-template-columns: minmax(0, 1fr); }
+.qd-alert-overview.is-doc .qd-bang :is(th, td):first-child { width: 40%; }
+.qd-ns-bang thead th { white-space: normal; vertical-align: bottom; }
+/* Bảng sáu cột không được kéo giãn ngăn hồ sơ: khối và khung bảng co theo
+   ngăn, bảng cuộn ngang bên trong khung (đo ở 375px: ngăn giãn 562px). */
+.qd-dn > .qd-dn-khoi, .qd-dn-khoi > .table-wrap { min-width: 0; max-width: 100%; }
+.qd-dn-khoi { grid-template-columns: minmax(0, 1fr); }
+
+/* =====================================================================
+   Tab: dấu "đang mở" trượt + phản hồi rê chuột (09/11/2026)
+   ---------------------------------------------------------------------
+   `.muc-chi` là MỘT dấu cho cả hàng, HangTab đặt nó trùng hộp của tab đang
+   mở. Hàng chính: gạch chân 2px (dải nền ở đáy hộp — cùng chỗ, cùng độ
+   dày với viền chân cũ). Hàng con: nền viên thuốc nằm DƯỚI chữ. Tab đang mở
+   bỏ dấu riêng của nó khi hàng đã có dấu trượt, để không vẽ hai lần.
+   ===================================================================== */
+.co-chi { position: relative; }
+.muc-chi { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; pointer-events: none; }
+/* Gạch chân là một DẢI NỀN 2px ở đáy hộp, không phải bóng trong (`inset
+   box-shadow`): ở tỷ lệ màn hình lẻ (125%) Chrome làm rò bóng trong ra mép
+   trái/phải của hộp đang trượt — thành một vạch dọc mảnh cạnh tab. */
+.thanh-muc-hang:not(.is-con) > .muc-chi { z-index: 1; }
+.thanh-muc-hang:not(.is-con) > .muc-chi::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--brand); }
+.co-chi > .muc-tab.is-active, .co-chi > .muc-tab.is-active:hover { border-bottom-color: transparent; }
+.thanh-muc-hang.is-con > .muc-chi { z-index: 0; border: 1px solid var(--line); border-radius: var(--radius-chip); background: var(--surface); box-shadow: 0 1px 2px rgb(22 38 60 / 10%); box-sizing: border-box; }
+.thanh-muc-hang.is-con > :is(.muc-tab-con, .muc-tab-nhom) { position: relative; z-index: 1; }
+.co-chi > .muc-tab-con.is-active, .co-chi > .muc-tab-con.is-active:hover { border-color: transparent; background: transparent; box-shadow: none; }
+
+/* Rê chuột lên tab chính: nền nhạt màu thương hiệu (6%) — thắng nền `--surface-soft` của shared/portalTransition.css (gần như trùng nền trang) — đủ thấy trên nền
+   trang #f2f5f9, khác hẳn nền xám cũ gần như vô hình — cộng chữ đậm lên và
+   vạch chân xám xem trước chỗ dấu sẽ trượt tới. */
+@media (hover: hover) and (pointer: fine) {
+  .muc-tab { border-radius: 6px 6px 0 0; }
+  .thanh-muc-hang > .muc-tab:not(.is-active):hover { background: color-mix(in srgb, var(--brand) 6%, transparent); }
+  .thanh-muc-hang > .muc-tab.is-active:hover { background: transparent; }
+  .thanh-muc-hang > .muc-tab:not(.is-active):active { background: color-mix(in srgb, var(--brand) 10%, transparent); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .muc-chi { transition: transform 280ms var(--ease-out), width 280ms var(--ease-out), height 280ms var(--ease-out), opacity 160ms ease-out; }
+  .muc-chi.is-tuc { transition: none; }
+}
+
+/* =====================================================================
+   Biểu đồ ở các tab: mọc khi dựng, trượt khi đổi số (09/11/2026)
+   ---------------------------------------------------------------------
+   Cùng hai lớp chuyển động của Tổng quan quản trị (`qd-kq-moc`):
+   • DỰNG (mở tab, đổi màn): thanh mọc từ trái, dải chồng quét từ trái,
+     vòng tròn vẽ dần từng cung. Keyframe chỉ có `from` — điểm đến là giá trị
+     thật của phần tử (scaleX nội tuyến, bề rộng, stroke-dasharray), nên không
+     phải biết số ở CSS.
+   • ĐỔI SỐ (đổi kỳ, phạm vi — dòng giữ nguyên, chỉ số đổi): thanh và cung
+     trượt tới giá trị mới thay vì nhảy.
+   Thẻ của Tổng quan (`.qd-kq-o .qd-sc-thanh`) và thanh điểm xếp hạng
+   (`.xhp-thanh`) đã có chuyển động riêng — không nằm trong danh sách này.
+   Giảm chuyển động: khối này không áp, và luật chung ở đầu tệp tắt mọi animation.
+   ===================================================================== */
+@keyframes bd-moc { from { transform: scaleX(0); } }
+@keyframes bd-quet { from { clip-path: inset(0 100% 0 0); } }
+@keyframes bd-vong { from { stroke-dasharray: 0 400; } }
+@media (prefers-reduced-motion: no-preference) {
+  :is(.qd-thanh-ray > i, .qd-thanh > i, .kt-thanh > i, .kt-cg-thanh > span, .so-sanh-thanh > i, .ty-le i > span, .xh-thanh > i) {
+    transform-origin: left center;
+    animation: bd-moc 380ms var(--ease-out) backwards;
+  }
+  .qd-chong { animation: bd-quet 380ms var(--ease-out) backwards; }
+  .qd-donut circle { animation: bd-vong 440ms var(--ease-out) backwards; }
+
+  /* Đổi số: bề rộng và cung trượt (thanh dùng scaleX đã có transition riêng). */
+  :is(.qd-thanh-ray > i, .qd-thanh > i, .kt-cg-thanh > span, .ty-le i > span, .xh-thanh > i, .qd-chong > i) {
+    transition: width 420ms var(--ease-out);
+  }
+  .qd-donut circle { transition: stroke-dasharray 480ms var(--ease-out), stroke-dashoffset 480ms var(--ease-out), stroke-width 120ms var(--ease-out); }
+  .so-sanh-thanh > i, .kt-thanh > i { transition: transform 420ms var(--ease-out), background-color 200ms var(--ease-out); }
+}
+/* Cột dọc (Số thu NSNN qua các năm): mọc từ chân, cùng lúc; đổi số thì cao độ trượt. */
+@keyframes bd-moc-doc { from { transform: scaleY(0); } }
+@media (prefers-reduced-motion: no-preference) {
+  .qd-cot-ray i { transform-origin: bottom center; animation: bd-moc-doc 380ms var(--ease-out) backwards; transition: height 420ms var(--ease-out); }
+}
+
+/* Xếp hạng cán bộ — góc nhìn chuyên viên (09/11/2026). Câu hạng đứng trên
+   ghi chú cách tính: vị trí của mình là thứ người xem đến để đọc. Dòng của
+   mình tô nền nhạt, vạch thương hiệu ở mép trái, nhãn "Bạn". */
+.xhc-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-bottom: 8px; }
+.xhc-toi { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.6; }
+.xhc-toi > span { white-space: nowrap; }
+.xhc-toi > span + span::before { content: "·"; margin-right: 12px; color: var(--ink-3); }
+.xhc-toi b { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+.xhc-toi .xhp-diem { font-size: 14px; }
+.goi-y-nut { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--radius-control); color: var(--ink-2); background: transparent; font-size: 12px; cursor: help; user-select: none; }
+.goi-y-nut svg { color: var(--ink-3); transition: color 120ms var(--ease-out); }
+/* Rê chuột chỉ đổi màu chữ và icon — không nền, vì đây không phải nút bấm. */
+.goi-y-nut:hover, .goi-y-nut:focus-visible { color: var(--ink); }
+.goi-y-nut:hover svg, .goi-y-nut:focus-visible svg { color: var(--brand); }
+.goi-y-nut:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.goi-y-nut.is-tam-tinh { position: relative; isolation: isolate; padding-inline: 10px; color: var(--warning); font-size: 13px; font-weight: 650; }
+.goi-y-nut.is-tam-tinh::before { content: ""; position: absolute; inset: 7px 0; z-index: -1; border: 1px solid color-mix(in srgb, var(--warning) 25%, transparent); border-radius: var(--radius-chip); background: var(--warning-bg); }
+.goi-y-nut.is-tam-tinh svg, .goi-y-nut.is-tam-tinh:hover svg, .goi-y-nut.is-tam-tinh:focus-visible svg { color: currentColor; }
+.goi-y-hop { width: min(360px, calc(100vw - 24px)); max-height: min(480px, calc(100dvh - 24px)); overflow-y: auto; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); color: var(--ink-2); box-shadow: 0 6px 20px rgb(22 38 60 / 12%); }
+.goi-y-noi-dung { display: grid; gap: 10px; padding: 16px; font-size: 13px; line-height: 1.6; outline: none; }
+.goi-y-noi-dung strong { color: var(--ink); font-size: 14px; font-weight: 650; }
+.goi-y-noi-dung p { margin: 0; }
+.goi-y-hop { pointer-events: none; }
+.goi-y-noi-dung small { color: var(--ink-3); font-size: 12px; }
+@media (max-width: 600px) {
+  .xhc-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; }
+  .xhc-toi { display: contents; font-size: 13px; }
+  .xhc-toi > span { white-space: normal; }
+  .xhc-toi > span:nth-child(2) { text-align: right; }
+  .xhc-toi > span + span::before { content: none; }
+}
+.xhc-bang tr.is-toi:not(.is-selected) { background: var(--selected-surface); }
+.xhc-bang tr.is-toi td:first-child { box-shadow: inset 3px 0 0 var(--brand); }
+.xhc-ban { margin-left: 8px; padding: 1px 6px; border-radius: var(--radius-hairline); background: var(--brand); color: #fff; font-size: 11px; font-style: normal; font-weight: 700; }
+
+/* =====================================================================
+   Gọn thông tin (09/11/2026, người dùng chốt bốn nhóm cắt giảm)
+   ===================================================================== */
+/* Khối thu gọn: chỉ còn đầu khối, thân không chiếm chỗ. */
+.panel.is-thu > .panel-body { display: none; }
+.panel.is-thu > .panel-head { border-bottom: 0; }
+/* Tổng quan đối tượng sau khi gỡ ba khối: khối lẻ cuối lưới trải hết bề ngang. */
+.qd-luoi-2 > .panel:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* =====================================================================
+   Thẻ Tổng quan quản trị — số trước, chữ sau (09/11/2026, "càng ít chữ
+   càng tốt", chuẩn dashboard SaaS). Một con số chính mỗi thẻ; số phụ chỉ
+   mang đơn vị; công thức ở tooltip; ghi chú thành nhãn ngắn.
+   ===================================================================== */
+.qd-kq-ky { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.qd-kq-ky > span { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-3); }
+.qd-kq-ky b { display: inline-grid; place-items: center; min-width: 26px; height: 20px; margin: 0; padding: 0 6px; border-radius: var(--radius-chip); background: var(--surface-soft); border: 1px solid var(--line-soft); color: var(--ink-2); font-size: 11px; font-weight: 650; letter-spacing: .02em; }
+.qd-kq-ky .qd-kq-dv { margin-left: auto; }
+.qd-kq-ky .qd-kq-dv + .qd-kq-dv { margin-left: 0; }
+
+.qd-kq-o { gap: 12px; padding: 18px 18px 16px; }
+.qd-kq-ten { min-height: 0; font-size: 13px; font-weight: 600; }
+.qd-kq-so { gap: 8px; }
+.qd-kq-so > b { display: inline-flex; align-items: center; gap: 4px; font-size: 28px; font-weight: 650; letter-spacing: -.02em; line-height: 1.1; }
+.qd-kq-so > b .icon { color: var(--ink-3); }
+.qd-kq-so > small { font-size: 12px; }
+.qd-kq-tl { display: flex; align-items: baseline; gap: 6px; min-height: 0; }
+.qd-kq-tl > b { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.qd-kq-tl > small { font-size: 12px; }
+.qd-kq-ghi { display: inline-flex; align-items: center; justify-self: start; gap: 4px; min-height: 22px; font-size: 12px; }
+.qd-kq-ghi:empty { visibility: hidden; }
+.qd-kq-ghi b { color: var(--ink); font-weight: 650; font-variant-numeric: tabular-nums; }
+.qd-kq-ghi.is-cho { padding: 0 8px; border-radius: var(--radius-chip); background: var(--warning-bg); color: var(--warning); font-weight: 600; }
+.qd-kq-ten > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qd-sc-thanh.is-trong { background: none; }
+
+/* Danh sách công thức trong "Cách tính ⓘ": mỗi cột một dòng, tên cột trái,
+   công thức phải — đọc như một bảng nhỏ. */
+.goi-y-ct { display: grid; gap: 6px; margin: 0; }
+.goi-y-ct > div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; }
+.goi-y-ct dt { color: var(--ink); font-weight: 600; }
+.goi-y-ct dd { margin: 0; color: var(--ink-2); }
+.qd-khoi-xep .goi-y-nut { min-height: 32px; margin-left: 4px; }
+@media (pointer: coarse) { .goi-y-nut { min-height: 44px; } }
+
+/* "Cách tính ⓘ" / "Tạm tính ⓘ" đứng ngay sau tên khối (09/11/2026). Trong
+   tiêu đề nhãn thấp bằng dòng chữ — không phình đầu khối; cảm ứng vẫn 44px. */
+.panel-tieu-de-kem { display: inline-flex; align-items: center; }
+.panel-tieu-de-kem:empty { display: none; }
+.panel-head h2 .goi-y-nut { min-height: 28px; font-size: 12px; }
+.panel-head h2 .goi-y-nut.is-icon { padding: 0 4px; }
+.panel-head h2 .goi-y-nut.is-icon svg { width: 16px; height: 16px; }
+.panel-head h2 .goi-y-nut.is-tam-tinh { min-height: 24px; padding-inline: 8px; }
+.panel-head h2 .goi-y-nut.is-tam-tinh::before { inset: 0; }
+@media (pointer: coarse) { .panel-head h2 .goi-y-nut { min-height: 44px; } .panel-head h2 .goi-y-nut.is-tam-tinh::before { inset: 10px 0; } }
+/* "Cách tính ⓘ" — cùng hình nhãn "Tạm tính" (đồng bộ 09/11/2026), màu xanh
+   thương hiệu: thông tin, không phải cảnh báo. Icon 17px, nét đậm. */
+.goi-y-nut.is-cach-tinh { position: relative; isolation: isolate; padding-inline: 10px; color: var(--brand-strong); font-size: 13px; font-weight: 650; }
+.goi-y-nut.is-cach-tinh::before { content: ""; position: absolute; inset: 7px 0; z-index: -1; border: 1px solid color-mix(in srgb, var(--brand) 22%, transparent); border-radius: var(--radius-chip); background: var(--blue-050); transition: background-color 120ms var(--ease-out), border-color 120ms var(--ease-out); }
+.goi-y-nut.is-cach-tinh svg, .goi-y-nut.is-cach-tinh:hover svg, .goi-y-nut.is-cach-tinh:focus-visible svg { color: var(--brand); }
+.goi-y-nut.is-cach-tinh:hover::before, .goi-y-nut.is-cach-tinh:focus-visible::before { background: var(--selected-surface); border-color: color-mix(in srgb, var(--brand) 40%, transparent); }
+.goi-y-nut.is-cach-tinh:hover { color: var(--brand-strong); }
+.panel-head h2 .goi-y-nut.is-cach-tinh { min-height: 24px; padding-inline: 8px; }
+.panel-head h2 .goi-y-nut.is-cach-tinh::before { inset: 0; }
+.panel-head h2 .goi-y-nut svg { width: 17px; height: 17px; }
+@media (pointer: coarse) { .panel-head h2 .goi-y-nut.is-cach-tinh::before { inset: 10px 0; } }
+/* Chỉ icon (09/11/2026): không khung nhãn; màu icon nói loại — xanh = cách
+   tính, vàng = tạm tính. Rê chuột: nền tròn nhạt cùng màu. */
+.goi-y-nut.is-icon { padding: 0; }
+.goi-y-nut.is-icon::before { display: none; }
+.panel-head h2 .goi-y-nut.is-icon { width: 28px; min-height: 28px; padding: 0; border-radius: 999px; transition: background-color 120ms var(--ease-out); }
+.panel-head h2 .goi-y-nut.is-icon svg { width: 19px; height: 19px; }
+.goi-y-nut.is-icon.is-cach-tinh svg { color: var(--brand); }
+.goi-y-nut.is-icon.is-tam-tinh svg { color: var(--warning); }
+.goi-y-nut.is-icon.is-cach-tinh:hover, .goi-y-nut.is-icon.is-cach-tinh:focus-visible { background: var(--blue-050); }
+.goi-y-nut.is-icon.is-tam-tinh:hover, .goi-y-nut.is-icon.is-tam-tinh:focus-visible { background: var(--warning-bg); }
+@media (pointer: coarse) { .panel-head h2 .goi-y-nut.is-icon { width: 44px; min-height: 44px; } }

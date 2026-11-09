@@ -130,27 +130,31 @@ function soLieuDonVi(d: DonViKT, thang: number): SoLieuKT {
   const g = prng(hatCua(2026, "ktts", d.id));
   const r = prng(hatCua(2026 * 100 + thang, "ktts-ky", d.id));
   const phong = Boolean(d.so);
+  /* Kịch bản demo: KT1 dẫn đầu cả năm ở 5 tiêu chí xếp hạng, cho cả
+     số liệu chung và đích danh. Các đơn vị khác giữ dữ liệu ngẫu nhiên
+     tất định. Điều chỉnh từ nguồn để bảng, tổng hợp và tệp xuất khớp nhau. */
+  const danDau = d.id === "KT1";
   /* Quy mô cả năm của đơn vị. Phòng QLHKD không có chỉ tiêu: chỉ có số hoàn thành. */
-  const giao = !d.coChiTieu ? 0 : phong ? 300 + Math.round(g() * 30) : 80 + Math.round(g() * 840);
-  const nam = d.coChiTieu ? giao * (0.95 + g() * 0.3) : 80 + g() * 30;
+  const giao = danDau ? 340 : !d.coChiTieu ? 0 : phong ? 300 + Math.round(g() * 30) : 80 + Math.round(g() * 840);
+  const nam = danDau ? giao * 1.28 : d.coChiTieu ? giao * (0.95 + g() * 0.3) : 80 + g() * 30;
   const namTruoc = nam * (0.62 + g() * 0.32);
-  const kh = d.coChiTieu ? Math.round(giao * (0.85 + g() * 0.06)) : 0;
-  const bq = phong ? 750 + g() * 950 : d.coChiTieu ? 90 + g() * 330 : 200 + g() * 60;
+  const kh = danDau ? 313 : d.coChiTieu ? Math.round(giao * (0.85 + g() * 0.06)) : 0;
+  const bq = danDau ? 1800 : phong ? 750 + g() * 950 : d.coChiTieu ? 90 + g() * 330 : 200 + g() * 60;
   const bqTruoc = bq * (0.65 + g() * 0.35);
   const tyGiamKT = 0.02 + g() * 0.12;
   const tyGiamLo = 0.3 + g() * 1.6;
-  const tyNop = 0.86 + g() * 0.13;
+  const tyNop = danDau ? 0.995 : 0.86 + g() * 0.13;
   const tyCoThu = 0.8 + g() * 0.18;
-  const ddNam = kh * (0.45 + g() * 0.35);
+  const ddNam = kh * (danDau ? 0.9 : 0.45 + g() * 0.35);
   const ddNamTruoc = ddNam * (0.35 + g() * 0.5);
   const chia = [0.32 + g() * 0.12, 0.12 + g() * 0.08, 0.18 + g() * 0.08, 0.14 + g() * 0.1, 0.08 + g() * 0.08];
 
   const htNay = Math.round(nam * nhipChung(thang));
   const htTruoc = Math.round(namTruoc * nhipChung(thang));
-  const thuNay = htNay * bq * (0.95 + r() * 0.1);
+  const thuNay = htNay * bq * (danDau ? 1.05 + r() * 0.02 : 0.95 + r() * 0.1);
   const ddNay = Math.min(htNay, Math.round(ddNam * nhipDichDanh(thang)));
   const ddTruoc = Math.round(ddNamTruoc * nhipDichDanh(thang));
-  const ddThu = ddNay * bq * (1 + r() * 0.25);
+  const ddThu = ddNay * bq * (danDau ? 1.2 + r() * 0.05 : 1 + r() * 0.25);
   const doDang = d.coChiTieu ? Math.round((phong ? 20 + g() * 40 : 4 + g() * 30) * (0.7 + r() * 0.5)) : 0;
   const chung: ChiSoKT = {
     giao, htTruoc, htNay, coTruyThu: Math.round(htNay * tyCoThu),

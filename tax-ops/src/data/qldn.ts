@@ -107,8 +107,19 @@ export function canBoCua(dvId: string): CanBoQ[] {
 
 /* ---------- Kỳ ---------- */
 
-export interface KyQ { id: string; nhan: string; thang: number }
+/*
+  `denNgay`: kỳ CHƯA khóa sổ, số mới đến ngày này của tháng. Biên bản
+  05/11/2026: "Đầu tháng số liệu chưa đủ, chỉ số hiện đỏ dễ gây hiểu nhầm nên
+  ẩn đi" — trước NGAY_DU_SO, mốc tháng trước và cùng kỳ không so (ô vẫn đứng
+  chỗ cũ, nói "Chưa so"). Mốc ngày 10 là GIẢ ĐỊNH, chờ Phòng Dự toán chốt.
+*/
+export interface KyQ { id: string; nhan: string; thang: number; denNgay?: number }
+export const NGAY_DU_SO = 10;
+export const chuaDuSo = (ky: KyQ) => ky.denNgay !== undefined && ky.denNgay < NGAY_DU_SO;
+/* Kỳ mở mặc định: tháng gần nhất đã khóa sổ — kỳ đang cập nhật chỉ mở khi chọn. */
+export const KY_Q_MAC_DINH = "2026-09";
 export const KY_Q: KyQ[] = [
+  { id: "2026-10", nhan: "Tháng 10/2026 · số đến 05/10", thang: 10, denNgay: 5 },
   { id: "2026-09", nhan: "Tháng 9/2026 · lũy kế từ 01/01", thang: 9 },
   { id: "2026-08", nhan: "Tháng 8/2026 · lũy kế từ 01/01", thang: 8 },
   { id: "2026-07", nhan: "Tháng 7/2026 · lũy kế từ 01/01", thang: 7 },

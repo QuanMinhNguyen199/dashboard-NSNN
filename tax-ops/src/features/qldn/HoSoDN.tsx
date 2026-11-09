@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { DetailGrid, Icon, TableWrap, integer } from "@/components/ui";
 import { TRANG_THAI_DN, type DongDN } from "@/data/qldn";
-import { hoSoDN, nghiepVuDN, type NamDN, type NghiepVuDN } from "@/data/hoSoQLDN";
+import { NHAN_RA_SOAT, hoSoDN, nghiepVuDN, quanHeNganSach, type DongNganSach, type NamDN, type NghiepVuDN } from "@/data/hoSoQLDN";
 
 /*
   Hồ sơ sức khỏe một doanh nghiệp (biên bản 22/10/2026 §3.2: "hiển thị lịch
@@ -44,13 +44,10 @@ const coKhong = (x: boolean) => x ? "Có" : "Không";
   Sáu khối nghiệp vụ, mỗi khối vài dòng nhãn – giá trị. Ô nào khác 0 / "Có"
   mới in đậm, để mắt dừng đúng chỗ có việc — không tô màu cả khối.
 */
-function KhoiNghiepVu({ nv, thang, soCuongChe }: { nv: NghiepVuDN; thang: number; soCuongChe: number }) {
+function KhoiNghiepVu({ nv, soCuongChe }: { nv: NghiepVuDN; soCuongChe: number }) {
   const khoi: { ten: string; dong: [string, string, boolean?][] }[] = [
-    { ten: "Thu NSNN", dong: [
-      [`Đã nộp tháng ${thang}/2026`, tien(nv.thu.thang)],
-      [`Lũy kế đến hết tháng ${thang}`, tien(nv.thu.luyKe)],
-      ["Cùng kỳ năm trước", nv.thu.cungKy ? tien(nv.thu.cungKy) : "Chưa thành lập"],
-    ] },
+    /* Khối "Thu NSNN" gỡ 09/11/2026: bảng Quan hệ ngân sách ở đầu hồ sơ đã
+       nói số đã nộp, còn nợ, nộp thừa theo từng tiểu mục. */
     { ten: "Nợ và cưỡng chế", dong: [
       ["Nợ thuế hiện tại", nv.no.hienTai ? tien(nv.no.hienTai) : "Không nợ", nv.no.hienTai > 0],
       ["Nợ đầu năm", tien(nv.no.dauNam)],
@@ -83,9 +80,69 @@ function KhoiNghiepVu({ nv, thang, soCuongChe }: { nv: NghiepVuDN; thang: number
   </div>)}</div>;
 }
 
+/*
+  Quan hệ ngân sách (biên bản 05/11/2026, việc 1 — ưu tiên cao nhất). Đứng
+  ĐẦU hồ sơ, ngay sau thông tin chung: đây là câu cán bộ đang phải đối chiếu
+  bằng tay — DN này còn thiếu bao nhiêu, thừa bao nhiêu, phần thừa đã rà chưa.
+
+  Câu trả lời đứng trước (dòng tóm tắt), bảng tiểu mục sau. Kết quả rà soát
+  nằm ngay dưới số thừa của đúng tiểu mục ấy, không tách thành khối riêng.
+  Cột của bảng còn chờ nghiệp vụ chốt — ghi chú cuối khối nói rõ.
+*/
+const trd = (x: number) => x ? integer(x) : "0";
+function QuanHeNganSach({ ds, thang }: { ds: DongNganSach[]; thang: number }) {
+  const tong = ds.reduce((a, x) => ({ noDauNam: a.noDauNam + x.noDauNam, phatSinh: a.phatSinh + x.phatSinh, daNop: a.daNop + x.daNop, conNo: a.conNo + x.conNo, thua: a.thua + x.thua }),
+    { noDauNam: 0, phatSinh: 0, daNop: 0, conNo: 0, thua: 0 });
+  const chuaRa = ds.filter((x) => x.raSoat === "CHUA").length;
+  const den = ngayVN(new Date(2026, thang, 0));
+  return <section className="qd-dn-khoi" aria-labelledby="qd-dn-ns">
+    <h3 id="qd-dn-ns">Quan hệ ngân sách<small>đến hết ngày {den} · triệu đồng</small></h3>
+    <p className="qd-ns-tom">
+      {!tong.conNo && !tong.thua
+        ? <span>Không còn nợ, không nộp thừa ở tiểu mục nào.</span>
+        : <>
+          <span>Còn nợ <b className={tong.conNo ? "is-xau" : undefined}>{trd(tong.conNo)}</b></span>
+          <span>Nộp thừa <b>{trd(tong.thua)}</b>{tong.thua > 0 && <small className={chuaRa ? "is-cho" : "is-tot"}>{chuaRa ? `${chuaRa} tiểu mục chưa rà soát` : "đã rà soát"}</small>}</span>
+        </>}
+    </p>
+    <TableWrap label="quan hệ ngân sách theo tiểu mục">
+      <table className="qd-bang qd-dn-bang qd-ns-bang">
+        <thead><tr>
+          <th scope="col">Tiểu mục</th>
+          <th scope="col" className="num">Nợ đầu năm</th>
+          <th scope="col" className="num" title="Số phải nộp phát sinh trong năm">Phát sinh</th>
+          <th scope="col" className="num">Đã nộp</th>
+          <th scope="col" className="num">Còn nợ</th>
+          <th scope="col" className="num">Nộp thừa</th>
+        </tr></thead>
+        <tbody>{ds.map((x) => <tr key={x.tieuMuc}>
+          <th scope="row">{x.ten}<small>Tiểu mục {x.tieuMuc}</small></th>
+          <td className="num">{trd(x.noDauNam)}</td>
+          <td className="num">{trd(x.phatSinh)}</td>
+          <td className="num">{trd(x.daNop)}</td>
+          <td className="num">{x.conNo ? <strong className="is-xau">{integer(x.conNo)}</strong> : <span className="cell-empty">0</span>}</td>
+          <td className="num">{x.thua
+            ? <><strong>{integer(x.thua)}</strong><small className={`qd-ns-rs is-${x.raSoat!.toLowerCase()}`}>{NHAN_RA_SOAT[x.raSoat!]}</small></>
+            : <span className="cell-empty">0</span>}</td>
+        </tr>)}</tbody>
+        <tfoot><tr>
+          <th scope="row">Tổng</th>
+          <td className="num">{trd(tong.noDauNam)}</td>
+          <td className="num">{trd(tong.phatSinh)}</td>
+          <td className="num">{trd(tong.daNop)}</td>
+          <td className="num">{trd(tong.conNo)}</td>
+          <td className="num">{trd(tong.thua)}</td>
+        </tr></tfoot>
+      </table>
+    </TableWrap>
+    <p className="qd-dn-trong">Mỗi dòng: nợ đầu năm + phát sinh − đã nộp = còn nợ − nộp thừa. Cột và cách rà soát nộp thừa chờ nghiệp vụ chốt (biên bản 05/11/2026, việc 1).</p>
+  </section>;
+}
+
 export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
   const hs = useMemo(() => hoSoDN(d), [d]);
   const nv = useMemo(() => nghiepVuDN(d, thang), [d, thang]);
+  const ns = useMemo(() => quanHeNganSach(d), [d]);
   const nam = hs.nam.filter((n) => n.co);
   const ttTen = TRANG_THAI_DN.find((t) => t.id === d.trangThai)!.ten;
 
@@ -102,19 +159,16 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
       { label: "Ngành nghề kinh doanh chính", value: nv.nganhNghe },
     ]}/>
 
+    <QuanHeNganSach ds={ns} thang={thang}/>
+
     <section className="qd-dn-khoi" aria-labelledby="qd-dn-nv">
       <h3 id="qd-dn-nv">Tình hình theo nghiệp vụ<small>đến hết tháng {thang}/2026</small></h3>
-      <KhoiNghiepVu nv={nv} thang={thang} soCuongChe={hs.cuongChe.filter((c) => c.conHieuLuc).length}/>
+      <KhoiNghiepVu nv={nv} soCuongChe={hs.cuongChe.filter((c) => c.conHieuLuc).length}/>
     </section>
 
-    <section className="qd-dn-khoi" aria-labelledby="qd-dn-xl">
-      <h3 id="qd-dn-xl">Xếp loại sức khỏe</h3>
-      <div className="qd-dn-cho">
-        <Icon name="clock" size={18}/>
-        <p><strong>Chưa xếp loại</strong><span>Chờ Phòng Kiểm tra gửi tiêu chí đánh giá và cách so sánh với các năm trước (biên bản 22/10/2026, việc số 3). Số liệu bên dưới là đầu vào cho xếp loại.</span></p>
-      </div>
-    </section>
-
+    {/* Ô "Xếp loại sức khỏe" gỡ 09/11/2026 (gọn thông tin): đang trống, chờ
+        Phòng Kiểm tra gửi tiêu chí (biên bản 22/10/2026, việc số 3). Đặt lại
+        ở đây, ngay sau tình hình nghiệp vụ, khi có tiêu chí. */}
     <section className="qd-dn-khoi" aria-labelledby="qd-dn-dh">
       <h3 id="qd-dn-dh">Dấu hiệu rủi ro{hs.dauHieu.length > 0 && <small>{hs.dauHieu.length} dấu hiệu</small>}</h3>
       {hs.dauHieu.length
@@ -177,6 +231,5 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
         <span className={`qd-dn-nhan ${t.ketQua === "Đã chấp nhận" ? "is-tot" : t.ketQua === "Đang giải quyết" ? "is-tat" : "is-cho"}`}>{t.ketQua}</span>
       </li>)}</ol>
     </section>
-    <p className="quality-note">Số liệu mô phỏng.</p>
   </div>;
 }

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useThamSo } from "@/state/diaChi";
 import type { ViewId } from "@/domain/types";
 
@@ -335,6 +335,13 @@ export function ThanhMuc({ view }: { view: ViewId }) {
     562px — hơn một màn rưỡi — nên đây không phải lo xa.
   • Tab đang mở tự cuộn vào tầm nhìn khi đổi mục. Không có nó thì mở một báo
     cáo ở cuối hàng xong, hàng vẫn đứng ở đầu và không gì sáng trong tầm mắt.
+
+  Dấu "đang mở" là MỘT vật thể trượt (09/11/2026): gạch chân ở hàng chính,
+  nền viên thuốc ở hàng con. Trước đây mỗi tab tự vẽ dấu của mình, nên đổi tab
+  là dấu tắt ở chỗ này và bật ở chỗ kia — mắt không theo được nó đi đâu. Nay
+  dấu trượt từ tab cũ sang tab mới, trả lời đúng cú bấm. Lần đặt đầu tiên và
+  khi đổi khổ thì đặt thẳng, không trượt từ mép trái vào. Giảm chuyển động thì
+  dấu vẫn đổi chỗ, chỉ không trượt (CSS).
 */
 export function HangTab({ children, lop, khoaMo }: { children: ReactNode; lop: string; khoaMo: string }) {
   const vung = useRef<HTMLDivElement>(null);
@@ -367,5 +374,29 @@ export function HangTab({ children, lop, khoaMo }: { children: ReactNode; lop: s
     nut.scrollIntoView({ inline: "nearest", block: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, [khoaMo]);
 
-  return <div ref={vung} className={lop} data-mep={mep}>{children}</div>;
+  const chi = useRef<HTMLSpanElement>(null);
+  const daDat = useRef(false);
+  useLayoutEffect(() => {
+    const el = vung.current, c = chi.current;
+    if (!el || !c) return;
+    const dat = (truot: boolean) => {
+      const nut = el.querySelector<HTMLElement>("[data-mo]");
+      if (!nut) { c.style.opacity = "0"; return; }
+      c.classList.toggle("is-tuc", !truot);
+      c.style.opacity = "1";
+      c.style.width = `${nut.offsetWidth}px`;
+      c.style.height = `${nut.offsetHeight}px`;
+      c.style.transform = `translate(${nut.offsetLeft}px, ${nut.offsetTop}px)`;
+    };
+    dat(daDat.current);
+    daDat.current = true;
+    /* ResizeObserver gọi một lần ngay khi bắt đầu theo dõi — lần ấy bỏ qua,
+       không thì nó đặt thẳng dấu và cắt ngang cú trượt vừa bắt đầu. */
+    let lanDau = true;
+    const theoDoi = new ResizeObserver(() => { if (lanDau) { lanDau = false; return; } dat(false); });
+    theoDoi.observe(el);
+    return () => theoDoi.disconnect();
+  }, [khoaMo, children]);
+
+  return <div ref={vung} className={`${lop} co-chi`} data-mep={mep}><span ref={chi} className="muc-chi" aria-hidden="true"/>{children}</div>;
 }

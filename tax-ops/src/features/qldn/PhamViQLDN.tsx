@@ -3,7 +3,7 @@ import { Button as AriaButton, Input, SearchField as AriaSearchField } from "rea
 import { Checkbox, Icon, MenuPop, SelectMenu } from "@/components/ui";
 import type { DemoUser } from "@/auth/demoAuth";
 import {
-  DON_VI_Q, KY_Q, NHAN_CHI_SO, NHAN_KHOI, NHAN_VAI_Q, TAT_CA_ID, choChotCua, nhanPhamVi, phamViCua,
+  DON_VI_Q, KY_Q, KY_Q_MAC_DINH, NHAN_CHI_SO, NHAN_KHOI, NHAN_VAI_Q, TAT_CA_ID, choChotCua, nhanPhamVi, phamViCua,
   type Khoi, type KyQ, type PhamVi,
 } from "@/data/qldn";
 
@@ -19,7 +19,7 @@ const Ngu = createContext<{ chon: string[]; datChon: (ds: string[]) => void; kyI
 
 export function PhamViProvider({ children }: { children: ReactNode }) {
   const [chon, datChon] = useState<string[]>([]);
-  const [kyId, datKyId] = useState(KY_Q[0].id);
+  const [kyId, datKyId] = useState(KY_Q_MAC_DINH);
   /* Phòng trưởng phòng đang xem: "" = phòng của mình, "P1"…"P5", hoặc "TCS". */
   const [xem, datXem] = useState("");
   const gia = useMemo(() => ({ chon, datChon, kyId, datKyId, xem, datXem }), [chon, kyId, xem]);
@@ -56,7 +56,7 @@ export function usePhamVi(user: DemoUser): { pv: PhamVi | null; ky: KyQ; datKy: 
     const donVi = ngu.xem === "TCS" ? DON_VI_Q.filter((d) => d.khoi === "TCS") : DON_VI_Q.filter((d) => d.id === ngu.xem);
     return donVi.length ? { ...goc, donVi, phongGoc: goc.donVi[0] } : goc;
   }, [user, ngu.chon, ngu.xem]);
-  return { pv, ky: KY_Q.find((k) => k.id === ngu.kyId) ?? KY_Q[0], datKy: ngu.datKyId };
+  return { pv, ky: KY_Q.find((k) => k.id === ngu.kyId) ?? KY_Q.find((k) => k.id === KY_Q_MAC_DINH)!, datKy: ngu.datKyId };
 }
 
 /* Bảy lựa chọn chia hai nhóm theo khối (SelectMenu, nhóm thay `optgroup`). */
