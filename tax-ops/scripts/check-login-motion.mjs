@@ -50,7 +50,7 @@ try {
         assert.equal(loading.wave, reduce ? 'none' : 'portal-dot-wave');
         assert.equal(loading.delays.length, 3, 'Loading uses three dots');
         if (!reduce) assert.ok(loading.delays.every((delay, i, delays) => i === 0 || delay > delays[i - 1]), 'Loading dots move in order from left to right');
-        assert.equal(loading.title, nsnn ? 'Dashboard Thu NSNN' : 'Quản lý nghiệp vụ Thuế');
+        assert.equal(loading.title, nsnn ? 'Dashboard Thu NSNN' : 'Quản lý Thuế');
         assert.equal(await page.$('.portal-flight-ring'), null, 'Letter wave replaces the spinner');
         if (!reduce) await page.screenshot({ path: fileURLToPath(new URL(`${suffix}-loading.png`, artifacts)) });
         await page.waitForSelector(nsnn ? '.dworkspace' : '.workspace');

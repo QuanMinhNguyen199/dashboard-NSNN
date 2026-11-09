@@ -51,7 +51,7 @@ export function LoginScreen({ onLogin, dashboard = false }: { onLogin: (user: De
     <section className="login-context" aria-label="Nhận diện hệ thống">
       <div className="login-mark">
         <TaxLogo/>
-        <strong>{dashboard ? "Dashboard Thu NSNN" : "Quản lý nghiệp vụ Thuế"}</strong>
+        <strong>{dashboard ? "Dashboard Thu NSNN" : "Quản lý Thuế"}</strong>
         <span className="login-rule" aria-hidden="true"/>
         <small>Thuế thành phố Hà Nội</small>
       </div>

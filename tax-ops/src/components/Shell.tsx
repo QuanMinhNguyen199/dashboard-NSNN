@@ -102,7 +102,7 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
   </>;
 
   const nav = <>
-    <div className="brand"><TaxLogo/><div><strong>Quản lý nghiệp vụ Thuế</strong><span>Thuế TP Hà Nội</span></div>{nutThuGon}</div>
+    <div className="brand"><TaxLogo/><div><strong>Quản lý Thuế</strong><span>Thuế TP Hà Nội</span></div>{nutThuGon}</div>
     <nav className="side-nav" aria-label="Nghiệp vụ chính">
       {NHOM.map(({ id: nhom, nhan }) => {
         const muc = duoc.filter((item) => item.nhom === nhom);

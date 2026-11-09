@@ -141,14 +141,14 @@ export function App() {
 
   useEffect(() => {
     if (!user) {
-      document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý nghiệp vụ Thuế";
+      document.title = dashboardLogin ? "Đăng nhập – Dashboard Thu NSNN" : "Đăng nhập – Quản lý Thuế";
       return;
     }
     const title: Record<ViewId, string> = { doituong: "Tổng quan đối tượng", dieuhanh: "Tổng quan quản trị", "kq-thu": "Thu NSNN", "kq-no": "Quản lý nợ", "kq-kekhai": "Quản lý kê khai", "kq-hoadon": "Quản lý hóa đơn", "kq-tongdai": "Tổng đài hỗ trợ NNT", "kq-kttb": "Phòng kiểm tra", "kq-hoan": "Hoàn thuế", canhbao: "Cảnh báo nhắc việc", debt: "Báo cáo công tác nợ", risk: "Kiểm tra tại bàn", hoadon: "Rủi ro hóa đơn", hoan: "Hoàn thuế TNCN và tổng đài", tinhtrang: "Tình trạng dữ liệu", giamsat: "Giám sát dữ liệu" };
     /* Tiêu đề theo màn THẬT SỰ hiện ra: vai không mở được màn trên địa chỉ rơi về màn đầu của vai. */
     const duocMo = navCho(user);
     const hien = duocMo.some((m) => m.id === view) ? view : duocMo[0]?.id ?? view;
-    document.title = `${title[hien]} – Quản lý nghiệp vụ Thuế`;
+    document.title = `${title[hien]} – Quản lý Thuế`;
   }, [user, view]);
 
   const login = (next: DemoUser) => {
@@ -232,7 +232,7 @@ function NoAccess({ user, onLogout }: { user: DemoUser; onLogout: () => void }) 
           chụp gửi đi nhất. */}
       <div className="no-access-brand">
         <TaxLogo/>
-        <div><strong>Quản lý nghiệp vụ Thuế</strong><small>Thuế TP Hà Nội</small></div>
+        <div><strong>Quản lý Thuế</strong><small>Thuế TP Hà Nội</small></div>
       </div>
       <p className="no-access-status" role="status">Đang mở Dashboard Thu NSNN…</p>
       <h1>Tài khoản này không dùng Web quản lý nghiệp vụ</h1>
