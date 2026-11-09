@@ -2,7 +2,10 @@ import './portalTransition.css';
 
 const key = 'portal-login-motion-v1';
 const ease = 'cubic-bezier(0.16, 1, 0.3, 1)';
-type Flight = { src: string; time: number; title: string; loadingAt?: number };
+type Box = { x: number; y: number; width: number; height: number };
+/* `out`: đang đăng xuất — logo đã đứng giữa lớp phủ kín ở `box`, chờ trang
+   đăng nhập dựng xong để bay về chỗ của nó. */
+type Flight = { src: string; time: number; title: string; loadingAt?: number; out?: boolean; box?: Box | null };
 let flight: Flight | null = null;
 let overlay: HTMLDivElement | null = null;
 let safety: number | undefined;
@@ -53,8 +56,8 @@ function stage(src: string, title: string) {
   return overlay;
 }
 
-async function play(el: Element, frames: Keyframe[], duration: number) {
-  const animation = el.animate(frames, { duration, easing: ease, fill: 'forwards' });
+async function play(el: Element, frames: Keyframe[], duration: number, easing = ease) {
+  const animation = el.animate(frames, { duration, easing, fill: 'forwards' });
   try { await animation.finished; } catch { /* Cancellation is a valid interruption. */ }
   animation.commitStyles?.();
   animation.cancel();
@@ -122,9 +125,117 @@ export async function departLogin(logo: HTMLImageElement, commit: () => void) {
   }
 }
 
+const brandSelector = '.brand .tax-logo, .dheader-mark i';
+const isVisible = (el: HTMLElement) => {
+  const r = el.getBoundingClientRect();
+  return getComputedStyle(el).visibility === 'visible' && r.width > 0 && r.height > 0 && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
+};
+const plainBox = (r: DOMRect): Box => ({ x: r.x, y: r.y, width: r.width, height: r.height });
+
+/* Đặt logo của lớp phủ lên đúng `box` (hoặc giữa màn), ẩn nếu chưa có ảnh. */
+function placeMark(layer: HTMLElement, box: Box | null | undefined, src: string) {
+  const mark = layer.querySelector<HTMLElement>('.portal-flight-mark')!;
+  mark.style.transform = box ? markPlacement(layer, mark, box) : '';
+  mark.style.opacity = src ? '1' : '0';
+  return mark;
+}
+
+/**
+ * Đăng xuất — chiều ngược của đăng nhập (09/11/2026): nền navy khép vòng vào
+ * logo ở khung điều hướng, rồi mới đổi sang trang đăng nhập. Phần còn lại
+ * (logo bay về trang đăng nhập) chạy trong `installLoginArrival`, nên dùng
+ * được cả khi `commit` tải sang tài liệu khác (Dashboard NSNN).
+ */
+export async function departWorkspace(commit: () => void) {
+  if (flight) { commit(); return; }
+  const root = document.getElementById('root');
+  const source = root ? [...root.querySelectorAll<HTMLElement>(brandSelector)].find(isVisible) : undefined;
+  const src = source instanceof HTMLImageElement ? source.src : '';
+  const box = source ? plainBox(source.getBoundingClientRect()) : null;
+  remember({ src, time: Date.now(), title: '', out: true, box });
+  const layer = stage(src, '');
+  layer.dataset.dir = 'out';
+  if (root) root.inert = true;
+  const mark = placeMark(layer, box, src);
+  try {
+    if (reduced()) {
+      await play(layer, [{ opacity: 0 }, { opacity: 1 }], 120);
+    } else {
+      const hole = layer.querySelector<SVGCircleElement>('.portal-reveal-hole')!;
+      const cx = box ? box.x + box.width / 2 : innerWidth / 2;
+      const cy = box ? box.y + box.height / 2 : innerHeight / 2;
+      const radius = Math.ceil(Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy))) + 2;
+      hole.setAttribute('cx', String(cx));
+      hole.setAttribute('cy', String(cy));
+      hole.setAttribute('r', String(radius));
+      // Logo của lớp phủ trùng khít logo thật, nên chỉ hiện khi vòng đã khép.
+      mark.style.opacity = '0';
+      const close = hole.animate([{ r: `${radius}px` }, { r: '0px' }], { duration: 560, easing: 'cubic-bezier(0.8, 0, 0.55, 1)', fill: 'forwards' });
+      await close.finished.catch(() => undefined);
+      hole.setAttribute('r', '0');
+      close.cancel();
+      if (src) mark.style.opacity = '1';
+    }
+    commit();
+  } catch (error) {
+    finish();
+    commit();
+    throw error;
+  }
+}
+
+/* Trang đăng nhập đã dựng sau lớp phủ: logo bay về chỗ của nó, lớp phủ tan. */
+function arriveAtLogin(root: HTMLElement) {
+  const target = root.querySelector<HTMLImageElement>('.login-page .login-mark .tax-logo');
+  if (!flight || !target) return;
+  arriving = true;
+  const layer = stage(flight.src, '');
+  layer.dataset.dir = 'out';
+  root.inert = true;
+  const mark = layer.querySelector<HTMLElement>('.portal-flight-mark')!;
+  const img = mark.querySelector('img')!;
+  void (async () => {
+    try {
+      await Promise.all([document.fonts.ready, new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))]);
+      if (!img.getAttribute('src')) img.src = target.src;
+      const end = markPlacement(layer, mark, plainBox(target.getBoundingClientRect()));
+      const backdrop = layer.querySelector<HTMLElement>('.portal-flight-backdrop')!;
+      if (reduced()) {
+        mark.style.opacity = '0';
+        await play(backdrop, [{ opacity: 1 }, { opacity: 0 }], 120);
+      } else {
+        /* 09/11/2026 (người dùng: "giật frame khi hiện đủ"):
+           • Chỉ NỀN tan; logo bay nằm trên cùng tới hết, nên logo không tối
+             đi rồi sáng lại như khi tan cả lớp phủ đè lên logo thật.
+           • Nền bắt đầu tan khi logo đã đi quá nửa đường — đuôi easing dài,
+             chờ hết mới tan thì logo đứng im ~0,4 giây trước khi trang hiện. */
+        target.style.visibility = 'hidden';
+        const from = mark.style.transform || 'translate(0, 0) scale(1)';
+        const wasShown = mark.style.opacity !== '0';
+        mark.style.opacity = '1';
+        const fly = 560;
+        await Promise.all([
+          play(mark, [{ transform: from, opacity: wasShown ? 1 : 0 }, { transform: end, opacity: 1 }], fly),
+          new Promise<void>(resolve => window.setTimeout(resolve, fly * 0.45))
+            /* Tan đều hai đầu: ease-out mạnh lộ nửa trang trong ~50ms đầu,
+               mắt thấy như bật chứ không như tan. */
+            .then(() => play(backdrop, [{ opacity: 1 }, { opacity: 0 }], 420, 'cubic-bezier(0.45, 0, 0.55, 1)')),
+        ]);
+      }
+      // Đổi logo bay sang logo thật trong cùng một khung hình: finish() gỡ
+      // lớp phủ ngay sau dòng này, trước lần vẽ kế tiếp.
+      target.style.visibility = '';
+    } finally {
+      target.style.visibility = '';
+      finish();
+    }
+  })();
+}
+
 /** Resume the same mark after either a React update or a portal document load. */
 export function installLoginArrival(root: HTMLElement) {
   const arrive = () => {
+    if (flight?.out) { if (!arriving) arriveAtLogin(root); return; }
     if (!flight || arriving || root.querySelector('.login-page')) return;
     const target = [...root.querySelectorAll<HTMLElement>('.brand .tax-logo, .dheader-mark i')]
       .find(el => {
@@ -201,8 +312,15 @@ try {
   const stored: Flight | null = JSON.parse(sessionStorage.getItem(key) ?? 'null');
   if (stored && typeof stored.src === 'string' && typeof stored.title === 'string' && Date.now() - stored.time < 8000) {
     flight = stored;
-    document.documentElement.dataset.portalEntering = '';
-    stage(stored.src, stored.title).classList.add('is-loading');
+    if (stored.out) {
+      // Đăng xuất sang tài liệu khác: lớp phủ đã kín, logo đứng nguyên chỗ cũ.
+      const layer = stage(stored.src, '');
+      layer.dataset.dir = 'out';
+      placeMark(layer, stored.box, stored.src);
+    } else {
+      document.documentElement.dataset.portalEntering = '';
+      stage(stored.src, stored.title).classList.add('is-loading');
+    }
   } else sessionStorage.removeItem(key);
 } catch { /* No persisted flight to resume. */ }
 

@@ -37,10 +37,12 @@ try {
   await page.setViewport({ width: 1440, height: 900 });
   await page.goto(dashboard.href);
   await page.waitForSelector(".login-page");
+  await chuyenCanhXong();
   for (const role of ["cv.ql1", "tp.ql1", "cv.ql3", "tp.ql3", "vanhanh.dulieu", "lanhdao.nhanuoc"]) {
     const state = role === "lanhdao.nhanuoc";
     await page.goto(state ? dashboard.href : management.href);
     await page.waitForSelector(".login-page");
+    await chuyenCanhXong();
     assert.equal(await page.$$eval(".demo-accounts-list button", buttons => buttons.length), state ? 1 : soNghiepVu);
     if (state) {
       await page.screenshot({ path: fileURLToPath(new URL("portal-login-nsnn-desktop.png", review)) });
@@ -79,9 +81,11 @@ try {
     }
     else await page.click(".sidebar .logout-button");
     await page.waitForSelector(".login-page");
+    await chuyenCanhXong();
     assert.equal(new URL(page.url()).pathname, state ? `${dashboard.pathname}dang-nhap/` : management.pathname);
     await page.goto(dashboard.href);
     await page.waitForSelector(".login-page");
+    await chuyenCanhXong();
     console.log(`PASS ${role}: same origin, redirect, reload, direct URL, logout`);
   }
   assert.deepEqual(errors, []);
