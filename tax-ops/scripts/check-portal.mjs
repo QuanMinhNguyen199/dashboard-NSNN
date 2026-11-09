@@ -21,6 +21,13 @@ const management = new URL("quan-ly/", base);
 const nguon = await readFile(new URL("../src/auth/demoAuth.ts", import.meta.url), "utf8");
 const soNghiepVu = [...nguon.matchAll(/permissions: \["TAX_OPS_VIEW"\]/g)].length;
 assert.ok(soNghiepVu > 0, "Không đọc được danh sách tài khoản nghiệp vụ trong demoAuth.ts");
+
+/*
+  Đăng nhập có hiệu ứng chuyển cảnh (shared/portalTransition.ts): lớp phủ
+  .portal-flight che trang và khóa #root (inert) tới khi mở xong. Thao tác
+  trước lúc đó thì cú bấm rơi vào lớp phủ, không tới giao diện.
+*/
+const chuyenCanhXong = () => page.waitForSelector(".portal-flight", { hidden: true, timeout: 15000 });
 
 const browser = await puppeteer.launch({ channel: "chrome", headless: true });
 const page = await browser.newPage();
@@ -45,18 +52,22 @@ try {
       .find(button => button.querySelector("code")?.textContent === label).click(), role);
     const selector = state ? ".dheader" : ".workspace";
     await page.waitForSelector(selector);
+    await chuyenCanhXong();
     assert.equal(new URL(page.url()).origin, base.origin);
     assert.equal(new URL(page.url()).pathname, state ? dashboard.pathname : management.pathname);
     await page.reload();
     await page.waitForSelector(selector);
+    await chuyenCanhXong();
     if (!state) {
       await page.goto(dashboard.href);
       await page.waitForSelector(".workspace");
+      await chuyenCanhXong();
       assert.equal(new URL(page.url()).pathname, management.pathname);
     } else {
       await page.goto(base.href);
       await page.waitForSelector(".dheader");
       await page.waitForSelector(".dkpis");
+      await chuyenCanhXong();
       assert.equal(new URL(page.url()).pathname, dashboard.pathname);
       await page.screenshot({ path: fileURLToPath(new URL("portal-nsnn-desktop.png", review)) });
       await page.setViewport({ width: 390, height: 844 });
