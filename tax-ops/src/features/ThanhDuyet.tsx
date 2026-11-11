@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { Badge, Button } from "@/components/ui";
 import { useAction } from "@/state/ActionContext";
 import { useDuyet } from "@/state/DuyetContext";
@@ -250,8 +251,9 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null, tomTat }: {
     <div className="duyet-trai">
       <Badge tone={SAC[b.trangThai]}>{NHAN[b.trangThai]}</Badge>
       <div className="duyet-chu">
-        <strong>{nhanKy}{b.soBanDaDuyet > 0 && b.trangThai !== "APPROVED" ? " · bản thay thế" : ""}</strong>
-        <span>{DIEN_GIAI[b.trangThai]}</span>
+        {/* Gọn chữ 11/11/2026: câu diễn giải trạng thái vào ⓘ cạnh tên kỳ — nhãn
+            trạng thái bên trái đã nói "Nháp / Chờ duyệt / Đã duyệt". */}
+        <strong>{nhanKy}{b.soBanDaDuyet > 0 && b.trangThai !== "APPROVED" ? " · bản thay thế" : ""}<GhiChu tieuDe={NHAN[b.trangThai]}>{DIEN_GIAI[b.trangThai]}</GhiChu></strong>
       </div>
     </div>
 

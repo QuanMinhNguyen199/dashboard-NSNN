@@ -1,4 +1,5 @@
 import { useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { FieldError, Input, Label, TextArea, TextField } from "react-aria-components";
 import { Badge, Button, Pager, Panel, SearchField, Segmented, SelectMenu, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
@@ -263,6 +264,7 @@ export function DoiSoatKT({ ky, actor }: { ky: KyQ; actor: string }) {
   }), { period: `Tháng ${thang}/2026`, scope: "Các Phòng Kiểm tra", actor, status: "DRAFT" }, `doi-soat-kiem-tra_2026-${String(thang).padStart(2, "0")}.xlsx`);
 
   return <Panel title={`${bieu.tieuDe[0]}${bieu.tieuDe.slice(1).toLowerCase()} tháng ${String(thang).padStart(2, "0")}/2026`}
+    tieuDeKem={<GhiChu tieuDe="Cách tổng hợp">Tổng hợp từ dữ liệu các đoàn kiểm tra nhập ở tab Cuộc kiểm tra (dữ liệu mô phỏng). Đối soát đếm trong số cuộc đã đăng ký của tháng những cuộc ban hành / hoàn thành ngay trong tháng đó; cuộc trễ sang tháng sau không tính là đúng hẹn (giả định cách đếm, chờ Phòng Kiểm tra xác nhận).</GhiChu>}
     subtitle={tomTat(b, thang, dong, tong)}
     actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="pkt-bieu-chon"><Segmented label="Biểu" value={b} onChange={datB} options={BIEU.map((x) => ({ value: x.id, label: x.nhan }))}/></div>
@@ -281,6 +283,5 @@ export function DoiSoatKT({ ky, actor }: { ky: KyQ; actor: string }) {
         <tfoot><tr><th scope="row">Tổng cộng</th>{cot.map((c, i) => <td key={i} className="num">{c.o(tong)}</td>)}</tr></tfoot>
       </table>
     </TableWrap>
-    <p className="pkt-chu-thich">Tổng hợp từ dữ liệu các đoàn kiểm tra nhập ở tab Cuộc kiểm tra (dữ liệu mô phỏng). Đối soát đếm trong số cuộc đã đăng ký của tháng những cuộc ban hành / hoàn thành ngay trong tháng đó; cuộc trễ sang tháng sau không tính là đúng hẹn (giả định cách đếm, chờ Phòng Kiểm tra xác nhận).</p>
   </Panel>;
 }

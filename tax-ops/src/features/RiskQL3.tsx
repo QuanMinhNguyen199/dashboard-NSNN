@@ -1,4 +1,5 @@
 import { useEffect, useMemo, type ReactNode } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { PageIntro, Panel, TableWrap, integer, money } from "@/components/ui";
 import { ThanhMuc } from "@/components/MucPhanHe";
 import { BoLocChung, useBoLoc, useKhoaDonVi } from "@/components/BoLoc";
@@ -200,7 +201,7 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     />}
 
     {tab === "kpi" && <KpiQL3 trongPhamVi={trongPhamVi} ky={ky} vaiTro={vaiTro}/>}
-    {tab === "ketqua" && <Panel chinh title="Tổng hợp kết quả theo đơn vị" subtitle={`Lũy kế đến ${ky.denNgay}`}>
+    {tab === "ketqua" && <Panel chinh title="Tổng hợp kết quả theo đơn vị" tieuDeKem={<GhiChu tieuDe="Cách đọc">Cột &quot;đã hoàn thành&quot; không tính hồ sơ đang chờ giải trình, nên luôn nhỏ hơn &quot;đã thực hiện&quot;. Tỷ lệ theo KPI vượt 100% là bình thường, vì KPI do từng đơn vị tự đăng ký theo tháng.</GhiChu>} subtitle={`Lũy kế đến ${ky.denNgay}`}>
       {trongPhamVi.length === 0
         ? <div className="empty-state"><strong>Không có đơn vị nào trong phạm vi lọc</strong></div>
         : <TableWrap label="tổng hợp kết quả kiểm tra tại bàn theo đơn vị"><table
@@ -229,12 +230,6 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
               </>}
             </tbody>
           </table></TableWrap>}
-      <footer className="table-footer">
-        <p className="bang-ghi-chu">
-          Cột "đã hoàn thành" không tính hồ sơ đang chờ giải trình, nên luôn nhỏ hơn "đã thực hiện".
-          Tỷ lệ theo KPI vượt 100% là bình thường, vì KPI do từng đơn vị tự đăng ký theo tháng.
-        </p>
-      </footer>
     </Panel>}
   </div></XuatProvider>;
 }

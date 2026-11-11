@@ -1,4 +1,5 @@
 import { Fragment, useState, type ReactNode } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { Button as AriaButton, Disclosure, DisclosurePanel } from "react-aria-components";
 import { useThamSo } from "@/state/diaChi";
 import { Button, Checkbox, Icon, integer, MenuPop, NhomNut, Panel, SelectMenu, TableWrap } from "@/components/ui";
@@ -245,7 +246,7 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
   };
   const donVi = (loc: (d: DonViKT) => boolean, cap: number) => DON_VI_KT.filter(loc).map((d) => dong(d.id, d.ten, cap, d));
 
-  return <Panel chinh title="Chi tiết theo đơn vị" subtitle={`${dd ? "Kế hoạch đích danh" : "Tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel chinh title="Chi tiết theo đơn vị" tieuDeKem={<GhiChu tieuDe="Cách đọc">Bấm một khối hoặc cụm để mở đơn vị bên trong. Cụm nội thành / ngoại thành đang chia tạm theo quận, huyện.</GhiChu>} subtitle={`${dd ? "Kế hoạch đích danh" : "Tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
       <ChonCot nhom={nhomGoc} dd={dd} hien={hien} datHien={datHien}/>
       <Button kind="secondary" className="kt-mo-het" onClick={doiMoHet}>{moHet ? "Thu gọn tất cả" : "Mở tất cả"}</Button>
@@ -274,9 +275,6 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
         </tbody>
       </table>
     </TableWrap>
-    <div className="table-footer">
-      <span>Bấm một khối hoặc cụm để mở đơn vị bên trong. Cụm nội thành / ngoại thành đang chia tạm theo quận, huyện.</span>
-    </div>
   </Panel>;
 }
 
@@ -365,7 +363,7 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
      điều chính. Muốn biết đơn vị nào cao nhất ở cột khác thì chọn "Xếp hạng theo". */
   const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : nhom === "tcs" ? `Nội thành và ngoại thành · ${dv.length} Thuế cơ sở` : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
-  return <Panel title="Xếp hạng đơn vị" subtitle={`${tenNhom} · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel title="Xếp hạng đơn vị" tieuDeKem={<GhiChu tieuDe="Cách đọc">Màu đỏ: đơn vị nhóm cuối theo tiêu chí đang chọn. Đồng giá trị thì cùng hạng; “—” không xếp hạng.</GhiChu>} subtitle={`${tenNhom} · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
     actions={<div className="inline-controls kt-dieu-khien">
       <SelectMenu label="Xếp hạng theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
         { value: "", label: `Xếp hạng theo ${nhanTyLe.toLowerCase()}` },
@@ -396,7 +394,7 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
           const cuoi = hangChinh.cuoi.has(x.d.id);
           return <tr key={x.d.id} className={cuoi ? "is-cuoi" : undefined}>
             <td className="num kt-dg-hang" title={hang === undefined ? "Chưa tính được chỉ số, không xếp hạng" : `Hạng ${hang} theo ${chinh.nhan.toLowerCase()}`}>{hang ?? "—"}</td>
-            <th scope="row"><span className="kt-dg-ten">{x.d.ten}{cuoi && <em className="kt-cuoi" title={`Thuộc nhóm thấp nhất theo ${chinh.nhan.toLowerCase()}`}>{soCuoi === 1 ? "Hạng cuối" : "Nhóm cuối"}</em>}</span></th>
+            <th scope="row"><span className="kt-dg-ten">{x.d.ten}{cuoi && <span className="sr-only">, {soCuoi === 1 ? "hạng cuối" : "nhóm cuối"} theo {chinh.nhan.toLowerCase()}</span>}</span></th>
             <td className="kt-dg-cot-thanh">
               <span className="kt-dg-thanh">
                 <span className="kt-thanh is-ngang" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(1, Math.max(0, (chinh.gia(x.c) ?? 0) / thang))})` }}/></span>
@@ -408,7 +406,6 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
         })}</tbody>
       </table>
     </TableWrap>
-    <div className="table-footer"><span>Tô đỏ {hangChinh.cuoi.size} đơn vị nhóm cuối. Đồng giá trị thì cùng hạng; “—” không xếp hạng.</span></div>
   </Panel>;
 }
 

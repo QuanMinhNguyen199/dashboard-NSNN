@@ -34,11 +34,19 @@ await mkdir(".impeccable/review", { recursive: true });
   Keycloak tượng trưng và sáu thẻ vai bấm vào là vào thẳng. Cổng kiểm vì thế
   bấm đúng thẻ mang mã tài khoản cần dùng, như người xem demo làm.
 */
+/*
+  Hiệu ứng chuyển cảnh đăng nhập / đăng xuất (shared/portalTransition.ts):
+  lớp phủ .portal-flight che trang và khóa #root (inert) tới khi xong. Bấm
+  trước lúc đó thì cú bấm rơi vào lớp phủ — cùng cách chờ với check-portal.
+*/
+const chuyenCanhXong = (page) => page.waitForSelector(".portal-flight", { hidden: true, timeout: 15000 });
+
 async function dangNhap(page, username) {
   if (username === "lanhdao.nhanuoc" && new URL(page.url()).pathname.endsWith("/quan-ly/")) {
     await page.goto(`${base}/nsnn/`, { waitUntil: "networkidle0" });
   }
   await page.waitForSelector(".demo-accounts-list");
+  await chuyenCanhXong(page);
   const bamDuoc = await page.evaluate((ma) => {
     const nut = [...document.querySelectorAll(".demo-accounts-list button")]
       .find((b) => b.querySelector("code")?.textContent?.trim() === ma);
@@ -47,12 +55,17 @@ async function dangNhap(page, username) {
     return true;
   }, username);
   if (!bamDuoc) throw new Error(`Màn đăng nhập không có thẻ vai cho tài khoản ${username}.`);
+  /* Phiên chỉ được ghi khi chuyển cảnh vào màn xong; chuyển trang sớm hơn là
+     mất phiên và rơi lại màn đăng nhập. */
+  await page.waitForSelector(".workspace, .dheader", { timeout: 15000 });
+  await chuyenCanhXong(page);
 }
 
 /* Nút Đăng xuất nằm trong thanh điều hướng, và ở khổ hẹp thanh đó chỉ dựng
    trong ngăn kéo. Kiểm hiển thị thật bằng `offsetParent` chứ không bằng sự
    tồn tại trong DOM — phần tử bị CSS ẩn vẫn `querySelector` ra được. */
 async function dangXuat(page) {
+  await chuyenCanhXong(page);
   const hien = await page.evaluate(() => {
     const nut = document.querySelector(".logout-button");
     return Boolean(nut && nut.offsetParent !== null);
@@ -65,6 +78,7 @@ async function dangXuat(page) {
     await page.click(".logout-button");
   }
   await page.waitForSelector(".login-page");
+  await chuyenCanhXong(page);
   if (await page.$(".workspace") !== null) throw new Error("Đăng xuất không xoá phiên demo.");
 }
 
@@ -127,8 +141,10 @@ await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true
 await page.screenshot({ path: ".impeccable/review/login-demo-accounts.png", fullPage: true });
 
 /* Bấm thẳng vào một thẻ là vào luôn, không qua bước nào nữa. */
+await chuyenCanhXong(page);
 await page.evaluate(() => document.querySelector(".demo-accounts-list button").click());
 await page.waitForSelector(".workspace", { timeout: 5000 });
+await chuyenCanhXong(page);
 await page.evaluate(() => {
   const nut = document.querySelector(".logout-button");
   if (nut && nut.offsetParent !== null) nut.click();
@@ -141,6 +157,7 @@ if (await page.$(".login-page") === null) {
 }
 await dangNhap(page, "cv.ql1");
 await page.waitForSelector(".workspace");
+await chuyenCanhXong(page);
 await page.reload({ waitUntil: "networkidle0" });
 if (await page.$(".workspace") === null) throw new Error("Phiên đăng nhập demo không được khôi phục sau reload.");
 
@@ -370,7 +387,7 @@ await inspect(1440, 1000, false, MAN_QL1);
   const BANG_GON = [
     { tk: "cv.ql2", view: "hoadon&muc=xmqh", khoa: "so", cot: ["Số hóa đơn", "Trạng thái", "Ngày quá hạn"], ngan: ["Ngày gửi", "Hạn xử lý", "MST bên bán", "Tên bên bán"] },
     { tk: "cv.ql4", view: "hoan&muc=dsphieu", khoa: "so", cot: ["ID", "Chủ đề", "Tiến độ"], ngan: ["Phân loại", "Chuyên viên tiếp nhận", "Tạo bởi"] },
-    { tk: "cv.ql4", view: "hoan&muc=dxvp", khoa: "so", cot: ["Số hồ sơ", "Trạng thái hồ sơ", "Số ngày quá hạn"], ngan: ["Ngày nhận", "Hạn xử lý", "Trạng thái ký điện tử", "Khớp kỳ hoàn"] },
+    { tk: "cv.ql4", view: "hoan&muc=dxvp", khoa: "so", cot: ["Số hồ sơ", "Trạng thái hồ sơ", "Số ngày quá hạn"], ngan: ["Ngày nhận", "Hạn xử lý", "Ký điện tử", "Khớp kỳ hoàn"] },
     { tk: "cv.ql4", view: "hoan&muc=venh", khoa: "so", cot: ["Số hồ sơ", "Loại vênh", "Phiếu PRS-05"], ngan: ["Chiều vênh", "Lý do"] },
     { tk: "cv.ql1", view: "debt&muc=cc", khoa: "nnt", cot: ["MST", "Tình trạng cưỡng chế"], ngan: ["Số quyết định", "Kết luận", "Ghi chú", "Chương"] },
     { tk: "cv.ql1", view: "debt&muc=t06", khoa: "nnt", cot: ["MST", "Nhóm xử lý"], ngan: ["Mã CQT", "Ngày tạm hoãn"] },
@@ -410,7 +427,8 @@ await inspect(1440, 1000, false, MAN_QL1);
       const b = dlg.getBoundingClientRect();
       return {
         chamPhai: Math.abs(b.right - window.innerWidth) < 2,
-        nhan: [...dlg.querySelectorAll(".detail-grid dt")].map((x) => x.textContent.trim()),
+        /* Kiểm tra tự động của hồ sơ hoàn là danh sách ✓/✗ (gọn chữ 11/11/2026), không còn trong lưới. */
+        nhan: [...dlg.querySelectorAll(".detail-grid dt, .kt-tu-dong li > span:last-child")].map((x) => x.textContent.trim()),
         thamSo: Object.fromEntries(new URLSearchParams(location.search)),
       };
     });
@@ -1422,7 +1440,7 @@ if (!cungGoc || dich.startsWith("chrome-error")) {
     for (const vo of document.querySelectorAll(".table-shell")) {
       const vung = vo.querySelector(".table-wrap");
       const tran = vung.scrollWidth - vung.clientWidth > 1;
-      const coDai = Boolean(vo.querySelector(".scroll-hint"));
+      const coDai = Boolean(vo.querySelector(".scroll-tiep"));
       if (tran !== coDai) xau.push({ nhan: vung.getAttribute("aria-label"), tran, coDai, thua: vung.scrollWidth - vung.clientWidth });
     }
     return xau;

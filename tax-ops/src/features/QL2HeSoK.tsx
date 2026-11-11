@@ -1,4 +1,6 @@
 import { useQL2 } from "@/state/QL2Context";
+import { ChipMa, DauDat } from "@/components/ChiBao";
+import { GhiChu } from "@/components/GhiChu";
 import type { VaiTro } from "@/domain/types";
 import { useMemo, useState } from "react";
 import { Badge, Button, DetailGrid, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
@@ -55,11 +57,11 @@ export function BangHeSoK({ ky }: { ky: KyQL2 }) {
 
   return <Panel chinh={mau === "noibo"}
     title="Cảnh báo hệ số K · theo đơn vị"
+    tieuDeKem={<GhiChu tieuDe="Cách tính tồn">Tồn tính trên các cảnh báo chưa xử lý từ {MOC_TON_K} (ngày sáp nhập) đến ngày chốt, gồm cả cảnh báo đang “Lưu tạm”. Ngày giám sát phát sinh lệch 1 ngày so với ngày chốt, nên báo cáo tuần chốt thứ Năm và tải sáng thứ Sáu.</GhiChu>}
     subtitle={`${ky.nhan} · nguồn: hddtcbt, kéo 18:00 hằng ngày`}
     actions={<Segmented label="Mẫu báo cáo K" value={mau} onChange={datMau} options={[{ value: "noibo", label: "Báo cáo nội bộ" }, { value: "qltt3", label: "Mẫu Cục Thuế QLTT3" }]}/>}
   >
     {mau === "qltt3" ? <p className="ql2-note">Mẫu QLTT3 có 35 cột, gồm sheet tháng, 6 tháng, lũy kế và tỷ lệ. Chưa có tệp “2.3. BC_QLTT3…(he so k).xlsx” để đối chiếu tên cột. Ánh xạ cột (15)–(20), (25)–(29) còn chờ Q-102; chưa xuất số theo mẫu này.</p> : <>
-    <p className="ql2-note">Tồn tính trên các cảnh báo chưa xử lý từ {MOC_TON_K} (ngày sáp nhập) đến ngày chốt, gồm cả cảnh báo đang “Lưu tạm”. Ngày giám sát phát sinh lệch 1 ngày so với ngày chốt, nên báo cáo tuần chốt thứ Năm và tải sáng thứ Sáu.</p>
     <TableWrap label="hệ số K theo đơn vị">
       <table className="ql1-table" style={{ minWidth: 1136 }}>
         <colgroup>
@@ -136,6 +138,7 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
   >
     <Panel chinh
     title={nhom === "vuong" ? "Vướng mắc gửi QLRR" : "Lượt cảnh báo còn tồn"}
+    tieuDeKem={nhom === "vuong" ? <GhiChu>Các lượt gửi QLRR không tính vào tồn cuối kỳ. Đánh dấu được lưu trong phiên demo.</GhiChu> : undefined}
     subtitle={`${ky.nhan} · ${money(loc.length)} lượt · sắp theo số ngày tồn giảm dần`}
     actions={<div className="inline-controls">
       <Segmented label="Nhóm lượt" value={nhom} onChange={(v) => { datNhom(v); datTrang(1); }} options={[{value:"ton",label:"Lượt còn tồn"},{value:"vuong",label:"Vướng mắc gửi QLRR"}]}/>
@@ -148,7 +151,6 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
       <SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); }} placeholder="Tìm MST hoặc tên NNT"/>
     </div>}
   >
-    {nhom === "vuong" && <p className="ql2-note">Các lượt gửi QLRR không tính vào tồn cuối kỳ. Đánh dấu được lưu trong phiên demo.</p>}
     {soCo > 0 && <div className="notice warning">
       <strong>{money(soCo)} lượt có cờ kiểm tra</strong>
       {/* Cùng một quy tắc cờ còn xuất hiện trong ngăn chi tiết; hai nơi phải
@@ -252,7 +254,7 @@ function ChiTietK({ r, ky, vaiTro, nhom, onDanhDau }: {
       { label: "Tên ngành nghề chính", value: r.nganhNghe },
       { label: "Tên cán bộ quản lý", value: r.canBo },
       { label: "Trạng thái xử lý", value: r.trangThai },
-      { label: "Trạng thái MST (TMS)", value: r.trangThaiMST },
+      { label: "Trạng thái MST (TMS)", value: <ChipMa giaTri={r.trangThaiMST}/> },
       { label: "Số ngày tồn", value: money(r.soNgayTon) },
       { label: "Ngày giám sát", value: ngayTonDauK(ky) },
     ]}/>
@@ -276,7 +278,7 @@ function ChiTietK({ r, ky, vaiTro, nhom, onDanhDau }: {
            thay vì đọc cả ba điều kiện rồi tự đoán điều nào rơi vào mình. */
         value: coCoK(r)
           ? <><Badge tone="warning">Có cờ</Badge><span className="ql3-chitiet-vi">{lyDoCo(r).join("; ")}.</span></>
-          : "Không",
+          : <DauDat ok nhan="Cờ kiểm tra" chuDat="Không có cờ"/>,
       },
     ]}/>
 

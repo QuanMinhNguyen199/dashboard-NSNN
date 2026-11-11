@@ -8,7 +8,7 @@ export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
   | "business" | "bell" | "overview" | "treasury" | "receivables" | "procedures" | "support" | "inspection" | "taxReturn"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key";
+  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key" | "mail" | "arrowUp" | "arrowDown" | "layers";
 
 const paths: Record<IconName, ReactNode> = {
   business: <><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h1m4 0h1M9 11h1m4 0h1M9 15h1m4 0h1M10 21v-3h4v3"/></>,
@@ -44,6 +44,10 @@ const paths: Record<IconName, ReactNode> = {
   database: <><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></>,
   external: <><path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M19 13v6H5V5h6"/></>,
   logout: <><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M18 12H9"/></>,
+  mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></>,
+  arrowUp: <path d="M12 19V5m-6 6 6-6 6 6"/>,
+  arrowDown: <path d="M12 5v14m-6-6 6 6 6-6"/>,
+  layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></>,
   key: <><circle cx="8" cy="15" r="4.2"/><path d="m11 12 8.5-8.5M16.5 6.5 19 9M14 9l2.5 2.5"/></>,
 };
 
@@ -141,6 +145,7 @@ export function Panel({ title, subtitle, actions, children, className = "", chin
 export function TableWrap({ children, label }: { children: ReactNode; label?: string }) {
   const vung = useRef<HTMLDivElement>(null);
   const [tran, datTran] = useState(false);
+  const [cuoi, datCuoi] = useState(true);
 
   /*
     Gợi ý cuộn bám THỰC TẾ TRÀN, không bám điểm ngắt.
@@ -161,19 +166,33 @@ export function TableWrap({ children, label }: { children: ReactNode; label?: st
   useEffect(() => {
     const el = vung.current;
     if (!el) return;
-    const do_ = () => datTran(el.scrollWidth - el.clientWidth > 1);
+    const do_ = () => {
+      datTran(el.scrollWidth - el.clientWidth > 1);
+      datCuoi(el.scrollLeft + el.clientWidth >= el.scrollWidth - 2);
+    };
     do_();
     const theoDoi = new ResizeObserver(do_);
     theoDoi.observe(el);
     for (const con of Array.from(el.children)) theoDoi.observe(con);
-    return () => theoDoi.disconnect();
+    el.addEventListener("scroll", do_, { passive: true });
+    return () => { theoDoi.disconnect(); el.removeEventListener("scroll", do_); };
   }, [children]);
 
+  /* Gọn chữ 11/11/2026: dải "Bảng rộng hơn khung · cuộn ngang…" thành MÉP MỜ
+     bên phải kèm nút ›. Cuộn tới cột cuối thì cả hai tắt — dấu hiệu chỉ có
+     mặt khi còn cột khuất. Bấm › cuộn tiếp gần một khung. */
+  const cuonTiep = () => {
+    const el = vung.current;
+    if (!el) return;
+    const giam = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollBy({ left: Math.round(el.clientWidth * 0.8), behavior: giam ? "auto" : "smooth" });
+  };
+
   const ten = label ? `Bảng ${label}` : "Bảng dữ liệu";
-  return <div className="table-shell">
-    {/* Dải gợi ý là THỊ GIÁC; phần khuất được nói cho trình đọc màn hình ngay
-        trong tên vùng, vì ở đó nó đến đúng lúc người dùng bước vào vùng. */}
-    {tran && <div className="scroll-hint" aria-hidden="true"><span>Bảng rộng hơn khung · cuộn ngang để xem hết cột</span><Icon name="arrow" size={15}/></div>}
+  return <div className={`table-shell${tran && !cuoi ? " is-con-cot" : ""}`}>
+    {/* Mép mờ và nút › là THỊ GIÁC; phần khuất được nói cho trình đọc màn hình
+        ngay trong tên vùng, vì ở đó nó đến đúng lúc người dùng bước vào vùng. */}
+    {tran && <button type="button" className="scroll-tiep" tabIndex={-1} aria-hidden="true" title="Còn cột bên phải — bấm để cuộn" onClick={cuonTiep}><Icon name="arrow" size={16}/></button>}
     <div
       ref={vung}
       className="table-wrap"

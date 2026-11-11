@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { Badge, DetailGrid, Pager, Panel, SearchField, Segmented, SelectMenu, TableWrap, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
@@ -79,10 +80,10 @@ export function BangXacMinh({ ky }: { ky: KyQL2 }) {
 
   return <Panel chinh
     title="Xác minh hóa đơn · theo đơn vị"
+    tieuDeKem={<GhiChu tieuDe="Cách đếm">Mỗi con số là một dòng hóa đơn, đếm theo trạng thái đang đứng trên csdlnnt. Tỷ lệ hoàn thành là phần đã trả kết quả trên tổng cộng; hóa đơn đã duyệt đang chờ cấp số (trạng thái 9) tính là đã trả, theo biên bản 15/10. Dữ liệu mô phỏng; nguồn chi tiết TCS và khóa loại trùng còn chờ Q-104, Q-17.</GhiChu>}
     subtitle={`${ky.nhan} · nguồn: csdlnnt, kéo thứ Năm · lũy kế từ 2022 · đếm theo dòng hóa đơn`}
     actions={<div className="inline-controls"><OChonKhoi khoi={khoi} datKhoi={datKhoi}/></div>}
   >
-    <p className="ql2-note">Mỗi con số là một dòng hóa đơn, đếm theo trạng thái đang đứng trên csdlnnt. Tỷ lệ hoàn thành là phần đã trả kết quả trên tổng cộng; hóa đơn đã duyệt đang chờ cấp số (trạng thái 9) tính là đã trả, theo biên bản 15/10. Dữ liệu mô phỏng; nguồn chi tiết TCS và khóa loại trùng còn chờ Q-104, Q-17.</p>
     <TableWrap label="xác minh hóa đơn theo đơn vị">
       <table className="ql1-table" style={{ minWidth: 1140 }}>
         <colgroup>

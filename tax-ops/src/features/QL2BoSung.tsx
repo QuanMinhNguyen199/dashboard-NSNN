@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { DetailGrid, Panel, Segmented, TableWrap, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { useChonHang } from "@/components/ChonHang";
@@ -113,10 +114,10 @@ function BangTPR({ ky, tu, den, tieuDe, chonCach, phu = false, tienTo = "tpr" }:
   >
   <Panel chinh={!phu}
     title={`Rủi ro hóa đơn TPR · ${tieuDe}`}
+    tieuDeKem={!phu ? <GhiChu tieuDe="Cách đếm">Đã rà soát = kiểm tra tại bàn + bổ sung kiểm tra tại trụ sở + giải thể. Số liệu lũy kế vì một NNT đi qua giải trình tối đa 2 lần, xác minh địa chỉ rồi mới có thể chuyển kiểm tra tại trụ sở. Các dòng “Trong đó” đã nằm trong dòng 8501, không cộng lần nữa. Bấm vào một đơn vị để xem chín loại kết quả và mã kqrr tương ứng.</GhiChu> : undefined}
     subtitle={`${ky.nhan} · nguồn: webtpr · 9 tiêu chí rủi ro · dữ liệu mô phỏng`}
     actions={chonCach}
   >
-    {!phu && <p className="ql2-note">Đã rà soát = kiểm tra tại bàn + bổ sung kiểm tra tại trụ sở + giải thể. Số liệu lũy kế vì một NNT đi qua giải trình tối đa 2 lần, xác minh địa chỉ rồi mới có thể chuyển kiểm tra tại trụ sở. Các dòng “Trong đó” đã nằm trong dòng 8501, không cộng lần nữa. Bấm vào một đơn vị để xem chín loại kết quả và mã kqrr tương ứng.</p>}
     <TableWrap label="TPR theo đơn vị">
       <table className="ql1-table" style={{ minWidth: 980 }}>
         <colgroup>
@@ -199,8 +200,7 @@ export function CongAnQL2({ ky }: { ky: KyQL2 }) {
 
   const nhanCot = ["Tổng phải thực hiện", "Tổng đã rà soát, xử lý", ...KET_QUA_CA.map((k) => k.nhan), "Số còn phải xử lý"];
 
-  return <Panel chinh title="Gói rủi ro hóa đơn Công an" subtitle={`${ky.nhan} · công văn cảnh báo DN trạng thái 06, DN có kết luận của Công an · dữ liệu mô phỏng`}>
-    <p className="ql2-note">Đã xử lý = tổng bốn loại kết quả; còn phải xử lý = phải thực hiện − đã xử lý; tỷ lệ tính theo số DN. Nguồn tải số liệu của gói chưa được xác nhận với QLDN2.</p>
+  return <Panel chinh title="Gói rủi ro hóa đơn Công an" tieuDeKem={<GhiChu tieuDe="Cách đếm">Đã xử lý = tổng bốn loại kết quả; còn phải xử lý = phải thực hiện − đã xử lý; tỷ lệ tính theo số DN. Nguồn tải số liệu của gói chưa được xác nhận với QLDN2.</GhiChu>} subtitle={`${ky.nhan} · công văn cảnh báo DN trạng thái 06, DN có kết luận của Công an · dữ liệu mô phỏng`}>
     <TableWrap label="gói rủi ro Công an">
       <table className="ql1-table" style={{ minWidth: 1740 }}>
         <colgroup>

@@ -1,4 +1,5 @@
 import { createContext, Fragment, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { ChoChot, GhiChu } from "@/components/GhiChu";
 import { createPortal } from "react-dom";
 import { Button as AriaButton, Disclosure, DisclosurePanel } from "react-aria-components";
 import { XepHangCanBo } from "@/features/qldn/XepHangCanBo";
@@ -513,11 +514,8 @@ function XepHangPhong({ pv, actor }: { pv: PhamVi; actor: string }) {
     rows: xepTheo("tong").map((d) => [hangCua(d, "tong"), d.ten, ...NHOM_DIEM.map((n) => d.diem[n.id]), d.tong]),
   }], { period: KY_XEP_HANG, scope: "Khối phòng QLDN", actor, status: "DRAFT" as const }, "xep-hang-phong-qldn_bcgb-thang-10.xlsx");
 
-  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG}`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
-    <div className="qd-overview-guide xhp-guide"><span>Bấm một phòng để theo phòng đó qua các chủ đề</span><span>{tenTheo ? <>Đang theo: <b>{tenTheo}</b></> : "Chưa chọn phòng"}</span></div>
-    <p className="qd-ghi-mot xhp-nguon">
-      <b>Số của file chấm điểm, không phải số mô phỏng</b> (sheet “II. Khối QLDN”). Điểm chỉ tiêu từ −1 đến +1; điểm nhóm là trung bình các chỉ tiêu trong nhóm.
-    </p>
+  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG}`} tieuDeKem={<GhiChu tieuDe="Nguồn số"><p><b>Số của file chấm điểm, không phải số mô phỏng</b> (sheet “II. Khối QLDN”). Điểm chỉ tiêu từ −1 đến +1; điểm nhóm là trung bình các chỉ tiêu trong nhóm.</p></GhiChu>} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    <div className="qd-overview-guide xhp-guide"><span>{tenTheo ? <>Đang theo: <b>{tenTheo}</b></> : "Chưa chọn phòng"}</span></div>
     <div className="xhp">
       <section className="xhp-tong" aria-labelledby="xhp-tong">
         <h3 className="qd-kq-tieu-de" id="xhp-tong">Tổng điểm<small>cộng 4 nhóm · điểm tối đa 4</small></h3>
@@ -654,7 +652,9 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
     <Panel
       chinh
       title={ct.ten}
-      tieuDeKem={<span ref={datOCT} className="panel-tieu-de-kem"/>}
+      tieuDeKem={<><span ref={datOCT} className="panel-tieu-de-kem"/>
+        {ct.ghiChu && <ChoChot>{ct.ghiChu}. Số hồ sơ hiển thị để theo dõi, chưa dùng để đánh giá.</ChoChot>}
+        {the === "no" && <ChoChot nhan="Chưa bóc nợ đất"><p><b>Chưa bóc nợ đất, chưa loại trường hợp đặc thù.</b> Nợ đất đang cộng vào nợ các phòng QLDN; bảo lãnh, nộp theo quyết định, tạm hoãn xuất cảnh vẫn nằm trong số nợ. Chờ bài toán bóc tách và file loại trừ của phòng đầu mối.</p></ChoChot>}</>}
       /* Lý do "Theo cán bộ" bị tắt nói bằng chữ trên màn, không chỉ trong
          `title` — chú thích trỏ chuột không tới được bằng bàn phím hay cảm ứng. */
       subtitle={pv.canBo ? `DN được phân công · ${ct.dvt}` : `${info.ten} · ${ct.dvt}${motDonVi ? "" : " · Theo cán bộ: chọn một đơn vị ở ô Phạm vi"}`}
@@ -674,11 +674,7 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
           Vai khác đã có dòng của mình (hoặc bảng theo tháng của cán bộ) mang
           đủ các số ấy — dải ô chỉ lặp lại. */}
       {pv.vai === "LD" && <TomTatMoc ct={ct} pv={pv} ky={ky}/>}
-      {ct.ghiChu && <div className="notice info qd-ghi"><strong>Chờ chốt</strong><span>{ct.ghiChu}. Số hồ sơ hiển thị để theo dõi, chưa dùng để đánh giá.</span></div>}
       {/* Hai việc đang chờ của biên bản demo 09/10 gom thành MỘT dòng. */}
-      {the === "no" && <p className="qd-ghi-mot">
-        <b>Chưa bóc nợ đất, chưa loại trường hợp đặc thù.</b> Nợ đất đang cộng vào nợ các phòng QLDN; bảo lãnh, nộp theo quyết định, tạm hoãn xuất cảnh vẫn nằm trong số nợ. Chờ bài toán bóc tách và file loại trừ của phòng đầu mối.
-      </p>}
       <OCachTinh.Provider value={oCT}>
       {pv.canBo
         ? <BangTheoThang key={ct.id} ct={ct} pv={pv} ky={ky}/>

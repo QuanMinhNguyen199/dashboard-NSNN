@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useState, type ReactNode } from "react";
+import { GhiChu } from "@/components/GhiChu";
 import { Badge, integer, NhomNut, Pager, Panel, Segmented, SelectMenu, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
@@ -120,6 +121,7 @@ export function HoanGTGT({ ky, actor }: { ky: KyQ; actor: string }) {
   return <>
     <OHanHoan lop="kt-loai-dt"/>
     <Panel title={`Hoàn trước – kiểm sau · tháng ${thangChu}`} subtitle={phatHien}
+      tieuDeKem={<GhiChu tieuDe="Cách tính hạn và nguồn"><p>Hạn: {cach.nhan}, ngày làm việc bỏ thứ Bảy, Chủ nhật, kết thúc ở ngày quyết định hoàn (không phải lệnh hoàn) · kỳ theo tháng của ngày quyết định hoàn · nguồn TMS chức năng 6.2 · lọc hoàn trước – kiểm sau theo "Phân loại nhận xét hồ sơ hoàn thuế" · đã loại {integer(tatCa.length - ds.length)} hồ sơ kiểm trước – hoàn sau · không dùng trường "trạng thái" và "số ngày quá hạn" của TMS · ngày lễ chưa trừ · dữ liệu mô phỏng</p></GhiChu>}
       actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
       <div className="kt-o-so">
         <OHg ten="Số hồ sơ đã hoàn" to={integer(daHoan.length)} donVi="hồ sơ" cachTinh="có quyết định hoàn trong tháng"
@@ -141,10 +143,6 @@ export function HoanGTGT({ ky, actor }: { ky: KyQ; actor: string }) {
     <HoSoCanXem ds={ds} daHoan={daHoan} chamT={chamT} lech={lech} ch={ch} hn={hn} tenMoc={tenMoc}/>
     <BangDonVi ds={ds} ch={ch} dauThang={dauThang} cuoiThang={cuoiThang} hn={hn} thangChu={thangChu}/>
 
-    <p className="hg-trang-thai">
-      Hạn: {cach.nhan}, ngày làm việc bỏ thứ Bảy, Chủ nhật, kết thúc ở ngày quyết định hoàn (không phải lệnh hoàn) · kỳ theo tháng của ngày quyết định hoàn · nguồn TMS chức năng 6.2 · lọc hoàn trước – kiểm sau theo "Phân loại nhận xét hồ sơ hoàn thuế" · đã loại {integer(tatCa.length - ds.length)} hồ sơ kiểm trước – hoàn sau ·
-      không dùng trường "trạng thái" và "số ngày quá hạn" của TMS · ngày lễ chưa trừ · dữ liệu mô phỏng
-    </p>
   </>;
 }
 

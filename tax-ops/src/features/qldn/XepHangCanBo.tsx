@@ -174,10 +174,17 @@ function ChiTietCanBo({ d, tong }: { d: HangCanBo; tong: number }) {
           <table className="xhc-ct">
             <thead><tr><th scope="col">Chỉ tiêu</th><th scope="col" className="num">Cán bộ</th><th scope="col" className="num">Chung của phòng</th><th scope="col" className="num">Chênh lệch</th></tr></thead>
             <tbody>{cua.map((c) => <tr key={c.ct.id}>
-              <th scope="row">{tenChiTieu(c)}{c.ct.kieu !== "CAO" && <small>thấp hơn là tốt</small>}</th>
+              {/* Gọn chữ 11/11/2026: "thấp hơn là tốt" thành dấu ↓ cạnh tên;
+                  chênh lệch mang mũi tên và màu theo TỐT/XẤU, không theo dấu. */}
+              <th scope="row">{tenChiTieu(c)}{c.ct.kieu !== "CAO" && <span className="xhc-chieu" title="Thấp hơn là tốt" role="img" aria-label="thấp hơn là tốt">↓</span>}</th>
               <td className="num">{pt(c.cb)}</td>
               <td className="num">{pt(c.phong)}</td>
-              <td className="num">{c.cb !== null && c.phong !== null ? dpt(c.cb - c.phong) : "—"}</td>
+              <td className="num">{c.cb !== null && c.phong !== null ? (() => {
+                const h = c.cb - c.phong;
+                if (!h) return dpt(h);
+                const tot = c.ct.kieu === "CAO" ? h > 0 : h < 0;
+                return <span className={`xhc-lech ${tot ? "is-tot" : "is-xau"}`}><span aria-hidden="true">{h > 0 ? "▲" : "▼"}</span>{dpt(h)}<span className="sr-only">, {tot ? "tốt hơn" : "kém hơn"} mức phòng</span></span>;
+              })() : "—"}</td>
             </tr>)}</tbody>
           </table>
         </TableWrap>
