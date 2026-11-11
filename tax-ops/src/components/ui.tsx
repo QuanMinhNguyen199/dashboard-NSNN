@@ -8,7 +8,7 @@ export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
   | "business" | "bell" | "overview" | "treasury" | "receivables" | "procedures" | "support" | "inspection" | "taxReturn"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key" | "mail" | "arrowUp" | "arrowDown" | "layers";
+  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key" | "mail" | "arrowUp" | "arrowDown" | "layers" | "sheet" | "doc";
 
 const paths: Record<IconName, ReactNode> = {
   business: <><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h1m4 0h1M9 11h1m4 0h1M9 15h1m4 0h1M10 21v-3h4v3"/></>,
@@ -44,6 +44,9 @@ const paths: Record<IconName, ReactNode> = {
   database: <><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></>,
   external: <><path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M19 13v6H5V5h6"/></>,
   logout: <><path d="M10 5H5v14h5"/><path d="M14 8l4 4-4 4M18 12H9"/></>,
+  /* Nút xuất (11/11/2026): bảng tính có lưới ô cho Excel, trang văn bản có dòng chữ cho Word — vẽ riêng, không dùng logo Microsoft. */
+  sheet: <><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 9v12"/></>,
+  doc: <><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 15.5h7M9 19h4"/></>,
   mail: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></>,
   arrowUp: <path d="M12 19V5m-6 6 6-6 6 6"/>,
   arrowDown: <path d="M12 5v14m-6-6 6 6 6-6"/>,

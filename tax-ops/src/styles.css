@@ -3788,9 +3788,8 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
      "một viền HOẶC một bóng, không bao giờ cả hai". Bóng chỉ còn trên thứ nổi
      thật: menu, tooltip, toast, ngăn trượt, thanh lọc dính.
    • Đổ bóng chữ giả đậm ở tab đang mở — cân nặng 600 đã đủ.
-   • Nút xuất tô kín màu Excel/Word: ba nút đặc màu cạnh nhau là chỗ ồn nhất
-     màn. Thành nút viền; màu định dạng thu về một ô nhỏ trước nhãn, nên vẫn
-     biết tệp gì trước khi đọc nhãn (giữ ý của 03/11/2026).
+   • Nút xuất Excel/Word: giữ nền màu thương hiệu (người dùng chốt lại
+     11/11/2026), bỏ bóng, thêm icon theo định dạng.
    • Thanh đáy mobile bằng kính mờ → nền trắng đặc.
    • Chữ dưới 11px → tối thiểu 11px.
    • Biểu đồ tròn năm màu (có cả tím) → một dải xanh dữ liệu, đậm cho kế
@@ -3807,9 +3806,11 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .qd-the:hover, .qd-the-loc-o:hover { box-shadow: none; }
 .muc-tab.is-active, .muc-tab-con.is-active { text-shadow: none; }
 
-.button.is-xuat-excel, .button.is-xuat-word { color: var(--ink); background: var(--surface); border-color: var(--control-line); box-shadow: none; }
-.button.is-xuat-excel::before, .button.is-xuat-word::before { content: ""; flex: none; width: 10px; height: 12px; border-radius: 2px; background: var(--xuat); clip-path: polygon(0 0, 65% 0, 100% 30%, 100% 100%, 0 100%); }
-.button.is-xuat-excel:hover, .button.is-xuat-word:hover { color: var(--ink); background: var(--surface-soft); border-color: var(--control-line-hover); }
+/* Nút xuất (người dùng 11/11/2026): nền màu thương hiệu của định dạng, chữ và
+   icon trắng, phẳng — không bóng. Icon bảng tính / văn bản đứng trước nhãn. */
+.button.is-xuat-excel, .button.is-xuat-word { color: #fff; background: var(--xuat); border-color: var(--xuat); box-shadow: none; }
+.button.is-xuat-excel .icon, .button.is-xuat-word .icon { color: #fff; }
+.button.is-xuat-excel:hover, .button.is-xuat-word:hover { color: #fff; background: var(--xuat-dam); border-color: var(--xuat-dam); }
 
 @media (max-width: 900px) {
   .mobile-nav { background: var(--surface); backdrop-filter: none; box-shadow: none; }

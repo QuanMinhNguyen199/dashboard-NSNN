@@ -582,7 +582,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 ### Buttons
 - **Shape:** bo nhẹ (6px), cao 32px trên desktop và 44px từ 900px xuống, chữ 13px/600, `white-space: nowrap`, icon 17px đặt trước nhãn.
 - **Primary:** nền và viền `--brand`, chữ trắng, không bóng. Hover chuyển `--brand-strong`; `:active` lún nửa pixel.
-- **Xuất tệp (Excel / Word):** dáng nút phụ (nền trắng, viền `--control-line`, chữ mực). Màu định dạng (#217346 Excel, #2b579a Word) chỉ còn ở một ô hình tệp 10×12px trước nhãn — vẫn biết tệp gì trước khi đọc nhãn, nhưng ba nút đặc màu cạnh nhau không còn là chỗ ồn nhất màn (rà taste 11/11/2026).
+- **Xuất tệp (Excel / Word):** nền màu thương hiệu của định dạng (#217346 Excel, hover #185c37; #2b579a Word, hover #1e4277), chữ và icon trắng, không bóng. Icon vẽ riêng đứng trước nhãn: bảng tính có lưới ô cho Excel (`sheet`), trang văn bản có dòng chữ cho Word (`doc`) — không dùng logo Microsoft (người dùng chốt 11/11/2026).
 - **Secondary:** nền trắng, viền `--control-line`, chữ mực. Hover đổi viền sang `--control-line-hover` và nền sang giấy mềm.
 - **Quiet:** không nền, không viền, chữ `--brand`, đệm ngang 8px. Hover nhận nền xanh nhạt `--surface-tint`. Trên mobile nó bỏ đệm ngang và căn trái trong đầu khối thay vì kéo rộng như hai loại kia.
 - **Disabled:** `opacity: .45`, bỏ bóng, bỏ dịch chuyển, `cursor: not-allowed`.
