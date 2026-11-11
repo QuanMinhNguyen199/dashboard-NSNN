@@ -274,13 +274,22 @@ function ChiTiet({ d }: { d: DongKTTB }) {
       phạt và nộp chậm. Doanh thu nằm ở báo cáo của phòng QL2 (chênh lệch tờ
       khai – hóa đơn), không nằm ở đây.
     */}
-    <h3 className="ql3-chitiet-de">Số tiền theo hồ sơ</h3>
-    <DetailGrid items={COT_TIEN.map((c) => ({
-      label: c.nhan,
-      value: Number(d[c.khoa]) > 0
-        ? <strong>{money(Number(d[c.khoa]))}</strong>
-        : <span className="cell-empty">—</span>,
-    }))}/>
-    <p className="quality-note">Đơn vị: đồng. Dấu gạch nghĩa là hồ sơ không phát sinh khoản đó, không phải bằng không.</p>
+    {(() => {
+      /* Gọn chữ 11/11/2026: chỉ hiện khoản có phát sinh; khoản không phát
+         sinh gộp thành MỘT dòng mở được — thay 12 ô "—" và câu giải thích
+         dấu gạch. */
+      const co = COT_TIEN.filter((c) => Number(d[c.khoa]) > 0);
+      const khong = COT_TIEN.filter((c) => !(Number(d[c.khoa]) > 0));
+      return <>
+        <h3 className="ql3-chitiet-de">Số tiền theo hồ sơ<small>đồng</small></h3>
+        {co.length
+          ? <DetailGrid items={co.map((c) => ({ label: c.nhan, value: <strong>{money(Number(d[c.khoa]))}</strong> }))}/>
+          : <p className="qd-dn-trong">Hồ sơ chưa phát sinh khoản tiền nào.</p>}
+        {khong.length > 0 && co.length > 0 && <details className="ql3-khong-ps">
+          <summary>Không phát sinh: {khong.length} khoản</summary>
+          <p>{khong.map((c) => c.nhan).join(" · ")}</p>
+        </details>}
+      </>;
+    })()}
   </div>;
 }

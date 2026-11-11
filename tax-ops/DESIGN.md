@@ -253,7 +253,7 @@ Mật độ cao và tĩnh. Thước đo là Stripe Dashboard: bảng dài đọc
 - Navy thể chế làm khung; nền xám xanh, bề mặt trắng và đường viền xanh xám tạo lớp nội dung.
 - Xanh thương hiệu dành cho hành động; thang xanh dữ liệu đơn sắc dành cho đại lượng; trạng thái giữ ngôn ngữ semantic riêng.
 - Một bộ chữ duy nhất, Public Sans, tự host trong mã nguồn; chữ số dùng `tabular-nums` trên toàn thân trang.
-- Khối nội dung có viền mảnh 1px và bóng hai lớp rất nhẹ; không có thẻ nổi.
+- Khối nội dung có viền mảnh 1px, **không bóng** (rà taste 11/11/2026: một viền hoặc một bóng, không cả hai); không có thẻ nổi.
 - Bậc chữ ngắn (10 → 22px, thêm một bậc `clamp` tới 26px ở màn đăng nhập); phân cấp do đường kẻ và cân nặng gánh.
 - Bàn phím và cảm ứng là điều kiện: focus 2px trên mọi thứ bấm được, 44px tối thiểu từ 900px trở xuống.
 - Không có tràn ngang ở bất kỳ khổ nào: mọi rãnh lưới chứa bảng đều khai báo cơ sở 0.
@@ -353,8 +353,8 @@ Tính cách của chữ vẫn đến từ cân nặng và khoảng cách nhiều
 - **Lead** (400, 13px/1.5, `max-width: 72ch`, màu `--ink-2`): dòng mô tả mở đầu mỗi màn (`.page-lead`). Đây là dòng chữ đầu tiên người dùng thấy trong nội dung, vì tiêu đề màn bị ẩn.
 - **Label** (600, 12px): nhãn ô chi tiết, nhãn dải tổng hợp, chú thích phụ, dòng phụ của hàng. Dòng phụ quan trọng đã được nâng từ 11px lên 12px và nâng đó vẫn đứng trong bản dựng.
 - **Column-head** (700, 11px, +0.02em): đầu cột bảng, sticky, nền giấy mềm, chữ `--ink-3`. Ở 11px giữa các ô 14px, cân nặng 650 đọc ra nhạt hơn ô dữ liệu bên dưới; 700 cộng một chút giãn chữ trả nó về đúng vai đầu cột.
-- **Nav-group** (700, 10.5px, +0.01em): nhãn nhóm điều hướng trong sidebar. Mực `--on-chrome-3` trên nền navy, không bấm được — nó là tiêu đề cấu trúc, và nó phân biệt bằng cỡ, cân nặng và màu chứ không bằng chữ hoa.
-- **Group-label** (700, 10.5px, +0.01em, chữ thường): nhãn nhóm BÁO CÁO trong cụm mục của phân hệ. Nó nằm một bậc dưới Nav-group, trong cùng vùng navy, nên nó phân biệt bằng cỡ và vị trí chứ không bằng việc viết hoa thêm một lần nữa.
+- **Nav-group** (700, 11px, +0.01em): nhãn nhóm điều hướng trong sidebar. Mực `--on-chrome-3` trên nền navy, không bấm được — nó là tiêu đề cấu trúc, và nó phân biệt bằng cỡ, cân nặng và màu chứ không bằng chữ hoa.
+- **Group-label** (700, 11px, +0.01em, chữ thường): nhãn nhóm BÁO CÁO trong cụm mục của phân hệ. Nó nằm một bậc dưới Nav-group, trong cùng vùng navy, nên nó phân biệt bằng cỡ và vị trí chứ không bằng việc viết hoa thêm một lần nữa.
 
 ### Named Rules
 
@@ -387,7 +387,7 @@ Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-lay
 **Điểm ngắt.**
 - **Mọi khổ** — chọn một hàng mở `<dialog>` trượt từ mép phải, rộng `min(100vw, 520px)`, cao toàn màn, nền `--canvas`. Không còn điểm ngắt 1361px và không có luật chặn chiều cao nào áp cho dải, vì khi danh sách đứng một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
 - **1180px** — lưới hai cột duỗi thành một; luồng trạng thái từ năm cột xuống ba.
-- **900px** — sidebar ẩn, mặt làm việc bỏ lùi trái, thanh điều hướng đáy hiện lên cùng nút mở ngăn điều hướng (nền `#fffffff2`, `backdrop-filter: blur(14px)`), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
+- **900px** — sidebar ẩn, mặt làm việc bỏ lùi trái, thanh điều hướng đáy hiện lên cùng nút mở ngăn điều hướng (nền trắng đặc `--surface`, không kính mờ, không bóng — rà taste 11/11/2026), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
 - **720px** — màn đăng nhập xếp dọc; dải tổng hợp về hai cột; nút phân đoạn đổi thành `<select>`; ô bảng cao 44px; dải thông báo xếp dọc hoàn toàn; luồng duyệt đổi trục ngang thành trục dọc.
 
 **Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`. Khi người dùng yêu cầu giảm chuyển động, công tắc chung tắt mọi animation và mọi chuyển tiếp dịch chuyển, nhưng GIỮ chuyển màu, nền, viền, độ mờ trong 120ms — đó là phản hồi trạng thái, không phải chuyển động (sửa 27/10/2026; bản cũ cắt cả màu về 0,01ms). Thanh và vạch chạy bằng `transform`, không bằng `width` hay `left`.
@@ -548,13 +548,12 @@ Bốn ràng buộc:
 Hệ gần như phẳng. Độ sâu chủ yếu đến từ lớp navy làm khung, trắng làm mặt, canvas xám xanh làm nền và hai bậc đường kẻ. Bóng chỉ nhận ba nhóm việc: đóng khung khối, phản hồi khi trỏ tới, và nâng lớp phủ.
 
 ### Shadow Vocabulary
-- **Khối nội dung** (`box-shadow: 0 1px 2px rgb(41 37 38 / 5%), 0 5px 14px rgb(41 37 38 / 4%)`, kèm `border: 1px solid var(--line)`): áp cho `.panel`, `.kpi-strip`, `.figure-line`. Hai lớp rất nhạt, đủ để khối tách khỏi giấy mà không đọc thành thẻ nổi.
-- **Nút có nền** (`0 1px 1px #29252614` cho nút chính, `0 1px 1px #2925260f` cho nút phụ): tắt hẳn khi `:active`, kèm `translateY(.5px)` để cú bấm có trọng lượng.
-- **Mục điều hướng đang mở** (`0 2px 5px rgb(0 0 0 / 10%)`): thanh trắng nổi lên khỏi nền navy.
-- **Nâng khi trỏ tới** (`0 3px 8px rgb(41 37 38 / 10%)` kèm `translateY(-2px)`): chỉ hàng bảng, hàng việc và ô tổng hợp bấm được.
-- **Nút phân đoạn đang bật** (`0 1px 2px #2925261f` kèm viền `--state-edge`): một mảnh trắng nhô lên khỏi rãnh xám.
-- **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): chỉ còn drawer điều hướng ở khổ điện thoại và toast — xem The No-Overlay Rule. Scrim của drawer là `#29252680`.
-- **Mép dính** (`0 1px 3px rgb(22 38 60 / 4%)` cho thanh lọc chung, `0 -6px 20px #16263c12` cho thanh điều hướng đáy): gần như không thấy, chỉ để mép không trôi vào nội dung khi cuộn.
+Rà taste 11/11/2026: **thứ đứng yên không có bóng** — khối, nút, ô phân đoạn đang bật, mục điều hướng đang mở, hàng bảng khi rê chuột đều phẳng; tách lớp bằng viền 1px hoặc một bậc nền. Bóng chỉ còn trên thứ nổi thật:
+- **Lớp phủ** (`--shadow-overlay: 0 18px 48px #29131833`): drawer điều hướng ở khổ điện thoại, ngăn chi tiết và toast — xem The No-Overlay Rule. Scrim của drawer là `#29252680`.
+- **Menu, tooltip, hộp gợi ý** (bóng nhẹ của chính chúng).
+- **Mép dính** (`0 1px 3px rgb(22 38 60 / 4%)` cho thanh lọc chung): gần như không thấy, chỉ để mép không trôi vào nội dung khi cuộn.
+
+Hàng bảng bấm được báo bằng **đổi nền** khi rê (`--hover-surface`), không nhấc lên. Mục điều hướng không trượt ngang.
 
 ### Named Rules
 
@@ -582,7 +581,8 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 
 ### Buttons
 - **Shape:** bo nhẹ (6px), cao 32px trên desktop và 44px từ 900px xuống, chữ 13px/600, `white-space: nowrap`, icon 17px đặt trước nhãn.
-- **Primary:** nền và viền `--brand`, chữ trắng, bóng 1px. Hover chuyển `--brand-strong`; `:active` bỏ bóng và lún nửa pixel.
+- **Primary:** nền và viền `--brand`, chữ trắng, không bóng. Hover chuyển `--brand-strong`; `:active` lún nửa pixel.
+- **Xuất tệp (Excel / Word):** dáng nút phụ (nền trắng, viền `--control-line`, chữ mực). Màu định dạng (#217346 Excel, #2b579a Word) chỉ còn ở một ô hình tệp 10×12px trước nhãn — vẫn biết tệp gì trước khi đọc nhãn, nhưng ba nút đặc màu cạnh nhau không còn là chỗ ồn nhất màn (rà taste 11/11/2026).
 - **Secondary:** nền trắng, viền `--control-line`, chữ mực. Hover đổi viền sang `--control-line-hover` và nền sang giấy mềm.
 - **Quiet:** không nền, không viền, chữ `--brand`, đệm ngang 8px. Hover nhận nền xanh nhạt `--surface-tint`. Trên mobile nó bỏ đệm ngang và căn trái trong đầu khối thay vì kéo rộng như hai loại kia.
 - **Disabled:** `opacity: .45`, bỏ bóng, bỏ dịch chuyển, `cursor: not-allowed`.
@@ -597,7 +597,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 ### Cards / Containers (Panel)
 - **Corner Style:** 10px, `overflow: hidden`.
 - **Background:** trắng trên canvas xám xanh.
-- **Border & Shadow:** có khung — viền 1px `--line` và bóng hai lớp rất nhẹ (xem Elevation & Depth). Stylesheet còn giữ một khai báo cũ hơn viết `border: 0` cho `.panel`, nhưng nó bị quy tắc muộn hơn ghi đè; trạng thái đang chạy là khối **có** viền và bóng.
+- **Border & Shadow:** viền 1px `--line`, **không bóng** (rà taste 11/11/2026). Stylesheet còn giữ các khai báo bóng cũ hơn; khối "Rà soát taste" cuối `styles.css` ghi đè chúng.
 - **Đầu khối:** cao tối thiểu 54px, đệm `13px 16px`, vạch dưới `--line`. Tiêu đề 14px/700, không kèm nhãn nguồn — xem **The Panel Is Not A Bibliography Rule** bên dưới. Dòng mô tả (`max-width: 72ch`, màu `--ink-3`) là tùy chọn và **không dùng ở khối chi tiết** — xem quy tắc dưới. Khi đầu khối có vùng thao tác, nó chuyển sang lưới (`display: grid`) để thao tác xuống dòng dưới tiêu đề thay vì bóp tiêu đề; đó là lý do đầu khối chi tiết ở Nợ và Lô dữ liệu cao hơn ở Hoàn thuế và Báo cáo, chứ không phải vì còn sót dòng phụ. Chiều cao đầu khối vì thế là kết quả của nội dung, không phải một con số đặt trước — đúng lý do hàng lưới chung phải là subgrid.
 - **Internal Padding:** `0 14px 12px`, xuống `0 12px 12px` từ 720px.
 - **Trong dải hai cột:** khối thành hộp dọc, thân nhận `flex: 1; min-height: 0; overflow: auto`, và hai đầu khối nằm trên cùng một hàng lưới (xem quy tắc dưới).

@@ -1,4 +1,5 @@
 import { Fragment, useMemo, useRef, useState } from "react";
+import { ChoChot, GhiChu } from "@/components/GhiChu";
 import { FigureLine, Icon, integer, NhomNut, PageIntro, Pager, Panel, SearchField, SelectMenu, TableWrap } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import type { DemoUser } from "@/auth/demoAuth";
@@ -77,7 +78,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
     {/* Bốn ô cố định ở mọi vai và mọi đơn vị: năm phòng QLDN và 25 thuế cơ sở
         đọc cùng một dải, chỉ khác số (chốt 14/10/2026). */}
     <FigureLine items={[
-      { label: pv.canBo ? "Doanh nghiệp được phân công" : "Doanh nghiệp, tổ chức", value: integer(o.soDN), note: "Bấm để mở danh sách", onSelect: () => moDanhSach("") },
+      { label: pv.canBo ? "Doanh nghiệp được phân công" : "Doanh nghiệp, tổ chức", value: integer(o.soDN), onSelect: () => moDanhSach("") },
       { label: pv.canBo ? "Cán bộ quản lý" : "Cán bộ đang quản lý", value: pv.canBo ? "1" : integer(o.soCanBo), note: pv.canBo ? pv.canBo.ten : "theo phân công TMS 2.4.2" },
       /* Ô 3: phòng QLDN không quản lý hộ kinh doanh (đã có phòng HKD riêng),
          nên ô ấy mang số thu NSNN của phòng. "DN đang hoạt động" và "DN mới
@@ -175,8 +176,7 @@ function PhanTichRuiRo({ pv }: { pv: PhamVi }) {
   const rr = useMemo(() => ruiRoPhamVi(pv), [pv]);
   const lop = { CAO: "is-do", TB: "is-vang", THAP: "is-tot" } as const;
   const maxDH = Math.max(...rr.dauHieu.map((x) => x.so), 1);
-  return <Panel title="Phân tích rủi ro" subtitle={`${integer(rr.tong)} doanh nghiệp đang hoạt động`}>
-    <p className="qd-ghi-mot">Bản đề xuất, chờ chốt nội dung hiển thị (biên bản 22/10/2026, việc số 4). Một doanh nghiệp có thể mang nhiều dấu hiệu.</p>
+  return <Panel title="Phân tích rủi ro" subtitle={`${integer(rr.tong)} doanh nghiệp đang hoạt động`} tieuDeKem={<ChoChot>Bản đề xuất, chờ chốt nội dung hiển thị (biên bản 22/10/2026, việc số 4). Một doanh nghiệp có thể mang nhiều dấu hiệu.</ChoChot>}>
     <div className="qd-rr">
       <div className="qd-rr-muc">
         <div className="qd-chong" aria-hidden="true">
@@ -354,7 +354,7 @@ function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId, 
     rows: BO_TIEU_CHI.map((t) => [t.stt, t.linhVuc, t.ten, t.phong, t.congThuc, t.ky, t.tinhDiem, t.doiTuong, t.ghiChu, t.bo ? "Đã bỏ" : t.the ? nhanNhom(t.the) : "Chưa có trong khối QLDN"]),
   }], { period: "Tháng 10/2026", scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "bo-tieu-chi-danh-gia.xlsx");
 
-  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" subtitle={`${BO_TIEU_CHI.length} chỉ tiêu · tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" tieuDeKem={<GhiChu tieuDe="Cột Theo dõi">Dấu – : chỉ tiêu chưa có trong khối QLDN (hộ kinh doanh, khối kiểm tra, gói nhiều nguồn). Bấm tên màn để mở đúng chỉ tiêu ở Quản trị công việc.</GhiChu>} subtitle={`${BO_TIEU_CHI.length} chỉ tiêu · tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-loc-cb">
       <NhomNut label="Lọc chỉ tiêu" value={chiTheoDoi ? "theo" : "tat"} onChange={(v) => datChiTheoDoi(v === "theo")} options={[{ value: "tat", label: "Tất cả" }, { value: "theo", label: "Đang theo dõi" }]}/>
     </div>
@@ -381,7 +381,7 @@ function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId, 
                   ? <span className="qd-tc-trang is-bo">Đã bỏ · biên bản 09/10</span>
                   : t.the && moNhom
                     ? <button type="button" className="qd-lien-ket qd-tc-mo" onClick={() => moNhom(nhomCuaThe(t.the!).id, t.the!, t.stt ?? undefined)}>{nhanNhom(t.the)}<Icon name="arrow" size={13}/></button>
-                    : <span className="qd-tc-trang">Chưa có trong khối QLDN</span>}</td>
+                    : <span className="qd-tc-trang is-chua" title="Chưa có trong khối QLDN" role="img" aria-label="Chưa có trong khối QLDN">–</span>}</td>
               </tr>
               {mo === khoa && <tr className="qd-ho-so"><td colSpan={5}>
                 <dl className="qd-tc-chi-tiet">

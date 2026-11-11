@@ -55,3 +55,6 @@ Thumbs.db
 # Luat duoi day giu lai lam luoi chan: neu ai do sinh lai bo du lieu vao dung
 # cho cu, no van khong len duoc remote.
 /tax-ops/public/du-lieu-that/
+
+# Ảnh và số đo của công cụ rà giao diện (taste-skill inspect) — không commit
+.taste-skill/

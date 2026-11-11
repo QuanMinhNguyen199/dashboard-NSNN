@@ -21,8 +21,10 @@ import { Focusable, Tooltip, TooltipTrigger } from "react-aria-components";
   • "trang-thai": nhãn vàng "Tạm tính ⓘ" — cả khối đang tính tạm.
   • "nhan": chữ + ⓘ, cho chỗ đứng một mình.
 */
-export function GoiYCachTinh({ nhan = "Cách tính", tieuDe = "Cách tính", children, className, placement = "bottom start", kieu = "nhan" }: {
+export function GoiYCachTinh({ nhan = "Cách tính", tieuDe = "Cách tính", children, className, placement = "bottom start", kieu = "nhan", tenDoc }: {
   nhan?: string; tieuDe?: string; children: ReactNode; className?: string;
+  /** Tên cho trình đọc màn hình khi khác mặc định ("… — xem cách tính"). */
+  tenDoc?: string;
   kieu?: "nhan" | "icon" | "trang-thai";
   /** Nhãn sát mép phải thì mở về bên trái ("bottom end"). */
   placement?: "bottom start" | "bottom end";
@@ -45,7 +47,7 @@ export function GoiYCachTinh({ nhan = "Cách tính", tieuDe = "Cách tính", chi
 
   return <TooltipTrigger delay={0} closeDelay={0} shouldCloseOnPress={false} isOpen={mo} onOpenChange={(v) => { if (!v && moBangCham.current) return; datMo(v); }}>
     <Focusable>
-      <span ref={nut} className={`goi-y-nut is-${kieu}${className ? ` ${className}` : ""}`} tabIndex={0} role="button" aria-label={kieu === "icon" ? nhan : `${nhan} — xem cách tính`}
+      <span ref={nut} className={`goi-y-nut is-${kieu}${className ? ` ${className}` : ""}`} tabIndex={0} role="button" aria-label={tenDoc ?? (kieu === "icon" ? nhan : `${nhan} — xem cách tính`)}
         onPointerEnter={(e) => { if (e.pointerType === "mouse") datMo(true); }}
         onPointerLeave={(e) => { if (e.pointerType === "mouse") datMo(false); }}
         onFocus={() => datMo(true)}

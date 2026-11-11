@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { ChoChot, GhiChu } from "@/components/GhiChu";
 import { Icon, Panel, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
@@ -63,6 +64,10 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
   return <Panel
     chinh
     title="Chênh lệch tờ khai – hóa đơn"
+    tieuDeKem={<>
+      <GhiChu tieuDe="Cách đếm"><p>{moDanhSach ? "Bấm một phòng để mở danh sách NNT của phòng đó ở tab Báo cáo. " : ""}Số NNT đếm mỗi MST một lần trong từng chiều; một NNT lệch cả bán ra lẫn mua vào nằm ở cả hai nhóm cột.</p></GhiChu>
+      <ChoChot nhan="Chưa nối nguồn">Chưa nối nguồn đối chiếu tờ khai – hóa đơn điện tử.</ChoChot>
+    </>}
     subtitle={`${nhanLuyKe(kyQ)} · triệu đồng`}
     actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}
   >
@@ -114,11 +119,6 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
         </tbody>
       </table>
     </TableWrap>
-    <div className="table-footer"><span>
-      {moDanhSach ? "Bấm một phòng để mở danh sách NNT của phòng đó ở tab Báo cáo. " : ""}
-      Số NNT đếm mỗi MST một lần trong từng chiều; một NNT lệch cả bán ra lẫn mua vào nằm ở cả hai nhóm cột.
-    </span></div>
-    <p className="quality-note">Chưa nối nguồn đối chiếu tờ khai – hóa đơn điện tử.</p>
   </Panel>;
 }
 

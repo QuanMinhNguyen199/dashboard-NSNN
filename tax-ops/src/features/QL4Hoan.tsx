@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { DauDat } from "@/components/ChiBao";
 import { Badge, DetailGrid, Icon, Pager, Panel, SearchField, Segmented, TableWrap, money } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ONhan, useChonHang } from "@/components/ChonHang";
@@ -323,30 +324,42 @@ export function DangXuLy({ ky, nhom }: { ky: KyQL4; nhom: "VP" | "TCS" }) {
 
 function ChiTietHoSo({ r }: { r: HoSoHoan }) {
   return <div className="ql3-chitiet">
-    <p className="ql3-chitiet-ten"><strong>{r.tenNNT}</strong><span>{r.so} · {r.mst} · {rutGonTenDonVi(r.dv.ten)}</span></p>
+    {/* Gọn chữ 11/11/2026: hạn là điều đọc đầu tiên — chip đứng cạnh tên NNT,
+        không là một ô giữa lưới. Trạng thái ký điện tử thành nhãn ngắn có
+        màu, tên đầy đủ trong `title`. */}
+    <p className="ql3-chitiet-ten"><strong>{r.tenNNT}{r.soNgayQuaHan > 0
+      ? <Badge tone="critical">quá {r.soNgayQuaHan} ngày</Badge>
+      : <Badge tone="positive">còn {Math.abs(r.soNgayQuaHan)} ngày</Badge>}</strong><span>{r.so} · {r.mst} · {rutGonTenDonVi(r.dv.ten)}</span></p>
     <DetailGrid items={[
       { label: "Trạng thái hồ sơ", value: r.trangThai },
       { label: "Hình thức xử lý", value: r.hinhThuc },
       { label: "Ngày nhận", value: r.ngayNhan },
       { label: "Hạn xử lý", value: r.hanXuLy },
-      {
-        label: "Số ngày quá hạn",
-        value: r.soNgayQuaHan > 0
-          ? <Badge tone="critical">quá {r.soNgayQuaHan} ngày</Badge>
-          : <Badge tone="positive">còn {Math.abs(r.soNgayQuaHan)} ngày</Badge>,
-      },
-      { label: "Trạng thái ký điện tử", value: r.trangThaiKDT },
+      { label: "Ký điện tử", value: <KyDienTu tt={r.trangThaiKDT}/> },
       { label: "Phòng xử lý", value: r.phongXuLy },
     ]}/>
 
     {/* Bốn phép kiểm của 6.29.1 đọc theo CẶP tên–kết quả, không phải một hàng
         tích chéo không nhãn như khi chúng là cột. */}
     <h3 className="ql3-chitiet-de">Kiểm tra tự động</h3>
-    <DetailGrid items={COT_KIEM_TRA.map((c, i) => ({
-      label: c,
-      value: r.kiemTra[i] ? "Đạt" : <Badge tone="warning">Không đạt</Badge>,
-    }))}/>
+    <ul className="kt-tu-dong">{COT_KIEM_TRA.map((c, i) => <li key={c} className={r.kiemTra[i] ? undefined : "is-khong"}>
+      <DauDat ok={r.kiemTra[i]} nhan={c}/><span>{c}</span>
+    </li>)}</ul>
   </div>;
+}
+
+/* Sáu trạng thái ký điện tử (G4) → nhãn ngắn và sắc độ; tên nguyên văn ở `title`. */
+const KDT_NGAN: Record<string, [string, "critical" | "warning" | "positive" | "neutral"]> = {
+  "Lỗi truyền lên ký điện tử": ["Lỗi truyền", "critical"],
+  "Đã truyền lên Ký điện tử": ["Đã truyền", "neutral"],
+  "KĐT nhận thành công (chưa ký)": ["Chờ ký", "neutral"],
+  "Từ chối ký": ["Từ chối ký", "critical"],
+  "Đã ký nhưng chưa lưu hành điện tử (Chưa cấp số)": ["Chưa cấp số", "warning"],
+  "Đã ký và lưu hành điện tử (đã cấp số)": ["Đã cấp số", "positive"],
+};
+function KyDienTu({ tt }: { tt: string }) {
+  const [ngan, sac] = KDT_NGAN[tt] ?? [tt, "neutral"];
+  return <span title={tt}><Badge tone={sac}>{ngan}</Badge><span className="sr-only">, {tt}</span></span>;
 }
 
 /* ── Tab 4 · Hồ sơ vênh ──────────────────────────────────────────────────── */
