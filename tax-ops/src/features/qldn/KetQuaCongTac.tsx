@@ -348,18 +348,18 @@ function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string
   */
   const coChenh = coTyLe || coBQ;
   let thuTu = 0;
-  return <Panel chinh title="Kết quả các mặt công tác" actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
-    {/* Nhãn mốc trên ô ghi bằng chữ ("Bình quân", "Tháng 8", "Cùng kỳ"), không
-        viết tắt (29/10/2026) — dòng này chỉ còn nói đơn vị của chênh lệch. */}
-    {/* Chú giải MỘT dòng ký hiệu (09/11/2026, ít chữ): ba mã mốc và đơn vị chênh
-        lệch. Câu dài cũ chuyển vào `title`. */}
-    <div className="qd-overview-guide is-chu-giai" title={chuaDuSo(ky) ? lyDoChuaSo(ky) : undefined}><span className="qd-kq-ky">
-      {coBQ && <span><b>BQ</b> {pv.vai === "LD" && pv.donVi.length === DON_VI_Q.length ? "số đơn vị dưới bình quân" : "bình quân toàn thuế"}</span>}
-      <span><b>T{ky.thang - 1}</b> tháng trước</span>
-      <span><b>CK</b> cùng kỳ 2025</span>
-      <span className="qd-kq-dv">{coChenh ? "đơn vị: điểm %" : "đơn vị: số tuyệt đối"}</span>
-      {chuaDuSo(ky) && <span className="qd-kq-dv">đầu tháng: chưa so</span>}
-    </span></div>
+  /* Chú giải ký hiệu thu vào ⓘ cạnh tên khối (17/11/2026), cùng cách các
+     trang khác dùng GhiChu — không còn một dòng chữ riêng trên các ô. */
+  const kyHieu = <GhiChu tieuDe="Ký hiệu">
+    <dl className="qd-dc-ky-hieu">
+      {coBQ && <div><dt>BQ</dt><dd>{pv.vai === "LD" && pv.donVi.length === DON_VI_Q.length ? "Số đơn vị dưới bình quân" : "Bình quân toàn thuế"}</dd></div>}
+      <div><dt>T{ky.thang - 1}</dt><dd>Tháng trước</dd></div>
+      <div><dt>CK</dt><dd>Cùng kỳ 2025</dd></div>
+    </dl>
+    <p>Đơn vị chênh lệch: {coChenh ? "điểm %" : "số tuyệt đối"}.</p>
+    {chuaDuSo(ky) && <p>{lyDoChuaSo(ky)}.</p>}
+  </GhiChu>;
+  return <Panel chinh title="Kết quả các mặt công tác" tieuDeKem={kyHieu} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
     <div className="qd-kq">
       {THU_TU_TQ.map((id) => NHOM_Q.find((n) => n.id === id)!).map((n) => ({ n, so: ds.filter((x) => n.the.includes(x.the.id)).length })).filter((x) => x.so).map(({ n, so: soO }) => <section key={n.id} className={`qd-kq-nhom is-${n.id}`} aria-labelledby={`qd-kq-${n.id}`} style={{ ["--o" as string]: soO }}>
         {/* Tên nhóm luôn là tên đầy đủ ("Công tác thu NSNN"): tên ngắn trùng
