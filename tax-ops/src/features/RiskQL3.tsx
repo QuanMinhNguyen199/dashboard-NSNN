@@ -284,7 +284,7 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
         </div>
       </Panel>
 
-      <Panel title="Phân bổ doanh nghiệp đã thực hiện" subtitle="Theo trạng thái xử lý">
+      <Panel title="Phân bổ doanh nghiệp đã thực hiện">
         <ol className="xep-hang">{trangThai.map((x) => <li key={x.nhan}>
           <span className="xh-ten">{x.nhan}</span>
           <span className="xh-so">{integer(x.v)} · {pt2(tongTT ? x.v / tongTT : 0)}</span>

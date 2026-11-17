@@ -258,7 +258,7 @@ export function DangXuLy({ ky, nhom }: { ky: KyQL4; nhom: "VP" | "TCS" }) {
   >
     <Panel chinh
       title={`Hồ sơ đang xử lý · khối ${nhom === "VP" ? "Văn phòng" : "Thuế cơ sở"}`}
-      subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ · nguồn: TMS 6.29.1, 63 cột · sắp theo số ngày quá hạn`}
+      subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ · nguồn: TMS 6.29.1`}
       actions={<div className="inline-controls">
         <Segmented
           label="Nhóm cột kiểm tra tự động"
@@ -389,7 +389,7 @@ export function HoSoVenhBang({ ky, vaiTro, onGiaoPhieu }: { ky: KyQL4; vaiTro: V
   >
     <Panel chinh
     title="Hồ sơ vênh giữa TMS 1.5.1 và 6.29.1"
-    subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ · ba loại vênh theo BR-40`}
+    subtitle={`${ky.nhan} · ${money(loc.length)} hồ sơ`}
     actions={<Segmented
       label="Lọc kết quả"
       value={loc1}
@@ -468,7 +468,7 @@ export function ChamDiem({ ky }: { ky: KyQL4 }) {
   return <>
     <Panel chinh
       title="Quy tắc chấm điểm đang áp"
-      subtitle="Nạp từ sheet CHẤM ĐIỂM · chỉ xem; trưởng phòng sửa ở Danh mục của phòng"
+      subtitle="Nạp từ sheet CHẤM ĐIỂM"
     >
       <TableWrap label="bậc chấm điểm">
         <table className="ql1-ds-table" style={{ minWidth: 760 }}>
@@ -495,7 +495,7 @@ export function ChamDiem({ ky }: { ky: KyQL4 }) {
       </TableWrap>
     </Panel>
 
-    <Panel title="Điểm từng đơn vị" subtitle="Xếp trong từng khối · đơn vị trên bình quân bị trừ điểm">
+    <Panel title="Điểm từng đơn vị" subtitle="Xếp trong từng khối">
       <TableWrap label="điểm từng đơn vị">
         <table className="ql1-ds-table" style={{ minWidth: 1010 }}>
           <colgroup>{[280, 150, 170, 290, 120].map((w, i) => <col key={i} style={{ width: w }}/>)}</colgroup>

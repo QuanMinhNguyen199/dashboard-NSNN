@@ -28,6 +28,7 @@ import { KiemTraTruSo, OSoLieuKT } from "@/features/qldn/KiemTraTruSo";
 import { CuocKiemTra, DoiSoatKT } from "@/features/qldn/PhongKiemTra";
 import { HoanGTGT, OHanHoan } from "@/features/qldn/HoanGTGT";
 import { DongMSTDonVi, NopThua, ToKhaiTonTruc, XuPhatDonVi } from "@/features/qldn/QuanLyKeKhai";
+import { DoiChieuDanhSach } from "@/features/qldn/DoiChieuDanhSach";
 import { NHAN_NGAY_KEO_TK } from "@/data/ql5";
 import { ChenhLechTK, kyQL2Cua } from "@/features/qldn/ChenhLechTK";
 import { KY_QL2_01 } from "@/data/ql2";
@@ -299,6 +300,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         : the === "hoangtgt" ? <HoanGTGT ky={ky} actor={user.name}/>
         : the === "tktt" ? <ToKhaiTonTruc pv={pv} actor={user.name}/>
         : the === "nopthua" ? <NopThua pv={pv} ky={ky} actor={user.name}/>
+        : the === "doichieu" ? <DoiChieuDanhSach pv={pv} ky={ky} actor={user.name}/>
         : the === "cltk" ? <ChenhLechTK pv={pv} ky={ky} actor={user.name} moDanhSach={bc ? moDSChenh : undefined}/>
         : !chiTieuCuaThe(the).length ? <ChuaCoChiTieu coBaoCao={Boolean(bc)}/>
         : <>
@@ -639,7 +641,6 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
   const [tcURL] = useThamSo<string>("tc", "");
   const [ctId, datCtId] = useState(() => ds.find((x) => String(x.stt) === tcURL)?.id ?? ds[0].id);
   const ct = ds.find((x) => x.id === ctId) ?? ds[0];
-  const info = THE_Q.find((t) => t.id === the)!;
   /* "Theo cán bộ" chỉ có nghĩa khi đang xem MỘT đơn vị. */
   const motDonVi = pv.donVi.length === 1 && !pv.canBo;
 
@@ -657,7 +658,7 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
         {the === "no" && <ChoChot nhan="Chưa bóc nợ đất"><p><b>Chưa bóc nợ đất, chưa loại trường hợp đặc thù.</b> Nợ đất đang cộng vào nợ các phòng QLDN; bảo lãnh, nộp theo quyết định, tạm hoãn xuất cảnh vẫn nằm trong số nợ. Chờ bài toán bóc tách và file loại trừ của phòng đầu mối.</p></ChoChot>}</>}
       /* Lý do "Theo cán bộ" bị tắt nói bằng chữ trên màn, không chỉ trong
          `title` — chú thích trỏ chuột không tới được bằng bàn phím hay cảm ứng. */
-      subtitle={pv.canBo ? `DN được phân công · ${ct.dvt}` : `${info.ten} · ${ct.dvt}${motDonVi ? "" : " · Theo cán bộ: chọn một đơn vị ở ô Phạm vi"}`}
+      subtitle={ct.dvt}
       actions={<div className="inline-controls">
         {!pv.canBo && <NhomNut label="Xem theo" value={theo === "CANBO" && motDonVi ? "CANBO" : "DONVI"} onChange={datTheo} options={[
           { value: "DONVI", label: "Theo đơn vị" },
@@ -748,7 +749,7 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
     <td className="num qd-goc-kq"><strong>{pt(ketQuaGoc(t, v), t.phep === "TANG")}</strong></td>
   </>;
 
-  return <Panel title="Theo bộ tiêu chí đánh giá" subtitle={`${cuaNhom.length} tiêu chí · lũy kế đến hết tháng ${ky.thang}/2026`}
+  return <Panel title="Theo bộ tiêu chí đánh giá"
     className={mo ? undefined : "is-thu"}
     actions={<Button kind="quiet" aria-expanded={mo} aria-controls={`qd-tc-${the}`} onClick={() => datMo(!mo)}>
       <span className="qd-nhan-on"><span aria-hidden={mo}>Xem bảng</span><span aria-hidden={!mo}>Thu gọn</span></span>
@@ -792,7 +793,7 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
         </table>
       </TableWrap>
       </div>
-      {soTrang > 1 && <div className="table-footer"><span>{dong.length} đơn vị</span><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>}
+      {soTrang > 1 && <div className="table-footer"><span/><Pager trang={trang} soTrang={soTrang} onChange={datTrang}/></div>}
     </div>}
   </Panel>;
 }
@@ -867,11 +868,8 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
   const haiKhoi = pv.vai === "LD" && pv.donVi.some((d) => d.khoi === "VP") && pv.donVi.some((d) => d.khoi === "TCS");
   const dsDonVi = khoiXepHang(pv, khoiXem);
   const dong = theo === "CANBO" ? theoCanBo(ct, pv.donVi[0].id, ky.thang) : theoDonVi(ct, dsDonVi, ky.thang);
-  /* "Kém nhất trước": lãnh đạo chuẩn bị họp cần đơn vị kéo tụt trước tiên,
-     không phải sang trang 3. Hạng giữ nguyên — chỉ đổi chiều đọc. */
-  const [kemTruoc, datKemTruoc] = useState(false);
-  const xep = xepHang(ct, dong);
-  const hang = kemTruoc ? [...xep].reverse() : xep;
+  /* Bộ chuyển "Tốt nhất / Kém nhất trước" gỡ 16/11/2026 (người dùng: không cần thiết). */
+  const hang = xepHang(ct, dong);
   /* Ô "việc quá hạn" mở danh sách cảnh báo của chính đơn vị ấy — chỉ với
      đơn vị nằm trong phạm vi cảnh báo của người xem. */
   const moDuoc = (id: string) => Boolean(moCanhBao) && theo === "DONVI" && pv.donVi.some((d) => d.id === id);
@@ -928,9 +926,6 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
   const dongNgan = () => { datNntMo(""); datSoMo(""); requestAnimationFrame(() => noiBam.current?.focus()); };
   const moCB = (id: string, nut: HTMLButtonElement | null) => { noiBam.current = nut; datNntMo(""); datSoMo(soMo === id ? "" : id); };
 
-  /* Điều khiển của bảng đứng NGAY TRÊN bảng nó điều khiển (critique
-     27/10/2026): bản trước để "Tốt nhất / Kém nhất trước" dưới chân bảng, sau
-     cả khối Cách tính. */
   return <CaseLayout
     presentation="drawer"
     label={cbMo ? `Người nộp thuế · ${cbMo.ten}` : "Người nộp thuế của cán bộ"}
@@ -946,9 +941,6 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
       <NhomNut label="Khối xếp hạng" value={khoiXem} onChange={(k) => { datKhoiXem(k); datTrang(1); }}
         options={(["VP", "TCS"] as Khoi[]).map((k) => ({ value: k, label: `${NHAN_KHOI[k]} · ${pv.donVi.filter((d) => d.khoi === k).length}` }))}/>
     </>}
-    <span className="bo-loc-nhan">Thứ tự</span>
-    <NhomNut label="Thứ tự xếp hạng" value={kemTruoc ? "kem" : "tot"} onChange={(v) => { datKemTruoc(v === "kem"); datTrang(1); }} options={[{ value: "tot", label: "Tốt nhất trước" }, { value: "kem", label: "Kém nhất trước" }]}/>
-    <span className="qd-khoi-dem">{integer(hang.length)} {theo === "CANBO" ? "cán bộ" : "đơn vị"}{coNNT ? " · bấm một cán bộ để xem NNT" : ""}</span>
     <CachTinh cot={cotCt}/>
   </div>
   <TableWrap label={`${ct.ten} theo ${theo === "CANBO" ? "cán bộ" : "đơn vị"}`}>
@@ -1058,7 +1050,7 @@ function UocThu({ pv }: { pv: PhamVi }) {
   const u = uocThu(pv, nhip);
   const tl = u.uoc ? u.thuc / u.uoc : 0;
   const coTyLe = duocXem(pv.vai, "tyLe") || pv.vai === "CB";
-  return <Panel title="Ước thu" subtitle="Số ước đặt đầu tháng 10/2026 · cách chia ước tháng ra ngày và tuần chờ nghiệp vụ xác nhận" actions={
+  return <Panel title="Ước thu" subtitle="Số ước đặt đầu tháng 10/2026" actions={
     <NhomNut label="Nhịp ước thu" value={nhip} onChange={datNhip} options={(["NGAY", "TUAN", "THANG"] as NhipUoc[]).map((n) => ({ value: n, label: NHAN_NHIP[n] }))}/>}>
     <div className="qd-uoc">
       <div><span>Ước thu {NHAN_NHIP[nhip].toLowerCase()}</span><strong>{so(u.uoc, "tỷ đồng")}</strong><small>tỷ đồng</small></div>

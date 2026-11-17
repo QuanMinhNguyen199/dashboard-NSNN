@@ -88,7 +88,7 @@ function ChiSoChinh({ ky, dd, chon, boChon }: { ky: KyQ; dd: boolean; chon: Pham
   const so = dd ? s.dichDanh : s.chung;
   const x = tyLeHT(so), don = tyLeDonDoc(so), bq = binhQuan(so);
   const cuoc = dd ? "cuộc đích danh" : "cuộc";
-  return <Panel title={`Chỉ số trọng tâm · ${tenPhamViKT(chon)}`} subtitle={`Lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel title={`Chỉ số trọng tâm · ${tenPhamViKT(chon)}`}
     actions={chon !== "TN" ? <Button kind="quiet" onClick={boChon}>Về toàn ngành</Button> : undefined}>
     <div className="kt-o-so">
       <OChiSo ten={dd ? "Tỷ lệ hoàn thành đích danh" : "Tỷ lệ hoàn thành nhiệm vụ"} to={pt(x)} thanh={x}
@@ -363,7 +363,7 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
      điều chính. Muốn biết đơn vị nào cao nhất ở cột khác thì chọn "Xếp hạng theo". */
   const tenNhom = nhom === "" ? "5 Phòng Kiểm tra" : nhom === "tcs" ? `Nội thành và ngoại thành · ${dv.length} Thuế cơ sở` : `${NHAN_CUM_KT[nhom === "nt" ? "NT" : "NGT"]} · ${dv.length} Thuế cơ sở`;
 
-  return <Panel title="Xếp hạng đơn vị" tieuDeKem={<GhiChu tieuDe="Cách đọc">Màu đỏ: đơn vị nhóm cuối theo tiêu chí đang chọn. Đồng giá trị thì cùng hạng; “—” không xếp hạng.</GhiChu>} subtitle={`${tenNhom} · ${dd ? "kế hoạch đích danh" : "tất cả các cuộc"} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Panel title="Xếp hạng đơn vị" tieuDeKem={<GhiChu tieuDe="Cách đọc">Màu đỏ: đơn vị nhóm cuối theo tiêu chí đang chọn. Đồng giá trị thì cùng hạng; “—” không xếp hạng.</GhiChu>} subtitle={tenNhom}
     actions={<div className="inline-controls kt-dieu-khien">
       <SelectMenu label="Xếp hạng theo" className="kt-loc-khoi kt-xep-theo" value={xep} onChange={datXep} options={[
         { value: "", label: `Xếp hạng theo ${nhanTyLe.toLowerCase()}` },
@@ -435,7 +435,7 @@ function TheoLoaiHinh({ ky, chon }: { ky: KyQ; chon: PhamViKT }) {
   const loai = soLieuKT(chon, ky.thang).loai;
   const phan = PHAN_LOAI.map((p) => p.loai.reduce((a, l) => a + loai[l], 0));
   /* Disclosure bọc cả khối: nút ở đầu khối, bảng ở thân khối — thư viện nối hai bên. */
-  return <Disclosure className="kt-loai-mo-rong" isExpanded={moBang} onExpandedChange={datMoBang}><Panel title="Số cuộc hoàn thành theo loại hình" subtitle={`${tenPhamViKT(chon)} · lũy kế đến ${ngayCuoi(ky)}`}
+  return <Disclosure className="kt-loai-mo-rong" isExpanded={moBang} onExpandedChange={datMoBang}><Panel title="Số cuộc hoàn thành theo loại hình" subtitle={tenPhamViKT(chon)}
     actions={<AriaButton slot="trigger" className="button is-quiet kt-mo-bang">
       <span>{moBang ? "Ẩn bảng theo phòng" : "Xem bảng theo phòng"}</span><Icon name={moBang ? "chevronUp" : "chevronDown"} size={16}/>
     </AriaButton>}>
@@ -448,13 +448,14 @@ function DonutLoaiHinh({ phan }: { phan: number[] }) {
   const [tro, datTro] = useState<number | null>(null);
   const tong = phan.reduce((a, b) => a + b, 0);
   if (!tong) return <p className="kt-trong">Chưa có cuộc kiểm tra hoàn thành trong kỳ này.</p>;
-  const R = 62, C = 2 * Math.PI * R, KHE = 2;
+  /* Vòng mảnh (rà soát 16/11/2026): nét 10 thay 18, bán kính nới để khung giữ nguyên cỡ. */
+  const R = 68, C = 2 * Math.PI * R, KHE = 2;
   let dau = 0;
   return <div className="qd-donut kt-donut">
     <svg viewBox="0 0 160 160" role="img" aria-label={PHAN_LOAI.map((p, i) => `${p.nhan} ${integer(phan[i])} cuộc, ${phanTram(phan[i], tong)}`).join("; ")}>
       <g transform="rotate(-90 80 80)">{phan.map((p, i) => {
         const dai = (C * p) / tong;
-        const cung = <circle key={i} cx="80" cy="80" r={R} fill="none" style={{ stroke: PHAN_LOAI[i].mau }} strokeWidth={tro === i ? 22 : 18}
+        const cung = <circle key={i} cx="80" cy="80" r={R} fill="none" style={{ stroke: PHAN_LOAI[i].mau }} strokeWidth={tro === i ? 14 : 10}
           strokeDasharray={`${p ? Math.max(dai - KHE, 0.5) : 0} ${C}`} strokeDashoffset={-dau}
           onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)}><title>{`${PHAN_LOAI[i].nhan}: ${integer(p)} cuộc, ${phanTram(p, tong)}`}</title></circle>;
         dau += dai;

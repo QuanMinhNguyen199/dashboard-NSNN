@@ -5,7 +5,7 @@ import { DauDat } from "@/components/ChiBao";
 import { doiChieuQHNS } from "@/data/doiChieuQHNS";
 import { TRANG_THAI_DN, type DongDN } from "@/data/qldn";
 import { DoiChieuQHNS } from "@/features/qldn/DoiChieuQHNS";
-import { NHAN_RA_SOAT, hoSoDN, nghiepVuDN, quanHeNganSach, type DongNganSach, type NamDN, type NghiepVuDN } from "@/data/hoSoQLDN";
+import { NHAN_RA_SOAT, hoSoDN, mocTrangThai, nghiepVuDN, quanHeNganSach, type DongNganSach, type NamDN, type NghiepVuDN } from "@/data/hoSoQLDN";
 
 /*
   Hồ sơ sức khỏe một doanh nghiệp (biên bản 22/10/2026 §3.2: "hiển thị lịch
@@ -68,7 +68,7 @@ function KhoiNghiepVu({ nv, soCuongChe }: { nv: NghiepVuDN; soCuongChe: number }
       ["Trạng thái", nv.kttb.trangThai ?? "—"],
     ] },
     { ten: "Kê khai", dong: [
-      ["Tờ khai chưa nộp", integer(nv.keKhai.chuaNop), nv.keKhai.chuaNop > 0],
+      ["Tờ khai chưa nộp", nv.keKhai.chuaNop ? nv.keKhai.dsChuaNop.join("; ") : "0", nv.keKhai.chuaNop > 0],
       ["Tờ khai nộp chậm năm 2026", integer(nv.keKhai.nopCham), nv.keKhai.nopCham > 0],
     ] },
     { ten: "Hóa đơn", dong: [
@@ -135,7 +135,7 @@ function QuanHeNganSach({ ds, thang }: { ds: DongNganSach[]; thang: number }) {
           <td className="num">{trd(x.daNop)}</td>
           <td className="num">{x.conNo ? <strong className="is-xau">{integer(x.conNo)}</strong> : <span className="cell-empty">0</span>}</td>
           <td className="num">{x.thua
-            ? <><strong>{integer(x.thua)}</strong><small className={`qd-ns-rs is-${x.raSoat!.toLowerCase()}`}>{NHAN_RA_SOAT[x.raSoat!]}</small></>
+            ? <><strong>{integer(x.thua)}</strong><small className={`qd-ns-rs is-${x.raSoat!.toLowerCase()}`}>{NHAN_RA_SOAT[x.raSoat!]}</small>{x.phanBo && <small className="qd-ns-rs is-chua">{integer(x.phanBo.soTien)} tại {x.phanBo.tinh}</small>}</>
             : <span className="cell-empty">0</span>}</td>
         </tr>)}</tbody>
         <tfoot><tr>
@@ -194,6 +194,7 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
   const ns = useMemo(() => quanHeNganSach(d), [d]);
   const nam = hs.nam.filter((n) => n.co);
   const ttTen = TRANG_THAI_DN.find((t) => t.id === d.trangThai)!.ten;
+  const moc = useMemo(() => mocTrangThai(d), [d]);
   const dc = useMemo(() => doiChieuQHNS(d), [d]);
   const ccHieuLuc = hs.cuongChe.filter((c) => c.conHieuLuc).length;
   const soHD = nv.hoaDon.canXacMinh + (nv.hoaDon.tpr ? 1 : 0) + (nv.hoaDon.heSoK ? 1 : 0);
@@ -212,7 +213,11 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
     <HangChiBao ds={chiBao}/>
     <DetailGrid items={[
       { label: "Trạng thái", value: ttTen },
-      { label: "Năm thành lập", value: d.namThanhLap },
+      /* Bốn trường của biên bản 13/11/2026 §2.3 — ô cố định cho mọi DN, không có thì "—". */
+      { label: "Ngày thành lập", value: ngayVN(moc.ngayThanhLap) },
+      { label: "Ngày bỏ trốn", value: moc.ngayBoTron ? `${ngayVN(moc.ngayBoTron)} · QĐ ${moc.soQD}` : "—" },
+      { label: "Ngày giải thể hoặc chuyển trạng thái 03", value: moc.ngayGiaiThe ? ngayVN(moc.ngayGiaiThe) : "—" },
+      { label: "Ngày dừng hoạt động", value: moc.ngayDung ? ngayVN(moc.ngayDung) : "—" },
       { label: "Đơn vị quản lý", value: d.donVi },
       { label: "Cán bộ quản lý", value: d.canBo },
       { label: "Ngày phân công", value: ngayVN(nv.ngayPhanCong) },

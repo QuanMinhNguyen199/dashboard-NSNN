@@ -139,7 +139,7 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
     <Panel chinh
     title={nhom === "vuong" ? "Vướng mắc gửi QLRR" : "Lượt cảnh báo còn tồn"}
     tieuDeKem={nhom === "vuong" ? <GhiChu>Các lượt gửi QLRR không tính vào tồn cuối kỳ. Đánh dấu được lưu trong phiên demo.</GhiChu> : undefined}
-    subtitle={`${ky.nhan} · ${money(loc.length)} lượt · sắp theo số ngày tồn giảm dần`}
+    subtitle={`${ky.nhan} · ${money(loc.length)} lượt`}
     actions={<div className="inline-controls">
       <Segmented label="Nhóm lượt" value={nhom} onChange={(v) => { datNhom(v); datTrang(1); }} options={[{value:"ton",label:"Lượt còn tồn"},{value:"vuong",label:"Vướng mắc gửi QLRR"}]}/>
       <Segmented

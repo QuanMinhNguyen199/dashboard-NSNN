@@ -133,7 +133,6 @@ export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
   const hangDonVi = du ? donViThuong : donViThuong.slice(0, GON_DONVI);
   const hangTK = du ? tkThuong.slice((trang - 1) * MOI_TRANG, trang * MOI_TRANG) : tkThuong.slice(0, MOI_TRANG);
   const tongHang = mo === "donvi" ? donViThuong.length : tkThuong.length;
-  const dangHien = mo === "donvi" ? hangDonVi.length : (du ? tkThuong.length : hangTK.length);
   const nhanHang = mo === "donvi" ? "đơn vị" : "tài khoản";
 
   const dvMo = dangMo.startsWith("dv:") ? gop.find((g) => g.donVi === dangMo.slice(3)) ?? null : null;
@@ -212,8 +211,7 @@ export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
       </TableWrap>
       <div className="table-footer">
         <span>
-          {dangHien < tongHang ? `${dangHien}/${tongHang} ${nhanHang} nhiều cuộc gọi đến không trả lời nhất` : `${tongHang} ${nhanHang} · xếp theo số cuộc gọi đến không trả lời`}
-          {tongHang > (mo === "donvi" ? GON_DONVI : MOI_TRANG) && <>{" · "}<button type="button" className="qd-lien-ket" aria-expanded={du} onClick={() => { datDu(!du); datTrang(1); }}>{du ? "Thu gọn" : `Xem đủ ${tongHang} ${nhanHang}`}</button></>}
+          {tongHang > (mo === "donvi" ? GON_DONVI : MOI_TRANG) && <><button type="button" className="qd-lien-ket" aria-expanded={du} onClick={() => { datDu(!du); datTrang(1); }}>{du ? "Thu gọn" : `Xem đủ ${tongHang} ${nhanHang}`}</button></>}
         </span>
         {du && mo === "taikhoan" && <Pager trang={trang} soTrang={soTrangTK} onChange={datTrang}/>}
       </div>
@@ -418,7 +416,7 @@ export function DanhSachPhieu({ ky }: { ky: KyQL4 }) {
   >
     <Panel chinh
       title="Danh sách phiếu ghi"
-      subtitle={`${ky.nhan} · ${money(loc.length)} phiếu · 14 cột gốc Viettel`}
+      subtitle={`${ky.nhan} · ${money(loc.length)} phiếu`}
       actions={<SearchField value={tim} onChange={(v) => { datTim(v); datTrang(1); datDangMo(""); }} placeholder="Tìm ID hoặc chủ đề"/>}
     >
       {/*

@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
-    "framer-motion": "^14.1.0"
+    "framer-motion": "^14.1.0",
+    "motion": "^14.14.0"
   }
 }

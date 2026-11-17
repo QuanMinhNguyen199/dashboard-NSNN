@@ -106,7 +106,7 @@ export function CuocKiemTra({ actor }: { actor: string }) {
 
   const sua = Boolean(phieu.id);
   return <div className="pkt-cuoc">
-    <Panel title="Cuộc kiểm tra" subtitle={`${integer(loc.length)} / ${integer(ds.length)} cuộc · dữ liệu mô phỏng`}
+    <Panel title="Cuộc kiểm tra" subtitle={`${integer(loc.length)} / ${integer(ds.length)} cuộc`}
       actions={<div className="inline-controls"><Button kind="secondary" icon="file" onClick={moMoi}>Thêm cuộc mới</Button><ExportButton onExport={xuat}>Xuất Excel</ExportButton></div>}>
       <div className="pkt-loc">
         <SearchField value={q} onChange={(v) => doiLoc(() => datQ(v))} placeholder="Tìm MST, tên doanh nghiệp"/>

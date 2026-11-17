@@ -187,7 +187,7 @@ export function DanhSachDNQL3({ trongPhamVi, hatKy, ky, meta, tenTep }: {
   >
     <Panel chinh
       title="Danh sách NNT đã kiểm tra tại bàn"
-      subtitle={`${money(loc.length)} hồ sơ khai thuế · ${money(soDN)} doanh nghiệp được đếm vào báo cáo`}
+      subtitle={`${money(loc.length)} hồ sơ · ${money(soDN)} doanh nghiệp`}
       actions={<div className="inline-controls">
         <SearchField value={tim} onChange={(v) => doiLoc(() => datTim(v))} placeholder="Tìm MST hoặc tên NNT"/>
         {/*

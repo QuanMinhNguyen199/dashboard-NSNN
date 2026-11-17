@@ -75,7 +75,7 @@ export function Runs({ readOnly = false }: { readOnly?: boolean }) {
           </tr>)}</tbody>
         </table></TableWrap>
         <footer className="table-footer">
-          <span>Hiển thị {rows.length}/{dataRuns.length} lượt – vùng thô giữ mọi phiên bản, không ghi đè</span>
+          <span>{rows.length}/{dataRuns.length} lượt</span>
         </footer>
       </Panel>
     </CaseLayout>
