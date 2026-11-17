@@ -251,7 +251,6 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
 
     <Panel
       title="Ba chỉ tiêu chấm điểm, theo đơn vị"
-      subtitle="Vạch là bình quân toàn ngành · chênh trên 5 đpt so với bình quân được ±1 điểm"
     >
       <SoSanhChiTieu
         cot={["Rà soát TPR · tỷ lệ đã rà soát", "Hệ số K · tỷ lệ đã xử lý", "Xác minh hóa đơn · tỷ lệ hoàn thành"]}
@@ -272,7 +271,6 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
 
     <Panel
       title="Đơn vị nhiều NNT chênh lệch chưa có kết quả nhất"
-      subtitle="Xếp 10 đơn vị đầu"
     >
       <ol className="xep-hang">
         {cl

@@ -228,7 +228,7 @@ export function BangQL2_01({ ky, loaiTK, onMoDanhSach }: {
      cao từng hàng tiêu đề nữa. */
   return <Panel chinh
     title={`Tổng hợp ${loaiTK === "01" ? "01GTGT" : "03, 04GTGT"}`}
-    subtitle={`${nhanLuyKe(ky)} · tờ khai ${loaiTK === "01" ? "01/GTGT" : "03, 04/GTGT"} · đơn vị tiền: triệu đồng · nguồn: hddtbaocao`}
+    subtitle={`${nhanLuyKe(ky)} · tờ khai ${loaiTK === "01" ? "01/GTGT" : "03, 04/GTGT"} · triệu đồng · nguồn: hddtbaocao`}
     actions={<SelectMenu className="compact-field" hienNhan kieu="o" label="Nhóm chỉ tiêu" value={nhomMo} onChange={(v) => datNhomMo(v)}
       options={[{ value: "tomtat", label: "Tóm tắt" }, ...nhomDay.map((n, i) => ({ value: `n${i}`, label: n.nhan })), { value: "tatca", label: `Tất cả ${cotTatCa} chỉ tiêu` }]}/>}
   >

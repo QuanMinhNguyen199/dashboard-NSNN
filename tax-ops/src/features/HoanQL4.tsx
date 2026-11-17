@@ -186,7 +186,6 @@ function TongQuanQL4() {
 
     <Panel
       title="Tỷ lệ hồ sơ quá hạn theo đơn vị"
-      subtitle="Vạch là bình quân toàn địa bàn"
     >
       <div className="so-sanh">
         <div className="so-sanh-dau">

@@ -151,7 +151,7 @@ export function TonQuaHanXM({ ky }: { ky: KyQL2 }) {
   >
     <Panel chinh
       title="Hóa đơn còn tồn xác minh"
-      subtitle={`${ky.nhan} · ${money(loc.length)} dòng hóa đơn · theo cán bộ xử lý`}
+      subtitle={`${ky.nhan} · ${money(loc.length)} dòng hóa đơn`}
       actions={<div className="inline-controls">
         <OChonKhoi khoi={khoi} datKhoi={(v) => { datKhoi(v); datTrang(1); datDangMo(""); }}/>
         <Segmented

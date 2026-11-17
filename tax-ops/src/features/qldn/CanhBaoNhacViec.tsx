@@ -122,9 +122,9 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
       hỏi chúng có khác nhau không.
     */}
     <section className="qd-alert-summary" aria-label="Tình hình thời hạn">
-    {/* Tiêu đề nhìn thấy không phải heading: trang đã có H1 cùng tên, và một
-        H2 trùng chữ đọc ra hai lần cùng một tên cho trình đọc màn hình. */}
-    <div className="qd-alert-summary-head"><strong className="qd-alert-title" aria-hidden="true">Cảnh báo nhắc việc</strong><SelectMenu className="qd-bao-truoc" hienNhan label="Báo trước" value={String(baoTruoc)} onChange={(v) => datBaoTruoc(Number(v))}
+    {/* Tiêu đề nhìn thấy gỡ 16/11/2026: chỉ màn này có tiêu đề to trong khung,
+        lặp đúng tên mục đang sáng ở thanh bên. H1 ẩn vẫn còn cho trình đọc màn hình. */}
+    <div className="qd-alert-summary-head"><SelectMenu className="qd-bao-truoc" hienNhan label="Báo trước" value={String(baoTruoc)} onChange={(v) => datBaoTruoc(Number(v))}
       options={Array.from({ length: 10 }, (_, i) => i + 1).map((n) => ({ value: String(n), label: `${n} ngày` }))}/></div>
     <ToggleButtonGroup className="qd-the-loc" aria-label="Lọc theo mức cảnh báo" selectionMode="single" disallowEmptySelection selectedKeys={[muc]}
       onSelectionChange={(k) => { const m = [...k][0]; if (m !== undefined) datMuc(String(m) as MucCanhBao | ""); }}>
@@ -197,7 +197,7 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
           </tbody>
         </table>
       </TableWrap>
-      <div className="table-footer"><span>{soTrang > 1 ? `Dòng ${(trangHien - 1) * coTrang + 1}–${Math.min(trangHien * coTrang, loc.length)}` : "Nhóm theo đầu việc"}</span>{soTrang > 1 && <Pager trang={trangHien} soTrang={soTrang} onChange={(n) => { datTrang(n); datMo(""); }}/>}</div>
+      <div className="table-footer"><span/>{soTrang > 1 && <Pager trang={trangHien} soTrang={soTrang} onChange={(n) => { datTrang(n); datMo(""); }}/>}</div>
       {khongPhatSinh.length > 0 && <details className="qd-alert-inactive"><summary><Icon name="check" size={16}/><span>{khongPhatSinh.length} đầu việc không phát sinh trong ngày</span><Icon name="chevronDown" size={16}/></summary><ul>{khongPhatSinh.map((d) => <li key={d.id}>{d.ten}</li>)}</ul></details>}
     </Panel>}
     </div>

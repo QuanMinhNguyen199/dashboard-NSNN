@@ -68,7 +68,7 @@ export function NhapKetQuaPhieu({ loai, hatKy, donViChoPhep }: { loai: LoaiPhieu
 
   return <Panel
     title={`Nhập kết quả phiếu ${ch.loai}`}
-    subtitle={`${money(chuaTraLoi.length)}/${money(dong.length)} dòng chưa có kết quả · sắp theo hạn, quá hạn lên trước`}
+    subtitle={`${money(chuaTraLoi.length)}/${money(dong.length)} dòng chưa có kết quả`}
     actions={<Button
       kind="secondary"
       icon="file"

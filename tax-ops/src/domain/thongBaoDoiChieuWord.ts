@@ -1,5 +1,5 @@
 import type { DongDN } from "@/data/qldn";
-import { NHAN_NGUON, ngayDoiChieu, type DongSoi } from "@/data/doiChieuQHNS";
+import { giaTri, nhanMa, ngayDoiChieu, type DongSoi } from "@/data/doiChieuQHNS";
 
 /*
   Thông báo đề nghị NNT giải trình khoản chưa đối chiếu được — bước 4 của quy
@@ -23,7 +23,7 @@ export async function xuatThongBaoDoiChieu(d: DongDN, dong: DongSoi[], canBo: st
   const o = (text: string, b = false, phai = false) => new TableCell({
     children: [new Paragraph({ alignment: phai ? AlignmentType.RIGHT : AlignmentType.LEFT, children: [new TextRun({ text, bold: b, size: 24 })] })],
   });
-  const tong = dong.reduce((a, v) => a + (v.chieu === "PN" ? v.soTien : -v.soTien), 0);
+  const tong = dong.reduce((a, v) => a + giaTri(v), 0);
   const homNay = new Date();
 
   const doc = new Document({
@@ -43,7 +43,7 @@ export async function xuatThongBaoDoiChieu(d: DongDN, dong: DongSoi[], canBo: st
             new TableRow({ tableHeader: true, children: [o("STT", true), o("Ngày", true), o("Loại khoản", true), o("Tiểu mục", true), o("Số tiền (đồng)", true, true)] }),
             ...dong.map((v, i) => new TableRow({ children: [
               o(String(i + 1)), o(ngayDoiChieu(v.ngay)),
-              o(`${v.chieu === "DN" ? "Đã nộp, chưa có nghĩa vụ đối ứng" : "Phải nộp, chưa có chứng từ nộp"} — ${NHAN_NGUON[v.nguon]}: ${v.moTa}`),
+              o(`${giaTri(v) < 0 ? "Có chứng từ nhưng không có tờ khai" : "Có tờ khai nhưng không có chứng từ tương ứng"} — ${nhanMa(v.ma)}: ${v.moTa}`),
               o(`${v.tieuMuc} ${v.tenTieuMuc}`), o(so(v.soTien), false, true),
             ] })),
           ],

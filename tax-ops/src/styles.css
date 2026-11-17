@@ -3844,3 +3844,71 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
   :is(tbody tr:has(.row-select:not(:disabled)), button.task-row:not(:disabled), .figure-line > button:not(:disabled)):hover { transform: none; box-shadow: none; }
   .nav-item:not(.is-active):hover, .nav-item:active { transform: none; }
 }
+
+/* ---------- Đối chiếu nghĩa vụ · bổ sung 16/11/2026 (folder 16-11) ---------- */
+/* Ký hiệu giao dịch TMS: chữ đậm nhỏ trong khung mảnh, mô tả ở title. */
+.qd-dc-ma { display: inline-block; min-width: 22px; margin-right: 4px; padding: 0 4px; border: 1px solid var(--line); border-radius: var(--radius-chip); color: var(--ink-2); font-size: 11px; font-weight: 700; line-height: 16px; text-align: center; text-decoration: none; font-variant-numeric: tabular-nums; cursor: help; }
+.qd-dc-ma-day { display: flex !important; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+.qd-dc-ma-day .qd-dc-ma { margin-right: 0; }
+.qd-dc-gh { display: block; color: var(--ink-3); font-size: 11px; font-weight: 400; }
+.qd-dc-ky-hieu { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 0 0 8px; }
+.qd-dc-ky-hieu > div { display: contents; }
+.qd-dc-ky-hieu dt { font-weight: 700; font-variant-numeric: tabular-nums; }
+.qd-dc-ky-hieu dd { margin: 0; }
+.qd-dc-phan-bo { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 8px 12px; border-radius: var(--radius-control); background: var(--warning-bg); color: var(--ink); font-size: 13px; line-height: 1.5; }
+.qd-dc-phan-bo .icon { flex: none; margin-top: 2px; color: var(--warning); }
+.qd-dc-soi-dau { align-items: center; }
+.qd-dc-soi-dau .qd-dc-soi-con { margin-left: auto; }
+.qd-dc-buoc-noi { animation: qd-dc-mo 220ms var(--ease-out); }
+.qd-dc-buoc-tra { margin: 0; padding-left: 18px; }
+.qd-dc-buoc-tra li + li { margin-top: 6px; }
+.qd-dc-noi .qd-dc-doc { display: inline-flex; align-items: flex-start; gap: 4px; font-size: 12px; font-weight: 600; line-height: 1.45; }
+.qd-dc-doc .icon { flex: none; margin-top: 2px; }
+.qd-dc-doc.is-cao { color: var(--critical); }
+.qd-dc-doc.is-thap { color: var(--positive); }
+.qd-dc-xoay { min-width: 420px; }
+.qd-dc-xoay :is(th, td) small { display: block; color: var(--ink-3); font-size: 11px; font-weight: 400; white-space: normal; }
+.qd-dc-xoay thead th { vertical-align: bottom; white-space: nowrap; }
+.qd-dc-xoay-no { color: var(--critical); font-weight: 600; font-variant-numeric: tabular-nums; }
+.qd-dc-xoay-thua { color: var(--brand); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Danh sách đối chiếu theo cán bộ / đơn vị. */
+.dc-dn-bang { min-width: 980px; }
+.dc-dn-bang th[scope="row"] { min-width: 220px; }
+.dc-dn-bang td:last-child { min-width: 180px; white-space: normal; }
+.dc-nn { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); font-weight: 600; }
+.dc-nn::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.dc-nn.is-cao::before { background: var(--critical); }
+.dc-nn.is-vua::before { background: var(--warning); }
+@media (prefers-reduced-motion: reduce) {
+  .qd-dc-buoc-noi { animation: none; }
+}
+.dc-dn-bang td:nth-last-child(2) { min-width: 210px; }
+.dc-dn-bang td:nth-last-child(2) small { display: block; }
+/* Hồ sơ DN có 9 ô thông tin chung (thêm Ngày dừng hoạt động, 16/11/2026): ô cuối lẻ trải hết hàng thay vì đứng một mình. */
+.qd-dn .detail-grid > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+/* ---------- Rà soát layout 16/11/2026 (taste review) ---------- */
+/* #4: ô tiêu đề hàng mang nền riêng của `th` — hàng đang chọn phải phủ cả ô ấy, không bị cắt đôi. */
+.qd-bang tbody tr.is-selected > th { background: var(--selected-surface); }
+/* #3: khung tóm tắt Cảnh báo không còn tiêu đề — ô "Báo trước" đứng một mình ở mép phải. */
+.qd-alert-summary-head { justify-content: flex-end; margin-bottom: 12px; }
+/* #2: ô ghi chú rỗng không giữ chỗ — hàng thẻ không có ghi chú (Kê khai, Hóa đơn) hết khoảng trắng ~34px dưới đáy.
+   Số và mốc vẫn thẳng hàng vì nội dung thẻ xếp từ trên xuống (align-content: start). */
+.qd-kq-ghi:empty { display: none; }
+/* #1: một số dẫn — tỷ lệ Thu NSNN (chỉ tiêu STT 1 của bộ tiêu chí) lớn hơn các ô khác.
+   Chiều cao dòng giữ đúng 28px × 1.1 của các ô cùng hàng để thanh và dòng mốc vẫn thẳng một đường (ô cố định). */
+.qd-kq-nhom.is-thu .qd-kq-so > b { font-size: 38px; line-height: 30.8px; letter-spacing: -.025em; }
+/* #8: điện thoại hai ô một hàng thay vì một — trang Tổng quan quản trị ngắn còn khoảng một nửa.
+   Ô lẻ cuối nhóm trải hết hàng để khe 1px không lộ ô trống. */
+@media (max-width: 700px) {
+  .qd-kq-khung { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qd-kq-o:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .qd-kq-o { padding: 12px; gap: 10px; }
+  .qd-kq-nhom.is-thu .qd-kq-so > b { font-size: 32px; line-height: 30.8px; }
+}
+/* #7: hồ sơ doanh nghiệp dày bảng (Quan hệ ngân sách 6 cột, đối chiếu) — ngăn trượt nới 600 → 760px chỉ khi chứa hồ sơ DN.
+   Bảy ô chỉ báo giữ lưới tự xếp (118px tối thiểu): ép một hàng 7 ô làm cắt chữ "Cưỡng chế", "Đối chiếu". */
+.case-drawer:has(.qd-dn) { width: min(760px, 100vw); }
+/* Mức sàn chữ 11px: mũi tên so năm trước trong hồ sơ DN (trước 9px). */
+.qd-dn-bang .qd-dn-chieu { font-size: 11px; }

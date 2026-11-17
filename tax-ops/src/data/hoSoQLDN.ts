@@ -1,5 +1,6 @@
 import { hatCua, nguyen, prng } from "@/data/ngauNhien";
 import { tenNNTGia } from "@/data/ngauNhien";
+import { tenTieuMucTMS } from "@/data/danhMucTMS";
 import {
   CHI_TIEU_Q, canBoCua, capCua, doiTuongCua, donViTheoId, tyLeCua,
   type CanBoQ, type ChiTieuQ, type DauViecId, type DongDN, type PhamVi, type ViecQ,
@@ -409,12 +410,14 @@ export interface NghiepVuDN {
   no: { hienTai: number; dauNam: number; chamNop: number };
   hoan: { dangXuLy: number; quaHan: number; soTien: number };
   kttb: { trongKeHoach: boolean; trangThai: string | null };
-  keKhai: { chuaNop: number; nopCham: number };
+  keKhai: { chuaNop: number; nopCham: number; dsChuaNop: string[] };
   hoaDon: { canXacMinh: number; quaHan: number; tpr: boolean; heSoK: boolean };
 }
 
 export function nghiepVuDN(d: DongDN, thang: number): NghiepVuDN {
   const r = prng(hatCua(87, "nvdn", d.khoa));
+  /* Hạt riêng cho tờ khai còn thiếu (demo 13/11/2026: bấm DN xem thiếu tờ khai nào) — không xê dịch chuỗi `r()`. */
+  const r2 = prng(hatCua(88, "nvdn-tk", d.khoa));
   const luyKe = d.thu2026;
   const dangXuLy = r() < 0.18 ? nguyen(r, 1, 3) : 0;
   const trongKeHoach = r() < 0.16;
@@ -435,7 +438,14 @@ export function nghiepVuDN(d: DongDN, thang: number): NghiepVuDN {
     },
     hoan: { dangXuLy, quaHan: dangXuLy && r() < 0.3 ? 1 : 0, soTien: dangXuLy ? Math.round(80 + r() * 4000) : 0 },
     kttb: { trongKeHoach, trangThai: trongKeHoach ? TT_KTTB[nguyen(r, 0, TT_KTTB.length - 1)] : null },
-    keKhai: { chuaNop: r() < 0.08 ? nguyen(r, 1, 2) : 0, nopCham: r() < 0.2 ? nguyen(r, 1, 3) : 0 },
+    keKhai: (() => {
+      const chuaNop = r() < 0.08 ? nguyen(r, 1, 2) : 0;
+      /* Kỳ gần nhất đã đến hạn trở về trước: tháng (01/GTGT) hoặc quý (05/KK-TNCN). */
+      const dsChuaNop = Array.from({ length: chuaNop }, (_, i) => r2() < 0.6
+        ? `01/GTGT tháng ${String(Math.max(1, thang - 1 - i)).padStart(2, "0")}/2026`
+        : `05/KK-TNCN quý ${Math.max(1, Math.ceil((thang - 1) / 3) - i)}/2026`);
+      return { chuaNop, nopCham: r() < 0.2 ? nguyen(r, 1, 3) : 0, dsChuaNop: [...new Set(dsChuaNop)] };
+    })(),
     hoaDon: { canXacMinh, quaHan: canXacMinh && r() < 0.4 ? nguyen(r, 1, canXacMinh) : 0, tpr: r() < 0.06, heSoK: r() < 0.05 },
   };
 }
@@ -489,7 +499,16 @@ export interface DongNganSach {
   /** Triệu đồng. */
   noDauNam: number; phatSinh: number; daNop: number; conNo: number; thua: number;
   raSoat: RaSoatThua | null;
+  /**
+   * Chứng từ phân bổ nộp nhầm sang tỉnh khác (biên bản 13/11/2026 §2.2):
+   * phần thừa này nằm ở CQT tỉnh ấy, trong khi khoản nợ cùng số vẫn treo ở
+   * Hà Nội. Triệu đồng, đã tính trong `thua` và `daNop`.
+   */
+  phanBo?: { tinh: string; soTien: number };
 }
+
+/* Tỉnh có chi nhánh, công trình nhận phân bổ — chỉ để dựng tình huống mô phỏng. */
+export const TINH_PHAN_BO = ["Thuế tỉnh Bắc Ninh", "Thuế tỉnh Hưng Yên", "Thuế TP Hải Phòng", "Thuế tỉnh Phú Thọ"];
 
 const KHOAN_NS: { tieuMuc: string; ten: string; w: number }[] = [
   { tieuMuc: "1701", ten: "Thuế GTGT", w: 0.48 },
@@ -517,14 +536,64 @@ export function quanHeNganSach(d: DongDN): DongNganSach[] {
   const conNo = chia(noTong, coNo.map((c) => (c ? 0.4 + r() : 0)));
   /* Nộp thừa: khoảng một phần tư DN có một tiểu mục thừa, ở tiểu mục không nợ. */
   const iThua = r() < 0.28 ? khoan.findIndex((_, i) => !coNo[i] && i > 0) : -1;
-  return khoan.map((k, i) => {
+  /* Hạt riêng cho phần thêm 16/11/2026 — không xê dịch chuỗi `r()` ở trên,
+     để số của mọi hồ sơ đã trình diễn giữ nguyên. */
+  const r2 = prng(hatCua(94, "qhns-pb", d.khoa));
+  const thuaS1 = new Map((d.thuaS1 ?? []).map((x) => [x.tieuMuc, Math.max(1, Math.round(x.thua / 1e6))]));
+  const dong = [...khoan];
+  for (const tm of thuaS1.keys()) if (!dong.some((k) => k.tieuMuc === tm)) dong.push({ tieuMuc: tm, ten: tenTieuMucNgan(tm), w: 0 });
+  return dong.map((k, i) => {
+    const goc = i < khoan.length;
+    let dn = goc ? daNop[i] : 0;
+    let no = goc ? conNo[i] : 0;
     /* Không thừa quá số đã nộp — giữ vế trái của đẳng thức không âm. */
-    const thua = i === iThua ? Math.min(daNop[i], Math.round(daNop[i] * (0.04 + r() * 0.25)) + nguyen(r, 5, 400)) : 0;
-    const noDauNam = conNo[i] ? Math.round(conNo[i] * (0.3 + r() * 0.9)) : 0;
+    let thua = i === iThua ? Math.min(dn, Math.round(dn * (0.04 + r() * 0.25)) + nguyen(r, 5, 400)) : 0;
+    const noDauNam = no ? Math.round(no * (0.3 + r() * 0.9)) : 0;
+    const raSoatGoc = thua ? (["CHUA", "DUNG", "DIEU_CHINH"] as const)[nguyen(r, 0, 2)] : "CHUA";
+    let phanBo: DongNganSach["phanBo"];
+    const s1 = thuaS1.get(k.tieuMuc);
+    if (s1 !== undefined) {
+      /* DN từ danh sách nộp thừa: số thừa lấy đúng sổ S1, tiểu mục ấy không còn nợ. */
+      thua = s1; no = 0; dn = Math.max(dn, s1 + Math.round(dn * 0.5));
+    } else if (no > 0 && k.tieuMuc === "1701" && r2() < 0.3) {
+      /* Chứng từ phân bổ chuyển sai: DN nộp đúng số nợ ở Hà Nội nhưng tiền vào tỉnh khác. */
+      phanBo = { tinh: TINH_PHAN_BO[nguyen(r2, 0, TINH_PHAN_BO.length - 1)], soTien: no };
+      thua += no; dn += no;
+    }
     /* Đẳng thức sổ: phát sinh = đã nộp + còn nợ − nộp thừa − nợ đầu năm (không âm). */
-    const phatSinh = Math.max(0, daNop[i] + conNo[i] - thua - noDauNam);
-    const noDau = daNop[i] + conNo[i] - thua - phatSinh;
-    const raSoat: RaSoatThua | null = thua ? (["CHUA", "DUNG", "DIEU_CHINH"] as const)[nguyen(r, 0, 2)] : null;
-    return { tieuMuc: k.tieuMuc, ten: k.ten, noDauNam: noDau, phatSinh, daNop: daNop[i], conNo: conNo[i], thua, raSoat };
+    const phatSinh = Math.max(0, dn + no - thua - noDauNam);
+    const noDau = dn + no - thua - phatSinh;
+    const raSoat: RaSoatThua | null = thua ? (phanBo ? "CHUA" : raSoatGoc) : null;
+    return { tieuMuc: k.tieuMuc, ten: k.ten, noDauNam: noDau, phatSinh, daNop: dn, conNo: no, thua, raSoat, ...(phanBo ? { phanBo } : {}) };
   });
+}
+
+/* Tiểu mục ngoài bốn khoản chính: tên theo danh mục TMS (Map_TM). */
+const tenTieuMucNgan = tenTieuMucTMS;
+
+/* =====================================================================
+   9. Mốc trạng thái của doanh nghiệp (demo 13/11/2026, phân hệ kê khai)
+   ===================================================================== */
+
+/*
+  "Trạng thái doanh nghiệp cần có ngày thành lập, ngày bỏ trốn (kèm số quyết
+  định ban hành), ngày giải thể hoặc chuyển trạng thái 03; bổ sung cột ngày
+  dừng hoạt động." Gieo theo DN (hạt 89), không chạm chuỗi số của hồ sơ.
+  DN đang hoạt động không có ngày dừng; số quyết định chỉ có khi bỏ địa chỉ
+  kinh doanh, vì biên bản chỉ đòi số quyết định ở trường hợp ấy.
+*/
+export interface MocTrangThai { ngayThanhLap: Date; ngayBoTron: Date | null; soQD: string | null; ngayGiaiThe: Date | null; ngayDung: Date | null }
+export function mocTrangThai(d: DongDN): MocTrangThai {
+  const r = prng(hatCua(89, "moc-tt", d.khoa));
+  const ngayThanhLap = new Date(d.namThanhLap, nguyen(r, 0, 11), nguyen(r, 1, 28));
+  if (d.trangThai === "HD" || d.trangThai === "MOI") return { ngayThanhLap, ngayBoTron: null, soQD: null, ngayGiaiThe: null, ngayDung: null };
+  const tu = Math.max(ngayThanhLap.getTime() + 180 * 86_400_000, new Date(2021, 0, 1).getTime());
+  const ngayDung = new Date(tu + r() * (new Date(2026, 9, 31).getTime() - tu));
+  const boTron = d.trangThai === "NGUNG";
+  return {
+    ngayThanhLap, ngayDung,
+    ngayBoTron: boTron ? ngayDung : null,
+    soQD: boTron ? `${nguyen(r, 100, 9800)}/QĐ-${ngayDung.getFullYear()}` : null,
+    ngayGiaiThe: d.trangThai === "GIAI_THE" || d.trangThai === "DONG_MA" ? ngayDung : null,
+  };
 }

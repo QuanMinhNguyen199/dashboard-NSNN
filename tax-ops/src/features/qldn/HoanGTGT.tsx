@@ -176,7 +176,7 @@ function BangDonVi({ ds, ch, dauThang, cuoiThang, hn, thangChu }: { ds: HoSoHoan
   const Hang = ({ ten, s, lop, cap }: { ten: string; s: DongDV; lop?: string; cap?: boolean }) => <tr className={lop}>
     <th scope="row" className={cap ? "hg-cap" : undefined}>{ten}</th>{COT.map((c, i) => <td key={i} className={`num${dauNhom(i) ? " hg-dau-nhom" : ""}`}>{c.o(s)}</td>)}
   </tr>;
-  return <Panel title="Theo đơn vị quản lý" subtitle={`${pham === "thang" ? `Tháng ${thangChu}` : `Lũy kế 01/01 – ${ngay(cuoiThang)}`} · hồ sơ hoàn trước – kiểm sau · số tiền triệu đồng`}
+  return <Panel title="Theo đơn vị quản lý" subtitle={`${pham === "thang" ? `Tháng ${thangChu}` : `Lũy kế 01/01 – ${ngay(cuoiThang)}`} · triệu đồng`}
     actions={<Segmented label="Phạm vi số liệu" value={pham} onChange={datPham} options={[{ value: "thang", label: "Tháng" }, { value: "luyKe", label: "Lũy kế" }]}/>}>
     <TableWrap label="Hồ sơ hoàn trước theo đơn vị quản lý">
       <table className="qd-bang hg-bang">
@@ -221,7 +221,7 @@ function HoSoCanXem({ ds, daHoan, chamT, lech, ch, hn, tenMoc }: { ds: HoSoHoan[
      các trường khác xuống dòng phụ `.hg-dt` — chuyển chỗ, không bỏ. */
   const ttDN = (h: HoSoHoan, dt: string) => <><span className="pkt-dn">{h.tenNNT}</span><small>{h.mst} · {h.id} · {tenDonViHoan(h.donVi)}</small><small className="hg-dt">{dt}</small></>;
 
-  return <Panel title="Hồ sơ cần xem" subtitle={tab === "nhac" ? `Chưa có quyết định hoàn, đếm tới hôm nay ${ngay(hn)} · ${hetHan ? `${hetHan} hồ sơ đã hết hạn` : "chưa hồ sơ nào hết hạn"}` : tab === "cham" ? `Quyết định hoàn trong tháng, quá ${ch.nguong} ngày làm việc từ ${tenMoc}` : "Quyết định hoàn trong tháng · số được hoàn khác số hoàn trực tiếp · đánh dấu để xem, không tự sửa số"}
+  return <Panel title="Hồ sơ cần xem" subtitle={tab === "nhac" ? `Chưa có quyết định hoàn, đếm tới hôm nay ${ngay(hn)} · ${hetHan ? `${hetHan} hồ sơ đã hết hạn` : "chưa hồ sơ nào hết hạn"}` : tab === "cham" ? `Quyết định hoàn trong tháng, quá ${ch.nguong} ngày làm việc từ ${tenMoc}` : "Quyết định hoàn trong tháng"}
     actions={/* Dropdown ngang tiêu đề panel (04/11/2026), như Xếp hạng đơn vị của Phòng kiểm tra; số lượng giữ trong tên lựa chọn. */
       <SelectMenu label="Danh sách hồ sơ cần xem" className="kt-loc-khoi kt-xep-theo" value={tab} onChange={doiTab}
         options={(["nhac", "cham", "lech"] as DS[]).map((t) => ({ value: t, label: nhan[t] }))}/>}>

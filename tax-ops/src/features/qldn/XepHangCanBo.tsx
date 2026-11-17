@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { GoiYCachTinh } from "@/components/GoiYCachTinh";
-import { DetailGrid, SelectMenu, TableWrap, Panel, integer } from "@/components/ui";
+import { DetailGrid, SelectMenu, TableWrap, Panel } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
@@ -94,7 +94,7 @@ export function XepHangCanBo({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: st
             <p>Điểm là trung bình các chỉ tiêu, từ −1 đến +1. Không tính Thu NSNN vì cán bộ không có số giao thu.</p>
             <small>Biên bản 22/10/2026, việc số 2 · Số liệu mô phỏng</small>
       </GoiYCachTinh>
-  </>} subtitle={`${ten} · ${KY.nhan} · ${integer(ds.length)} cán bộ`} actions={<div className="inline-controls">
+  </>} subtitle={KY.nhan} actions={<div className="inline-controls">
     {DS_DV.length > 1 && <SelectMenu className="compact-field" hienNhan kieu="o" label="Đơn vị" value={phong} onChange={(v) => { datPhong(v === DS_DV[0].id ? "" : v); datDangMo(""); }}
       options={DS_DV.map((p) => ({ value: p.id, label: `${p.ngan}${p.id === cuaToi?.id ? " (của tôi)" : ""}` }))}/>}
     <ExportButton onExport={xuat}>Xuất Excel</ExportButton>

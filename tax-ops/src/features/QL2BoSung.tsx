@@ -115,7 +115,7 @@ function BangTPR({ ky, tu, den, tieuDe, chonCach, phu = false, tienTo = "tpr" }:
   <Panel chinh={!phu}
     title={`Rủi ro hóa đơn TPR · ${tieuDe}`}
     tieuDeKem={!phu ? <GhiChu tieuDe="Cách đếm">Đã rà soát = kiểm tra tại bàn + bổ sung kiểm tra tại trụ sở + giải thể. Số liệu lũy kế vì một NNT đi qua giải trình tối đa 2 lần, xác minh địa chỉ rồi mới có thể chuyển kiểm tra tại trụ sở. Các dòng “Trong đó” đã nằm trong dòng 8501, không cộng lần nữa. Bấm vào một đơn vị để xem chín loại kết quả và mã kqrr tương ứng.</GhiChu> : undefined}
-    subtitle={`${ky.nhan} · nguồn: webtpr · 9 tiêu chí rủi ro · dữ liệu mô phỏng`}
+    subtitle={`${ky.nhan} · nguồn: webtpr`}
     actions={chonCach}
   >
     <TableWrap label="TPR theo đơn vị">

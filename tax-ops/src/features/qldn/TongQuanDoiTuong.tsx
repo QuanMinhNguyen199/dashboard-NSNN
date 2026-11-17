@@ -111,7 +111,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
       {/* Gỡ 09/11/2026 (người dùng chốt gọn thông tin): "Theo số năm thành
           lập", "Theo quy mô vốn điều lệ", "Cơ cấu thu theo sắc thuế" — không
           nằm trong bốn nội dung biên bản 09/10 §5 yêu cầu cho mô-đun này. */}
-      <Panel title="Tình hình kê khai" subtitle={`Doanh nghiệp đang hoạt động · kỳ kê khai tháng 9/2026 · ${integer(tongKK)} DN`}>
+      <Panel title="Tình hình kê khai" subtitle={`${integer(tongKK)} DN đang hoạt động`}>
         <div className="qd-chong" aria-hidden="true">
           <i className="is-tot" style={{ width: phanTram(o.keKhai.dungHan, tongKK).replace(",", ".") }}/>
           <i className="is-vang" style={{ width: phanTram(o.keKhai.muon, tongKK).replace(",", ".") }}/>
@@ -321,7 +321,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
           <td className="qd-cc-o">{cc.length ? cc.map((c) => <span key={c.soQD} className={c.conHieuLuc ? undefined : "is-tat"} title={`${c.bienPhap} · ${c.conHieuLuc ? "đang hiệu lực" : "đã chấm dứt"}`}>{c.ngan}{!c.conHieuLuc && " (đã chấm dứt)"}</span>) : <span className="cell-empty">—</span>}</td>
         </tr>;
         })}
-        {dongTrang.length === 0 && <tr><td colSpan={soCot} className="table-empty">Không có doanh nghiệp khớp “{tim}”. Thử tìm theo đủ 10 số MST hoặc một phần tên.</td></tr>}
+        {dongTrang.length === 0 && <tr><td colSpan={soCot} className="table-empty">Không có doanh nghiệp khớp “{tim}”.</td></tr>}
         </tbody>
       </table>
     </TableWrap>

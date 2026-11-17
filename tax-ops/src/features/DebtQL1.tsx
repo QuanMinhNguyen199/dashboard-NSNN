@@ -574,7 +574,7 @@ export function DebtQL1({ actor }: { actor: string }) {
               ? <ONhan key={c.khoa} id={row.id} dangMo={dangMo}>{oDs(row, c)}</ONhan>
               : <td key={c.khoa} className={c.kieu === "tien" ? "num" : undefined}>{oDs(row, c)}</td>))}
           </tr>)}
-          {locDay.length === 0 && <tr><td className="table-empty" colSpan={cotHien.length}>{coLoc ? "Không có người nộp thuế nào khớp bộ lọc đang đặt. Bấm Đặt lại để bỏ bộ lọc." : "Kỳ và đơn vị đang chọn không có người nộp thuế nào trong danh sách này. Thử chọn kỳ khác ở thanh lọc phía trên."}</td></tr>}
+          {locDay.length === 0 && <tr><td className="table-empty" colSpan={cotHien.length}>{coLoc ? "Không có người nộp thuế nào khớp bộ lọc." : "Kỳ và đơn vị đang chọn không có người nộp thuế nào trong danh sách này. Thử chọn kỳ khác ở thanh lọc phía trên."}</td></tr>}
         </tbody>
       </table></TableWrap>
       <footer className="table-footer">

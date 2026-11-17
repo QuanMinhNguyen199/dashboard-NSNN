@@ -44,11 +44,11 @@ const dongCua = (pv: PhamVi): DonViQ[] => (pv.canBo || pv.vai === "LD" ? pv.donV
 interface Cot<T> { nhan: string; ma: string; dau?: boolean; o: (s: T) => ReactNode }
 interface NhomCot<T> { nhan?: string; cot: Cot<T>[] }
 
-function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, onXuat, ghiChu }: {
+function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, onXuat }: {
   pv: PhamVi; title: string; subtitle: string; label: string;
   nhom: NhomCot<T>[]; gia: (ids: string[]) => T;
   chon?: string; datChon?: (id: string) => void;
-  onXuat: () => Promise<void>; ghiChu: ReactNode;
+  onXuat: () => Promise<void>;
 }) {
   const [loc, datLoc] = useThamSo<"" | Khoi>("khoi", "", ["", "VP", "TCS"]);
   const [trang, datTrang] = useThamSoSo("trang", 1);
@@ -113,7 +113,6 @@ function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, on
     </TableWrap>
     <div className="table-footer">
       <Pager trang={tr} soTrang={soTrang} onChange={datTrang}/>
-      <span>{ghiChu}</span>
     </div>
   </Panel>;
 }
@@ -159,9 +158,8 @@ export function XuPhatDonVi({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: str
     rows: hangMau(pv, (ids) => { const s = g(ids); return [s.phai, null, daXP(s), s.phai ? daXP(s) / s.phai : null, s.qd, s.canhCao, null]; }),
     percent: [5],
   }], { period: `Lũy kế từ 01/01 đến ${ngayCuoi(ky)}`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, `xu-phat-vphc_${ky.id}.xlsx`);
-  return <BangDonVi pv={pv} title="Kết quả xử phạt theo đơn vị" subtitle={`Mẫu TONG HOP báo cáo quyết định VPHC · tờ khai nộp quá hạn · lũy kế đến ${ngayCuoi(ky)}`}
-    label="Kết quả xử phạt vi phạm hành chính theo đơn vị" nhom={nhom} gia={g} onXuat={xuat}
-    ghiChu="Có quyết định phạt hoặc cảnh cáo là đã xử phạt."/>;
+  return <BangDonVi pv={pv} title="Kết quả xử phạt theo đơn vị" subtitle=""
+    label="Kết quả xử phạt vi phạm hành chính theo đơn vị" nhom={nhom} gia={g} onXuat={xuat}/>;
 }
 
 /* =====================================================================
@@ -198,9 +196,8 @@ export function DongMSTDonVi({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: st
     rows: hangMau(pv, (ids) => { const s = g(ids); return [tonDM(s), s.tonCQT, s.tonNNT, xongDM(s), s.tt01, s.tt0307, s.xongCQT, xongNNT(s), tonDM(s), tyLeDM(s)]; }),
     percent: [11],
   }], { period: `Từ 01/04/2026 đến ${ngayCuoi(ky)}`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, `dong-mst_${ky.id}.xlsx`);
-  return <BangDonVi pv={pv} title="Giải thể, đóng mã số thuế theo đơn vị" subtitle={`Mẫu BC đóng MST · từ 01/04/2026 đến ${ngayCuoi(ky)}`}
-    label="Giải thể, đóng mã số thuế theo đơn vị" nhom={nhom} gia={g} onXuat={xuat}
-    ghiChu="Tồn + hoàn thành = hồ sơ phải xử lý của chỉ tiêu phát sinh mới."/>;
+  return <BangDonVi pv={pv} title="Giải thể, đóng mã số thuế theo đơn vị" subtitle={`Từ 01/04/2026 đến ${ngayCuoi(ky)}`}
+    label="Giải thể, đóng mã số thuế theo đơn vị" nhom={nhom} gia={g} onXuat={xuat}/>;
 }
 
 /* =====================================================================
@@ -247,10 +244,9 @@ export function ToKhaiTonTruc({ pv, actor }: { pv: PhamVi; actor: string }) {
   ], { period: `Lần kéo ${NHAN_NGAY_KEO_TK}`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "to-khai-ton-truc.xlsx");
 
   return <>
-    <BangDonVi pv={pv} title="Tờ khai tồn trục theo đơn vị" subtitle={`Lần kéo ${NHAN_NGAY_KEO_TK}`}
-      label="Tờ khai tồn trục theo đơn vị" nhom={nhom} gia={cua} chon={chon} datChon={(id) => { datChon(id); datTrang(1); }} onXuat={xuat}
-      ghiChu="Nghĩa của 4B, 5B, 5G chờ nghiệp vụ xác nhận."/>
-    <Panel title={`Danh sách tờ khai${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} tờ khai · tồn lâu nhất trên đầu`}
+    <BangDonVi pv={pv} title="Tờ khai tồn trục theo đơn vị" subtitle=""
+      label="Tờ khai tồn trục theo đơn vị" nhom={nhom} gia={cua} chon={chon} datChon={(id) => { datChon(id); datTrang(1); }} onXuat={xuat}/>
+    <Panel title={`Danh sách tờ khai${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} tờ khai`}
       actions={<div className="inline-controls kt-dieu-khien">
         {dvChon && <Button kind="quiet" onClick={() => { datChon(""); datTrang(1); }}>Bỏ lọc đơn vị</Button>}
         <SelectMenu<LocTT> className="kt-loc-khoi kt-xep-theo" label="Trạng thái" value={loc} onChange={(v) => { datLoc(v); datTrang(1); }}
@@ -363,10 +359,9 @@ export function NopThua({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: string 
   };
 
   return <>
-    <BangDonVi pv={pv} title="Đối chiếu nộp thừa theo đơn vị" subtitle={`Mẫu báo cáo trung gian · triệu đồng · tháng ${ky.thang}/2026`}
-      label="Đối chiếu nộp thừa theo đơn vị" nhom={nhom} gia={g} chon={chon} datChon={(id) => { datChon(id); datTrang(1); }} onXuat={xuat}
-      ghiChu="D, E do bên Thuế nhập."/>
-    <Panel title={`Danh sách NNT nộp thừa${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} NNT · tổng thừa lớn nhất trên đầu · triệu đồng`}
+    <BangDonVi pv={pv} title="Đối chiếu nộp thừa theo đơn vị" subtitle="Triệu đồng"
+      label="Đối chiếu nộp thừa theo đơn vị" nhom={nhom} gia={g} chon={chon} datChon={(id) => { datChon(id); datTrang(1); }} onXuat={xuat}/>
+    <Panel title={`Danh sách NNT nộp thừa${dvChon ? ` · ${dvChon.ngan}` : ""}`} subtitle={`${integer(ds.length)} NNT · triệu đồng`}
       actions={<div className="inline-controls kt-dieu-khien">
         {dvChon && <Button kind="quiet" onClick={() => { datChon(""); datTrang(1); }}>Bỏ lọc đơn vị</Button>}
         <NhomNut label="Ngưỡng" value={nhanh} onChange={(v) => { datNhanh(v); datTrang(1); }} options={[{ value: "ty", label: "Trên 1 tỷ" }, { value: "muoiTrieu", label: "Trên 10 triệu" }]}/>
@@ -392,7 +387,6 @@ export function NopThua({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: string 
       </TableWrap> : <p className="table-empty">Không có NNT nào khớp bộ lọc.</p>}
       <div className="table-footer">
         <Pager trang={tr} soTrang={soTrang} onChange={datTrang}/>
-        <span>"Đã hoàn thành" là không còn trên 1 tỷ ở tháng này, chưa chứng minh đã hoàn tiền.</span>
       </div>
     </Panel>
   </>;

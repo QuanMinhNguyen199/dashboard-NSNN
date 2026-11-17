@@ -146,7 +146,7 @@ const hatKy = (thang: number, nam = 2026) => nam * 100 + thang;
   • THAP — tỷ lệ thấp là tốt (tồn quá hạn / tổng hồ sơ).
   • TANG — tốc độ tăng của tử so với mẫu, thấp là tốt (nợ nay so nợ đầu năm).
 */
-export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "ktcuoc" | "ktdoisoat" | "hoan" | "hoangtgt" | "tktt" | "nopthua";
+export type TheId = "thu" | "no" | "cc" | "thxc" | "tthc" | "xp" | "gt" | "tpr" | "xmhd" | "k" | "cltk" | "tongdai" | "kttb" | "ktnnt" | "ktcuoc" | "ktdoisoat" | "hoan" | "hoangtgt" | "tktt" | "nopthua" | "doichieu";
 export type Kieu = "CAO" | "THAP" | "TANG";
 
 export interface ChiTieuQ {
@@ -182,6 +182,9 @@ export const THE_Q: TheQ[] = [
      02-11): tờ khai tồn trục (RS-QL5-06) và nộp thừa — xem `QuanLyKeKhai`. */
   { id: "tktt", ten: "Tờ khai tồn trục", ngan: "Tờ khai tồn trục" },
   { id: "nopthua", ten: "Nộp thừa", ngan: "Nộp thừa" },
+  /* Đối chiếu nghĩa vụ theo phòng, cán bộ (biên bản 11/11/2026, folder 16-11):
+     đứng sau Nộp thừa vì mẫu lấy từ chính danh sách nộp thừa. */
+  { id: "doichieu", ten: "Đối chiếu nghĩa vụ", ngan: "Đối chiếu nghĩa vụ" },
   { id: "tpr", ten: "Rà soát TPR", ngan: "Rà soát TPR" },
   { id: "xmhd", ten: "Xác minh hóa đơn", ngan: "Xác minh hóa đơn" },
   { id: "k", ten: "Hệ số K", ngan: "Hệ số K" },
@@ -221,7 +224,7 @@ export interface NhomQ { id: NhomId; ten: string; ngan: string; the: TheId[] }
 export const NHOM_Q: NhomQ[] = [
   { id: "thu", ten: "Công tác thu NSNN", ngan: "Thu NSNN", the: ["thu"] },
   { id: "no", ten: "Công tác quản lý nợ", ngan: "Quản lý nợ", the: ["no", "cc", "thxc"] },
-  { id: "kekhai", ten: "Quản lý kê khai", ngan: "Quản lý kê khai", the: ["tthc", "xp", "gt", "tktt", "nopthua"] },
+  { id: "kekhai", ten: "Quản lý kê khai", ngan: "Quản lý kê khai", the: ["tthc", "xp", "gt", "tktt", "nopthua", "doichieu"] },
   { id: "hoadon", ten: "Quản lý hóa đơn", ngan: "Quản lý hóa đơn", the: ["tpr", "xmhd", "k", "cltk"] },
   { id: "tongdai", ten: "Tổng đài hỗ trợ NNT", ngan: "Tổng đài hỗ trợ NNT", the: ["tongdai"] },
   /* Phòng thuế yêu cầu 20/10/2026: kiểm tra tại bàn và hoàn thuế mỗi việc một
@@ -532,6 +535,13 @@ export interface DongDN {
   khoa: string;
   mst: string; ten: string; donVi: string; canBo: string; trangThai: TrangThaiDN;
   namThanhLap: number; von: number; thu2026: number; no: number;
+  /** Mã CQT quản lý (danh mục 31 mã). Không có thì suy từ đơn vị. */
+  cqt?: string;
+  /**
+   * Số thừa theo sổ S1 khi DN đến từ danh sách nộp thừa (QL5), đồng — để hồ
+   * sơ và đối chiếu nói đúng số của danh sách người dùng vừa bấm.
+   */
+  thuaS1?: { tieuMuc: string; thua: number }[];
 }
 
 /*

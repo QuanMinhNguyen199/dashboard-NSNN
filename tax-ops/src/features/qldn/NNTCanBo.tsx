@@ -86,8 +86,7 @@ export function NNTCanBo({ ct, dvId, donVi, cb, ky, nnt, moNNT }: {
             </tr>)}</tbody>
           </table>
         </TableWrap>
-        <div className="table-footer"><span>{tim.trim() ? `${integer(loc.length)} / ${integer(ds.length)} NNT khớp` : `${integer(ds.length)} NNT · xếp theo số thu giảm dần`}</span>{soTrang > 1 && <Pager trang={trang} soTrang={soTrang} onChange={datTrang}/>}</div>
+        <div className="table-footer"><span>{tim.trim() ? `${integer(loc.length)} / ${integer(ds.length)} NNT khớp` : ""}</span>{soTrang > 1 && <Pager trang={trang} soTrang={soTrang} onChange={datTrang}/>}</div>
       </>}
-    <p className="quality-note">Số thu từng NNT chia ra từ số của cán bộ.</p>
   </div>;
 }

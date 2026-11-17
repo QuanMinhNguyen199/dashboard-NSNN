@@ -145,13 +145,13 @@ export function TongQuanQL1({ ky, trongPhamVi }: { ky: KyQL1; trongPhamVi: DonVi
     </div>
 
     <div className="tq-doi">
-      <Panel title="Đơn vị tăng nợ khả năng thu nhiều nhất" subtitle="So với đầu năm · xếp 10 đơn vị đầu">
+      <Panel title="Đơn vị tăng nợ khả năng thu nhiều nhất" subtitle="So với đầu năm">
         {xepHang.length === 0
           ? <div className="empty-state"><strong>Trong phạm vi đang lọc, không đơn vị nào có nợ khả năng thu tăng so với đầu năm</strong></div>
           : <ol className="xep-hang">{xepHang.map((x) => <Thanh key={x.dv.id} ten={rutGon(x.dv.ten)} x={x.muc} max={maxTang} phu={`${money(x.muc)} tr.đ`}/>)}</ol>}
       </Panel>
 
-      <Panel title="Đơn vị có tỷ lệ cưỡng chế thấp nhất" subtitle="Tỷ lệ đã cưỡng chế theo số tiền · xếp 10 đơn vị cuối">
+      <Panel title="Đơn vị có tỷ lệ cưỡng chế thấp nhất" subtitle="Tỷ lệ theo số tiền">
         <ol className="xep-hang">{tyLe.map((x) => <Thanh key={x.dv.id} ten={rutGon(x.dv.ten)} x={x.cc} max={1} phu={`${pt(x.cc)}${x.th === null ? "" : ` · THXC ${pt(x.th)}`}`}/>)}</ol>
       </Panel>
     </div>
