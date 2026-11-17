@@ -2286,7 +2286,10 @@ td.o-nong { color: var(--critical); font-weight: 700; }
   đều kín, thứ tự đọc vẫn đúng thứ tự file chấm điểm. TTHC là ô duy nhất rộng
   gấp đôi — nhóm một ô, nên giãn ra không chia nhịp số của nhóm nào.
 */
-.qd-kq { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 16px; }
+.qd-kq { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px 16px; }
+/* Chú giải đã thu vào ⓘ (17/11/2026): dòng chú giải từng tạo khoảng cách dưới
+   header, nay khối ô tự đệm trên để tên nhóm không dính đường kẻ. */
+.panel-body > .qd-kq:first-child { padding: 20px 2px 6px; }
 .qd-kq-nhom { grid-column: span min(var(--o), 6); min-width: 0; }
 .qd-kq-tieu-de { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; overflow: hidden; color: var(--ink); font-size: 14px; font-weight: 650; white-space: nowrap; text-overflow: ellipsis; }
 .qd-kq-tieu-de small { color: var(--ink-3); font-size: 12px; font-weight: 500; }
