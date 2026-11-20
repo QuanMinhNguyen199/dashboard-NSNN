@@ -52,7 +52,7 @@ export function CuocKiemTra({ actor }: { actor: string }) {
   const loc = useMemo(() => {
     const k = q.trim().toLowerCase();
     return ds.filter((c) => (!phong || c.phong === phong) && (!loai || c.loai === loai) && (!td || tienDo(c) === td)
-      && (!k || c.mst.includes(k) || c.tenDN.toLowerCase().includes(k))).slice().reverse();
+      && (!k || c.mst.includes(k) || c.tenDN.toLowerCase().includes(k))).toReversed();
   }, [ds, q, phong, loai, td]);
   const soTrang = Math.max(1, Math.ceil(loc.length / MOI_TRANG));
   const tr = Math.min(trang, soTrang);
@@ -229,7 +229,7 @@ function cotBieu(b: BieuDS): { nhan: string; ngan?: string; ma: string; o: (d: D
 function tomTat(b: BieuDS, thang: number, dong: DongDS[], tong: DongDS) {
   const t = `Tháng ${String(thang).padStart(2, "0")}/2026`;
   const chua = dong.filter((d) => !d.tong).map((d) => tenPhongDS(d.phong));
-  const nhieu = [...dong].sort((a, c) => c.tong - a.tong)[0];
+  const nhieu = dong.toSorted((a, c) => c.tong - a.tong)[0];
   if (b === "dkBH" || b === "dkHT") {
     const dx = DOT_XUAT.filter((l) => tong.theoLoai[l.id]).map((l) => `${l.ngan} ${tong.theoLoai[l.id]}`);
     if (!tong.tong) return `${t}: chưa có cuộc nào đăng ký ${b === "dkBH" ? "ban hành" : "hoàn thành"}.`;

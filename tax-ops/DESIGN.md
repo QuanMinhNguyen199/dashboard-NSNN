@@ -52,81 +52,81 @@ colors:
 typography:
   display:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "clamp(24px, 2.2vw, 30px)"
+    fontSize: "clamp(1.5rem, .5rem + 1.6vw, 1.875rem)"
     fontWeight: 650
     lineHeight: 1.25
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.022em"
   headline:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "20px"
+    fontSize: "1.25rem"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.02em"
   figure:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "24px"
+    fontSize: "1.5rem"
     fontWeight: 700
-    lineHeight: 1.2
+    lineHeight: 1.25
     letterSpacing: "-0.015em"
   metric:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "18px"
+    fontSize: "1.125rem"
     fontWeight: 650
     lineHeight: 1.25
     letterSpacing: "-0.015em"
   subhead:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "16px"
+    fontSize: "1rem"
     fontWeight: 650
     lineHeight: 1.35
     letterSpacing: "-0.008em"
   title:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "14px"
-    fontWeight: 650
-    lineHeight: 1.4
-    letterSpacing: "-0.005em"
+    fontSize: "0.875rem"
+    fontWeight: 700
+    lineHeight: 1.5
+    letterSpacing: "-0.008em"
   body:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "14px"
+    fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
   body-strong:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "13px"
+    fontSize: "0.8125rem"
     fontWeight: 600
-    lineHeight: 1.45
+    lineHeight: 1.35
     letterSpacing: "normal"
   lead:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "13px"
+    fontSize: "0.8125rem"
     fontWeight: 400
     lineHeight: 1.5
     letterSpacing: "normal"
   label:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "12px"
+    fontSize: "0.75rem"
     fontWeight: 600
-    lineHeight: 1.4
+    lineHeight: 1.35
     letterSpacing: "normal"
   column-head:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "11px"
-    fontWeight: 650
-    lineHeight: 1.4
-    letterSpacing: "0.01em"
+    fontSize: "0.6875rem"
+    fontWeight: 700
+    lineHeight: 1.35
+    letterSpacing: "0.02em"
   nav-group:
     fontFamily: "Public Sans, system-ui, -apple-system, Segoe UI, sans-serif"
-    fontSize: "10px"
+    fontSize: "0.65625rem"
     fontWeight: 700
-    lineHeight: 1.4
-    letterSpacing: "0.1em"
+    lineHeight: 1.35
+    letterSpacing: "0.01em"
   mono:
     fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace"
-    fontSize: "12px"
+    fontSize: "0.8125rem"
     fontWeight: 600
-    lineHeight: 1.4
+    lineHeight: 1.35
     letterSpacing: "-0.01em"
 rounded:
   panel: "10px"
@@ -277,6 +277,8 @@ Thay vào đó: khối mở ra **trong luồng trang, ngay dưới thứ mở n�
 
 Hai thứ được phép nổi lên vì chúng không mang nội dung phải đọc kỹ: toast thông báo, và drawer điều hướng ở khổ điện thoại.
 
+Thứ ba là **toggletip ⓘ** (`GoiYCachTinh`, `GhiChu`, `ChoChot`, 20/11/2026): hộp nhỏ nổi cạnh tên khối, mang cách tính hoặc lý do số còn tạm. Nó được phép vì nó gắn với đúng chữ nó giải thích và không che bảng đang đọc. Hành vi: rê chuột hoặc Tab tới thì hiện; chuột vào được hộp để đọc và bôi chữ (WCAG 1.4.13); bấm, Enter hoặc Space thì giữ mở (không lật đóng); Esc, bấm ra ngoài hoặc focus đi chỗ khác thì đóng. Nút thật mang `aria-expanded`, nội dung `role="tooltip"`. Quyết định 09/11/2026 "bấm không làm gì" bỏ vì nút `role="button"` mà bấm không có tác dụng là nói dối trình đọc màn hình, và chữ cán bộ cần đọc không được nằm trong mô tả phụ mà NVDA bỏ qua.
+
 **Ngoại lệ thứ ba — chi tiết một bản ghi (chốt 07/10/2026).** Người dùng quyết định: bấm một dòng trong danh sách thì chi tiết của nó mở trong **ngăn trượt từ mép phải**, không phải một khối trong luồng trang. Áp cho danh sách lượt chạy ở Tình trạng dữ liệu và danh sách NNT của QL3. Từ 28/10/2026 áp thêm cho Thu NSNN · Theo cán bộ: bấm một cán bộ mở ngăn danh sách NNT của người ấy (`so=`), bấm một NNT thì hồ sơ của nó thay chỗ danh sách TRONG CÙNG ngăn (`nnt=`), có nút "Danh sách NNT của …" đưa về đúng dòng vừa bấm. Ngăn hai tầng, không chồng ngăn thứ hai.
 
 Quyết định này được ghi lại thay vì tranh luận lại, nhưng nó KHÔNG mở cửa cho lớp phủ nói chung. Ba cái giá ở trên vẫn còn nguyên, và ngoại lệ chỉ đứng vững khi trả lại được hai trong ba:
@@ -326,6 +328,10 @@ Tax Ops và Dashboard Thu NSNN dùng chung bảng màu semantic. Màu xác lập
 
 **The Neutral Numeral Rule.** Numeric values stay ink-colored. Status color belongs on the label, chip or notice, not on a number that only needs emphasis.
 
+Áp dụng (rà 20/11/2026): bảng theo mức của Cảnh báo nhắc việc mang màu mức ở **chấm trên đầu cột** (`.qd-cham-muc`, một lần cho cả cột), số trong ô và số trong bốn ô lọc giữ màu mực — nhãn ô lọc giữ màu và chấm. Đơn vị cuối bảng Phòng kiểm tra: chip "cuối" và thanh mang màu, tên, hạng, điểm giữ màu mực. Chấm so sánh (BQ/T8/CK, `.qd-cham`) đứng CẠNH số màu mực và mang màu tốt lên/kém đi theo chiều của từng chỉ tiêu; nghĩa đi kèm bằng chữ cho trình đọc màn hình (`nghiaChenh`). Người dùng chốt 20/11/2026 không thêm dấu hình khác nhau cho tốt/xấu — một lớp ký hiệu nữa làm dải số rối.
+
+**The Export Button Wears The File Rule (người dùng chốt 03/11 và 11/11/2026, giữ lại 20/11/2026).** Nút xuất là ngoại lệ có chủ đích của The Blue Action Rule: nền xanh Excel `#217346` và xanh Word `#2b579a` cho người xem biết tệp gì sắp tải về trước khi đọc nhãn. Đánh giá impeccable 20/11/2026 nêu xanh lá trùng `--positive`; người dùng giữ quyết định. Không mở rộng màu thương hiệu Office sang nút nào khác.
+
 **The Two Neutral Lines Rule.** Use `--line` for panel boundaries and table-header rules; use `--line-soft` for internal separators. Do not introduce a third neutral divider.
 
 ## Typography
@@ -342,9 +348,9 @@ Tính cách của chữ vẫn đến từ cân nặng và khoảng cách nhiều
 **The Font Must Earn Its Bytes Rule.** Một bộ chữ chỉ được đưa vào khi nó vượt qua ba phép đo, và cả ba đều chạy được trong trình duyệt trước khi quyết định: có subset `vietnamese` riêng hay không; bề rộng mười chữ số dưới `font-variant-numeric: tabular-nums` có bằng nhau không; và tổng kilobyte của các subset thực dùng. Không bộ chữ nào được chọn bằng cảm nhận về "đẹp" mà bỏ qua ba phép đo này. Khi đo `tnum`, đặt `font-variant-numeric` **sau** shorthand `font:` — shorthand reset nó về `normal` và phép đo sẽ nói dối.
 
 ### Hierarchy
-- **Display** (650, `clamp(24px, 2.2vw, 30px)`, 1.22, -0.022em): chỉ tên hệ trong khối nhận diện màn đăng nhập. Đây là chỗ duy nhất trong hệ có chữ lớn, và nó được phép lớn vì màn đăng nhập không phải màn làm việc.
+- **Display** (650, `clamp(1.5rem, .5rem + 1.6vw, 1.875rem)` ≈ 24–30px, 1.25, -0.022em): chỉ tên hệ trong khối nhận diện màn đăng nhập. Đây là chỗ duy nhất trong hệ có chữ lớn, và nó được phép lớn vì màn đăng nhập không phải màn làm việc.
 - **Headline** (650, 20px, 1.25, -0.02em): tiêu đề hộp thoại tạo báo cáo, tiêu đề form đăng nhập, tiêu đề màn từ chối quyền.
-- **Figure** (700, 24px, 1.2, -0.015em): con số chính của ô tổng quan — thẻ chỉ tiêu ở Kết quả công tác, bốn ô mức ở Cảnh báo nhắc việc, ô nợ ở Tổng quan đối tượng, tổng điểm và hạng ở Xếp hạng. Ghi vào thang ngày 27/10/2026: các ô ấy đã dùng 22–30px rải rác; audit gom về một bậc thay vì hạ xuống 18px, vì ở đó con số LÀ nội dung của ô. Khổ hẹp hạ xuống Headline 20px.
+- **Figure** (700, 24px, 1.2, -0.015em): con số chính của ô tổng quan — thẻ chỉ tiêu ở Kết quả công tác, bốn ô mức ở Cảnh báo nhắc việc, ô nợ ở Tổng quan đối tượng, tổng điểm và hạng ở Xếp hạng. Ghi vào thang ngày 27/10/2026: các ô ấy đã dùng 22–30px rải rác; audit gom về một bậc thay vì hạ xuống 18px, vì ở đó con số LÀ nội dung của ô. Khổ hẹp hạ xuống Headline 20px. Mười hai ô của Tổng quan quản trị cũng ở bậc này (20/11/2026): bản trước để 28px cho cả lưới và 38px cho Thu NSNN — vượt trần và mười hai số to tranh nhau dẫn mắt. Thu NSNN dẫn bằng **vị trí** (nhóm đầu, ô trên cùng bên trái), không bằng cỡ chữ.
 - **Subhead** (650, 16px, 1.35): tên bản ghi đầu ngăn chi tiết (tên doanh nghiệp, tiêu đề ngăn trượt) và nội dung chính của khối chi tiết hồ sơ. Một bậc giữa Title và Metric, ghi vào thang cùng ngày.
 - **Metric** (650, 18px, 1.25, -0.015em): con số trong dải tổng hợp và trong luồng trạng thái. Giữ nguyên 18px cả trên mobile — dải tổng hợp ở Trang công việc đổi khuôn hình (mỗi ô thành một hàng nhãn-số) chứ không hạ cỡ số, vì con số là thứ người dùng quét trước.
 - **Title** (700, 14px, -0.008em): tiêu đề khối `.panel-head h2`. Đây là bậc tiêu đề thường gặp nhất; tiêu đề màn ẩn nên khối chính là đơn vị người dùng đọc. Nó ở **700** chứ không phải 650 vì tên hàng trong bảng cũng là 14px và cũng màu `--ink`: lệch 50 đơn vị cân nặng ở cùng một cỡ và cùng một màu là lệch không nhìn ra, và tiêu đề khối khi đó không hơn được chính nội dung nó quản.
@@ -353,16 +359,30 @@ Tính cách của chữ vẫn đến từ cân nặng và khoảng cách nhiều
 - **Lead** (400, 13px/1.5, `max-width: 72ch`, màu `--ink-2`): dòng mô tả mở đầu mỗi màn (`.page-lead`). Đây là dòng chữ đầu tiên người dùng thấy trong nội dung, vì tiêu đề màn bị ẩn.
 - **Label** (600, 12px): nhãn ô chi tiết, nhãn dải tổng hợp, chú thích phụ, dòng phụ của hàng. Dòng phụ quan trọng đã được nâng từ 11px lên 12px và nâng đó vẫn đứng trong bản dựng.
 - **Column-head** (700, 11px, +0.02em): đầu cột bảng, sticky, nền giấy mềm, chữ `--ink-3`. Ở 11px giữa các ô 14px, cân nặng 650 đọc ra nhạt hơn ô dữ liệu bên dưới; 700 cộng một chút giãn chữ trả nó về đúng vai đầu cột.
-- **Nav-group** (700, 11px, +0.01em): nhãn nhóm điều hướng trong sidebar. Mực `--on-chrome-3` trên nền navy, không bấm được — nó là tiêu đề cấu trúc, và nó phân biệt bằng cỡ, cân nặng và màu chứ không bằng chữ hoa.
+- **Nav-group** (700, 10.5px, 1.35, +0.01em): nhãn nhóm điều hướng trong sidebar. Mực `--on-chrome-3` trên nền navy, không bấm được — nó là tiêu đề cấu trúc, và nó phân biệt bằng cỡ, cân nặng và màu chứ không bằng chữ hoa.
 - **Group-label** (700, 11px, +0.01em, chữ thường): nhãn nhóm BÁO CÁO trong cụm mục của phân hệ. Nó nằm một bậc dưới Nav-group, trong cùng vùng navy, nên nó phân biệt bằng cỡ và vị trí chứ không bằng việc viết hoa thêm một lần nữa.
 
 ### Named Rules
 
-**The Nine Steps Rule.** Mọi `font-size` trong `styles.css` đứng trên một trong chín bậc: 10.5 · 11 · 12 · 13 · 14 · 16 · 18 · 20 · 24px (bậc Display của màn đăng nhập dùng `clamp` riêng). Audit 27/10/2026 đếm được 21 cỡ — 9.5, 11.5, 12.5, 13.5, 15, 17, 21, 22, 26, 28, 30 — và gom về bậc gần nhất. Một cỡ mới phải vào thang này trước, với tên và vai, rồi mới vào CSS.
+**The Nine Steps Rule.** Mọi `font-size` trong `styles.css` đứng trên một trong chín bậc: 10.5 · 11 · 12 · 13 · 14 · 16 · 18 · 20 · 24px, viết bằng rem — .65625 · .6875 · .75 · .8125 · .875 · 1 · 1.125 · 1.25 · 1.5rem (bậc Display của màn đăng nhập dùng `clamp` riêng). Rà 20/11/2026 còn tìm thấy 9px (mũi tên chênh lệch, nâng lên 10.5px) và 28/32/38px (thẻ Tổng quan quản trị, về 24px) — không còn cỡ nào ngoài thang. Audit 27/10/2026 đếm được 21 cỡ — 9.5, 11.5, 12.5, 13.5, 15, 17, 21, 22, 26, 28, 30 — và gom về bậc gần nhất. Một cỡ mới phải vào thang này trước, với tên và vai, rồi mới vào CSS.
 
 **The Silent H1 Rule.** Tiêu đề trang không hiện. `PageIntro` vẫn dựng `<h1>` nhưng gắn `className="sr-only"`: tên màn đã nằm ở mục điều hướng đang mở trong sidebar, in lại nó ở đầu nội dung là nói hai lần và ăn mất dòng đắt nhất của trang. Thẻ vẫn nằm trong DOM vì một trang không có tiêu đề là một trang mà người dùng bàn phím không biết mình đang ở đâu. Không gỡ `<h1>`, và cũng không bỏ `sr-only` để "cho cân". Cùng nguyên tắc này áp xuống cấp khối — xem **The Row Already Said It Rule** ở mục Components.
 
 **The One Leading Per Step Rule.** Mỗi cỡ chữ có ĐÚNG một giãn dòng, và cả hệ chỉ có ba giá trị: **1.25** cho chữ lớn một dòng (display, số trong dải tổng hợp), **1.35** cho nhãn nhỏ và chip, **1.5** cho mọi thứ có thể xuống dòng thành đoạn. Bản trước có tám giá trị — 1.22, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.6 — và riêng cỡ 12px dùng tới bốn trong số đó. Mắt không đọc ra từng giá trị, nhưng đọc ra việc nhịp dọc không đều, và đó là thứ làm trang có cảm giác chưa được chỉnh.
+
+Rà 20/11/2026 đếm lại được 17 giá trị (1.6, 1.55, 1.45, 1.4, 1.3, 1.2, 1.1, 1 và vài giá trị px) và gom về ba: chữ đoạn về 1.5, nhãn về 1.35, số lớn về 1.25. Ngoại lệ duy nhất là **dòng của control có khuôn cố định** — ô giá trị bộ lọc, dòng phụ thanh phạm vi, ký hiệu giao dịch trong đối chiếu: bốn chỗ đặt chiều cao dòng bằng rem (1.375 · 2.125 · 1.25 · 1rem) để chữ ngồi giữa một ô cao cố định (The Fixed Slots Rule). Rem chứ không px, để ô vẫn lớn theo cỡ chữ người dùng chọn.
+
+**The Rem Rule (20/11/2026).** Cỡ chữ viết bằng rem, không bằng px, và không đặt `font-size` trên `html`/`:root`. Lý do: px bỏ qua cỡ chữ mặc định người dùng đặt trong trình duyệt — cán bộ đặt chữ lớn hơn sẽ không thấy gì đổi. Ở mặc định 16px giao diện y như bản px. Đã đo trên 8 màn ở cỡ gốc 20px: không tràn ngang, không chữ nào bị cắt. Bề rộng, đệm và đường kẻ vẫn px (không gắn với chữ); cột số có bề rộng cố định gắn với chữ thì dùng rem (`6.5rem` ở danh sách thanh).
+
+**The Word Break Rule (20/11/2026).** Không dùng `overflow-wrap: anywhere` trên đầu cột hay ô bảng hẹp: nó cho phép cắt giữa âm tiết ("Tổn / g", "Tron / g đó chư / a xử / lý" ở 390px). Bảng hẹp hơn chữ của nó thì cuộn ngang trong `TableWrap` với cột đầu dính trái, không bóp chữ. `anywhere` chỉ còn cho chuỗi không có khoảng trắng (mã, tên tệp, nội dung người dùng gõ). Tiêu đề và đầu cột dùng `text-wrap: balance`, đoạn văn `text-wrap: pretty` — đặt theo phần tử, không trên `*`.
+
+**The Two Weights Per Small Step Rule (20/11/2026).** Ở 13–14px chỉ có 400 (chữ nền), 600 (nhấn: số nhấn, nhãn, tên nhóm) và 700 (tiêu đề khối, dòng tổng); 13px không dùng 700 trừ đầu cột 11px. Bậc **650 chỉ dùng từ 16px trở lên** (Subhead, Metric, Headline, Display) — ở cỡ nhỏ 650 cạnh 600 và 700 là lệch không nhìn ra, chỉ thêm nhiễu. Rà 20/11/2026 đo được 400/600/650/700 cùng ở 14px và gom 11 selector 650 → 600, hai chỗ 500 → 400.
+
+**The Unit Rides The Title Rule (20/11/2026).** Đơn vị của khối chỉ tiêu ("hồ sơ", "tỷ đồng") đi cùng dòng tên, sau dấu chấm giữa, chữ 12px `--ink-3` (`.panel-dvt`) — không thành một dòng phụ đứng một mình dưới tiêu đề.
+
+**The Abbreviation Explains Itself Rule (20/11/2026).** Chữ viết tắt trong dải so sánh (BQ, T8, CK) và đơn vị "đpt" mang `<abbr title>`: rê chuột đọc được "Bình quân toàn thuế", "điểm phần trăm". Gạch chấm mảnh màu `--control-line`, không dùng gạch chấm đậm mặc định của trình duyệt. Ô đủ rộng thì in chữ đầy đủ thay vì viết tắt (container query sẵn có).
+
+**The Fallback Metric Rule.** `body` mang `font-size-adjust: from-font`: lúc Public Sans chưa tải, font dự phòng được nắn theo chiều cao chữ thường của nó nên chữ không nhảy cỡ khi đổi font (`font-display: swap`).
 
 **The No Uppercase Tier Rule.** Toàn hệ KHÔNG có bậc nào viết hoa toàn bộ. Mọi nhãn nhỏ — nhãn nhóm điều hướng, nhãn bộ lọc, nhãn thẻ số, đầu cột so sánh, nhãn ô nhập — viết thường và phân biệt bằng cỡ, cân nặng, màu mực.
 
@@ -385,20 +405,23 @@ Nhịp khoảng cách chạy theo bậc 4 / 8 / 10 / 12 / 14 / 16 / 18 / 20. Đ�
 Hai bố cục làm việc: `.workbench-grid` chia 1.1fr / 0.9fr, và `.case-layout` nay chỉ còn **một cột** — danh sách chiếm trọn bề ngang, chi tiết nằm trong `<dialog>` trượt từ mép phải. Màn đăng nhập là lưới hai cột `minmax(300px, 36%) / minmax(0, 1fr)`: cột trái navy, cột phải trắng. 36% giữ được vai trò làm khung mà không thành khoảng trống. Cụm form rộng `min(380px, 100%)` — hai ô nhập trải 560px đọc ra một biểu mẫu bị kéo giãn, vì ô dài gấp mấy lần nội dung nó chứa.
 
 **Điểm ngắt.**
-- **Mọi khổ** — chọn một hàng mở `<dialog>` trượt từ mép phải, rộng `min(100vw, 520px)`, cao toàn màn, nền `--canvas`. Không còn điểm ngắt 1361px và không có luật chặn chiều cao nào áp cho dải, vì khi danh sách đứng một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
+- **Mọi khổ** — chọn một hàng mở ngăn `Modal` + `Dialog` của React Aria (không phải `<dialog>` gốc) trượt từ mép phải, rộng `min(600px, 100vw)` — nới `min(760px, 100vw)` khi ngăn chứa hồ sơ doanh nghiệp (bảng Quan hệ ngân sách sáu cột và khối đối chiếu) — cao toàn màn, nền `--canvas`. Không còn điểm ngắt 1361px và không có luật chặn chiều cao nào áp cho dải, vì khi danh sách đứng một cột thì chặn chiều cao là bóp nghẹt chính bảng dữ liệu.
 - **1180px** — lưới hai cột duỗi thành một; luồng trạng thái từ năm cột xuống ba.
 - **900px** — sidebar ẩn, mặt làm việc bỏ lùi trái, thanh điều hướng đáy hiện lên cùng nút mở ngăn điều hướng (nền trắng đặc `--surface`, không kính mờ, không bóng — rà taste 11/11/2026), mặt làm việc chừa 86px đáy. Mọi vùng chạm lên 44px và dải nhắc cuộn ngang xuất hiện trên bảng.
-- **720px** — màn đăng nhập xếp dọc; dải tổng hợp về hai cột; nút phân đoạn đổi thành `<select>`; ô bảng cao 44px; dải thông báo xếp dọc hoàn toàn; luồng duyệt đổi trục ngang thành trục dọc.
+- **Điểm ngắt cục bộ** — ngoài bốn mốc trên, vài khối có mốc riêng theo nội dung của chúng: 1360/1361px (cột chi tiết cũ của danh sách NNT), 700px (lưới thẻ Tổng quan quản trị về hai cột), 640 · 600 · 560 · 480px (khối nhỏ trong hồ sơ và đối chiếu). Mốc mới nên đi theo `@container` khi khối là thứ quyết định, không theo khung nhìn.
+- **720px** — bảng xếp hạng (`.qd-bang-xh`) và bảng tổng hợp của Cảnh báo nhắc việc thôi bóp cột: bảng giãn theo nội dung, cuộn trong `TableWrap`, cột tên dính trái; dải tổng hợp về hai cột; nút phân đoạn đổi thành `<select>`; ô bảng cao 44px; dải thông báo xếp dọc hoàn toàn; luồng duyệt đổi trục ngang thành trục dọc.
 
-**Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`. Khi người dùng yêu cầu giảm chuyển động, công tắc chung tắt mọi animation và mọi chuyển tiếp dịch chuyển, nhưng GIỮ chuyển màu, nền, viền, độ mờ trong 120ms — đó là phản hồi trạng thái, không phải chuyển động (sửa 27/10/2026; bản cũ cắt cả màu về 0,01ms). Thanh và vạch chạy bằng `transform`, không bằng `width` hay `left`.
+**Chuyển động.** Một hàm gia tốc duy nhất `--ease-out: cubic-bezier(.16, 1, .3, 1)`. Đổi trạng thái 100–160ms; vào màn 200ms; toast 220ms; ngăn chi tiết 180ms. Toàn bộ nằm sau `prefers-reduced-motion: no-preference`. Khi người dùng yêu cầu giảm chuyển động, công tắc chung tắt mọi animation và mọi chuyển tiếp dịch chuyển, nhưng GIỮ chuyển màu, nền, viền, độ mờ trong 120ms — đó là phản hồi trạng thái, không phải chuyển động (sửa 27/10/2026; bản cũ cắt cả màu về 0,01ms). Thanh và vạch chạy bằng `transform`, không bằng `width` hay `left`: phần tô phủ đủ rãnh và nhận `transform: scaleX(tỉ lệ)` nội tuyến (cột dọc `scaleY`), keyframe mọc chỉ có `from`. Rà 20/11/2026 chuyển nốt 12 thanh còn đặt `width`/`height`. Hai ngoại lệ có lý do: dải chồng `.qd-chong` (nhiều đoạn nối nhau là bố cục, nên đặt bề rộng và chỉ quét khi dựng, không trượt khi đổi số), và dấu tab `.muc-chi` (viên có viền và bo góc trượt giữa các tab — `scale` sẽ làm méo viền).
 
 ### Named Rules
 
-**The 44px Floor Rule.** Từ 900px trở xuống, mọi thứ bấm được cao tối thiểu 44px: nút, ô tìm kiếm, `<select>`, nút phân đoạn, mục điều hướng trong drawer, nút đăng xuất, vùng chọn hàng, nút trong chân bảng. Đây là ràng buộc trong PRODUCT.md, không phải gợi ý.
+**The 44px Floor Rule.** Từ 900px trở xuống — và trên mọi màn cảm ứng (`pointer: coarse`) — mọi thứ bấm được cao tối thiểu 44px. Viết luật ấy bằng cùng độ ưu tiên với biến thể nó sửa: rà 20/11/2026 thấy chip "Chờ chốt" còn 24px vì `.panel-head h2 .goi-y-nut.is-tam-tinh` mạnh hơn luật 44px chung. Danh sách: nút, ô tìm kiếm, `<select>`, nút phân đoạn, mục điều hướng trong drawer, nút đăng xuất, vùng chọn hàng, nút trong chân bảng. Đây là ràng buộc trong PRODUCT.md, không phải gợi ý.
 
 **The Whole Row Rule.** Hàng bảng bấm được thì cả hàng bấm được: `.row-select` kéo rộng `calc(100% + 24px)` với `margin: -7px -12px` để phủ hết ô, và `tbody tr:has(.row-select:not(:disabled))` nhận `cursor: pointer`. Không bắt người dùng ngắm một nút nhỏ nằm trong hàng.
 
 **The Zero-Basis Track Rule.** Mọi rãnh lưới có thể chứa bảng phải khai báo cơ sở 0: `.page-stack` dùng `grid-template-columns: minmax(0, 1fr)`, và `.case-layout` cùng `.case-list` đều mang `min-width: 0`. Rãnh `auto` mặc định nở tới bề rộng tối thiểu 780px của bảng nghiệp vụ rồi kéo mọi khối anh em vượt khung nhìn ở 390 và 768 — tràn ngang không bắt đầu ở cái bảng, nó bắt đầu ở cái rãnh chứa bảng.
+
+**The One Number Line Rule (20/11/2026).** Trong một dải tổng hợp, mọi con số đứng trên cùng một đường. Ô dải `.qd-tom-tat` dùng `grid-template-rows: subgrid` (span 3: nhãn · số · chú thích) nên nhãn hai dòng của một ô kéo cả hàng nhãn xuống cùng nhau, không đẩy riêng số của ô ấy; số căn `baseline`. Ô dải `.figure-line` / `.kpi` căn TRÊN (`align-content: start`), kể cả ô dạng `<button>` thiếu dòng phụ — bản cũ căn giữa nên ô hai dòng lệch khỏi ô ba dòng bên cạnh. Thứ tự ô không đổi (The Fixed Slots Rule).
 
 **The List Has No Ceiling Rule.** Danh sách không nhận trần chiều cao nào. Mười dòng một trang đã là trần thật của nó, và một trần thứ hai bằng `vh` chỉ sinh ra thanh cuộn dọc bên trong một khối vốn đã vừa — xem **The Long List Gets Pages Rule**. Luật cũ "dải quyết định chiều cao" đã gỡ cùng với dải hai cột: không còn cột nào bên cạnh để kéo bằng.
 
@@ -563,7 +586,7 @@ Hàng bảng bấm được báo bằng **đổi nền** khi rê (`--hover-surfa
 
 ## Shapes
 
-Ba bậc bo góc, mỗi bậc gắn với một loại vật: khối nội dung và toast dùng 10px (`--radius-panel`); nút, ô nhập, `<select>`, ô tìm kiếm, nút đóng dùng 6px (`--radius-control`); chip trạng thái, vùng chọn hàng và mục điều hướng dùng 4px (`--radius-chip`). Bậc 12px cũ đi cùng hộp thoại tạo báo cáo đã bỏ, nên không còn ngoại lệ nào. Hệ còn khai báo `--radius-hairline: 2px` nhưng không nơi nào dùng — coi đó là token cũ, đừng dựng bậc thứ tư quanh nó.
+Ba bậc bo góc, mỗi bậc gắn với một loại vật: khối nội dung và toast dùng 10px (`--radius-panel`); nút, ô nhập, `<select>`, ô tìm kiếm, nút đóng dùng 6px (`--radius-control`); chip trạng thái, vùng chọn hàng và mục điều hướng dùng 4px (`--radius-chip`). Bậc 12px cũ đi cùng hộp thoại tạo báo cáo đã bỏ, nên không còn ngoại lệ nào. `--radius-hairline: 2px` là bậc riêng của **thanh dữ liệu** (rãnh và phần tô của thanh tỷ lệ, thanh điểm, thanh cơ cấu) — rà 20/11/2026 sửa câu cũ "không nơi nào dùng", vì mọi thanh mảnh đều dùng nó; một thanh 3px lẻ đã về token này. Không dùng nó cho control hay khối.
 
 Thanh cuộn tùy biến cũng lấy bậc khối (`--radius-panel`) thay vì một con số rời, để không có bán kính nào sống ngoài thang.
 
@@ -602,7 +625,7 @@ Biểu trưng là ảnh `public/tax-logo.png` dựng qua `<img>`, cắt tròn b�
 - **Internal Padding:** `0 14px 12px`, xuống `0 12px 12px` từ 720px.
 - **Trong dải hai cột:** khối thành hộp dọc, thân nhận `flex: 1; min-height: 0; overflow: auto`, và hai đầu khối nằm trên cùng một hàng lưới (xem quy tắc dưới).
 
-**The Row Already Said It Rule.** Đầu khối chi tiết chỉ định danh bản ghi bằng tên, còn mọi trường đã hiện trên hàng đang chọn thì ở lại trên hàng. Bốn khối chi tiết của dải (Nợ, Hoàn thuế, Báo cáo, Lô dữ liệu) đã bỏ hẳn dòng phụ vì nó lặp lại đúng các cột nằm cách đó vài trăm pixel về bên trái — mã số thuế che, đơn vị và cán bộ ở Nợ; ngày nhận và đơn vị ở Hoàn thuế; kỳ, đơn vị chủ trì và nguồn ở Báo cáo; mốc cập nhật ở Lô dữ liệu. Đọc cùng một trường hai lần trên một màn, và trả giá bằng một đầu khối cao hơn, là lỗ kép. Đây chính là **The Silent H1 Rule** áp xuống một cấp.
+**The Row Already Said It Rule.** Đầu khối chi tiết chỉ định danh bản ghi bằng tên, còn mọi trường đã hiện trên hàng đang chọn thì ở lại trên hàng. Bốn khối chi tiết của dải (Nợ, Hoàn thuế, Báo cáo, Lô dữ liệu) đã bỏ hẳn dòng phụ vì nó lặp lại đúng các cột nằm cách đó vài trăm pixel về bên trái — mã số thuế che, đơn vị và cán bộ ở Nợ; ngày nhận và đơn vị ở Hoàn thuế; kỳ, đơn vị chủ trì và nguồn ở Báo cáo; mốc cập nhật ở Lô dữ liệu. Đọc cùng một trường hai lần trên một màn, và trả giá bằng một đầu khối cao hơn, là lỗ kép. Đây chính là **The Silent H1 Rule** áp xuống một cấp. Áp cho đầu ngăn trượt (20/11/2026): `CaseLayout` nhận `tieuDeHien` — ngăn hồ sơ in "Hồ sơ NNT" / "Hồ sơ doanh nghiệp" ở đầu vì thân ngăn đã in tên và MST ngay dưới; tên đầy đủ vẫn nằm trong `label` để trình đọc màn hình gọi đúng vùng.
 
 Kèm theo một điều kiện, vì đây là chỗ cách làm rẻ tiền sẽ làm mất dữ liệu: con số nào chỉ có trong dòng phụ mà không có trong bảng thì phải chuyển đi đâu đó, không được bỏ. Ở Lô dữ liệu, `{thieu.length} đơn vị chưa gửi` đã chuyển vào dải cảnh báo sẵn có trong thân khối, nay đọc là "{loi.length} file cần xem lại, trong đó {thieu.length} đơn vị chưa gửi". Bỏ dòng phụ là bỏ một chỗ đặt chữ, không phải bỏ một dữ kiện.
 
@@ -641,7 +664,7 @@ Cột phải mang toàn bộ phần đọc và làm: `<h1>Đăng nhập</h1>` �
 
 Từ 720px xuống, dải nhận diện co thành một hàng ngang cao tự nhiên — con dấu 46px bên trái, tên hệ và tên cơ quan xếp dọc bên phải — và thành đầu trang thay vì một nửa bố cục. Ghi chú mô phỏng vẫn hiện ở khổ này.
 
-**The Login Is Not A Control Panel Rule.** Màn đăng nhập không mang bảng chọn tài khoản mẫu. Một danh sách in sẵn tên đăng nhập và mật khẩu chung ngay cạnh ô nhập là bộ phận của bản trình diễn chứ không phải của sản phẩm: nó làm màn đầu tiên người xem nhìn thấy tự khai mình là đồ giả, và mọi nhận xét về sau đều bị đặt trong khung đó. Hệ quả phải chịu và không được lách: **ô nhập bắt đầu rỗng**. Điền sẵn một tài khoản cũng là tự khai là demo, chỉ kín đáo hơn. Tài khoản demo vẫn nằm trong `demoAuth`; chỉ lối vào nhanh bị gỡ.
+**The Login Is Not A Control Panel Rule.** Màn đăng nhập không mang bảng chọn tài khoản mẫu. Một danh sách in sẵn tên đăng nhập và mật khẩu chung ngay cạnh ô nhập là bộ phận của bản trình diễn chứ không phải của sản phẩm: nó làm màn đầu tiên người xem nhìn thấy tự khai mình là đồ giả, và mọi nhận xét về sau đều bị đặt trong khung đó. Hệ quả phải chịu và không được lách: **ô nhập bắt đầu rỗng**. Điền sẵn một tài khoản cũng là tự khai là demo, chỉ kín đáo hơn. Tài khoản demo vẫn nằm trong `demoAuth`; chỉ lối vào nhanh bị gỡ. **CHƯA XÁC NHẬN (rà 20/11/2026):** màn đăng nhập hiện vẫn có lưới thẻ tài khoản mẫu (`.demo-accounts-list`) — chưa rõ luật này đã đổi hay lối vào nhanh được thêm lại cho buổi demo; cần người dùng chốt rồi sửa một trong hai.
 
 ### Navigation
 - **Sidebar** rộng 252px, nền navy, cuộn dọc riêng, đệm `20px 14px 14px`. Các màn cấp hệ thống chia theo nhóm; nhóm "Dữ liệu" mở đầu bằng **Tình trạng dữ liệu**. Chữ làm điều hướng: mục **không có icon**, chỉ có nhãn 14px. Ba nhóm ("Điều hành" / "Nghiệp vụ" / "Dữ liệu") ngăn nhau bằng `margin-top: 24px` và một vạch `#ffffff2b`; nhãn nhóm là bậc `nav-group`, `aria-hidden` vì `role="group"` đã mang tên. Nhóm là tiêu đề cấu trúc, các mục bên dưới mới là đích điều hướng.
@@ -777,7 +800,7 @@ Trả lại **bắt buộc có lý do** — sơ đồ luồng ghi thẳng "Trả
 - Thông báo nói việc đã xảy ra và hệ quả: "Đã gửi báo cáo tuần… lên trưởng phòng. Số liệu khóa lại cho tới khi có kết quả duyệt."
 - Lỗi nhập nói cần làm gì và để làm gì: "Nhập lý do trả lại để chuyên viên biết cần sửa gì", thay cho thông báo mặc định tiếng Anh của trình duyệt.
 
-**The Total Row Does Not Need A Colour Rule.** Dòng tổng và dòng khối nổi bằng cân nặng chữ và vạch trên, không bằng mảng màu. Tô đặc `--brand` rồi đặt chữ trắng lên làm mất vai trò hành động của màu xanh; mũi tên tăng giảm trong chính hai dòng ấy vẫn mang màu nghĩa. Giữ dòng tổng trung tính để so sánh số liệu và hướng biến động không bị nhiễu.
+**The Total Row Does Not Need A Colour Rule.** Dòng tổng **ghim ĐẦU bảng** ở mọi bảng (như dòng "A. Tổng cộng" của mẫu Excel; bảng chia trang thấy tổng ngay khi mở — người dùng chốt 20/11/2026, chuyển bảng xếp hạng, chênh lệch tờ khai, chỉ tiêu theo kỳ và kiểm tra tại trụ sở từ cuối lên đầu). Nó nổi bằng chữ đậm 700 và vạch 2px `--ink-3` ngăn với các dòng con (vạch dưới khi ghim đầu, vạch trên ở chỗ khác), **không nền tô** — bản trước tô `--surface-tint` ở mọi bảng. Tô đặc `--brand` rồi đặt chữ trắng lên làm mất vai trò hành động của màu xanh; mũi tên tăng giảm trong chính hai dòng ấy vẫn mang màu nghĩa. Giữ dòng tổng trung tính để so sánh số liệu và hướng biến động không bị nhiễu.
 
 ### Theo FRS
 **The Catalogue Has One Home Rule.** FRS mở đầu mục 4 bằng câu quyết định: "Mọi phân hệ khác đọc danh mục từ đây, không tự giữ bản riêng." `data/danhMuc.ts` giữ 31 mã cơ quan thuế của Phụ lục A, và hai phân hệ dựng danh sách đơn vị từ đó. Trước đó mỗi phân hệ tự khai, và hai bản đã lệch nhau thật: mã viết tắt của Thuế cơ sở 18 đến 25 ở QL3 sai so với Phụ lục A.

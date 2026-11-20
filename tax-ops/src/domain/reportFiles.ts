@@ -23,7 +23,8 @@ export async function exportExcel(sheets: ReportSheet[], meta: ReportMeta, filen
         const refs = s.rows.map((_, i) => i).filter(i => i > ri && i < end && !s.bold?.includes(i)).map(i => `${columnName(ci)}${i + 6}`);
         if (refs.length) return { value: `SUM(${refs.join(",")})`, type: "Formula", format: "#,##0.########", fontWeight: "bold" };
       }
-      return { value: value ?? "—", type: typeof value === "number" ? Number : String, format: typeof value === "number" ? (s.percent?.includes(ci) ? "0.0%" : "#,##0.########") : undefined, fontWeight: s.bold?.includes(ri) ? "bold" : undefined, wrap: true };
+      return { value: value ?? "—", type: typeof value === "number" ? Number : String, format: typeof value === "number" ? (s.percent?.includes(ci) ? "0.0%" : "#,##0.########") : undefined, fontWeight: s.bold?.includes(ri) ? "bold" : undefined, wrap: true,
+        ...(s.toDo?.includes(ri) ? { backgroundColor: "#FFC7CE", textColor: "#9C0006" } : {}) };
     }));
     return {
       sheet: s.name,

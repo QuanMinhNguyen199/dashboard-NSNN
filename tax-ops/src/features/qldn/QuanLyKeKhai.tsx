@@ -1,12 +1,14 @@
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { useThamSo, useThamSoSo } from "@/state/diaChi";
 import { Button, integer, NhomNut, Pager, Panel, SelectMenu, TableWrap } from "@/components/ui";
+import { FileTrigger } from "react-aria-components";
 import { ExportButton } from "@/components/ExportButton";
+import { useAction } from "@/state/ActionContext";
 import { exportExcel } from "@/domain/reportFiles";
 import type { ReportSheet, ReportValue } from "@/domain/reportExport";
 import { DON_VI_Q, NHAN_KHOI, nhanPhamVi, type DonViQ, type Khoi, type KyQ, type PhamVi } from "@/data/qldn";
 import {
-  LA, NHAN_NGAY_KEO_TK, NHAN_NX, TRANG_THAI_TK, congDM, congNT, congXP, daXP, danhSachNT, fNT, gNT, hNT, laCua, nhanXetNT, soNTLa,
+  LA, NHAN_NGAY_KEO_TK, NHAN_NX, TRANG_THAI_TK, chuaXP, congDM, congNT, congXP, daXP, ngayXPBinhQuan, danhSachNT, fNT, gNT, hNT, laCua, nhanXetNT, soNTLa,
   toKhaiTon, tonDM, tyLeDM, xongDM, xongNNT,
   type NNTThua, type NhanXet, type NhanhNT, type SoDM, type SoNT, type SoXP, type ToKhaiTon, type TrangThaiTK,
 } from "@/data/ql5";
@@ -44,11 +46,13 @@ const dongCua = (pv: PhamVi): DonViQ[] => (pv.canBo || pv.vai === "LD" ? pv.donV
 interface Cot<T> { nhan: string; ma: string; dau?: boolean; o: (s: T) => ReactNode }
 interface NhomCot<T> { nhan?: string; cot: Cot<T>[] }
 
-function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, onXuat }: {
+function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, onXuat, them }: {
   pv: PhamVi; title: string; subtitle: string; label: string;
   nhom: NhomCot<T>[]; gia: (ids: string[]) => T;
   chon?: string; datChon?: (id: string) => void;
   onXuat: () => Promise<void>;
+  /** Thao tác riêng của bảng, đứng trước nút xuất. */
+  them?: ReactNode;
 }) {
   const [loc, datLoc] = useThamSo<"" | Khoi>("khoi", "", ["", "VP", "TCS"]);
   const [trang, datTrang] = useThamSoSo("trang", 1);
@@ -89,6 +93,7 @@ function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, on
     actions={<div className="inline-controls kt-dieu-khien">
       {haiKhoi && <SelectMenu<"" | Khoi> className="kt-loc-khoi" label="Hiển thị đơn vị" value={locKhoi} onChange={(v) => { datLoc(v); datTrang(1); }}
         options={[{ value: "", label: "Tất cả đơn vị" }, { value: "VP", label: NHAN_KHOI.VP }, { value: "TCS", label: NHAN_KHOI.TCS }]}/>}
+      {them}
       <ExportButton onExport={onXuat}>Xuất Excel</ExportButton>
     </div>}>
     <TableWrap label={label}>
@@ -137,29 +142,55 @@ function hangMau(pv: PhamVi, o: (ids: string[]) => ReportValue[]): ReportValue[]
 
 /*
   Cột theo sheet TONG HOP: C số tờ khai phải xử phạt, E đã xử phạt = H quyết
-  định phạt + I quyết định cảnh cáo, F tỷ lệ = E / C. Cột D "Không xử phạt"
-  và J "Không phạt phí" của mẫu để trống, chưa có quy tắc nguồn — không dựng
-  trên màn. Số C và E là tử, mẫu của chỉ tiêu 20 ở bảng phía trên.
+  định phạt + I quyết định cảnh cáo, F tỷ lệ = E / C. Cột J "Không phạt phí"
+  của mẫu để trống, chưa có quy tắc nguồn — không dựng trên màn. Số C và E là
+  tử, mẫu của chỉ tiêu 20 ở bảng phía trên.
+
+  Biên bản 18/11/2026 §2.1 (folder 20-11):
+  • Tách "Không xử phạt" (cột D, danh sách cán bộ tải lên) và "Chưa xử phạt"
+    (= C − E − D) thành hai cột riêng; thêm nút tải danh sách không xử phạt.
+  • Số ngày xử phạt = ngày quyết định − ngày biên bản, bình quân trên số quyết
+    định. Hạn ra quyết định 7–10 ngày CHƯA XÁC NHẬN — chưa tô cảnh báo quá hạn.
+  Tỷ lệ F giữ công thức của chỉ tiêu 20; biên bản không đổi công thức này.
 */
+const ngayTB = (x: number | null) => (x === null ? <span className="cell-empty">—</span> : x.toLocaleString("vi-VN", { maximumFractionDigits: 1 }));
+
+function TaiKhongXuPhat() {
+  const notify = useAction();
+  return <FileTrigger acceptedFileTypes={[".xlsx", ".xls", ".csv"]} onSelect={(ds) => {
+    const f = ds?.[0];
+    if (f) notify(`Đã tiếp nhận ${f.name}. Bản demo chưa đọc tệp; cột Không xử phạt đang dùng số mô phỏng.`);
+  }}>
+    <Button kind="secondary" icon="upload">Tải danh sách không xử phạt</Button>
+  </FileTrigger>;
+}
+
 export function XuPhatDonVi({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: string }) {
   const g = (ids: string[]) => congXP(ids, ky.thang);
   const nhom: NhomCot<SoXP>[] = [
     { cot: [{ nhan: "Số TK phải xử phạt", ma: "C", o: (s) => integer(s.phai) }] },
+    { cot: [{ nhan: "Không xử phạt", ma: "D", dau: true, o: (s) => so(s.khong) }] },
     { nhan: "Đã xử phạt", cot: [
       { nhan: "Quyết định phạt", ma: "H", dau: true, o: (s) => so(s.qd) },
       { nhan: "Phạt cảnh cáo", ma: "I", o: (s) => so(s.canhCao) },
       { nhan: "Cộng", ma: "E = H + I", o: (s) => <strong>{integer(daXP(s))}</strong> },
     ] },
+    { cot: [{ nhan: "Chưa xử phạt", ma: "C − E − D", dau: true, o: (s) => so(chuaXP(s)) }] },
     { cot: [{ nhan: "Tỷ lệ", ma: "F = E / C", dau: true, o: (s) => <strong>{pt(s.phai ? daXP(s) / s.phai : null)}</strong> }] },
+    { cot: [{ nhan: "Số ngày từ biên bản đến quyết định (bình quân)", ma: "ngày QĐ − ngày BB", dau: true, o: (s) => ngayTB(ngayXPBinhQuan(s)) }] },
   ];
   const xuat = () => exportExcel([{
     name: "TONG_HOP", title: `BÁO CÁO QUYẾT ĐỊNH VPHC · LŨY KẾ ĐẾN ${ngayCuoi(ky)}`,
-    headers: ["STT", "Phòng/cán bộ", "Số TK phải xử phạt", "Không xử phạt", "Đã xử phạt", "Tỷ lệ", "QĐ phạt", "Cảnh cáo", "Không phạt phí"],
-    rows: hangMau(pv, (ids) => { const s = g(ids); return [s.phai, null, daXP(s), s.phai ? daXP(s) / s.phai : null, s.qd, s.canhCao, null]; }),
-    percent: [5],
+    headers: ["STT", "Phòng/cán bộ", "Số TK phải xử phạt", "Không xử phạt", "Đã xử phạt", "Chưa xử phạt", "Tỷ lệ", "QĐ phạt", "Cảnh cáo", "Không phạt phí", "Số ngày BB → QĐ (bình quân)"],
+    rows: hangMau(pv, (ids) => {
+      const s = g(ids);
+      const tb = ngayXPBinhQuan(s);
+      return [s.phai, s.khong, daXP(s), chuaXP(s), s.phai ? daXP(s) / s.phai : null, s.qd, s.canhCao, null, tb === null ? null : Math.round(tb * 10) / 10];
+    }),
+    percent: [6],
   }], { period: `Lũy kế từ 01/01 đến ${ngayCuoi(ky)}`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, `xu-phat-vphc_${ky.id}.xlsx`);
   return <BangDonVi pv={pv} title="Kết quả xử phạt theo đơn vị" subtitle=""
-    label="Kết quả xử phạt vi phạm hành chính theo đơn vị" nhom={nhom} gia={g} onXuat={xuat}/>;
+    label="Kết quả xử phạt vi phạm hành chính theo đơn vị" nhom={nhom} gia={g} onXuat={xuat} them={<TaiKhongXuPhat/>}/>;
 }
 
 /* =====================================================================
@@ -240,7 +271,7 @@ export function ToKhaiTonTruc({ pv, actor }: { pv: PhamVi; actor: string }) {
     { name: "Theo_don_vi", title: `TỜ KHAI TỒN TRỤC · LẦN KÉO ${NHAN_NGAY_KEO_TK}`, headers: ["STT", "Đơn vị", ...TRANG_THAI_TK.map((t) => `${t.id} – ${t.nhan}`), "Cộng", "Tồn lâu nhất từ 10/2017 (ngày)"],
       rows: hangMau(pv, (ids) => { const x = cua(ids); return [...TRANG_THAI_TK.map((t) => dem(x, t.id)), x.length, lauNhat(x.filter((t) => t.trangThai !== "7B"))?.soNgay ?? null]; }) },
     { name: "Danh_sach", title: "DANH SÁCH TỜ KHAI CẦN XỬ LÝ", headers: ["Đơn vị", "Mã CQT", "Mã số thuế", "Tên NNT", "Mẫu tờ khai", "Kỳ", "Ngày nhận", "Trạng thái", "Nguồn", "Số ngày tồn"],
-      rows: [...tatCa].sort((a, b) => b.soNgay - a.soNgay).map((t) => [t.la.nhan, t.la.cqt, t.mst, t.ten, t.mau, t.ky, ngay(t.ngayNhan), t.trangThai, TRANG_THAI_TK.find((x) => x.id === t.trangThai)!.nguon, t.soNgay]) },
+      rows: tatCa.toSorted((a, b) => b.soNgay - a.soNgay).map((t) => [t.la.nhan, t.la.cqt, t.mst, t.ten, t.mau, t.ky, ngay(t.ngayNhan), t.trangThai, TRANG_THAI_TK.find((x) => x.id === t.trangThai)!.nguon, t.soNgay]) },
   ], { period: `Lần kéo ${NHAN_NGAY_KEO_TK}`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "to-khai-ton-truc.xlsx");
 
   return <>
@@ -317,7 +348,7 @@ export function NopThua({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: string 
   const goc: NNTThua[] = nxLoc === "COMPLETED"
     ? nx.daXong.filter((n) => laChon.includes(n.la))
     : danhSachNT(ky.thang, nhanh, laChon).filter((n) => !nxLoc || nx.cua(n)?.nx === nxLoc);
-  const ds = [...goc].sort((a, b) => b.tong - a.tong);
+  const ds = goc.toSorted((a, b) => b.tong - a.tong);
   const soTrang = Math.max(1, Math.ceil(ds.length / CO_TRANG));
   const tr = Math.min(trang, soTrang);
   const ve = (n: NNTThua) => {

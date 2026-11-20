@@ -133,8 +133,8 @@ export function TonQuaHanXM({ ky }: { ky: KyQL2 }) {
          còn âm nhưng không quá hai. */
       .filter((r) => (pham === "tatca" ? true : pham === "quahan" ? r.soNgayQuaHan > 0 : r.soNgayQuaHan <= 0 && r.soNgayQuaHan >= -2))
       .filter((r) => !q || r.soHoaDon.toLowerCase().includes(q) || r.so.toLowerCase().includes(q) || r.canBo.toLowerCase().includes(q) || r.mstBan.includes(q))
-      .slice()
-      .sort((a, b) => b.soNgayQuaHan - a.soNgayQuaHan);
+      
+      .toSorted((a, b) => b.soNgayQuaHan - a.soNgayQuaHan);
   }, [tatCa, chon, khoi, pham, tim]);
 
   const soTrang = Math.max(1, Math.ceil(loc.length / MOI_TRANG));

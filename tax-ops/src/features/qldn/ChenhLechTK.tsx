@@ -86,6 +86,16 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
           </tr>
         </thead>
         <tbody>
+          {theoDV.length > 1 && <tr className="is-tong">
+            <th scope="row" className="qd-goc-dv">Cộng {theoDV.length} đơn vị</th>
+            {CHIEU.map((c) => {
+              const dong = tatCa.filter(c.hop);
+              return [
+                <td key={`${c.id}-n`} className="num qd-goc-dau">{integer(demNNT(dong))}</td>,
+                <td key={`${c.id}-t`} className="num">{trieu(cong(dong))}</td>,
+              ];
+            })}
+          </tr>}
           {theoDV.map(({ d, ds }) => {
             const mo = moDuoc(d);
             return <tr key={d.id} className={`${mo ? "qd-viec" : ""}${d.id === cuaToi ? " is-selected" : ""}`.trim() || undefined}
@@ -106,16 +116,6 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
               })}
             </tr>;
           })}
-          {theoDV.length > 1 && <tr className="is-tong">
-            <th scope="row" className="qd-goc-dv">Cộng {theoDV.length} đơn vị</th>
-            {CHIEU.map((c) => {
-              const dong = tatCa.filter(c.hop);
-              return [
-                <td key={`${c.id}-n`} className="num qd-goc-dau">{integer(demNNT(dong))}</td>,
-                <td key={`${c.id}-t`} className="num">{trieu(cong(dong))}</td>,
-              ];
-            })}
-          </tr>}
         </tbody>
       </table>
     </TableWrap>

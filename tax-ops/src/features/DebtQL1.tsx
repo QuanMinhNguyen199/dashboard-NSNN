@@ -152,7 +152,7 @@ function TangGiam({ nay, truoc, dang }: { nay: number; truoc: number; dang: Dang
 
 function TyLe({ x }: { x: number }) {
   const w = Math.max(0, Math.min(1, Number.isFinite(x) ? x : 0)) * 100;
-  return <span className="ty-le"><b>{pt(x)}</b><i><span style={{ width: `${w}%` }}/></i></span>;
+  return <span className="ty-le"><b>{pt(x)}</b><i><span style={{ transform: `scaleX(${w / 100})` }}/></i></span>;
 }
 
 /*

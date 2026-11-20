@@ -349,12 +349,12 @@ function XepHang({ ky, dd }: { ky: KyQ; dd: boolean }) {
   const chinh = tieuChi[xep];
   /* Khi đồng hạng, giữ thứ tự số phòng / Thuế cơ sở để vị trí ổn định. */
   const soTCS = (ten: string) => Number(ten.match(/Thuế cơ sở (\d+)/)?.[1] ?? 0);
-  const ds = [...dv].sort((a, b) => (a.so ?? soTCS(a.ten)) - (b.so ?? soTCS(b.ten)))
+  const ds = dv.toSorted((a, b) => (a.so ?? soTCS(a.ten)) - (b.so ?? soTCS(b.ten)))
     .map((d) => ({ d, c: dd ? soLieuKT(d.id, ky.thang).dichDanh : soLieuKT(d.id, ky.thang).chung }));
   const soCuoi = SO_CUOI[nhom];
   const xepHang = (k: XepTheo) => xepHangGiaTri(ds.map((x) => ({ id: x.d.id, gia: tieuChi[k].gia(x.c) })), soCuoi);
   const hangChinh = xepHang(xep);
-  const dongXepHang = [...ds].sort((a, b) =>
+  const dongXepHang = ds.toSorted((a, b) =>
     (hangChinh.hang.get(a.d.id) ?? Infinity) - (hangChinh.hang.get(b.d.id) ?? Infinity));
   const thang = xep === "" || xep === "dondoc" ? 1 : Math.max(1e-9, ...ds.map((x) => chinh.gia(x.c) ?? 0));
   const phu = (["", "so", "thu", "bq", "dondoc"] as XepTheo[]).filter((k) => k !== xep);
@@ -467,7 +467,7 @@ function DonutLoaiHinh({ phan }: { phan: number[] }) {
     <ul className="qd-chu-giai">{PHAN_LOAI.map((p, i) => <li key={p.nhan} className={tro === i ? "is-tro" : undefined} tabIndex={0} onPointerEnter={() => datTro(i)} onPointerLeave={() => datTro(null)} onFocus={() => datTro(i)} onBlur={() => datTro(null)}>
       <i style={{ background: p.mau }}/><span>{p.nhan}</span>
       {/* Thanh tỷ trọng mảnh lấp phần còn lại của khối — cùng màu với cung trên vòng. */}
-      <span className="kt-cg-thanh" aria-hidden="true"><span style={{ width: `${(phan[i] / Math.max(...phan)) * 100}%`, background: p.mau }}/></span>
+      <span className="kt-cg-thanh" aria-hidden="true"><span style={{ transform: `scaleX(${phan[i] / Math.max(...phan)})`, background: p.mau }}/></span>
       <b>{integer(phan[i])}</b><small>{phanTram(phan[i], tong)}</small>
     </li>)}</ul>
   </div>;
@@ -491,16 +491,16 @@ function BangLoaiHinh({ ky, chon }: { ky: KyQ; chon: PhamViKT }) {
         </tr>
       </thead>
       <tbody>
-        {dong.map((d) => <tr key={d.id} className={d.id === chon ? "is-selected" : undefined}>
-          <th scope="row" className="qd-goc-dv">{d.ten}</th>
-          {LOAI_HINH.map((l, i) => <td key={l.id} className={`num${i === 0 ? " qd-goc-dau" : ""}`}>{so(d.s.loai[l.id])}</td>)}
-          <td className="num qd-goc-dau"><span className="kt-ty-le"><span className="kt-thanh is-nho" aria-hidden="true"><i style={{ transform: `scaleX(${tong(d.s.loai) / max})` }}/></span><strong>{integer(tong(d.s.loai))}</strong></span></td>
-        </tr>)}
         <tr className="is-tong">
           <th scope="row" className="qd-goc-dv">Cộng 5 Phòng Kiểm tra</th>
           {LOAI_HINH.map((l, i) => <td key={l.id} className={`num${i === 0 ? " qd-goc-dau" : ""}`}>{integer(vp.s.loai[l.id])}</td>)}
           <td className="num qd-goc-dau"><strong>{integer(tong(vp.s.loai))}</strong></td>
         </tr>
+        {dong.map((d) => <tr key={d.id} className={d.id === chon ? "is-selected" : undefined}>
+          <th scope="row" className="qd-goc-dv">{d.ten}</th>
+          {LOAI_HINH.map((l, i) => <td key={l.id} className={`num${i === 0 ? " qd-goc-dau" : ""}`}>{so(d.s.loai[l.id])}</td>)}
+          <td className="num qd-goc-dau"><span className="kt-ty-le"><span className="kt-thanh is-nho" aria-hidden="true"><i style={{ transform: `scaleX(${tong(d.s.loai) / max})` }}/></span><strong>{integer(tong(d.s.loai))}</strong></span></td>
+        </tr>)}
       </tbody>
     </table>
   </TableWrap>;

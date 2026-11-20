@@ -63,7 +63,7 @@ function Thanh({ ten, x, max, phu }: { ten: string; x: number; max: number; phu:
   return <li>
     <span className="xh-ten">{ten}</span>
     <span className="xh-so">{phu}</span>
-    <span className="xh-thanh"><i style={{ width: `${max > 0 ? Math.max(2, (x / max) * 100) : 0}%` }}/></span>
+    <span className="xh-thanh"><i style={{ transform: `scaleX(${max > 0 ? Math.max(.02, x / max) : 0})` }}/></span>
   </li>;
 }
 

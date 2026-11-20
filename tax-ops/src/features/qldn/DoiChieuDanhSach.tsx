@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from "react";
-import { Button, NhomNut, Pager, Panel, TableWrap, integer } from "@/components/ui";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Icon, NhomNut, Pager, Panel, TableWrap, integer } from "@/components/ui";
 import { CaseLayout } from "@/components/CaseLayout";
 import { ExportButton } from "@/components/ExportButton";
 import { GhiChu } from "@/components/GhiChu";
@@ -14,7 +14,7 @@ import { HoSoDN } from "@/features/qldn/HoSoDN";
   Đối chiếu nghĩa vụ — danh sách theo phòng, theo cán bộ (biên bản 11/11/2026
   §1, §3; folder 16-11). Trả lời ba câu theo thứ tự:
     1. Ai đang có bao nhiêu DN thừa, thiếu (bảng theo cán bộ hoặc đơn vị —
-       bấm một dòng để lọc danh sách, The Whole Row Rule).
+       bấm một dòng để mở danh sách trong ngăn bên phải, The Whole Row Rule).
     2. DN nào, nguyên nhân dự kiến gì, cần làm việc với ai (danh sách).
     3. Vì sao (bấm DN mở hồ sơ, khối Đối chiếu nghĩa vụ có từng dòng).
 
@@ -31,10 +31,13 @@ const CAN_MOI: NguyenNhan[] = ["PHAN_BO", "NHAM_TM", "THIEU_PS", "THIEU_CT"];
 export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: string }) {
   const [sac, datSac] = useThamSo<SacThue>("sac", "GTGT", ["GTGT", "TNCN", "TNDN"]);
   const [nhom, datNhom] = useThamSo<Nhom>("mau", "", ["", "ty"]);
-  const [chon, datChon] = useState("");
+  const [chon, datChon] = useThamSo<string>("so", "");
   const [trang, datTrang] = useState(1);
   const [mo, datMo] = useThamSo<string>("nnt", "");
   const noiBam = useRef<HTMLButtonElement | null>(null);
+  const nutDN = useRef<HTMLButtonElement | null>(null);
+  const nutVe = useRef<HTMLButtonElement | null>(null);
+  const cuonDanhSach = useRef(0);
 
   const tatCa = useMemo(() => danhSachDoiChieu(pv, ky.thang, sac), [pv, ky.thang, sac]);
   const theoCanBo = pv.donVi.length === 1;
@@ -48,13 +51,18 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tatCa, theoCanBo]);
 
-  const ds = tatCa
-    .filter((x) => !chon || khoaNhom(x) === chon)
+  const dangMo = mo ? tatCa.find((x) => x.d.mst === mo) ?? null : null;
+  const nhomChon = nhomDong.find((n) => n.id === (chon || (dangMo ? khoaNhom(dangMo) : "")));
+  const tenChon = nhomChon?.ten;
+  const ds = (pv.canBo ? tatCa : nhomChon?.ds ?? [])
     .filter((x) => !nhom || x.thuaS1 > NGUONG_MAU.ty);
   const soTrang = Math.max(1, Math.ceil(ds.length / CO_TRANG));
   const tr = Math.min(trang, soTrang);
-  const dangMo = mo ? tatCa.find((x) => x.d.mst === mo) ?? null : null;
-  const tenChon = nhomDong.find((n) => n.id === chon)?.ten;
+
+  useEffect(() => {
+    if (dangMo) nutVe.current?.focus();
+  }, [dangMo]);
+
   const sacNhan = SAC_THUE.find((s) => s.id === sac)!.nhan;
 
   const tong = (xs: DongDC[]) => ({
@@ -78,14 +86,82 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
     },
   ], { period: `Tháng ${ky.thang}/2026`, scope: nhanPhamVi(pv), actor, status: "DRAFT" }, `doi-chieu-nghia-vu_${sac}_${ky.id}.xlsx`);
 
-  const dong = () => { datMo(""); requestAnimationFrame(() => noiBam.current?.focus()); };
+  const dong = () => {
+    datMo(""); datChon("");
+    requestAnimationFrame(() => (pv.canBo ? nutDN : noiBam).current?.focus({ preventScroll: true }));
+  };
+  const veDanhSach = () => {
+    const mst = mo;
+    if (!pv.canBo && nhomChon) datChon(nhomChon.id);
+    const viTri = ds.findIndex((x) => x.d.mst === mst);
+    if (viTri >= 0) datTrang(Math.floor(viTri / CO_TRANG) + 1);
+    datMo("");
+    requestAnimationFrame(() => {
+      const nut = nutDN.current ?? [...document.querySelectorAll<HTMLButtonElement>("[data-dc-mst]")].find((n) => n.dataset.dcMst === mst);
+      const ngan = nut?.closest(".case-drawer");
+      if (ngan) ngan.scrollTop = cuonDanhSach.current;
+      nut?.focus({ preventScroll: true });
+    });
+  };
   const tc = tong(tatCa);
+  const danhSach = (
+    <Panel className="dc-list-panel" title={pv.canBo ? "Doanh nghiệp cần đối chiếu" : `${integer(ds.length)} doanh nghiệp`}
+      subtitle={`${pv.canBo ? `${integer(ds.length)} doanh nghiệp · ` : ""}${sacNhan} · Triệu đồng`}
+      actions={<div className="inline-controls kt-dieu-khien">
+        {pv.canBo && <NhomNut<SacThue> label="Sắc thuế" value={sac} onChange={(v) => { datSac(v); datTrang(1); }}
+          options={SAC_THUE.map((s) => ({ value: s.id, label: s.id, title: s.nhan }))}/>}
+        <NhomNut<Nhom> label="Nhóm mẫu" value={nhom} onChange={(v) => { datNhom(v); datTrang(1); }}
+          options={[{ value: "", label: "Trên 500 triệu" }, { value: "ty", label: "Trên 1 tỷ" }]}/>
+      </div>}>
+      {ds.length ? <TableWrap label="Doanh nghiệp đang thừa/thiếu">
+        <table className="qd-bang kt-bang dc-dn-bang">
+          <thead><tr>
+            <th scope="col">Người nộp thuế</th>
+            <th scope="col">Cơ quan thuế</th>
+            {!pv.canBo && !theoCanBo && <th scope="col">Cán bộ</th>}
+            <th scope="col" className="num">Thừa theo S1</th>
+            <th scope="col" className="num">Thiếu phát sinh phải nộp</th>
+            <th scope="col" className="num">Thiếu khoản đã nộp</th>
+            <th scope="col">Nguyên nhân dự kiến</th>
+            <th scope="col">Đơn vị cần mời lên làm việc</th>
+          </tr></thead>
+          <tbody>{ds.slice((tr - 1) * CO_TRANG, tr * CO_TRANG).map((x) => {
+            const nn = NHAN_NGUYEN_NHAN[x.nguyenNhan];
+            return <tr key={x.d.mst} className={`qd-viec${mo === x.d.mst ? " is-selected" : ""}`} onClick={(e) => { nutDN.current = e.currentTarget.querySelector("button"); cuonDanhSach.current = e.currentTarget.closest(".case-drawer")?.scrollTop ?? 0; if (!pv.canBo && nhomChon) datChon(nhomChon.id); datMo(x.d.mst); }}>
+              <th scope="row"><button type="button" className="row-select" data-dc-mst={x.d.mst}>{x.d.ten}</button><small className="kt-ma">{x.d.mst}</small></th>
+              <td>{x.la.cqt}<small className="kt-ma">{tenCQTCua(x.la.cqt)}</small></td>
+              {!pv.canBo && !theoCanBo && <td>{x.canBo.ten}</td>}
+              <td className="num"><strong>{trieu(x.thuaS1)}</strong></td>
+              <td className="num">{trieu(x.thua)}</td>
+              <td className="num">{trieu(x.thieu)}</td>
+              <td>{nn.nhan ? <span className={`dc-nn is-${nn.muc}`}>{nn.nhan}</span> : <span className="cell-empty">—</span>}</td>
+              <td>{nn.moi(x) || <span className="cell-empty">—</span>}</td>
+            </tr>;
+          })}</tbody>
+        </table>
+      </TableWrap> : <p className="table-empty">{tatCa.length ? "Không có NNT nào khớp bộ lọc." : "Không có NNT nào."}</p>}
+      <div className="table-footer">
+        <Pager trang={tr} soTrang={soTrang} onChange={datTrang}/>
+      </div>
+    </Panel>
+  );
+  const chiTiet = <div className="dc-drawer-content">
+    <div hidden={Boolean(dangMo)}>{!pv.canBo && danhSach}</div>
+    {dangMo && <div className="qd-nnt-ho-so">
+      <button ref={nutVe} type="button" className="qd-nnt-ve" onClick={veDanhSach}>
+        <Icon name="chevronLeft" size={16}/>Danh sách doanh nghiệp{tenChon ? ` của ${tenChon}` : " của tôi"}
+      </button>
+      <HoSoDN key={dangMo.d.khoa} d={dangMo.d} thang={ky.thang}/>
+    </div>}
+  </div>;
 
-  return <CaseLayout presentation="drawer" label={dangMo ? `Hồ sơ NNT · ${dangMo.d.ten}` : "Hồ sơ người nộp thuế"}
-    mobileOpen={Boolean(dangMo)} onClose={dong}
-    detail={dangMo ? <HoSoDN key={dangMo.d.khoa} d={dangMo.d} thang={ky.thang}/> : null}>
-    {!pv.canBo && <Panel chinh title={`Đối chiếu nghĩa vụ theo ${theoCanBo ? "cán bộ" : "đơn vị"}`}
-      subtitle="Triệu đồng"
+  return <CaseLayout presentation="drawer"
+    label={dangMo ? `Hồ sơ NNT · ${dangMo.d.ten}` : `Doanh nghiệp cần đối chiếu · ${tenChon ?? ""}`}
+    tieuDeHien={dangMo ? "Hồ sơ NNT" : undefined}
+    mobileOpen={Boolean(dangMo || (!pv.canBo && nhomChon))} onClose={dong} detail={chiTiet}>
+    {pv.canBo ? danhSach : <>
+    <Panel chinh title={`Đối chiếu nghĩa vụ theo ${theoCanBo ? "cán bộ" : "đơn vị"}`}
+      subtitle="Triệu đồng · Chọn cán bộ hoặc đơn vị để xem danh sách doanh nghiệp"
       tieuDeKem={<GhiChu tieuDe="Biên bản 11/11/2026">
         <p>Sắc thuế ưu tiên: GTGT (tiểu mục 1701) làm trước, tiếp theo TNCN, TNDN. Tạm chưa làm phí, lệ phí.</p>
         <p>Chọn mẫu: lấy doanh nghiệp lớn, nộp thừa lớn nhất trước, từ danh sách nộp thừa đã có (nhóm trên 1 tỷ và trên 500 triệu đồng).</p>
@@ -112,9 +188,9 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
               <td className="num"><strong>{integer(tc.so)}</strong></td><td className="num">{trieu(tc.s1)}</td>
               <td className="num">{trieu(tc.thua)}</td><td className="num">{trieu(tc.thieu)}</td><td className="num"><strong>{integer(tc.moi)}</strong></td>
             </tr>
-            {nhomDong.map((n) => { const t = tong(n.ds); return <tr key={n.id} className={`qd-viec${chon === n.id ? " is-selected" : ""}`}
-              onClick={() => { datChon(chon === n.id ? "" : n.id); datTrang(1); }}>
-              <th scope="row"><button type="button" className="row-select kt-dv" aria-pressed={chon === n.id}>{n.ten}</button></th>
+            {nhomDong.map((n) => { const t = tong(n.ds); return <tr key={n.id} className={`qd-viec${nhomChon?.id === n.id ? " is-selected" : ""}`}
+              onClick={(e) => { noiBam.current = e.currentTarget.querySelector("button"); noiBam.current?.focus({ preventScroll: true }); datChon(n.id); datMo(""); datTrang(1); }}>
+              <th scope="row"><button type="button" className="row-select kt-dv" aria-haspopup="dialog" aria-expanded={nhomChon?.id === n.id}>{n.ten}</button></th>
               <td className="num">{integer(t.so)}</td><td className="num">{trieu(t.s1)}</td>
               <td className="num">{trieu(t.thua)}</td><td className="num">{trieu(t.thieu)}</td>
               <td className="num">{t.moi ? <strong>{integer(t.moi)}</strong> : <span className="cell-empty">0</span>}</td>
@@ -123,47 +199,8 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
         </table>
       </TableWrap>
       {!nhomDong.length && <p className="table-empty">Không có NNT nào.</p>}
-    </Panel>}
-
-    <Panel title={`Doanh nghiệp đang thừa/thiếu${tenChon ? ` · ${tenChon}` : ""}`}
-      subtitle="Triệu đồng"
-      actions={<div className="inline-controls kt-dieu-khien">
-        {tenChon && <Button kind="quiet" onClick={() => { datChon(""); datTrang(1); }}>Bỏ lọc {theoCanBo ? "cán bộ" : "đơn vị"}</Button>}
-        {pv.canBo && <NhomNut<SacThue> label="Sắc thuế" value={sac} onChange={(v) => { datSac(v); datTrang(1); }}
-          options={SAC_THUE.map((s) => ({ value: s.id, label: s.id, title: s.nhan }))}/>}
-        <NhomNut<Nhom> label="Nhóm mẫu" value={nhom} onChange={(v) => { datNhom(v); datTrang(1); }}
-          options={[{ value: "", label: "Trên 500 triệu" }, { value: "ty", label: "Trên 1 tỷ" }]}/>
-      </div>}>
-      {ds.length ? <TableWrap label="Doanh nghiệp đang thừa/thiếu">
-        <table className="qd-bang kt-bang dc-dn-bang">
-          <thead><tr>
-            <th scope="col">Người nộp thuế</th>
-            <th scope="col">Cơ quan thuế</th>
-            {!pv.canBo && <th scope="col">Cán bộ</th>}
-            <th scope="col" className="num">Thừa theo S1</th>
-            <th scope="col" className="num">Thiếu phát sinh phải nộp</th>
-            <th scope="col" className="num">Thiếu khoản đã nộp</th>
-            <th scope="col">Nguyên nhân dự kiến</th>
-            <th scope="col">Đơn vị cần mời lên làm việc</th>
-          </tr></thead>
-          <tbody>{ds.slice((tr - 1) * CO_TRANG, tr * CO_TRANG).map((x) => {
-            const nn = NHAN_NGUYEN_NHAN[x.nguyenNhan];
-            return <tr key={x.d.mst} className={`qd-viec${mo === x.d.mst ? " is-selected" : ""}`} onClick={(e) => { noiBam.current = (e.currentTarget.querySelector("button") as HTMLButtonElement) ?? null; datMo(x.d.mst); }}>
-              <th scope="row"><button type="button" className="row-select">{x.d.ten}</button><small className="kt-ma">{x.d.mst}</small></th>
-              <td>{x.la.cqt}<small className="kt-ma">{tenCQTCua(x.la.cqt)}</small></td>
-              {!pv.canBo && <td>{x.canBo.ten}</td>}
-              <td className="num"><strong>{trieu(x.thuaS1)}</strong></td>
-              <td className="num">{trieu(x.thua)}</td>
-              <td className="num">{trieu(x.thieu)}</td>
-              <td>{nn.nhan ? <span className={`dc-nn is-${nn.muc}`}>{nn.nhan}</span> : <span className="cell-empty">—</span>}</td>
-              <td>{nn.moi(x) || <span className="cell-empty">—</span>}</td>
-            </tr>;
-          })}</tbody>
-        </table>
-      </TableWrap> : <p className="table-empty">{tatCa.length ? "Không có NNT nào khớp bộ lọc." : "Không có NNT nào."}</p>}
-      <div className="table-footer">
-        <Pager trang={tr} soTrang={soTrang} onChange={datTrang}/>
-      </div>
     </Panel>
+
+    </>}
   </CaseLayout>;
 }

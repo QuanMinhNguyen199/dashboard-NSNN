@@ -49,8 +49,8 @@ export function BangQL4_01({ ky, onMoChiTiet }: { ky: KyQL4; onMoChiTiet: (muc: 
      không nói về tiến độ. */
   const hangCua = (h: HangQL4_01) => {
     const khoi = (h.dv.nhom === "VP" ? vp : tcs)
-      .slice()
-      .sort((a, b) => (tyLeQuaHan(a) ?? 1) - (tyLeQuaHan(b) ?? 1));
+      
+      .toSorted((a, b) => (tyLeQuaHan(a) ?? 1) - (tyLeQuaHan(b) ?? 1));
     return khoi.findIndex((x) => x.dv.id === h.dv.id) + 1;
   };
 
@@ -237,8 +237,8 @@ export function DangXuLy({ ky, nhom }: { ky: KyQL4; nhom: "VP" | "TCS" }) {
     const q = tim.trim().toLowerCase();
     return theoDonVi(tatCa, chon, (r) => r.dv.ten)
       .filter((r) => !q || r.mst.includes(q) || r.so.toLowerCase().includes(q))
-      .slice()
-      .sort((a, b) => b.soNgayQuaHan - a.soNgayQuaHan);
+      
+      .toSorted((a, b) => b.soNgayQuaHan - a.soNgayQuaHan);
   }, [tatCa, chon, tim]);
 
   const soTrang = Math.max(1, Math.ceil(loc.length / MOI_TRANG));

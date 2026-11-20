@@ -209,7 +209,7 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
   ];
 
   return <div className="qd-dn" data-motion="detail">
-    <p className="qd-dn-ten"><strong>{d.ten}</strong><span>MST {d.mst}</span></p>
+    <p className="qd-dn-ten"><strong>{d.ten}</strong><span>MST <code>{d.mst}</code></span></p>
     <HangChiBao ds={chiBao}/>
     <DetailGrid items={[
       { label: "Trạng thái", value: ttTen },

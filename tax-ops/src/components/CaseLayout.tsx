@@ -42,12 +42,15 @@ export function useCaseSelection(initialId: string) {
   return { selectedId, setSelectedId, select, mobileOpen, close };
 }
 
-export function CaseLayout({ children, detail, mobileOpen, onClose, label, presentation = "inline" }: {
+export function CaseLayout({ children, detail, mobileOpen, onClose, label, tieuDeHien, presentation = "inline" }: {
   children: ReactNode;
   detail: ReactNode;
   mobileOpen: boolean;
   onClose: () => void;
   label: string;
+  /** Tiêu đề HIỆN trên ngăn khi khác `label`: thân ngăn đã in tên bản ghi thì đầu ngăn không in lại
+      (The Row Already Said It Rule, 20/11/2026). `label` vẫn là tên vùng cho trình đọc màn hình. */
+  tieuDeHien?: string;
   presentation?: "inline" | "drawer";
 }) {
   const khoi = useRef<HTMLElement>(null);
@@ -70,9 +73,11 @@ export function CaseLayout({ children, detail, mobileOpen, onClose, label, prese
   */
   useEffect(() => { if (mobileOpen && presentation === "inline") khoi.current?.focus(); }, [mobileOpen, presentation]);
 
+  const khoaDanhSach = mobileOpen && presentation === "drawer";
+
   return <div className="case-layout">
-    <div className="case-list">{children}</div>
-    {mobileOpen && presentation === "drawer" && <CaseDrawer label={label} onClose={onClose}>{detail}</CaseDrawer>}
+    <div className="case-list" {...(khoaDanhSach ? { inert: "" } : {})}>{children}</div>
+    {mobileOpen && presentation === "drawer" && <CaseDrawer label={label} tieuDe={tieuDeHien} onClose={onClose}>{detail}</CaseDrawer>}
     {mobileOpen && presentation === "inline" && <section
       ref={khoi}
       tabIndex={-1}
@@ -90,11 +95,11 @@ export function CaseLayout({ children, detail, mobileOpen, onClose, label, prese
 }
 
 /* Ngăn trượt là Modal của React Aria: Esc, bấm nền để đóng, bẫy Tab, khoá cuộn. */
-function CaseDrawer({ children, label, onClose }: { children: ReactNode; label: string; onClose: () => void }) {
+function CaseDrawer({ children, label, tieuDe, onClose }: { children: ReactNode; label: string; tieuDe?: string; onClose: () => void }) {
   return <ModalOverlay className="case-scrim" isOpen onOpenChange={(mo) => { if (!mo) onClose(); }} isDismissable>
     <Modal className="case-drawer">
       <Dialog className="case-drawer-than" aria-label={label}>
-        <header className="case-drawer-heading"><h2>{label}</h2><AriaButton autoFocus className="case-detail-close" onPress={onClose}><Icon name="close" size={16}/><span>Đóng chi tiết</span></AriaButton></header>
+        <header className="case-drawer-heading"><h2>{tieuDe ?? label}</h2><AriaButton autoFocus className="case-detail-close" onPress={onClose}><Icon name="close" size={16}/><span>Đóng chi tiết</span></AriaButton></header>
         <div className="case-drawer-body">{children}</div>
       </Dialog>
     </Modal>
