@@ -124,7 +124,8 @@ export function Shell({ view, user, onView, onLogout, children }: { view: ViewId
       })}
     </nav>
     <div className="sidebar-user">
-      <strong>{user.name}</strong><small title={`${NHAN_VAI[user.vaiTro]}${maPhong} – ${user.unit}`}>{NHAN_VAI[user.vaiTro]}{maPhong} · {rutGonTenDonVi(user.unit)}</small>
+      <strong>{user.name}</strong>{/* Vai trò và đơn vị mỗi thứ một dòng đầy đủ (20/11/2026): thanh bên 252px, không nới bề ngang để ép một dòng, không cắt tên. */}
+      <small title={`${NHAN_VAI[user.vaiTro]}${maPhong} – ${user.unit}`}><span className="sidebar-vai">{NHAN_VAI[user.vaiTro]}{maPhong}</span><span className="sr-only">, </span><span className="sidebar-dv">{rutGonTenDonVi(user.unit)}</span></small>
       <button className="logout-button" type="button" onClick={onLogout}
         onPointerEnter={(e) => hienNhan(`Đăng xuất · ${user.name}`, e.currentTarget)} onPointerLeave={anNhan}
         onFocus={(e) => hienNhan(`Đăng xuất · ${user.name}`, e.currentTarget)} onBlur={anNhan}><Icon name="logout" size={16}/><span>Đăng xuất</span></button>
