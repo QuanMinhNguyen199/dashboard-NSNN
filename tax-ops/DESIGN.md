@@ -253,6 +253,8 @@ Mật độ cao và tĩnh. Thước đo là Stripe Dashboard: bảng dài đọc
 - Navy thể chế làm khung; nền xám xanh, bề mặt trắng và đường viền xanh xám tạo lớp nội dung.
 - Xanh thương hiệu dành cho hành động; thang xanh dữ liệu đơn sắc dành cho đại lượng; trạng thái giữ ngôn ngữ semantic riêng.
 - Một bộ chữ duy nhất, Public Sans, tự host trong mã nguồn; chữ số dùng `tabular-nums` trên toàn thân trang.
+- Không để một từ hoặc số đơn lẻ rơi xuống dòng cuối của một cụm nhiều từ. Cân dòng các nhãn ngắn; giữ tên đơn vị và số hiệu liền nhau khi cần. Kiểm tra cả desktop và mobile (yêu cầu người dùng 20/11/2026).
+- Chân điều hướng in vai trò và đơn vị thành **hai dòng riêng**, mỗi dòng đầy đủ (`.sidebar-vai`, `.sidebar-dv`); không giảm cỡ chữ, không cắt tên. Thanh bên rộng `--sidebar-width: 15.75rem` (252px ở cỡ chữ mặc định), nội dung chính lùi đúng biến ấy. Người dùng chốt 20/11/2026, thay quyết định cùng ngày nới thanh bên lên `20rem` để ép một dòng — 320px thì thanh bên chiếm quá nhiều bề ngang của bảng.
 - Khối nội dung có viền mảnh 1px, **không bóng** (rà taste 11/11/2026: một viền hoặc một bóng, không cả hai); không có thẻ nổi.
 - Bậc chữ ngắn (10 → 22px, thêm một bậc `clamp` tới 26px ở màn đăng nhập); phân cấp do đường kẻ và cân nặng gánh.
 - Bàn phím và cảm ứng là điều kiện: focus 2px trên mọi thứ bấm được, 44px tối thiểu từ 900px trở xuống.

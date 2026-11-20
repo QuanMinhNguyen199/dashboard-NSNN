@@ -144,6 +144,7 @@
   --scroll-thumb-hover: #9aa9bd;
 
   --radius-panel: 10px;
+  --sidebar-width: 15.75rem; /* 252px ở cỡ chữ mặc định; rem để lớn theo cỡ chữ người dùng */
   --radius-control: 6px;
   --radius-chip: 4px;
   --radius-hairline: 2px;
@@ -237,7 +238,7 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 
 
 /* Sidebar navy tạo khung điều hướng dùng chung với Dashboard Thu NSNN. */
-.sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: 252px; display: flex; flex-direction: column; padding: 16px 12px; color: var(--on-chrome-2); background: var(--chrome); }
+.sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: var(--sidebar-width); display: flex; flex-direction: column; padding: 16px 12px; color: var(--on-chrome-2); background: var(--chrome); }
 .brand { display: flex; align-items: center; gap: 10px; padding: 2px 6px 14px; border-bottom: 1px solid #ffffff1f; }
 .brand strong, .brand span { display: block; }
 .brand strong { color: white; font-size: .8125rem; line-height: 1.35; letter-spacing: -.01em; }
@@ -262,6 +263,7 @@ a { color: var(--brand); text-underline-offset: 2px; text-decoration-thickness: 
 .sidebar-user span { color: var(--on-chrome-3); font-size: .6875rem; }
 .sidebar-user strong { margin-top: 2px; color: white; font-size: .8125rem; }
 .sidebar-user small { margin-top: 7px; color: var(--on-chrome-note); font-size: .75rem; line-height: 1.5; }
+.sidebar-user small > .sidebar-vai, .sidebar-user small > .sidebar-dv { display: block; color: inherit; font-size: inherit; text-wrap: balance; }
 .logout-button { width: 100%; min-height: 36px; margin-top: 11px; display: flex; align-items: center; gap: 8px; padding: 0; border: 0; color: var(--on-chrome-2); background: transparent; text-align: left; }
 .sidebar-user .logout-button span { color: inherit; font-size: .75rem; font-weight: 600; }
 .logout-button:hover { color: white; }
@@ -281,7 +283,7 @@ select:disabled { color: var(--ink-2); background: var(--surface-soft); border-c
    trong măng sét — nên nó không mang kiểu riêng, mà theo đúng kiểu ô như bốn
    đích đến bên cạnh. Lớp `menu-button` giữ lại làm điểm bám cho phép kiểm. */
 
-.workspace { margin-left: 252px; padding: 18px 20px 32px; }
+.workspace { margin-left: var(--sidebar-width); padding: 18px 20px 32px; }
 /* Cột `auto` của lưới nở theo phần tử rộng nhất, và bảng nghiệp vụ có
    `min-width: 780px`, nên ở khổ hẹp mọi khối khác bị kéo rộng theo nó rồi tràn
    ra ngoài màn hình. `minmax(0, 1fr)` cho track quyền co lại dưới min-content;
