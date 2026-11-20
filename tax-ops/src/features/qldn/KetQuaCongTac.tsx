@@ -87,10 +87,15 @@ const nghiaChenh = (ct: ChiTieuQ, d: number) => { const t = tot(ct, d); return t
   nhất. Nay: chênh lệch xấu mang thêm biểu tượng cảnh báo, và trình đọc màn
   hình nghe "tốt hơn / kém hơn / ngang mốc" ngay sau con số.
 */
+/* "đpt" là viết tắt: tách đơn vị ra `<abbr>` để rê chuột đọc được "điểm phần trăm" (20/11/2026). */
+function coDonViDpt(x: ReactNode): ReactNode {
+  if (typeof x !== "string" || !x.endsWith(" đpt")) return x;
+  return <>{x.slice(0, -4)} <abbr title="điểm phần trăm">đpt</abbr></>;
+}
 function Chenh({ ct, d, children, title }: { ct: ChiTieuQ; d: number; children: ReactNode; title?: string }) {
   const t = tot(ct, d);
   return <span className={lopChenh(ct, d)} title={title}>
-    {t !== null && <i className="qd-cham" aria-hidden="true"/>}{children}<span className="sr-only">, {nghiaChenh(ct, d)}</span>
+    {t !== null && <i className="qd-cham" aria-hidden="true"/>}{coDonViDpt(children)}<span className="sr-only">, {nghiaChenh(ct, d)}</span>
   </span>;
 }
 
@@ -140,11 +145,12 @@ function mocCua(kq: KetQuaChiTieu, pv: PhamVi, ky: KyQ): MocSoSanh[] {
    thang của nó co theo số lớn nhất để thanh không dẹt về 0. */
 function ThanhTyLe({ ct, x, bq }: { ct: ChiTieuQ; x: number; bq: number | null }) {
   const tran = ct.kieu === "CAO" ? 1 : Math.max(x, bq ?? 0, 0.01) * 1.3;
-  const w = (v: number) => `${Math.min(Math.max(v / tran, 0), 1) * 100}%`;
+  const ti = (v: number) => Math.min(Math.max(v / tran, 0), 1);
+  const w = (v: number) => `${ti(v) * 100}%`;
   /* Vạch là bình quân toàn thuế — nói bằng `title` khi rê chuột; quá 100% thì
      thanh mang vạch chặn ở đầu, không lặng lẽ cắt bằng 100%. */
   return <span className={`qd-thanh${x > tran ? " is-vuot" : ""}`} aria-hidden="true" title={bq !== null ? `Vạch: bình quân toàn thuế ${pt(bq, ct.kieu === "TANG")}` : undefined}>
-    <i style={{ width: w(x) }}/>
+    <i style={{ transform: `scaleX(${ti(x)})` }}/>
     {bq !== null && <b style={{ left: w(bq) }}/>}
   </span>;
 }
@@ -420,7 +426,7 @@ function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string
                     /* Mẫu số của thu là SỐ GIAO — cán bộ không có số giao (§4). */
                     : <small className="qd-khong-co">Không có số giao</small>}
               </span>
-              <span className="qd-kq-moc" style={{ gridTemplateColumns: `repeat(${coBQ ? 3 : 2}, auto)` }}>{moc.map((m) => <span key={m.nhan}><em><span className="qd-moc-dai">{m.ngan}</span><span className="qd-moc-ngan" aria-hidden="true">{m.viet}</span></em><Moc ct={ct} m={m}/></span>)}</span>
+              <span className="qd-kq-moc" style={{ gridTemplateColumns: `repeat(${coBQ ? 3 : 2}, auto)` }}>{moc.map((m) => <span key={m.nhan}><em><span className="qd-moc-dai">{m.ngan}</span><span className="qd-moc-ngan" aria-hidden="true"><abbr title={m.nhan}>{m.viet}</abbr></span></em><Moc ct={ct} m={m}/></span>)}</span>
               <span className={`qd-kq-ghi${ct.ghiChu ? " is-cho" : ""}`} title={ghi ?? undefined}>{ghiNgan}</span>
             </button>;
           })}
@@ -502,7 +508,7 @@ function XepHangPhong({ pv, actor }: { pv: PhamVi; actor: string }) {
     phòng có tổng điểm cao hơn xếp trên; vẫn bằng thì theo thứ tự phòng.
     Quy tắc phá hòa này là GIẢ ĐỊNH, chờ phòng thuế xác nhận.
   */
-  const xepTheo = (k: KhoaXep) => [...dong].sort((a, b) => giaTri(b, k) - giaTri(a, k) || b.tong - a.tong || a.thuTu - b.thuTu);
+  const xepTheo = (k: KhoaXep) => dong.toSorted((a, b) => giaTri(b, k) - giaTri(a, k) || b.tong - a.tong || a.thuTu - b.thuTu);
   const hangCua = (d: Dong, k: KhoaXep) => xepTheo(k).indexOf(d) + 1;
   const tenTheo = theo ? tenNgan(dong.find((d) => d.donVi === theo)?.ten ?? "") : null;
 
@@ -653,12 +659,11 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
     <Panel
       chinh
       title={ct.ten}
-      tieuDeKem={<><span ref={datOCT} className="panel-tieu-de-kem"/>
+      tieuDeKem={<><span className="panel-dvt">{ct.dvt}</span><span ref={datOCT} className="panel-tieu-de-kem"/>
         {ct.ghiChu && <ChoChot>{ct.ghiChu}. Số hồ sơ hiển thị để theo dõi, chưa dùng để đánh giá.</ChoChot>}
         {the === "no" && <ChoChot nhan="Chưa bóc nợ đất"><p><b>Chưa bóc nợ đất, chưa loại trường hợp đặc thù.</b> Nợ đất đang cộng vào nợ các phòng QLDN; bảo lãnh, nộp theo quyết định, tạm hoãn xuất cảnh vẫn nằm trong số nợ. Chờ bài toán bóc tách và file loại trừ của phòng đầu mối.</p></ChoChot>}</>}
       /* Lý do "Theo cán bộ" bị tắt nói bằng chữ trên màn, không chỉ trong
          `title` — chú thích trỏ chuột không tới được bằng bàn phím hay cảm ứng. */
-      subtitle={ct.dvt}
       actions={<div className="inline-controls">
         {!pv.canBo && <NhomNut label="Xem theo" value={theo === "CANBO" && motDonVi ? "CANBO" : "DONVI"} onChange={datTheo} options={[
           { value: "DONVI", label: "Theo đơn vị" },
@@ -781,14 +786,14 @@ function BangTieuChi({ the, pv, ky }: { the: TheId; pv: PhamVi; ky: KyQ }) {
             </tr>
           </thead>
           <tbody>
-            {trongTrang.map((d) => <tr key={d.id} className={d.id === cuaToi && !pv.canBo ? "is-selected" : undefined}>
-              <th scope="row" className="qd-goc-dv">{d.ten}{d.id === cuaToi && !pv.canBo && <span className="qd-cua-toi"> · đơn vị của tôi</span>}</th>
-              {ds.map((t) => <Fragment key={t.stt}>{o(t, t.lay(d.id, ky.thang, d.cb))}</Fragment>)}
-            </tr>)}
             {coTong && <tr className="is-tong">
               <th scope="row" className="qd-goc-dv">Toàn thuế (cộng 30 đơn vị)</th>
               {ds.map((t) => <Fragment key={t.stt}>{o(t, tong(t))}</Fragment>)}
             </tr>}
+            {trongTrang.map((d) => <tr key={d.id} className={d.id === cuaToi && !pv.canBo ? "is-selected" : undefined}>
+              <th scope="row" className="qd-goc-dv">{d.ten}{d.id === cuaToi && !pv.canBo && <span className="qd-cua-toi"> · đơn vị của tôi</span>}</th>
+              {ds.map((t) => <Fragment key={t.stt}>{o(t, t.lay(d.id, ky.thang, d.cb))}</Fragment>)}
+            </tr>)}
           </tbody>
         </table>
       </TableWrap>
@@ -944,7 +949,7 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
     <CachTinh cot={cotCt}/>
   </div>
   <TableWrap label={`${ct.ten} theo ${theo === "CANBO" ? "cán bộ" : "đơn vị"}`}>
-    <table className="qd-bang">
+    <table className={`qd-bang qd-bang-xh${coHang ? " co-hang" : ""}`}>
       <thead><tr>
         {coHang && <th scope="col" className="num">Hạng</th>}
         <th scope="col">{theo === "CANBO" ? "Cán bộ" : "Đơn vị"}</th>
@@ -954,6 +959,20 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
         <th scope="col" className="num">Việc quá hạn</th>
       </tr></thead>
       <tbody>
+        {coBQ && <tr className="is-tong">
+          {coHang && <td/>}
+          {/* Số tuyệt đối của dòng này là TỔNG 30 đơn vị, còn tỷ lệ là Σtử/Σmẫu —
+              tức bình quân chung theo đúng định nghĩa §6. Nhãn cũ "Bình quân"
+              đặt trên một con số tổng là thứ dễ bị trích nhầm vào báo cáo họp. */}
+          <th scope="row">Toàn thuế (cộng 30 đơn vị) · tỷ lệ chung</th>
+          <td className="num">{so(bq.tu, ct.dvt)}</td>
+          {coGiao && <td className="num">{so(bq.mau, ct.dvt)}</td>}
+          {coTyLe && <td className="num">{pt(tlBQ, ct.kieu === "TANG")}</td>}
+          <td/>
+          {theo === "DONVI" && <><td/><td/></>}
+          {coNoThu && <td/>}
+          <td className="num">{integer(bq.quaHan)}</td>
+        </tr>}
         {trongTrang.map((h) => {
           const t = truoc.get(h.id);
           const tlTruoc = t ? tyLeCua(ct, t) : null;
@@ -983,20 +1002,6 @@ function BangXepHang({ ct, pv, ky, theo, moCanhBao }: { ct: ChiTieuQ; pv: PhamVi
               : h.cap.quaHan ? integer(h.cap.quaHan) : <span className="cell-empty">0</span>}</td>
           </tr>;
         })}
-        {coBQ && <tr className="is-tong">
-          {coHang && <td/>}
-          {/* Số tuyệt đối của dòng này là TỔNG 30 đơn vị, còn tỷ lệ là Σtử/Σmẫu —
-              tức bình quân chung theo đúng định nghĩa §6. Nhãn cũ "Bình quân"
-              đặt trên một con số tổng là thứ dễ bị trích nhầm vào báo cáo họp. */}
-          <th scope="row">Toàn thuế (cộng 30 đơn vị) · tỷ lệ chung</th>
-          <td className="num">{so(bq.tu, ct.dvt)}</td>
-          {coGiao && <td className="num">{so(bq.mau, ct.dvt)}</td>}
-          {coTyLe && <td className="num">{pt(tlBQ, ct.kieu === "TANG")}</td>}
-          <td/>
-          {theo === "DONVI" && <><td/><td/></>}
-          {coNoThu && <td/>}
-          <td className="num">{integer(bq.quaHan)}</td>
-        </tr>}
       </tbody>
     </table>
   </TableWrap>
@@ -1028,7 +1033,7 @@ function BangTheoThang({ ct, pv, ky }: { ct: ChiTieuQ; pv: PhamVi; ky: KyQ }) {
         <ThCt {...cotCt[cotCt.length - 2]}/>
         <ThCt {...cotCt[cotCt.length - 1]}/>
       </tr></thead>
-      <tbody>{thang.slice().reverse().map((t) => {
+      <tbody>{thang.toReversed().map((t) => {
         const i = t - 1;
         const ck = capCua(ct, pv.donVi[0].id, t, 2025, pv.canBo!);
         return <tr key={t}>
@@ -1055,7 +1060,7 @@ function UocThu({ pv }: { pv: PhamVi }) {
     <div className="qd-uoc">
       <div><span>Ước thu {NHAN_NHIP[nhip].toLowerCase()}</span><strong>{so(u.uoc, "tỷ đồng")}</strong><small>tỷ đồng</small></div>
       <div><span>Đã thu</span><strong>{so(u.thuc, "tỷ đồng")}</strong><small>tỷ đồng</small></div>
-      {coTyLe && <div className="qd-uoc-tl"><span>Đạt so với ước</span><strong>{pt(tl)}</strong><span className="qd-thanh is-lon" aria-hidden="true"><i style={{ width: `${Math.min(tl, 1) * 100}%` }}/></span></div>}
+      {coTyLe && <div className="qd-uoc-tl"><span>Đạt so với ước</span><strong>{pt(tl)}</strong><span className="qd-thanh is-lon" aria-hidden="true"><i style={{ transform: `scaleX(${Math.min(Math.max(tl, 0), 1)})` }}/></span></div>}
     </div>
   </Panel>;
 }

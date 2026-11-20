@@ -19,18 +19,32 @@ import { moTaGD, tenTieuMucTMS } from "@/data/danhMucTMS";
        (§2.5) — điều chỉnh DP có thể âm, hủy chứng từ HC trừ lại khoản đã nộp.
     2. Xếp theo HẠN NỘP; có ngày gia hạn thì lấy ngày gia hạn (§2.2, điểm
        thống nhất 5).
-    3. Vòng 1: khoản nào khớp 1–1 thì nhấc ra. Vòng 2 trở đi: ghép 2–4 khoản
-       gần nhau cộng lại, khớp thì nhấc tiếp (§2.1). "Gần nhau" là trong cửa
-       sổ khoảng 7 dòng như công cụ VBA đang quét (§2.6). Hết vòng thì dồn
-       bảng và chạy lại.
-    4. Khoản còn lại là điểm cần soi. Khoản dương (phải nộp chưa có chứng từ)
-       tính tiền chậm nộp; khoản âm (đã nộp không có phát sinh) không tính.
+    3. Bắt cặp theo công cụ VBA của phòng nghiệp vụ — biên bản 18/11/2026
+       §2.2 (folder 20-11), thay cách mô tả của biên bản 11/11:
+       • Cắt theo lũy kế: cộng dồn từ đầu bảng, tại điểm lũy kế bằng 0 thì
+         đoạn trước đã khớp, cắt bỏ để giảm số dòng (yêu cầu cải thiện).
+       • Vòng 1: ghép hai dòng liền kề, tổng lệch dưới 100.000 đồng thì coi
+         là bù trừ được. Không bù được thì tìm cặp âm – dương cùng số tiền.
+         Vẫn không ghép được thì đặt trạng thái "treo".
+       • Từ vòng 2: chỉ ghép C2 (chứng từ nộp) với TK (tờ khai), tối đa 7
+         dòng liền kề, tổng bằng 0 thì coi là bù được. Thường đến vòng 4 là
+         hết cặp.
+    4. Dòng còn lại được tô đỏ — là điểm cần soi, kèm các bước tìm nguyên
+       nhân của biên bản 18/11 §2.3.
 
   Nhãn của hai loại dòng còn lại lấy theo sheet TS của công cụ RSNT_GTGT_CUC:
   "thiếu khoản đã nộp (C2, ĐC…)" và "thiếu phát sinh phải nộp (TK, QT, QĐ…)".
 
+  DIỄN GIẢI (chưa xác nhận):
+  - Vòng 1 "ghép các dòng liền kề": một đoạn từ 2 dòng liền kề trở lên (tối
+    đa 7 như vòng 2), không chỉ một cặp — để bắt nhóm TK + QT + C2 nộp chung.
+  - "Liền kề" ở vòng 2 tính trên dãy chỉ gồm dòng C2 và TK (ghép riêng hai
+    loại này), không tính các dòng loại khác nằm xen giữa.
+  - Tờ khai bổ sung giữ ký hiệu TK (danh mục KHGD không có ký hiệu riêng),
+    ghi rõ điều chỉnh tăng hay giảm của tờ khai nào (§2.2, yêu cầu cải thiện).
+  - "Cùng kỳ" ở bước 1 tìm nguyên nhân hiểu là cùng năm.
+
   GIẢ ĐỊNH CÒN LẠI (chưa xác nhận):
-  - Ngưỡng lệch 1.000 đồng: ví dụ trong họp 09/11, chưa phải con số chốt.
   - Ghép trong cùng tiểu mục và cùng CQT.
   - Chưa áp quy tắc hạch toán theo từng mốc thông tư (TT156 / TT80 / TT89:
     tờ khai GTGT 7 chỉ tiêu trước 2018, tờ khai bổ sung lấy số ở bảng kê, quyết
@@ -38,16 +52,20 @@ import { moTaGD, tenTieuMucTMS } from "@/data/danhMucTMS";
   - Trước 2015 vẫn là một giao dịch CD (số dư đầu kỳ) — chờ dữ liệu QLT
     1999–2014 của anh Tân (11/11, việc 5).
 
-  Sổ là SỐ ĐẶT RA, gieo theo DN (hạt 95). Dòng không ghép được dựng khớp với
-  bảng Quan hệ ngân sách của cùng hồ sơ: tổng nợ treo = cột "Còn nợ", tổng
-  nộp không đối ứng = cột "Nộp thừa" — để hai khối không nói hai số khác.
+  Sổ là SỐ ĐẶT RA, gieo theo DN (hạt 95). Sổ dựng khớp với bảng Quan hệ ngân
+  sách của cùng hồ sơ: phải nộp trừ đã nộp = cột "Còn nợ" trừ "Nộp thừa". Các
+  quy tắc của công cụ VBA có trường hợp không bắt được (biên bản 18/11 §2.2),
+  nên dòng tô đỏ có thể nhiều hơn khoản nợ, thừa thật.
 */
 
-export const NGUONG_LECH = 1000;
-/** Cửa sổ quét của công cụ VBA phía Thuế (biên bản 11/11 §2.6). */
+/** Vòng 1: hai dòng liền kề lệch dưới mức này coi là bù trừ được (biên bản 18/11 §2.2). */
+export const NGUONG_LECH = 100_000;
+/** Từ vòng 2: ghép tối đa 7 dòng C2/TK liền kề (biên bản 18/11 §2.2). */
 export const CUA_SO = 7;
-/** Một nhóm ghép tối đa: một khoản và 2–4 khoản đối ứng (§2.1). */
-const NHOM_TOI_DA = 5;
+/** Từ vòng 2 chỉ ghép chứng từ nộp C2 với tờ khai TK. */
+const laC2TK = (x: DongSo) => x.ma === "C2" || x.ma === "TK";
+/** Giao dịch chuyển từ ứng dụng cũ sang TMS (biên bản 18/11 §2.2), trước 2021. */
+const MA_CHUYEN_DOI = new Set(["CD", "RV", "NM", "TH"]);
 /** TMS chạy từ 2015; trước đó chỉ có một giao dịch CD (§2.4). */
 const NAM_TMS = 2015;
 /** Dòng phải nộp có hạn đến hết ngày này mới vào sổ. */
@@ -71,9 +89,14 @@ export interface DongSo {
   ngay: Date;
   /** Phải nộp được gia hạn: hạn nộp gốc. */
   hanGoc?: Date;
-  /** Đồng, giữ dấu của giao dịch: DP có thể âm, HC âm. */
+  /** Đồng, giữ dấu của giao dịch: DP có thể âm, HC âm, tờ khai bổ sung giảm âm. */
   soTien: number;
+  /** Tờ khai bổ sung: điều chỉnh tăng hay giảm, của tờ khai nào (biên bản 18/11 §2.2). */
+  boSung?: { huong: "TANG" | "GIAM"; cua: string };
 }
+
+/** "Điều chỉnh giảm của Tờ khai quý 2/2023". */
+export const nhanBoSung = (b: NonNullable<DongSo["boSung"]>) => `Điều chỉnh ${b.huong === "TANG" ? "tăng" : "giảm"} của ${b.cua}`;
 
 /** Giá trị có dấu trong phép cộng trừ: phải nộp dương, đã nộp âm. */
 export const giaTri = (x: DongSo) => (x.chieu === "PN" ? x.soTien : -x.soTien);
@@ -81,16 +104,25 @@ export const laHaNoi = (x: { cqt: string }) => x.cqt !== "";
 /** "TK · TK tháng/quý/năm" — chú giải ký hiệu theo danh mục TMS. */
 export const nhanMa = (ma: string) => `${ma} · ${moTaGD(ma)}`;
 
-export interface Cap { pn: DongSo[]; dn: DongSo[]; vong: number; lech: number }
+/** Cách một nhóm được nhấc ra — biên bản 18/11/2026 §2.2. */
+export type CachGhep = "LUY_KE" | "LIEN_KE" | "CUNG_SO" | "C2_TK";
+export const NHAN_CACH: Record<CachGhep, string> = {
+  LUY_KE: "cắt tại điểm lũy kế bằng 0",
+  LIEN_KE: "các dòng liền kề, lệch dưới 100.000 đồng",
+  CUNG_SO: "cặp âm – dương cùng số tiền",
+  C2_TK: "C2 và TK liền kề, tổng bằng 0",
+};
+export interface Cap { pn: DongSo[]; dn: DongSo[]; vong: number; cach: CachGhep; lech: number }
 /** Ngày của nhóm: hạn của khoản phải nộp đầu; nhóm chỉ có chứng từ (C2 + HC) lấy ngày nộp. */
 export const dauCap = (c: Cap) => (c.pn[0] ?? c.dn[0]).ngay;
 
 /** NO: phải nộp, thiếu chứng từ nộp. THUA: đã nộp, thiếu phát sinh. */
 export type LoaiSoi = "THUA" | "NO" | "CHUYEN_DOI";
-export interface DocNhanh { muc: "cao" | "thap"; nhan: string; nhamTM?: true }
+/** `buoc`: số thứ tự bước tìm nguyên nhân đã tự tìm ra gợi ý này (biên bản 18/11 §2.3). */
+export interface DocNhanh { muc: "cao" | "thap"; nhan: string; nhamTM?: true; buoc?: number }
 export interface DongSoi extends DongSo {
   loai: LoaiSoi;
-  /** Các bước tra theo thứ tự cán bộ đề xuất (biên bản 11/11 §2.6). */
+  /** Các bước tìm nguyên nhân theo thứ tự (biên bản 18/11 §2.3). */
   buoc: string[];
   docNhanh?: DocNhanh;
 }
@@ -103,10 +135,14 @@ export interface PhanBo { tinh: string; thua: number; cqtNo: string; tenNo: stri
 export interface KetQuaDoiChieu {
   phaiNop: number; daNop: number; conPhaiNop: number;
   soDong: number; capDaGhep: Cap[]; soVong: number;
-  /** Cặp chỉ ghép được nhờ ngưỡng lệch, và tổng phần lệch còn lại. */
+  /** Cặp chỉ ghép được nhờ ngưỡng lệch (vòng 1), và tổng phần lệch còn lại. */
   capTheoNguong: number; tongLech: number;
-  /** Nhóm ghép từ 3 khoản trở lên (vòng 2 trở đi). */
+  /** Nhóm ghép từ 3 khoản trở lên. */
   nhomNhieu: number;
+  /** Đoạn cắt theo lũy kế bằng 0, và số dòng nằm trong các đoạn ấy. */
+  doanLuyKe: number; dongLuyKe: number;
+  /** Dòng ở trạng thái "treo" sau vòng 1 — chuyển sang vòng 2. */
+  soTreo: number;
   canSoi: DongSoi[];
   tuNam: number; coChuyenDoi: boolean;
   soGiaHan: number;
@@ -134,84 +170,104 @@ export function cqtCuaDN(d: DongDN) {
 }
 
 /*
-  Bước tra — NGUYÊN VĂN biên bản 11/11/2026 (§2.1, §2.4, §2.6, §3), không
-  viết thêm (người dùng chốt 16/11/2026: bám sát tài liệu).
+  Bước tìm nguyên nhân — NGUYÊN VĂN biên bản 18/11/2026 §2.3, thay ba bước
+  của biên bản 11/11 (người dùng chốt 16/11/2026: bám sát tài liệu).
 */
-function buocCua(_x: DongSo, loai: LoaiSoi): string[] {
+const BUOC_TIM: string[] = [
+  "Quét trên tổng quan xem trong cùng kỳ có phát sinh dương cùng số tiền ở sắc thuế, tiểu mục khác không (nộp nhầm tiểu mục).",
+  "Kiểm tra tờ khai bổ sung, tờ khai chưa hạch toán (chức năng 3.2.6).",
+  "Kiểm tra tờ khai lỗi, tồn trục chưa xử lý (chức năng 3.2.3.3).",
+  "Tra eDoc xem có quyết định xử phạt, truy thu, kết luận kiểm toán chưa được nhập không.",
+  "Liên hệ NNT.",
+];
+function buocCua(loai: LoaiSoi): string[] {
   if (loai === "CHUYEN_DOI") return [
-    "Dữ liệu chuyển từ hệ thống cũ sang TMS nằm thành một giao dịch CD duy nhất (số dư đầu kỳ).",
-    "Sau đó thay CD bằng dữ liệu chi tiết giai đoạn 1999–2014 từ anh Tân.",
+    "Dữ liệu chuyển từ ứng dụng cũ sang TMS (giao dịch RV, NM, TH…, trước năm 2021) hoặc cán bộ nhập lại trên TMS — công cụ bắt cặp chưa bắt được (biên bản 18/11 §2.2).",
+    "Số dư trước 2015 nằm thành một giao dịch CD; sẽ thay bằng dữ liệu chi tiết giai đoạn 1999–2014 từ anh Tân (biên bản 11/11).",
   ];
-  if (loai === "THUA") return [
-    "Tra hệ thống quyết định (edoc) xem trong kỳ có quyết định phạt, truy thu hoặc quyết định khác chưa nhập không.",
-    "Tra tờ khai bị treo, bị từ chối, hoặc doanh nghiệp chưa nộp lại sau khi bị từ chối; cảnh báo để đôn đốc.",
-    "Cuối cùng mới mời doanh nghiệp lên làm việc.",
-  ];
-  return [
-    "Khoản còn lại không có gì tương ứng thì yêu cầu doanh nghiệp giải trình.",
-    "Khoản dương tính tiền chậm nộp, khoản âm không tính.",
-  ];
+  return BUOC_TIM;
 }
 
-/* ---------- Bắt cặp ---------- */
+/* ---------- Bắt cặp (biên bản 18/11/2026 §2.2) ---------- */
 
-/** Mọi tổ hợp `k` phần tử của `ds`, theo thứ tự xuất hiện. */
-function toHop<T>(ds: T[], k: number): T[][] {
-  if (k === 0) return [[]];
-  const ra: T[][] = [];
-  for (let i = 0; i <= ds.length - k; i++) for (const c of toHop(ds.slice(i + 1), k - 1)) ra.push([ds[i], ...c]);
-  return ra;
+type Nhac = (x: DongSo[], vong: number, cach: CachGhep) => void;
+
+/** Cộng dồn từ đầu bảng; tại mỗi điểm lũy kế bằng 0, đoạn trước đã khớp — nhấc ra. */
+function catLuyKe(bang: DongSo[], vong: number, nhac: Nhac): DongSo[] {
+  let tong = 0, dau = 0;
+  for (let i = 0; i < bang.length; i++) {
+    tong += giaTri(bang[i]);
+    if (tong === 0) { nhac(bang.slice(dau, i + 1), vong, "LUY_KE"); dau = i + 1; }
+  }
+  return bang.slice(dau);
 }
 
 /*
-  Mỗi (tiểu mục, CQT) một bảng, xếp theo ngày đối chiếu. Vòng k ghép nhóm tối
-  đa k + 1 khoản (vòng 1: cặp 1–1; từ vòng 4: tới 5 khoản = một khoản và 4
-  khoản đối ứng). Với mỗi dòng còn lại, xét các dòng trong cửa sổ 7 dòng tính
-  từ nó: nhóm nào có cả khoản dương lẫn khoản âm và cộng lại bằng 0 (trong
-  ngưỡng lệch) thì nhấc ra; nhóm nhỏ trước, khớp đúng trước khớp theo ngưỡng.
-  Hết vòng thì dồn bảng. Dừng khi một vòng ở cỡ nhóm lớn nhất không nhấc
-  thêm được gì.
+  Mỗi (tiểu mục, CQT) một bảng, xếp theo ngày đối chiếu.
+  Vòng 1: (a) đoạn 2–7 dòng liền kề có cả dương lẫn âm, tổng lệch dưới
+  100.000 đồng, đoạn ngắn trước;
+  (b) dòng còn lại tìm cặp trái dấu cùng số tiền ở bất kỳ đâu trong bảng.
+  Dòng vẫn chưa ghép được ở trạng thái "treo".
+  Vòng 2 trở đi: trên dãy chỉ gồm C2 và TK, từ mỗi dòng xét đoạn 2–7 dòng
+  liền kề, đoạn ngắn trước; tổng bằng 0 thì nhấc ra. Hết vòng thì dồn bảng
+  (các dòng mới thành liền kề) và chạy tiếp; dừng khi một vòng không nhấc
+  thêm được gì. Trước mỗi vòng cắt theo lũy kế.
 */
 function batCap(dong: DongSo[]) {
   const theoBang = new Map<string, DongSo[]>();
   for (const x of dong) { const k = `${x.tieuMuc}|${x.cqt}|${x.tenCQT}`; theoBang.set(k, [...(theoBang.get(k) ?? []), x]); }
   const cap: Cap[] = [];
-  let soVong = 0;
+  let soVong = 0, soTreo = 0;
   const conLai: DongSo[] = [];
+  const nhac: Nhac = (x, vong, cach) => {
+    cap.push({ pn: x.filter((v) => v.chieu === "PN"), dn: x.filter((v) => v.chieu === "DN"), vong, cach, lech: x.reduce((a, v) => a + giaTri(v), 0) });
+    soVong = Math.max(soVong, vong);
+  };
   for (const ds of theoBang.values()) {
-    let bang = [...ds].sort((a, b) => a.ngay.getTime() - b.ngay.getTime() || (a.chieu === "PN" ? -1 : 1));
-    for (let k = 1; k <= 10 && bang.length > 1; k++) {
-      const coNhom = Math.min(k + 1, NHOM_TOI_DA);
-      const da = new Set<number>();
-      for (let i = 0; i < bang.length; i++) {
-        if (da.has(i)) continue;
-        const cuaSo: number[] = [];
-        for (let j = i + 1; j < bang.length && cuaSo.length < CUA_SO - 1; j++) if (!da.has(j)) cuaSo.push(j);
-        let tot: number[] | null = null;
-        for (const chat of [true, false]) {
-          for (let s = 2; s <= coNhom && !tot; s++) {
-            for (const c of toHop(cuaSo, s - 1)) {
-              const nhom = [i, ...c];
-              const g = nhom.map((j) => giaTri(bang[j]));
-              if (!g.some((v) => v > 0) || !g.some((v) => v < 0)) continue;
-              const tong = g.reduce((a, b) => a + b, 0);
-              if (chat ? tong === 0 : Math.abs(tong) <= NGUONG_LECH) { tot = nhom; break; }
-            }
-          }
-          if (tot) break;
-        }
-        if (!tot) continue;
-        for (const j of tot) da.add(j);
-        const x = tot.map((j) => bang[j]);
-        cap.push({ pn: x.filter((v) => v.chieu === "PN"), dn: x.filter((v) => v.chieu === "DN"), vong: k, lech: x.reduce((a, v) => a + giaTri(v), 0) });
+    let bang = catLuyKe(ds.toSorted((a, b) => a.ngay.getTime() - b.ngay.getTime() || (a.chieu === "PN" ? -1 : 1)), 1, nhac);
+
+    /* Vòng 1 */
+    const da = new Set<DongSo>();
+    for (let i = 0; i < bang.length; i++) {
+      for (let n = 2; n <= CUA_SO && i + n <= bang.length; n++) {
+        const doan = bang.slice(i, i + n);
+        const g = doan.map(giaTri);
+        if (!g.some((v) => v > 0) || !g.some((v) => v < 0) || Math.abs(g.reduce((a, v) => a + v, 0)) >= NGUONG_LECH) continue;
+        for (const x of doan) da.add(x);
+        nhac(doan, 1, "LIEN_KE");
+        i += n - 1;
+        break;
       }
-      if (da.size) soVong = Math.max(soVong, k);
-      bang = bang.filter((_, i) => !da.has(i));
-      if (!da.size && coNhom === NHOM_TOI_DA) break;
+    }
+    for (const a of bang) {
+      if (da.has(a)) continue;
+      const b = bang.find((y) => y !== a && !da.has(y) && giaTri(y) === -giaTri(a));
+      if (b) { da.add(a); da.add(b); nhac(a.ngay <= b.ngay ? [a, b] : [b, a], 1, "CUNG_SO"); }
+    }
+    bang = bang.filter((x) => !da.has(x));
+    soTreo += bang.length;
+
+    /* Vòng 2 trở đi */
+    for (let k = 2; k <= 10 && bang.length > 1; k++) {
+      bang = catLuyKe(bang, k, nhac);
+      const day = bang.filter(laC2TK);
+      const nhacVong = new Set<DongSo>();
+      for (let i = 0; i < day.length; i++) {
+        for (let n = 2; n <= CUA_SO && i + n <= day.length; n++) {
+          const doan = day.slice(i, i + n);
+          if (doan.reduce((a, x) => a + giaTri(x), 0) !== 0) continue;
+          for (const x of doan) nhacVong.add(x);
+          nhac(doan, k, "C2_TK");
+          i += n - 1;
+          break;
+        }
+      }
+      if (!nhacVong.size) break;
+      bang = bang.filter((x) => !nhacVong.has(x));
     }
     conLai.push(...bang);
   }
-  return { cap, soVong, conLai };
+  return { cap, soVong, soTreo, conLai };
 }
 
 /* ---------- Dựng sổ ---------- */
@@ -284,6 +340,8 @@ export function doiChieuQHNS(d: DongDN): KetQuaDoiChieu {
     const cacPN: DongSo[] = [];
     /* Phần DP đã tách khỏi tờ khai — chứng từ nộp vẫn trả đủ số gốc. */
     const dpCua = new Map<DongSo, number>();
+    /* Tờ khai có bổ sung giảm: nộp theo số sau điều chỉnh, sau ngày khai bổ sung. */
+    const giamCua = new Map<DongSo, { so: number; sau: number }>();
     const phat = tm.tieuMuc.startsWith("42");
     for (let nam = tuNam; nam <= 2026; nam++) {
       const tren = quyMo(nam) * ty;
@@ -308,6 +366,17 @@ export function doiChieuQHNS(d: DongDN): KetQuaDoiChieu {
           continue;
         }
         cacPN.push(pn);
+        /* Tờ khai bổ sung (biên bản 18/11 §2.2): tăng thì nộp thêm phần tăng;
+           giảm thì dòng âm, doanh nghiệp nộp theo số sau điều chỉnh. */
+        if (k.ma === "TK" && so > 2e6 && r() < 0.06) {
+          const lech = Math.round(so * (0.05 + r() * 0.2) / 1000) * 1000;
+          const sau = nguyen(r, 20, 90);
+          const tang = r() < 0.5;
+          const bs = them({ ...goc, ma: "TK", chieu: "PN", ngay: cong(pn.ngay, sau), soTien: tang ? lech : -lech,
+            moTa: k.moTa.replace("Tờ khai", "Tờ khai bổ sung"), boSung: { huong: tang ? "TANG" : "GIAM", cua: k.moTa } });
+          if (tang) cacPN.push(bs);
+          else giamCua.set(pn, { so: lech, sau });
+        }
       }
       /* Thỉnh thoảng một biên bản kiểm tra hoặc quyết định của cơ quan thuế. */
       if (r() < (phat ? 0.35 : 0.1)) {
@@ -320,7 +389,7 @@ export function doiChieuQHNS(d: DongDN): KetQuaDoiChieu {
 
     /* Nghĩa vụ gần nhất mang khoản nợ treo, không có chứng từ đối ứng. Nộp
        nhầm tiểu mục thì nợ treo tách hai dòng: một dòng đúng bằng số đã nộp sang tiểu mục kia. */
-    const pnNo = noTreo > 0 && !noOChuyenDoi ? cacPN.filter((x) => !dpCua.has(x)).at(-1) ?? null : null;
+    const pnNo = noTreo > 0 && !noOChuyenDoi ? cacPN.filter((x) => !dpCua.has(x) && !giamCua.has(x) && x.soTien > 0).at(-1) ?? null : null;
     if (pnNo) {
       pnNo.soTien = noTreo;
       if (tm === tmNo && nhamTM) {
@@ -332,21 +401,25 @@ export function doiChieuQHNS(d: DongDN): KetQuaDoiChieu {
       const pn = cacPN[i];
       if (pn === pnNo) continue;
       const dp = dpCua.get(pn) ?? 0;
-      const gop = { ...pn, soTien: pn.soTien + dp };
+      const giam = giamCua.get(pn);
+      const gop = { ...pn, soTien: pn.soTien + dp - (giam?.so ?? 0) };
+      if (giam) { tra([gop], giam.sau + nguyen(r, 3, 20), false); continue; }
       /* Thỉnh thoảng một chứng từ nộp chung hai kỳ liền nhau. */
       const ke = cacPN[i + 1];
-      if (ke && ke !== pnNo && !dpCua.has(ke) && r() < 0.06) {
+      if (ke && ke !== pnNo && !dpCua.has(ke) && !giamCua.has(ke) && r() < 0.06) {
         tra([gop, ke], 0, false); i++; continue;
       }
       /* Khoảng một phần năm nộp chậm, sau cả hạn kỳ kế — để cần nhiều vòng. */
-      tra([gop], r() < 0.2 ? nguyen(r, 60, 150) : 0, !dp);
+      tra([gop], r() < 0.2 ? nguyen(r, 60, 150) : 0, !dp && pn.ma === "TK");
     }
 
     /* Khoản nộp không có nghĩa vụ đối ứng = cột "Nộp thừa". */
     if (thua > 0) {
-      const nam = Math.max(tuNam, 2026 - nguyen(r, 1, 6));
-      const nk = tm !== tmThua || !nhamTM ? r() < 0.3 : false;
-      them({ ...goc, ma: nk ? "P4" : "C2", chieu: "DN", ngay: new Date(nam, nguyen(r, 0, 11), nguyen(r, 1, 28)), soTien: thua, moTa: moTaGD(nk ? "P4" : "C2") });
+      const nham = tm === tmThua && nhamTM > 0;
+      /* Nộp nhầm tiểu mục: tiền vào cùng năm với khoản nợ của tiểu mục kia (nợ treo ở kỳ gần nhất, năm 2026). */
+      const ngay = nham ? new Date(2026, nguyen(r, 3, 8), nguyen(r, 1, 28)) : new Date(Math.max(tuNam, 2026 - nguyen(r, 1, 6)), nguyen(r, 0, 11), nguyen(r, 1, 28));
+      const nk = !nham && r() < 0.3;
+      them({ ...goc, ma: nk ? "P4" : "C2", chieu: "DN", ngay, soTien: thua, moTa: moTaGD(nk ? "P4" : "C2") });
     }
     /* Chứng từ phân bổ chuyển sai: tiền vào CQT tỉnh khác, nợ cùng số vẫn treo ở Hà Nội. */
     if (phanBo > 0) {
@@ -354,19 +427,28 @@ export function doiChieuQHNS(d: DongDN): KetQuaDoiChieu {
     }
   }
 
-  const { cap, soVong, conLai } = batCap(dong);
+  const { cap, soVong, soTreo, conLai } = batCap(dong);
   const phaiNop = dong.filter((x) => x.chieu === "PN").reduce((a, x) => a + x.soTien, 0);
   const daNop = dong.filter((x) => x.chieu === "DN").reduce((a, x) => a + x.soTien, 0);
   const theoNguong = cap.filter((c) => c.lech !== 0);
+  const luyKeCat = cap.filter((c) => c.cach === "LUY_KE");
   const soi = conLai.map((x) => {
-    const loai: LoaiSoi = x.ma === "CD" ? "CHUYEN_DOI" : giaTri(x) < 0 ? "THUA" : "NO";
-    return { ...x, loai, buoc: buocCua(x, loai) } as DongSoi;
+    const loai: LoaiSoi = MA_CHUYEN_DOI.has(x.ma) && x.ngay.getFullYear() < 2021 ? "CHUYEN_DOI" : giaTri(x) < 0 ? "THUA" : "NO";
+    return { ...x, loai, buoc: buocCua(loai) } as DongSoi;
   });
-  /* Đọc nhanh — nguyên văn biên bản 11/11/2026 §2.6. Phân bổ liên tỉnh đã có
-     dải cảnh báo ở đầu khối (biên bản 13/11), không lặp trên từng dòng. */
+  /*
+    Tự chạy các bước tìm nguyên nhân làm được trên dữ liệu đang có (biên bản
+    18/11 §2.3, việc 4): bước 1 — cùng năm có khoản trái chiều cùng số tiền ở
+    tiểu mục khác; bước 2 — dòng là tờ khai bổ sung. Bước 3–5 cần chức năng
+    3.2.3.3, eDoc và liên hệ NNT, prototype chưa có nguồn nên để cán bộ tra.
+    Hai nhận xét còn lại giữ nguyên văn biên bản 11/11 §2.6. Phân bổ liên tỉnh
+    đã có dải cảnh báo ở đầu khối (biên bản 13/11), không lặp trên từng dòng.
+  */
   for (const x of soi) {
-    const nham = soi.some((y) => y !== x && y.tieuMuc !== x.tieuMuc && y.loai !== x.loai && y.loai !== "CHUYEN_DOI" && x.loai !== "CHUYEN_DOI" && Math.abs(y.soTien - x.soTien) <= NGUONG_LECH);
-    if (nham) x.docNhanh = { muc: "cao", nhamTM: true, nhan: "Nộp nhầm tiểu mục hoặc sắc thuế; cùng một đơn vị có thể vừa thừa chỗ này, thiếu chỗ kia." };
+    const nham = x.loai === "CHUYEN_DOI" ? undefined : soi.find((y) => y !== x && y.tieuMuc !== x.tieuMuc && y.loai !== "CHUYEN_DOI" && y.loai !== x.loai
+      && y.ngay.getFullYear() === x.ngay.getFullYear() && Math.abs(y.soTien) === Math.abs(x.soTien));
+    if (nham) x.docNhanh = { muc: "cao", nhamTM: true, buoc: 1, nhan: `Cùng năm có khoản ${nham.loai === "THUA" ? "nộp" : "phải nộp"} cùng số tiền ở tiểu mục ${nham.tieuMuc}: có thể nộp nhầm tiểu mục.` };
+    else if (x.boSung) x.docNhanh = { muc: "cao", buoc: 2, nhan: `Tờ khai bổ sung — ${nhanBoSung(x.boSung).toLowerCase()} chưa có chứng từ tương ứng.` };
     else if (x.loai === "THUA" && x.ma === "P4") x.docNhanh = { muc: "thap", nhan: "Chứng từ nơi khác chuyển về: thừa thường là đúng." };
     else if (x.loai === "THUA" && x.ma === "C2" && laHaNoi(x)) x.docNhanh = { muc: "cao", nhan: "Chứng từ nộp tại Hà Nội mà thừa thì chắc chắn có vấn đề, vì doanh nghiệp không tự nộp thừa." };
   }
@@ -397,6 +479,8 @@ export function doiChieuQHNS(d: DongDN): KetQuaDoiChieu {
     soDong: dong.length, capDaGhep: cap.sort((a, b) => dauCap(a).getTime() - dauCap(b).getTime()), soVong,
     capTheoNguong: theoNguong.length, tongLech: theoNguong.reduce((a, c) => a + c.lech, 0),
     nhomNhieu: cap.filter((c) => c.pn.length + c.dn.length > 2).length,
+    doanLuyKe: luyKeCat.length, dongLuyKe: luyKeCat.reduce((a, c) => a + c.pn.length + c.dn.length, 0),
+    soTreo,
     canSoi, tuNam, coChuyenDoi,
     soGiaHan: dong.filter((x) => x.hanGoc).length,
     luyKe, phanBo,

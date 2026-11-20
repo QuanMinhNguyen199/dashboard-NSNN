@@ -119,8 +119,8 @@ export function DanhSachK({ ky, vaiTro }: { ky: KyQL2; vaiTro: VaiTro }) {
       .filter((r) => !q || r.mst.includes(q) || r.ten.toLowerCase().includes(q))
       /* Mặc định SỐ NGÀY TỒN giảm dần (§4.5): việc tồn lâu nhất là việc cần
          nhìn trước, không phải việc có mã số thuế nhỏ nhất. */
-      .slice()
-      .sort((a, b) => b.soNgayTon - a.soNgayTon);
+      
+      .toSorted((a, b) => b.soNgayTon - a.soNgayTon);
   }, [tatCa, chon, chiCo, tim, nhom, vuongMac, ky.id]);
 
   const soTrang = Math.max(1, Math.ceil(loc.length / MOI_TRANG));

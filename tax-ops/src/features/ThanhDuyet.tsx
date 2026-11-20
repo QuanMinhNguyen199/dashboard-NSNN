@@ -397,7 +397,9 @@ export function ThanhDuyet({ khoa, nhanKy, xemTruoc, chan = null, tomTat }: {
         <textarea
           ref={oLyDo} rows={1} maxLength={200} name="lyDoTraLai" value={lyDo} placeholder={CHU.goiY}
           onInput={(e) => { const o = e.currentTarget; o.style.height = "auto"; o.style.height = `${o.scrollHeight}px`; }}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); xong(); } }}
+          /* Bộ gõ tiếng Việt (Telex của Windows 11, macOS) dùng IME: Enter đang
+             chốt chữ thì không gửi. keyCode 229 bắt Safari báo isComposing trễ. */
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (e.nativeEvent.isComposing || e.keyCode === 229) return; xong(); } }}
           onChange={(e) => { setLyDo(e.target.value); setLoi(""); }}
         />
       </label>}

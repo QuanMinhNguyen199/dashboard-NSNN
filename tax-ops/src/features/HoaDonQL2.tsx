@@ -281,7 +281,7 @@ function TongQuanQL2({ onMo }: { onMo: (muc: string) => void }) {
             <button type="button" className="xh-nut" onClick={() => onMo("dschenh")}>
               <span className="xh-ten" title={x.dv.ten}>{rutGonTenDonVi(x.dv.ten)}</span>
               <span className="xh-so">{money(x.so)} NNT</span>
-              <span className="xh-thanh"><i style={{ width: `${ds2[0].so ? (x.so / ds2[0].so) * 100 : 0}%` }}/></span>
+              <span className="xh-thanh"><i style={{ transform: `scaleX(${ds2[0].so ? x.so / ds2[0].so : 0})` }}/></span>
             </button>
           </li>)}
       </ol>

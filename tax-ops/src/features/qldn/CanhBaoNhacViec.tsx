@@ -269,7 +269,7 @@ function TheoDauViec({ ds, chon }: { ds: CanhBao[]; chon: (id: DauViecId) => voi
   return <Panel chinh title="Theo đầu việc">
     <TableWrap label="cảnh báo theo đầu việc">
       <table className="qd-bang">
-        <thead><tr><th scope="col">Đầu việc</th>{MUC.map((m) => <th key={m} scope="col" className="num">{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th><th scope="col" className="num">Trong đó chưa xử lý</th></tr></thead>
+        <thead><tr><th scope="col">Đầu việc</th>{MUC.map((m) => <th key={m} scope="col" className="num"><i className={`qd-cham-muc tone-${TONE[m]}`} aria-hidden="true"/>{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th><th scope="col" className="num">Trong đó chưa xử lý</th></tr></thead>
         <tbody>{DAU_VIEC.map((d) => {
           const cua = ds.filter((v) => v.dauViec === d.id);
           const s = dem(cua);
@@ -319,7 +319,7 @@ function TheoNhom({ loai, ds, nhom: dsNhom, chon, datChon }: { loai: "DV" | "CB"
   </div>}>
     <TableWrap label={`cảnh báo theo ${N.dv}`}>
       <table className="qd-bang">
-        <thead><tr><th scope="col">{N.cot}</th>{MUC.map((m) => <th key={m} scope="col" className="num">{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th></tr></thead>
+        <thead><tr><th scope="col">{N.cot}</th>{MUC.map((m) => <th key={m} scope="col" className="num"><i className={`qd-cham-muc tone-${TONE[m]}`} aria-hidden="true"/>{NHAN_MUC[m]}</th>)}<th scope="col" className="num">Tổng</th></tr></thead>
         <tbody>{hien.map((n) => <tr key={n.id} className={n.id === chon ? "is-selected qd-viec" : "qd-viec"} onClick={() => { datChon(n.id === chon ? "" : n.id); datDoi(false); }}>
           <td><button type="button" className="row-select" aria-pressed={n.id === chon}>{n.ten}</button></td>
           {MUC.map((m) => <td key={m} className="num">{n.s[m] ? <span className={`qd-so-muc tone-${TONE[m]}`}>{n.s[m]}</span> : <span className="cell-empty">0</span>}</td>)}

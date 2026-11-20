@@ -96,7 +96,7 @@ function TongQuan({ pv, moDanhSach, moNhom }: { pv: PhamVi; moDanhSach: (tt: Tra
           {TRANG_THAI_DN.map((t) => <li key={t.id}>
             <button type="button" onClick={() => moDanhSach(t.id)}>
               <span className="qd-thanh-ten">{t.ten}</span>
-              <span className="qd-thanh-ray"><i style={{ width: `${(o.trangThai[t.id] / maxTT) * 100}%` }}/></span>
+              <span className="qd-thanh-ray"><i style={{ transform: `scaleX(${o.trangThai[t.id] / maxTT})` }}/></span>
               <span className="qd-thanh-so"><b>{integer(o.trangThai[t.id])}</b><small>{phanTram(o.trangThai[t.id], tongTT)}</small></span>
               <Icon name="arrow" size={14}/>
             </button>
@@ -156,7 +156,7 @@ function BienPhapCuongChe({ pv }: { pv: PhamVi }) {
     <ul className="qd-thanh-ds is-tinh qd-bp-ds">
       {bp.ds.map((b) => <li key={b.id} title={`${b.ten}: ${integer(b.soNNT)} NNT, ${integer(b.dangHieuLuc)} còn hiệu lực`}>
         <span className="qd-thanh-ten">{b.ten}</span>
-        <span className="qd-thanh-ray"><i style={{ width: `${(b.soNNT / max) * 100}%` }}/></span>
+        <span className="qd-thanh-ray"><i style={{ transform: `scaleX(${b.soNNT / max})` }}/></span>
         <span className="qd-thanh-so"><b>{integer(b.soNNT)}</b><small>{integer(b.dangHieuLuc)} còn hiệu lực</small></span>
       </li>)}
     </ul>
@@ -181,17 +181,17 @@ function PhanTichRuiRo({ pv }: { pv: PhamVi }) {
       <div className="qd-rr-muc">
         <div className="qd-chong" aria-hidden="true">
           {/* Cùng thứ tự với dải Kê khai: tốt bên trái, xấu bên phải. */}
-          {[...MUC_RUI_RO].reverse().map((m) => <i key={m.id} className={lop[m.id]} style={{ width: phanTram(rr.muc[m.id], rr.tong).replace(",", ".") }}/>)}
+          {MUC_RUI_RO.toReversed().map((m) => <i key={m.id} className={lop[m.id]} style={{ width: phanTram(rr.muc[m.id], rr.tong).replace(",", ".") }}/>)}
         </div>
         <ul className="qd-chu-giai">
-          {[...MUC_RUI_RO].reverse().map((m) => <li key={m.id}><i className={lop[m.id]}/><span>{m.ten}</span><b>{integer(rr.muc[m.id])}</b><small>{phanTram(rr.muc[m.id], rr.tong)}</small></li>)}
+          {MUC_RUI_RO.toReversed().map((m) => <li key={m.id}><i className={lop[m.id]}/><span>{m.ten}</span><b>{integer(rr.muc[m.id])}</b><small>{phanTram(rr.muc[m.id], rr.tong)}</small></li>)}
         </ul>
       </div>
       <div className="qd-rr-dh">
         <h3>Dấu hiệu rủi ro thường gặp<small>số doanh nghiệp có dấu hiệu</small></h3>
         <ul className="qd-thanh-ds is-tinh">{rr.dauHieu.map((x) => <li key={x.ten} title={`${x.ten}: ${integer(x.so)} DN`}>
           <span className="qd-thanh-ten">{x.ten}</span>
-          <span className="qd-thanh-ray"><i style={{ width: `${(x.so / maxDH) * 100}%` }}/></span>
+          <span className="qd-thanh-ray"><i style={{ transform: `scaleX(${x.so / maxDH})` }}/></span>
           <span className="qd-thanh-so"><b>{integer(x.so)}</b><small>{phanTram(x.so, rr.tong)}</small></span>
         </li>)}</ul>
       </div>
@@ -206,7 +206,7 @@ function Cot({ du }: { du: { nam: string; so: number }[] }) {
   return <div className="qd-cot" role="img" aria-label={du.map((d) => `${d.nam}: ${tyDong(d.so)} tỷ đồng`).join("; ")}>
     {du.map((d, i) => <div key={d.nam} className="qd-cot-muc" title={`${d.nam}: ${tyDong(d.so)} tỷ đồng`}>
       <b>{integer(d.so)}</b>
-      <span className="qd-cot-ray"><i className={i === du.length - 1 ? "is-do-dang" : undefined} style={{ height: `${(d.so / max) * 100}%` }}/></span>
+      <span className="qd-cot-ray"><i className={i === du.length - 1 ? "is-do-dang" : undefined} style={{ transform: `scaleY(${d.so / max})` }}/></span>
       <small>{d.nam}</small>
     </div>)}
   </div>;
@@ -246,7 +246,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
     if (q) tat = tat.filter((d) => d.mst.includes(q) || d.ten.toLowerCase().includes(q));
     if (xep) {
       const lay = (d: (typeof tat)[number]) => xep.cot === "nam" ? d.namThanhLap : d[xep.cot];
-      tat = [...tat].sort((a, b) => (lay(a) - lay(b)) * (xep.giam ? -1 : 1));
+      tat = tat.toSorted((a, b) => (lay(a) - lay(b)) * (xep.giam ? -1 : 1));
     }
     return { tong: tat.length, dong: tat.slice((trang - 1) * CO_TRANG, trang * CO_TRANG) };
   }, [pv, loc, trang, q, xep, canDung, vuot, tongLoc]);
@@ -278,6 +278,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
   return <CaseLayout
     presentation="drawer"
     label={chon ? `Hồ sơ doanh nghiệp ${chon.mst}` : "Hồ sơ doanh nghiệp"}
+    tieuDeHien={chon ? "Hồ sơ doanh nghiệp" : undefined}
     mobileOpen={Boolean(chon)}
     onClose={dong}
     detail={chon ? <HoSoDN d={chon}/> : null}

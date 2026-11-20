@@ -353,6 +353,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
   return <><CaseLayout
     presentation="drawer"
     label={dnMo ? `Hồ sơ NNT · ${dnMo.ten}` : "Hồ sơ người nộp thuế"}
+    tieuDeHien={dnMo ? "Hồ sơ NNT" : undefined}
     mobileOpen={Boolean(dnMo)}
     onClose={dongHoSo}
     detail={dnMo ? <HoSoDN d={dnMo} thang={thangKy}/> : null}

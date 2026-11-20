@@ -124,7 +124,7 @@ export function CuocGoi({ ky, onGan }: { ky: KyQL4; onGan: () => void }) {
     <td className="num">{giay(thoiGianTB(g as HangCuocGoi))}</td>
   </>;
 
-  const theoNho = <T extends GopDonVi | HangCuocGoi>(x: T[]) => [...x].sort((a, b) => b.denKhongTraLoi - a.denKhongTraLoi);
+  const theoNho = <T extends GopDonVi | HangCuocGoi>(x: T[]) => x.toSorted((a, b) => b.denKhongTraLoi - a.denKhongTraLoi);
   const donViThuong = theoNho(gop.filter((g) => g.donVi !== CHUA_XAC_DINH));
   const donViLac = gop.find((g) => g.donVi === CHUA_XAC_DINH);
   const tkThuong = theoNho(ds.filter((h) => h.donVi !== CHUA_XAC_DINH));

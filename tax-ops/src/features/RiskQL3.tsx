@@ -41,7 +41,7 @@ const pt = (x: number) => hienTyLe(Number.isFinite(x) && x >= 0 ? x : null);
 
 function TyLe({ x, nguong = 1 }: { x: number; nguong?: number }) {
   const w = Math.max(0, Math.min(1, Number.isFinite(x) ? x / nguong : 0)) * 100;
-  return <span className="ty-le"><b>{pt(x)}</b><i><span style={{ width: `${w}%` }}/></i></span>;
+  return <span className="ty-le"><b>{pt(x)}</b><i><span style={{ transform: `scaleX(${w / 100})` }}/></i></span>;
 }
 
 const SO = (v: number) => <span className="num">{integer(v)}</span>;
@@ -288,7 +288,7 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
         <ol className="xep-hang">{trangThai.map((x) => <li key={x.nhan}>
           <span className="xh-ten">{x.nhan}</span>
           <span className="xh-so">{integer(x.v)} · {pt2(tongTT ? x.v / tongTT : 0)}</span>
-          <span className="xh-thanh"><i style={{ width: `${tongTT ? Math.max(1, (x.v / tongTT) * 100) : 0}%` }}/></span>
+          <span className="xh-thanh"><i style={{ transform: `scaleX(${tongTT ? Math.max(.01, x.v / tongTT) : 0})` }}/></span>
         </li>)}</ol>
       </Panel>
     </div>
@@ -297,7 +297,7 @@ function TongQuanQL3({ toan, trongPhamVi, oCua, ky }: {
       <ol className="xep-hang">{xep.map((x) => <li key={x.dv.id}>
         <span className="xh-ten">{x.dv.ten}{x.duoiKPI && <em className="xh-co"> dưới KPI</em>}</span>
         <span className="xh-so">{pt2(x.x)}</span>
-        <span className="xh-thanh"><i className={x.duoiKPI ? "is-canh-bao" : undefined} style={{ width: `${Math.max(2, x.x * 100)}%` }}/></span>
+        <span className="xh-thanh"><i className={x.duoiKPI ? "is-canh-bao" : undefined} style={{ transform: `scaleX(${Math.max(.02, x.x)})` }}/></span>
       </li>)}</ol>
     </Panel>
   </>;

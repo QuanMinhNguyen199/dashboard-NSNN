@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { Button, Icon, NhomNut, TableWrap, type IconName } from "@/components/ui";
 import { GhiChu } from "@/components/GhiChu";
+import { ExportButton } from "@/components/ExportButton";
 import type { DongDN } from "@/data/qldn";
 import {
-  CUA_SO, NGUONG_LECH, dauCap, doiChieuQHNS, giaTri, laHaNoi, ngayDoiChieu,
+  CUA_SO, NGUONG_LECH, NHAN_CACH, dauCap, doiChieuQHNS, giaTri, laHaNoi, nhanBoSung, ngayDoiChieu,
   type Cap, type DongSoi, type KetQuaDoiChieu,
 } from "@/data/doiChieuQHNS";
 import { moTaGD } from "@/data/danhMucTMS";
 import { xuatThongBaoDoiChieu } from "@/domain/thongBaoDoiChieuWord";
+import { xuatExcelDoiChieu } from "@/domain/doiChieuExcel";
 
 /*
   Đối chiếu nghĩa vụ từ khi thành lập — Biểu QHNS. Đứng ngay dưới bảng Quan
@@ -26,6 +28,13 @@ import { xuatThongBaoDoiChieu } from "@/domain/thongBaoDoiChieuWord";
   • Gợi ý chỗ tìm thành các bước theo thứ tự (eDoc → tờ khai treo → mời DN)
     và một dòng "đọc nhanh" khi biên bản đã nói rõ cách đọc.
   • Chỉ báo lũy kế: Tổng quan TMS so với cộng từ chi tiết (sheet HETHONG).
+
+  Bổ sung 20/11/2026 theo biên bản 18/11 (folder 20-11):
+  • Bắt cặp theo công cụ VBA: cắt lũy kế, vòng 1 lệch dưới 100.000 đồng rồi
+    cặp cùng số tiền, "treo", từ vòng 2 chỉ C2 và TK — xem `data/doiChieuQHNS`.
+  • Năm bước tìm nguyên nhân thay ba bước cũ; bước tự tìm được ghi ngay
+    trên dòng.
+  • Xuất Excel kết quả: dòng còn lệch tô đỏ, kèm gợi ý và nguyên nhân.
 */
 
 type XuLy = "CHUA" | "GIAI_THICH" | "HOI_NNT";
@@ -64,7 +73,7 @@ function SoDaGhep({ cap }: { cap: Cap[] }) {
           const dau = c.pn[0] ?? c.dn[0];
           const tien = c.pn.length ? c.pn.reduce((a, x) => a + x.soTien, 0) : c.dn.reduce((a, x) => a + Math.abs(x.soTien), 0) / 2;
           const nop = c.dn.map((x) => x.ngay.getTime());
-          return <tr key={`${dau.id}-${i}`} title={`Ghép ở vòng ${c.vong}`}>
+          return <tr key={`${dau.id}-${i}`} title={`Vòng ${c.vong}: ${NHAN_CACH[c.cach]}`}>
             <td>{ngayDoiChieu(dau.ngay)}{dau.hanGoc && <small className="qd-dc-gh">hạn nộp {ngayDoiChieu(dau.hanGoc)}</small>}</td>
             <th scope="row">{dau.moTa}{c.pn.length > 1 && ` + ${c.pn.length - 1} khoản`}
               <small className="qd-dc-ma-day">{[...c.pn, ...c.dn].map((x, j) => <Ma key={j} ma={x.ma}/>)}</small>
@@ -126,11 +135,12 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
   };
 
   return <section className="qd-dn-khoi qd-dc" id="qd-dc-khoi" aria-labelledby="qd-dc">
-    <h3 id="qd-dc"><span>Đối chiếu nghĩa vụ<GhiChu tieuDe="Biên bản 11/11/2026">
-      {/* Nguyên văn biên bản 11/11/2026: §3 điểm 5, §2.1 bước 3, §2.6. */}
+    <h3 id="qd-dc"><span>Đối chiếu nghĩa vụ<GhiChu tieuDe="Logic bắt cặp">
+      {/* Biên bản 11/11/2026 §3 điểm 5; biên bản 18/11/2026 §2.2. */}
       <p>Bung toàn bộ giao dịch theo tiểu mục, âm/dương giữ nguyên, cộng trừ; sắp theo hạn nộp, có ngày gia hạn thì lấy ngày gia hạn.</p>
-      <p>Vòng 1: khoản nào khớp 1-1 thì nhấc ra. Vòng 2 trở đi: ghép 2–4 khoản gần nhau cộng lại, khớp thì nhấc tiếp.</p>
-      <p>Công cụ VBA hiện có quét trong cửa sổ khoảng {CUA_SO} dòng, khớp cặp, loại dòng trùng rồi chạy lại nhiều vòng.</p>
+      <p>Tại điểm lũy kế bằng 0 thì đoạn trước đã khớp, cắt bỏ để giảm số dòng.</p>
+      <p>Vòng 1: ghép các dòng liền kề, nếu tổng lệch dưới {dong(NGUONG_LECH)} đồng thì coi là bù trừ được. Nếu không bù được: tìm cặp dòng âm – dương cùng số tiền; vẫn không ghép được thì đặt trạng thái "treo".</p>
+      <p>Từ vòng 2: ghép riêng cặp C2 (chứng từ nộp) và TK (tờ khai), tối đa {CUA_SO} dòng liền kề, tổng bằng 0 thì coi là bù được. Các dòng còn lại được tô đỏ.</p>
     </GhiChu><GhiChu tieuDe="Ký hiệu giao dịch">
       <dl className="qd-dc-ky-hieu">{kq.kyHieu.map((m) => <div key={m}><dt>{m}</dt><dd>{moTaGD(m)}</dd></div>)}</dl>
     </GhiChu></span><small>đồng</small></h3>
@@ -145,7 +155,9 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
       <span className={`qd-dc-ghep${kq.canSoi.length ? " is-con" : ""}`} title={`Bắt cặp tự động ${dong(soDongGhep)}/${dong(kq.soDong)} dòng sau ${kq.soVong} vòng; ${kq.nhomNhieu} nhóm ghép từ 3 khoản trở lên`}>
         <Icon name={kq.canSoi.length ? "alert" : "check"} size={14}/>Bắt cặp {dong(soDongGhep)}/{dong(kq.soDong)} dòng · {kq.soVong} vòng
       </span>
-      {kq.capTheoNguong > 0 && <span className="qd-dc-ghep is-phu" title={`${kq.capTheoNguong} nhóm ghép theo ngưỡng lệch ${dong(NGUONG_LECH)} đồng; còn chênh ${dong(kq.tongLech)} đồng`}>±{dong(NGUONG_LECH)} đ · {kq.capTheoNguong} nhóm</span>}
+      {kq.doanLuyKe > 0 && <span className="qd-dc-ghep is-phu" title={`${kq.doanLuyKe} đoạn cắt tại điểm lũy kế bằng 0, gồm ${dong(kq.dongLuyKe)} dòng`}>Lũy kế: cắt {dong(kq.dongLuyKe)} dòng</span>}
+      {kq.capTheoNguong > 0 && <span className="qd-dc-ghep is-phu" title={`Vòng 1: ${kq.capTheoNguong} nhóm ghép theo ngưỡng lệch dưới ${dong(NGUONG_LECH)} đồng; còn chênh ${dong(kq.tongLech)} đồng`}>&lt;{dong(NGUONG_LECH)} đ · {kq.capTheoNguong} nhóm</span>}
+      {kq.soTreo > 0 && <span className="qd-dc-ghep is-phu" title="Dòng chưa ghép được sau vòng 1, chuyển sang vòng 2 (ghép C2 và TK)">Treo sau vòng 1: {dong(kq.soTreo)} dòng</span>}
       {kq.soGiaHan > 0 && <span className="qd-dc-ghep is-phu">{kq.soGiaHan} kỳ gia hạn</span>}
       {/* Cột của sheet HETHONG (công cụ RSNT_GTGT_CUC): Lũy kế TQ, Lũy kế File, KHỚP. */}
       <span className={`qd-dc-ghep ${lechLK.length ? "is-con" : "is-phu"}`}
@@ -179,9 +191,10 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
             <span className="qd-dn-ngay">{ngayDoiChieu(x.ngay)}{x.hanGoc && <small className="qd-dc-gh">gia hạn</small>}</span>
             <span className="qd-dc-noi">
               <strong><span className={`qd-dc-loai is-${x.loai.toLowerCase()}`} title={l.day} aria-hidden="true"><Icon name={l.icon} size={13}/></span>{l.nhan}<span className="sr-only">: {l.day}</span>
-                <GhiChu tieuDe="Tra theo thứ tự"><ol className="qd-dc-buoc-tra">{x.buoc.map((b) => <li key={b}>{b}</li>)}</ol></GhiChu></strong>
+                <GhiChu tieuDe="Các bước tìm nguyên nhân"><ol className="qd-dc-buoc-tra">{x.buoc.map((b) => <li key={b}>{b}</li>)}</ol></GhiChu></strong>
               <small><Ma ma={x.ma}/> {x.moTa} · TM {x.tieuMuc} · CQT {tenCQT(x)}</small>
-              {x.docNhanh && <small className={`qd-dc-doc is-${x.docNhanh.muc}`}><Icon name={x.docNhanh.muc === "cao" ? "alert" : "check"} size={12}/>{x.docNhanh.nhan}</small>}
+              {x.boSung && <small>{nhanBoSung(x.boSung)}</small>}
+              {x.docNhanh && <small className={`qd-dc-doc is-${x.docNhanh.muc}`}><Icon name={x.docNhanh.muc === "cao" ? "alert" : "check"} size={12}/>{x.docNhanh.buoc ? `Bước ${x.docNhanh.buoc}: ` : ""}{x.docNhanh.nhan}</small>}
             </span>
             <span className="qd-dc-cot-phai">
               <span className={`qd-dc-tien ${x.chieu === "PN" ? "is-pn" : "is-dn"}`}>{dong(x.soTien)}</span>
@@ -197,6 +210,10 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
       <div className="qd-dc-thao-tac">
         <div className="qd-dc-o">
           <Button kind="primary" icon="file" disabled={!hoiNNT.length || dangXuat} aria-busy={dangXuat} title={hoiNNT.length ? undefined : "Chọn Hỏi NNT ở khoản cần hỏi để đưa vào thông báo"} onClick={xuat}>Xuất thông báo gửi NNT</Button>
+        </div>
+        {/* Biên bản 18/11/2026 §2.3: "file Excel highlight các dòng còn lệch kèm gợi ý và nguyên nhân". */}
+        <div className="qd-dc-o">
+          <ExportButton onExport={() => xuatExcelDoiChieu(d, kq)}>Xuất Excel kết quả</ExportButton>
         </div>
         <span className="qd-dc-o-ghi" aria-live="polite">{hoiNNT.length ? <><Icon name="mail" size={13}/>{hoiNNT.length} khoản sẽ vào thông báo</> : null}</span>
       </div>

@@ -25,18 +25,35 @@ const tron = Math.round;
 
 /* ---------- Xử phạt VPHC (mẫu TONG HOP, cột C–I) ---------- */
 
-export interface SoXP { phai: number; qd: number; canhCao: number }
+/*
+  Biên bản 18/11/2026 §2.1 (folder 20-11):
+  • "Không xử phạt" là danh sách cán bộ tải lên (đang theo dõi thủ công ngoài
+    hệ thống); "Chưa xử phạt" = tổng − đã xử phạt − không xử phạt.
+  • Số ngày xử phạt = ngày trên quyết định − ngày trên biên bản, không tính từ
+    ngày nộp tờ khai. `ngayBB` là tổng số ngày ấy của mọi quyết định (phạt và
+    cảnh cáo), để cộng được qua đơn vị rồi mới chia bình quân.
+  Số "không xử phạt" ở đây là số ĐẶT RA thay cho danh sách tải lên.
+*/
+export interface SoXP { phai: number; qd: number; canhCao: number; khong: number; ngayBB: number }
 export const daXP = (s: SoXP) => s.qd + s.canhCao;
+export const chuaXP = (s: SoXP) => Math.max(0, s.phai - daXP(s) - s.khong);
+/** Số ngày bình quân từ biên bản đến quyết định; `null` khi chưa có quyết định. */
+export const ngayXPBinhQuan = (s: SoXP) => (daXP(s) ? s.ngayBB / daXP(s) : null);
 
 /** Tử/mẫu của chỉ tiêu 20 — "Số đã xử phạt / Tổng số phải xử phạt" — tách đã xử phạt thành quyết định phạt và cảnh cáo. */
 export function soXP(dvId: string, thang: number): SoXP {
   const c = capCua(ctCua("xp"), dvId, thang);
   const r = prng(hatCua(thang, "ql5-xp", dvId));
   const canhCao = tron(c.tu * r() * 0.03);
-  return { phai: c.mau, qd: c.tu - canhCao, canhCao };
+  /* Hạt riêng: thêm hai số mới không làm đổi các số cũ đã gieo. */
+  const r2 = prng(hatCua(thang, "ql5-xp-1811", dvId));
+  const khong = tron((c.mau - c.tu) * (0.15 + r2() * 0.35));
+  const ngayBB = tron(c.tu * (5 + r2() * 9));
+  return { phai: c.mau, qd: c.tu - canhCao, canhCao, khong, ngayBB };
 }
 export const congXP = (ids: string[], thang: number): SoXP => ids.map((id) => soXP(id, thang))
-  .reduce((a, b) => ({ phai: a.phai + b.phai, qd: a.qd + b.qd, canhCao: a.canhCao + b.canhCao }), { phai: 0, qd: 0, canhCao: 0 });
+  .reduce((a, b) => ({ phai: a.phai + b.phai, qd: a.qd + b.qd, canhCao: a.canhCao + b.canhCao, khong: a.khong + b.khong, ngayBB: a.ngayBB + b.ngayBB }),
+    { phai: 0, qd: 0, canhCao: 0, khong: 0, ngayBB: 0 });
 
 /* ---------- Đóng mã, giải thể (mẫu BC dong MST, cột C–L) ---------- */
 

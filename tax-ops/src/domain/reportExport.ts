@@ -28,7 +28,8 @@ export type ReportValue = string | number | null;
   Khi `khuon` có mặt, `exportExcel` ghi thẳng nó và bỏ qua `headers`/`rows` —
   hai trường ấy vẫn giữ để bản Word và các chỗ đọc chung không phải phân nhánh.
 */
-export interface ReportSheet { name: string; title: string; headers: string[]; rows: ReportValue[][]; percent?: number[]; bold?: number[]; unit?: string; khuon?: SheetData; rongCot?: number[]; dongDinh?: number }
+/** `toDo`: chỉ số dòng (trong `rows`) tô nền đỏ — dòng còn lệch của đối chiếu nghĩa vụ. */
+export interface ReportSheet { name: string; title: string; headers: string[]; rows: ReportValue[][]; percent?: number[]; bold?: number[]; unit?: string; khuon?: SheetData; rongCot?: number[]; dongDinh?: number; toDo?: number[] }
 export interface ReportMeta { period: string; scope: string; actor: string; status: ReportStatus }
 export const statusLabel: Record<ReportStatus, string> = { DRAFT: "Nháp", REVIEWED: "Đã rà soát", APPROVED: "Đã duyệt", AMEND: "Đang điều chỉnh", BLOCKED: "Chưa đủ dữ liệu" };
 const ratio = (a: number, b: number) => b ? a / b : null;
