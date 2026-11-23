@@ -128,6 +128,10 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
   const thua = kq.conPhaiNop < 0;
   const soDongGhep = kq.capDaGhep.reduce((a, c) => a + c.pn.length + c.dn.length, 0);
   const lechLK = kq.luyKe.filter((x) => x.tms !== x.file);
+  /* Bước tìm nguyên nhân giống nhau cho mọi dòng thừa/thiếu → một ⓘ ở tiêu đề. Tiểu mục, CQT giống nhau ở mọi dòng → nói một lần. */
+  const buocChung = kq.canSoi.find((x) => x.loai !== "CHUYEN_DOI")?.buoc;
+  const chungTM = new Set(kq.canSoi.map((x) => x.tieuMuc)).size === 1 ? kq.canSoi[0]?.tieuMuc : null;
+  const chungCQT = new Set(kq.canSoi.map((x) => tenCQT(x))).size === 1 && kq.canSoi[0] ? (kq.canSoi[0].cqt ? `CQT ${kq.canSoi[0].cqt}` : kq.canSoi[0].tenCQT) : null;
 
   const xuat = async () => {
     datDangXuat(true);
@@ -135,13 +139,14 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
   };
 
   return <section className="qd-dn-khoi qd-dc" id="qd-dc-khoi" aria-labelledby="qd-dc">
-    <h3 id="qd-dc"><span>Đối chiếu nghĩa vụ<GhiChu tieuDe="Logic bắt cặp">
+    <h3 id="qd-dc"><span>Đối chiếu nghĩa vụ<GhiChu tieuDe="Cách đọc">
       {/* Biên bản 11/11/2026 §3 điểm 5; biên bản 18/11/2026 §2.2. */}
       <p>Bung toàn bộ giao dịch theo tiểu mục, âm/dương giữ nguyên, cộng trừ; sắp theo hạn nộp, có ngày gia hạn thì lấy ngày gia hạn.</p>
       <p>Tại điểm lũy kế bằng 0 thì đoạn trước đã khớp, cắt bỏ để giảm số dòng.</p>
       <p>Vòng 1: ghép các dòng liền kề, nếu tổng lệch dưới {dong(NGUONG_LECH)} đồng thì coi là bù trừ được. Nếu không bù được: tìm cặp dòng âm – dương cùng số tiền; vẫn không ghép được thì đặt trạng thái "treo".</p>
       <p>Từ vòng 2: ghép riêng cặp C2 (chứng từ nộp) và TK (tờ khai), tối đa {CUA_SO} dòng liền kề, tổng bằng 0 thì coi là bù được. Các dòng còn lại được tô đỏ.</p>
-    </GhiChu><GhiChu tieuDe="Ký hiệu giao dịch">
+      {/* Một ⓘ cho cả khối (23/11/2026): hai ⓘ liền nhau ở tiêu đề là chú thích chồng chú thích. */}
+      <strong className="qd-dc-ghi-tieu">Ký hiệu giao dịch</strong>
       <dl className="qd-dc-ky-hieu">{kq.kyHieu.map((m) => <div key={m}><dt>{m}</dt><dd>{moTaGD(m)}</dd></div>)}</dl>
     </GhiChu></span><small>đồng</small></h3>
 
@@ -152,18 +157,14 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
     </dl>
 
     <p className="qd-dc-trang-thai">
-      <span className={`qd-dc-ghep${kq.canSoi.length ? " is-con" : ""}`} title={`Bắt cặp tự động ${dong(soDongGhep)}/${dong(kq.soDong)} dòng sau ${kq.soVong} vòng; ${kq.nhomNhieu} nhóm ghép từ 3 khoản trở lên`}>
+      <span className={`qd-dc-ghep${kq.canSoi.length ? " is-con" : ""}`} title={`Bắt cặp tự động ${dong(soDongGhep)}/${dong(kq.soDong)} dòng sau ${kq.soVong} vòng${kq.dongLuyKe ? `; lũy kế cắt ${dong(kq.dongLuyKe)} dòng` : ""}${kq.capTheoNguong ? `; ${kq.capTheoNguong} nhóm lệch dưới ${dong(NGUONG_LECH)} đ` : ""}${kq.soTreo ? `; ${dong(kq.soTreo)} dòng treo sau vòng 1` : ""}${kq.soGiaHan ? `; ${kq.soGiaHan} kỳ gia hạn` : ""}; ${kq.nhomNhieu} nhóm ghép từ 3 khoản trở lên`}>
         <Icon name={kq.canSoi.length ? "alert" : "check"} size={14}/>Bắt cặp {dong(soDongGhep)}/{dong(kq.soDong)} dòng · {kq.soVong} vòng
       </span>
-      {kq.doanLuyKe > 0 && <span className="qd-dc-ghep is-phu" title={`${kq.doanLuyKe} đoạn cắt tại điểm lũy kế bằng 0, gồm ${dong(kq.dongLuyKe)} dòng`}>Lũy kế: cắt {dong(kq.dongLuyKe)} dòng</span>}
-      {kq.capTheoNguong > 0 && <span className="qd-dc-ghep is-phu" title={`Vòng 1: ${kq.capTheoNguong} nhóm ghép theo ngưỡng lệch dưới ${dong(NGUONG_LECH)} đồng; còn chênh ${dong(kq.tongLech)} đồng`}>&lt;{dong(NGUONG_LECH)} đ · {kq.capTheoNguong} nhóm</span>}
-      {kq.soTreo > 0 && <span className="qd-dc-ghep is-phu" title="Dòng chưa ghép được sau vòng 1, chuyển sang vòng 2 (ghép C2 và TK)">Treo sau vòng 1: {dong(kq.soTreo)} dòng</span>}
-      {kq.soGiaHan > 0 && <span className="qd-dc-ghep is-phu">{kq.soGiaHan} kỳ gia hạn</span>}
       {/* Cột của sheet HETHONG (công cụ RSNT_GTGT_CUC): Lũy kế TQ, Lũy kế File, KHỚP. */}
-      <span className={`qd-dc-ghep ${lechLK.length ? "is-con" : "is-phu"}`}
+      {lechLK.length > 0 && <span className="qd-dc-ghep is-con"
         title={kq.luyKe.map((x) => `${x.tieuMuc} · Lũy kế TQ ${dong(x.tms)} · Lũy kế File ${dong(x.file)}`).join("; ")}>
-        <Icon name={lechLK.length ? "alert" : "check"} size={14}/>{lechLK.length ? `Lũy kế TQ – File: lệch ${lechLK.map((x) => x.tieuMuc).join(", ")}` : "Lũy kế TQ – File: khớp"}
-      </span>
+        <Icon name="alert" size={14}/>Lũy kế TQ – File: lệch {lechLK.map((x) => x.tieuMuc).join(", ")}
+      </span>}
     </p>
 
     {kq.phanBo.map((p) => <p key={p.tinh} className="qd-dc-phan-bo" role="note">
@@ -174,14 +175,16 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
 
     {kq.canSoi.length > 0 && <>
       <div className="qd-dc-soi-dau">
-        <h4>Dòng cần soi <span className="qd-dc-dem">{kq.canSoi.length}</span></h4>
+        <h4>Dòng cần soi
+          {buocChung && <GhiChu tieuDe="Các bước tìm nguyên nhân"><ol className="qd-dc-buoc-tra">{buocChung.map((b) => <li key={b}>{b}</li>)}</ol></GhiChu>}</h4>
         <NhomNut<Buoc> className="qd-dc-buoc" label="Cách xem dòng cần soi" value={buoc} onChange={datBuoc}
           options={[
             /* Nguyên văn biên bản 13/11/2026 §2.2 (Đối chiếu nhiều bước). */
             { value: "DS", label: "Bước 1", title: "Lọc các tờ khai và số nộp khớp nhau, tách các tờ khai lệch chưa có chứng từ" },
             { value: "XOAY", label: "Bước 2", title: "Xoay lại cột và hàng để xem chứng từ phân bổ, nộp nhầm và các nguyên nhân khác" },
           ]}/>
-        <span className="qd-dc-soi-con">{conLai ? `${conLai} chưa xử lý` : "đã xử lý hết"}</span>
+        {/* Phần chung của mọi dòng nói một lần; số "chưa xử lý" chỉ khi đã xử lý một phần. */}
+        <span className="qd-dc-soi-con">{[chungTM && `TM ${chungTM}`, chungCQT, conLai === kq.canSoi.length ? "" : conLai ? `${conLai} chưa xử lý` : "đã xử lý hết"].filter(Boolean).join(" · ")}</span>
       </div>
       <div className="qd-dc-buoc-noi" key={buoc}>
         {buoc === "XOAY" ? <BangXoay ds={kq.canSoi}/> : <ol className="qd-dc-soi">{kq.canSoi.map((x) => {
@@ -191,8 +194,8 @@ export function DoiChieuQHNS({ d, kq: coSan }: { d: DongDN; kq?: KetQuaDoiChieu 
             <span className="qd-dn-ngay">{ngayDoiChieu(x.ngay)}{x.hanGoc && <small className="qd-dc-gh">gia hạn</small>}</span>
             <span className="qd-dc-noi">
               <strong><span className={`qd-dc-loai is-${x.loai.toLowerCase()}`} title={l.day} aria-hidden="true"><Icon name={l.icon} size={13}/></span>{l.nhan}<span className="sr-only">: {l.day}</span>
-                <GhiChu tieuDe="Các bước tìm nguyên nhân"><ol className="qd-dc-buoc-tra">{x.buoc.map((b) => <li key={b}>{b}</li>)}</ol></GhiChu></strong>
-              <small><Ma ma={x.ma}/> {x.moTa} · TM {x.tieuMuc} · CQT {tenCQT(x)}</small>
+                {x.loai === "CHUYEN_DOI" && <GhiChu tieuDe="Các bước tìm nguyên nhân"><ol className="qd-dc-buoc-tra">{x.buoc.map((b) => <li key={b}>{b}</li>)}</ol></GhiChu>}</strong>
+              <small><Ma ma={x.ma}/> {x.moTa}{!chungTM && ` · TM ${x.tieuMuc}`}{!chungCQT && ` · CQT ${tenCQT(x)}`}</small>
               {x.boSung && <small>{nhanBoSung(x.boSung)}</small>}
               {x.docNhanh && <small className={`qd-dc-doc is-${x.docNhanh.muc}`}><Icon name={x.docNhanh.muc === "cao" ? "alert" : "check"} size={12}/>{x.docNhanh.buoc ? `Bước ${x.docNhanh.buoc}: ` : ""}{x.docNhanh.nhan}</small>}
             </span>

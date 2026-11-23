@@ -107,6 +107,8 @@ function QuanHeNganSach({ ds, thang }: { ds: DongNganSach[]; thang: number }) {
   const tong = ds.reduce((a, x) => ({ noDauNam: a.noDauNam + x.noDauNam, phatSinh: a.phatSinh + x.phatSinh, daNop: a.daNop + x.daNop, conNo: a.conNo + x.conNo, thua: a.thua + x.thua }),
     { noDauNam: 0, phatSinh: 0, daNop: 0, conNo: 0, thua: 0 });
   const chuaRa = ds.filter((x) => x.raSoat === "CHUA").length;
+  /* Trạng thái rà soát đúng cho mọi dòng thừa thì dòng tóm tắt đã nói một lần — chỉ gắn nhãn từng dòng khi các dòng khác nhau (23/11/2026). */
+  const nhanTungDong = new Set(ds.filter((x) => x.thua).map((x) => x.raSoat)).size > 1;
   const den = ngayVN(new Date(2026, thang, 0));
   return <section className="qd-dn-khoi" aria-labelledby="qd-dn-ns">
     <h3 id="qd-dn-ns"><span>Quan hệ ngân sách<GhiChu tieuDe="Cách đọc bảng">Mỗi dòng: nợ đầu năm + phát sinh − đã nộp = còn nợ − nộp thừa. Cột và cách rà soát nộp thừa chờ nghiệp vụ chốt (biên bản 05/11/2026, việc 1).</GhiChu></span><small>đến {den} · triệu đồng</small></h3>
@@ -129,13 +131,13 @@ function QuanHeNganSach({ ds, thang }: { ds: DongNganSach[]; thang: number }) {
           <th scope="col" className="num">Nộp thừa</th>
         </tr></thead>
         <tbody>{ds.map((x) => <tr key={x.tieuMuc}>
-          <th scope="row">{x.ten}<small>Tiểu mục {x.tieuMuc}</small></th>
+          <th scope="row">{x.ten}<small className="qd-ns-ma">{x.tieuMuc}</small></th>
           <td className="num">{trd(x.noDauNam)}</td>
           <td className="num">{trd(x.phatSinh)}</td>
           <td className="num">{trd(x.daNop)}</td>
           <td className="num">{x.conNo ? <strong className="is-xau">{integer(x.conNo)}</strong> : <span className="cell-empty">0</span>}</td>
           <td className="num">{x.thua
-            ? <><strong>{integer(x.thua)}</strong><small className={`qd-ns-rs is-${x.raSoat!.toLowerCase()}`}>{NHAN_RA_SOAT[x.raSoat!]}</small>{x.phanBo && <small className="qd-ns-rs is-chua">{integer(x.phanBo.soTien)} tại {x.phanBo.tinh}</small>}</>
+            ? <><strong>{integer(x.thua)}</strong>{nhanTungDong && <small className={`qd-ns-rs is-${x.raSoat!.toLowerCase()}`}>{NHAN_RA_SOAT[x.raSoat!]}</small>}{x.phanBo && <small className="qd-ns-rs is-chua">{integer(x.phanBo.soTien)} tại {x.phanBo.tinh}</small>}</>
             : <span className="cell-empty">0</span>}</td>
         </tr>)}</tbody>
         <tfoot><tr>
@@ -155,7 +157,7 @@ function QuanHeNganSach({ ds, thang }: { ds: DongNganSach[]; thang: number }) {
   Hàng chỉ báo đầu hồ sơ (gọn chữ 11/11/2026, người dùng: "danh sách chi
   tiết quá tải thông tin"). Hồ sơ cao khoảng 3.000px; trước đây phải cuộn hết
   mới biết DN có vấn đề gì. Bảy ô CỐ ĐỊNH, cùng thứ tự với mọi DN — DN không
-  có việc ở mục nào thì ô ấy xám có dấu ✓, không biến mất (fixed-slots).
+  có việc ở mục nào thì ô ấy lùi xuống (chữ nhạt, không icon — 23/11/2026), không biến mất (fixed-slots).
   Bấm một ô là cuộn tới khối của nó.
 */
 type ChiBao = { ten: string; gia: string; muc: "xau" | "vang" | "ok"; toi: string; icon: IconName; day: string };
@@ -188,6 +190,9 @@ function ThuGon({ id, tieuDe, dem, trong, children }: { id: string; tieuDe: stri
   </section>;
 }
 
+/* Ô chưa có giá trị: dấu gạch nhạt — ô vẫn đứng đúng chỗ (biên bản 13/11) nhưng không kéo mắt như ô có dữ liệu. */
+const TRONG = <span className="cell-empty">—</span>;
+
 export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
   const hs = useMemo(() => hoSoDN(d), [d]);
   const nv = useMemo(() => nghiepVuDN(d, thang), [d, thang]);
@@ -215,9 +220,9 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
       { label: "Trạng thái", value: ttTen },
       /* Bốn trường của biên bản 13/11/2026 §2.3 — ô cố định cho mọi DN, không có thì "—". */
       { label: "Ngày thành lập", value: ngayVN(moc.ngayThanhLap) },
-      { label: "Ngày bỏ trốn", value: moc.ngayBoTron ? `${ngayVN(moc.ngayBoTron)} · QĐ ${moc.soQD}` : "—" },
-      { label: "Ngày giải thể hoặc chuyển trạng thái 03", value: moc.ngayGiaiThe ? ngayVN(moc.ngayGiaiThe) : "—" },
-      { label: "Ngày dừng hoạt động", value: moc.ngayDung ? ngayVN(moc.ngayDung) : "—" },
+      { label: "Ngày bỏ trốn", value: moc.ngayBoTron ? `${ngayVN(moc.ngayBoTron)} · QĐ ${moc.soQD}` : TRONG },
+      { label: "Ngày giải thể hoặc chuyển trạng thái 03", value: moc.ngayGiaiThe ? ngayVN(moc.ngayGiaiThe) : TRONG },
+      { label: "Ngày dừng hoạt động", value: moc.ngayDung ? ngayVN(moc.ngayDung) : TRONG },
       { label: "Đơn vị quản lý", value: d.donVi },
       { label: "Cán bộ quản lý", value: d.canBo },
       { label: "Ngày phân công", value: ngayVN(nv.ngayPhanCong) },
@@ -230,7 +235,7 @@ export function HoSoDN({ d, thang = 9 }: { d: DongDN; thang?: number }) {
     <DoiChieuQHNS key={d.khoa} d={d} kq={dc}/>
 
     <section className="qd-dn-khoi" id="qd-dn-nv-khoi" aria-labelledby="qd-dn-nv">
-      <h3 id="qd-dn-nv">Tình hình theo nghiệp vụ<small>đến hết tháng {thang}/2026</small></h3>
+      <h3 id="qd-dn-nv">Tình hình theo nghiệp vụ</h3>
       <KhoiNghiepVu nv={nv} soCuongChe={hs.cuongChe.filter((c) => c.conHieuLuc).length}/>
     </section>
 

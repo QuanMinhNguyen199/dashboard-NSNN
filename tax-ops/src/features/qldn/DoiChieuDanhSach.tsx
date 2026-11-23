@@ -118,7 +118,7 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
           <thead><tr>
             <th scope="col">Người nộp thuế</th>
             <th scope="col">Cơ quan thuế</th>
-            {!pv.canBo && !theoCanBo && <th scope="col">Cán bộ</th>}
+            {!pv.canBo && !theoCanBo && <th scope="col" className="dc-cot-cb">Cán bộ</th>}
             <th scope="col" className="num">Thừa theo S1</th>
             <th scope="col" className="num">Thiếu phát sinh phải nộp</th>
             <th scope="col" className="num">Thiếu khoản đã nộp</th>
@@ -130,12 +130,12 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
             return <tr key={x.d.mst} className={`qd-viec${mo === x.d.mst ? " is-selected" : ""}`} onClick={(e) => { nutDN.current = e.currentTarget.querySelector("button"); cuonDanhSach.current = e.currentTarget.closest(".case-drawer")?.scrollTop ?? 0; if (!pv.canBo && nhomChon) datChon(nhomChon.id); datMo(x.d.mst); }}>
               <th scope="row"><button type="button" className="row-select" data-dc-mst={x.d.mst}>{x.d.ten}</button><small className="kt-ma">{x.d.mst}</small></th>
               <td>{x.la.cqt}<small className="kt-ma">{tenCQTCua(x.la.cqt)}</small></td>
-              {!pv.canBo && !theoCanBo && <td>{x.canBo.ten}</td>}
+              {!pv.canBo && !theoCanBo && <td className="dc-cot-cb">{x.canBo.ten}</td>}
               <td className="num"><strong>{trieu(x.thuaS1)}</strong></td>
               <td className="num">{trieu(x.thua)}</td>
               <td className="num">{trieu(x.thieu)}</td>
               <td>{nn.nhan ? <span className={`dc-nn is-${nn.muc}`}>{nn.nhan}</span> : <span className="cell-empty">—</span>}</td>
-              <td>{nn.moi(x) || <span className="cell-empty">—</span>}</td>
+              <td>{nn.moi(x) ? <span className={`dc-moi${x.tinh ? " is-khac" : ""}`}>{nn.moi(x)}</span> : <span className="cell-empty">—</span>}</td>
             </tr>;
           })}</tbody>
         </table>
@@ -161,7 +161,7 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
     mobileOpen={Boolean(dangMo || (!pv.canBo && nhomChon))} onClose={dong} detail={chiTiet}>
     {pv.canBo ? danhSach : <>
     <Panel chinh title={`Đối chiếu nghĩa vụ theo ${theoCanBo ? "cán bộ" : "đơn vị"}`}
-      subtitle="Triệu đồng · Chọn cán bộ hoặc đơn vị để xem danh sách doanh nghiệp"
+      subtitle="Triệu đồng"
       tieuDeKem={<GhiChu tieuDe="Biên bản 11/11/2026">
         <p>Sắc thuế ưu tiên: GTGT (tiểu mục 1701) làm trước, tiếp theo TNCN, TNDN. Tạm chưa làm phí, lệ phí.</p>
         <p>Chọn mẫu: lấy doanh nghiệp lớn, nộp thừa lớn nhất trước, từ danh sách nộp thừa đã có (nhóm trên 1 tỷ và trên 500 triệu đồng).</p>

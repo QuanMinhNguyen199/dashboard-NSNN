@@ -1,9 +1,15 @@
 {
-  "name": "Tax Ops — Design System",
+  "name": "Tax Ops — Design System v1.1",
   "id": "tax-ops-design-system-local",
   "api": "1.0.0",
   "main": "code.js",
-  "editorType": ["figma"],
+  "editorType": [
+    "figma"
+  ],
   "documentAccess": "dynamic-page",
-  "networkAccess": { "allowedDomains": ["none"] }
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
 }

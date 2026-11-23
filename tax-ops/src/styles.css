@@ -562,7 +562,8 @@ td { height: 38px; padding: 7px 12px; border-bottom: 1px solid var(--line-soft);
 
 tbody tr.is-selected { background: var(--selected-surface); }
 tbody tr.is-selected td { font-weight: 500; }
-tbody tr:last-child td { border-bottom: 0; }
+/* Hàng cuối không kẻ vạch dưới — cả ô tiêu đề hàng <th scope="row">, nếu không cột đầu còn một đoạn kẻ ngắn lẻ loi (23/11/2026). */
+tbody tr:last-child > :is(td, th) { border-bottom: 0; }
 td strong, td small { display: block; }
 td strong { font-weight: 600; }
 td small { margin-top: 1px; color: var(--ink-3); font-size: .75rem; }
@@ -3941,8 +3942,12 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 /* Danh sách đối chiếu theo cán bộ / đơn vị. */
 .dc-dn-bang { min-width: 980px; }
 .dc-dn-bang th[scope="row"] { min-width: 220px; }
+/* Tên cán bộ nằm một dòng (23/11/2026): bảng giãn theo nội dung (`table-layout: auto`) nên cột bị co tới 64px, "Bùi Ngọc Q" vỡ ba dòng. */
+.dc-dn-bang .dc-cot-cb { white-space: nowrap; }
+/* Đầu cột xuống dòng theo từ: bề ngang cột số do chữ đầu cột một dòng quyết định ("Thiếu phát sinh phải nộp"), đẩy cột cuối ra ngoài ngăn 1240px. */
+.dc-dn-bang thead :is(th, th.num) { white-space: normal; vertical-align: bottom; }
 .dc-dn-bang td:last-child { min-width: 180px; white-space: normal; }
-.dc-nn { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); font-weight: 600; }
+.dc-nn { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); font-weight: 600; text-wrap: balance; }
 .dc-nn::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
 .dc-nn.is-cao::before { background: var(--critical); }
 .dc-nn.is-vua::before { background: var(--warning); }
@@ -3958,6 +3963,9 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .dc-drawer-content .dc-list-panel { border: 0; border-radius: 0; }
 .dc-drawer-content .dc-list-panel > .panel-head { padding: 0 0 16px; }
 .dc-drawer-content .dc-list-panel > .panel-body { padding: 0; }
+/* Thân khối trong ngăn không có đệm, nên vùng cuộn của bảng KHÔNG dùng lề âm -14px để chạm mép khối như ngoài trang:
+   lề âm đẩy bảng ra ngoài khối (overflow: hidden) và cắt mất mép trái cột "Người nộp thuế" (23/11/2026). */
+.dc-drawer-content .dc-list-panel .table-shell { margin-inline: 0; }
 @media (max-width: 900px) {
   .case-drawer:has(> .case-drawer-than > .case-drawer-body > .dc-drawer-content) { width: 100%; }
 }
@@ -3968,7 +3976,7 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 /* #4: ô tiêu đề hàng mang nền riêng của `th` — hàng đang chọn phải phủ cả ô ấy, không bị cắt đôi. */
 /* Tiêu đề hàng trong thân bảng lấy nền của HÀNG (20/11/2026): luật `th` chung tô --surface-soft cho đầu cột,
    rơi cả vào <th scope="row"> và tạo một "đường may" dọc ở mép cột tên. Cột dính có nền riêng, mạnh hơn luật này. */
-.qd-bang tbody th { background: inherit; }
+.qd-bang tbody th { background: inherit; border-bottom-color: var(--line-soft); }
 .qd-bang tbody tr.is-selected > th { background: var(--selected-surface); }
 /*
   Bảng xếp hạng trên điện thoại (20/11/2026, đánh giá impeccable): bản cũ bóp
@@ -4010,3 +4018,99 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .case-drawer:has(.qd-dn) { width: min(760px, 100vw); }
 /* Mức sàn chữ 11px: mũi tên so năm trước trong hồ sơ DN (trước 9px). */
 .qd-dn-bang .qd-dn-chieu { font-size: .6875rem; }
+
+/* =====================================================================
+   Hồ sơ doanh nghiệp — gọn mật độ (23/11/2026, người dùng: "quá nhiều
+   thông tin và chú thích"). Giữ cấu trúc và mọi ô cố định; chỉ đổi cách
+   trình bày.
+   ===================================================================== */
+/* Bảy ô chỉ báo thành MỘT dải: ô không có việc lùi xuống (chữ nhạt, không
+   icon), ô có việc nổi lên (icon màu, chữ đậm). Số giữ màu mực — màu nằm ở
+   icon (The Neutral Numeral Rule). Thứ tự và số ô không đổi (fixed slots). */
+.qd-dn-chi-bao { grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); gap: 1px; border: 1px solid var(--line-soft); border-radius: var(--radius-control); background: var(--line-soft); overflow: hidden; }
+.qd-dn-chi-bao .qd-cb { display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 0; background: var(--surface); font-size: .8125rem; }
+.qd-dn-chi-bao .qd-cb-ten { flex: 1 1 auto; }
+.qd-dn-chi-bao .qd-cb:hover { border: 0; background: var(--hover-surface); }
+.qd-dn-chi-bao .qd-cb:active { transform: none; }
+.qd-dn-chi-bao .qd-cb:focus-visible { outline-offset: -2px; }
+.qd-dn-chi-bao .qd-cb.is-ok { color: var(--ink-3); }
+.qd-dn-chi-bao .qd-cb.is-ok .qd-cb-icon { display: none; }
+.qd-dn-chi-bao .qd-cb.is-ok .qd-cb-gia { color: var(--ink-3); font-weight: 400; }
+.qd-dn-chi-bao .qd-cb:not(.is-ok) { color: var(--ink); font-weight: 600; }
+.qd-dn-chi-bao .qd-cb.is-xau .qd-cb-gia { color: var(--ink); }
+
+/* Lưới thông tin: ba cột, hàng thấp (bản cũ hai cột, mỗi ô ~76px — ba ô
+   ngày chỉ có "—" mà chiếm chỗ như ô có dữ liệu). Ô lẻ cuối trải hết phần
+   còn lại của hàng để không hở một ô trống. */
+.case-drawer .qd-dn .detail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.case-drawer .qd-dn .detail-grid > div { min-height: 0; gap: 1px; padding: 8px 14px; border-top: 1px solid var(--line-soft); border-left: 1px solid var(--line-soft); }
+.case-drawer .qd-dn .detail-grid > div:nth-child(-n + 3) { border-top: 0; }
+.case-drawer .qd-dn .detail-grid > div:nth-child(3n + 1) { border-left: 0; }
+.case-drawer .qd-dn .detail-grid > div:last-child:nth-child(odd) { grid-column: auto; }
+.case-drawer .qd-dn .detail-grid > div:last-child:nth-child(3n + 2) { grid-column: span 2; }
+.case-drawer .qd-dn .detail-grid > div:last-child:nth-child(3n + 1) { grid-column: 1 / -1; }
+.qd-dn .detail-grid dd .cell-empty { color: var(--ink-3); font-weight: 400; }
+@media (max-width: 720px) {
+  .case-drawer .qd-dn .detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .case-drawer .qd-dn .detail-grid > div:nth-child(n) { border-top: 1px solid var(--line-soft); border-left: 1px solid var(--line-soft); grid-column: auto; }
+  .case-drawer .qd-dn .detail-grid > div:nth-child(-n + 2) { border-top: 0; }
+  .case-drawer .qd-dn .detail-grid > div:nth-child(odd) { border-left: 0; }
+  .case-drawer .qd-dn .detail-grid > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+
+/* Quan hệ ngân sách: mã tiểu mục cùng dòng với tên — đầu cột đã nói "Tiểu mục". */
+.qd-ns-bang th[scope="row"] small.qd-ns-ma { display: inline; margin-left: 6px; font-variant-numeric: tabular-nums; }
+/* Dải chỉ báo xuống hàng thì ô hàng cuối giãn lấp chỗ trống (flex), không để mảng nền xám như lưới cố định cột. */
+.qd-dn-chi-bao { display: flex; flex-wrap: wrap; }
+.qd-dn-chi-bao > li { flex: 1 1 6rem; min-width: 0; }
+/* Ô lưới căn TRÊN: nhãn hai dòng của một ô không đẩy ô bên cạnh xuống giữa. */
+.case-drawer .qd-dn .detail-grid > div { align-content: start; }
+/* Dòng "Tổng" ở chân bảng: ô tiêu đề lấy nền và cỡ chữ của hàng, không của đầu cột. */
+.qd-bang tfoot th { background: inherit; }
+.qd-ns-bang tfoot th { color: var(--ink); font-size: .875rem; font-weight: 700; letter-spacing: 0; }
+/* Tiêu đề phụ trong toggletip "Cách đọc" của Đối chiếu nghĩa vụ. */
+.goi-y-noi-dung .qd-dc-ghi-tieu { margin-top: 4px; font-size: .8125rem; font-weight: 600; }
+
+/* =====================================================================
+   Ngăn Đối chiếu nghĩa vụ — rà theo design-taste-frontend (app screen),
+   23/11/2026. Giữ nội dung, thứ tự ô và token DESIGN.md; chỉ đổi trình bày.
+   ===================================================================== */
+/* Dòng trạng thái bắt cặp: thông tin kỹ thuật gom thành MỘT dòng chữ nhỏ,
+   không nền chip. Chỉ mục còn việc (còn dòng chưa ghép, lũy kế lệch) giữ màu. */
+.qd-dc-trang-thai { gap: 2px 16px; }
+.qd-dc-trang-thai .qd-dc-ghep { padding: 0; border-radius: 0; background: none; color: var(--ink-3); font-weight: 400; }
+.qd-dc-trang-thai .qd-dc-ghep.is-con { background: none; color: var(--warning); font-weight: 600; }
+.qd-dc-trang-thai .qd-dc-ghep.is-phu { background: none; }
+.qd-dc-trang-thai .qd-dc-ghep .icon { color: currentColor; }
+/* Dòng cần soi: không vạch màu bên trái (mọi dòng chưa xử lý giống nhau thì
+   không cần đánh dấu). Nút đã bấm tô đặc là dấu xử lý; dòng đã giải thích
+   lùi xuống, dòng hỏi NNT giữ nền xanh nhạt. */
+.qd-dc-soi li, .qd-dc-soi li.is-giai_thich, .qd-dc-soi li.is-hoi_nnt { box-shadow: none; }
+.qd-dc-soi li.is-giai_thich { background: var(--surface); }
+.qd-dc-soi li.is-giai_thich :is(.qd-dc-noi, .qd-dc-tien) { color: var(--ink-3); }
+/* Số tiền giữ màu mực (The Neutral Numeral Rule) — loại dòng đã nói bằng nhãn và icon. */
+.qd-dc-tien.is-pn { color: var(--ink); }
+/* Nhận xét "đọc nhanh": chữ thường, màu chỉ ở icon — đỏ là tín hiệu, không phải kết cấu. */
+.qd-dc-noi .qd-dc-doc.is-cao, .qd-dc-noi .qd-dc-doc.is-thap { color: var(--ink-2); font-weight: 400; }
+.qd-dc-doc.is-cao .icon { color: var(--critical); }
+.qd-dc-doc.is-thap .icon { color: var(--positive); }
+/* Danh sách DN: giá trị lặp ở mọi dòng lùi xuống; dòng khác biệt (mời thêm tỉnh) mới đậm. */
+.dc-nn { font-weight: 400; }
+.dc-moi { color: var(--ink-3); }
+.dc-moi.is-khac { color: var(--ink); font-weight: 600; }
+/* Bảng trong hồ sơ trên điện thoại: không bóp cột (số dính mũi tên, tên tiểu mục vỡ dòng) —
+   giữ bề ngang tối thiểu, cuộn trong TableWrap, cột tên dính trái (app-screens §12). */
+@media (max-width: 720px) {
+  .qd-dn .qd-dn-bang { min-width: 34rem; }
+  .qd-dn .qd-dn-bang :is(th, td):first-child { position: sticky; left: 0; z-index: 2; min-width: 8.5rem; background: var(--surface); box-shadow: inset -1px 0 0 var(--line-soft); }
+  .qd-dn .qd-dn-bang thead th:first-child { z-index: 4; background: var(--surface-soft); }
+}
+/* Bảng dùng table-layout: fixed nên bề ngang cột lấy từ đầu cột (24%) — đặt thẳng width, min-width bị bỏ qua. */
+@media (max-width: 720px) { .qd-dn .qd-ns-bang thead th:first-child { width: 10.5rem; } }
+/* Hàng tiêu đề "Dòng cần soi" (23/11/2026): bỏ số đếm (đã có ở dải chỉ báo đầu hồ sơ);
+   tiêu đề, ⓘ và nhóm "Bước 1 / Bước 2" cùng một đường giữa, cao bằng nhóm nút. */
+.qd-dc-soi-dau { align-items: center; column-gap: 16px; }
+.qd-dc-soi-dau h4 { display: inline-flex; align-items: center; gap: 2px; min-height: 36px; line-height: 1.35; }
+@media (pointer: fine) and (min-width: 901px) {
+  .qd-dc-soi-dau h4 .goi-y-nut { min-height: 28px; padding: 0 4px; }
+}

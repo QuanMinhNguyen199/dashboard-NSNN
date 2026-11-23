@@ -1,18 +1,43 @@
 {
-  "runId": "tax-ops-ds-v1-20261001",
+  "runId": "tax-ops-ds-v1.1-20261123",
   "scope": "full-library-v1",
   "fileKey": "zwUeggCjneSdx9Hl61teer",
-  "step": "local-import-kit-prepared",
+  "step": "local-import-kit-updated-to-prototype-20261120",
   "remoteStatus": "blocked-by-figma-mcp-starter-quota",
   "remoteMutations": [],
-  "sourceOfTruth": ["tax-ops/src/styles.css", "tax-ops/src/components/ui.tsx"],
+  "sourceOfTruth": [
+    "tax-ops/src/styles.css",
+    "tax-ops/src/components/ui.tsx"
+  ],
   "existingFigma": {
     "page": "0:1",
     "buttonSet": "10:19",
     "statusSet": "16:284",
     "collection": "VariableCollectionId:21:1724"
   },
-  "completedSteps": ["source-discovery", "figma-inspection", "library-discovery", "source-gap-analysis", "local-token-extraction", "plugin-generation", "browser-preview"],
-  "pendingValidations": ["run-plugin-in-figma", "canvas-visual-review", "code-connect-registration"],
-  "resume": "Use the saved plugin import report for IDs after import; do not recreate an existing Tax Ops library."
+  "completedSteps": [
+    "source-discovery",
+    "figma-inspection",
+    "library-discovery",
+    "source-gap-analysis",
+    "local-token-extraction",
+    "plugin-generation",
+    "browser-preview",
+    "token-refresh-20261123"
+  ],
+  "pendingValidations": [
+    "run-plugin-in-figma",
+    "canvas-visual-review",
+    "code-connect-registration"
+  ],
+  "resume": "Use the saved plugin import report for IDs after import; do not recreate an existing Tax Ops library.",
+  "version": "1.1.0",
+  "changes": [
+    "typography: thêm Figure 24, Subhead 16, Nav group 10.5; giãn dòng 1.25/1.35/1.5; ghi rem (gốc 16px)",
+    "radius: bỏ bậc dialog 12px; Dialog dùng panel 10px",
+    "size: bỏ topbar (không còn măng sét); thêm drawer 600/760",
+    "components: Table/Row thêm State=Total (ghim đầu, không nền); thêm Toggletip + Toggletip/Trigger",
+    "icons: 40 icon lấy lại từ ui.tsx",
+    "trang Figma: \"Tax Ops — Design System v1.1\""
+  ]
 }
