@@ -1,0 +1,15 @@
+{
+  "name": "Tax Ops — Khôi phục component",
+  "id": "tax-ops-restore-components-local",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}
