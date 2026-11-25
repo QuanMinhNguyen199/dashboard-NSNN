@@ -8,7 +8,7 @@ import { useThamSo } from "@/state/diaChi";
 import { nhanPhamVi, type KyQ, type PhamVi } from "@/data/qldn";
 import { NGUONG_MAU, NHAN_NGUYEN_NHAN, SAC_THUE, danhSachDoiChieu, type DongDC, type NguyenNhan, type SacThue } from "@/data/danhSachDoiChieu";
 import { tenCQTCua } from "@/data/doiChieuQHNS";
-import { HoSoDN } from "@/features/qldn/HoSoDN";
+import { DoiChieuQHNS } from "@/features/qldn/DoiChieuQHNS";
 
 /*
   Đối chiếu nghĩa vụ — danh sách theo phòng, theo cán bộ (biên bản 11/11/2026
@@ -151,7 +151,23 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
       <button ref={nutVe} type="button" className="qd-nnt-ve" onClick={veDanhSach}>
         <Icon name="chevronLeft" size={16}/>Danh sách doanh nghiệp{tenChon ? ` của ${tenChon}` : " của tôi"}
       </button>
-      <HoSoDN key={dangMo.d.khoa} d={dangMo.d} thang={ky.thang}/>
+      {/* Chỉ phần các biên bản đối chiếu yêu cầu (25/11/2026, người dùng: "làm
+          lại theo đúng doc"): tên DN → nguyên nhân dự kiến và đơn vị cần mời
+          (biên bản 11/11 §1) → Biểu QHNS 3 cột và các dòng cần soi (09/11,
+          13/11, 18/11). Hồ sơ sức khỏe DN (biên bản 22/10) không thuộc việc
+          này — vẫn mở đầy đủ ở Tổng quan đối tượng và NNT của cán bộ. */}
+      <div key={dangMo.d.khoa} className="qd-dn" data-motion="detail">
+        <p className="qd-dn-ten"><strong>{dangMo.d.ten}</strong><span>MST <code>{dangMo.d.mst}</code></span></p>
+        {(() => {
+          const nn = NHAN_NGUYEN_NHAN[dangMo.nguyenNhan];
+          const moi = nn.moi(dangMo);
+          return nn.nhan ? <dl className="dc-ngu-canh">
+            <div><dt>Nguyên nhân dự kiến</dt><dd><span className={`dc-nn is-${nn.muc}`}>{nn.nhan}</span></dd></div>
+            <div><dt>Đơn vị cần mời lên làm việc</dt><dd>{moi || <span className="cell-empty">—</span>}</dd></div>
+          </dl> : null;
+        })()}
+        <DoiChieuQHNS d={dangMo.d} kq={dangMo.kq}/>
+      </div>
     </div>}
   </div>;
 
@@ -170,7 +186,7 @@ export function DoiChieuDanhSach({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor
       actions={<div className="inline-controls kt-dieu-khien">
         <NhomNut<SacThue> label="Sắc thuế" value={sac} onChange={(v) => { datSac(v); datChon(""); datTrang(1); }}
           options={SAC_THUE.map((s) => ({ value: s.id, label: s.id, title: s.nhan }))}/>
-        <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
+        <ExportButton onExport={xuat}>Excel</ExportButton>
       </div>}>
       <TableWrap label={`Đối chiếu nghĩa vụ theo ${theoCanBo ? "cán bộ" : "đơn vị"}`}>
         <table className="qd-bang kt-bang dc-ds-bang">

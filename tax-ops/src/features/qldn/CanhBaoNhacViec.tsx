@@ -141,7 +141,7 @@ export function CanhBaoNhacViec({ user }: { user: DemoUser }) {
     {/* Lãnh đạo xem theo đơn vị rồi theo đầu việc (§7): chưa chọn đơn vị thì
         chỉ có bảng tổng hợp theo đầu việc — danh sách việc của 30 đơn vị là
         hàng nghìn dòng mà không ai đọc hết. */}
-    {tongHop ? <TheoDauViec ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} chon={datDauViec}/> : <Panel chinh title={muc ? `Danh sách cảnh báo · ${NHAN_MUC[muc].toLowerCase()}` : "Danh sách cảnh báo"} subtitle={donVi ? tatCa.find((v) => v.dvId === donVi)?.donVi ?? "Đơn vị đã chọn" : cbChon ? `Cán bộ ${cbChon.ten}` : undefined} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    {tongHop ? <TheoDauViec ds={muc ? tatCa.filter((v) => v.muc === muc) : tatCa} chon={datDauViec}/> : <Panel chinh title={muc ? `Danh sách cảnh báo · ${NHAN_MUC[muc].toLowerCase()}` : "Danh sách cảnh báo"} subtitle={donVi ? tatCa.find((v) => v.dvId === donVi)?.donVi ?? "Đơn vị đã chọn" : cbChon ? `Cán bộ ${cbChon.ten}` : undefined} actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
       <div className="qd-loc-cb">
       <SelectMenu<DauViecId | ""> label="Đầu việc" value={dauViec} onChange={(v) => datDauViec(v)}
         options={[{ value: "", label: "Tất cả 10 đầu việc" }, ...DAU_VIEC.map((d) => ({ value: d.id, label: d.ten }))]}/>

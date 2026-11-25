@@ -25,7 +25,7 @@ import { HangTab, mucNhung } from "@/components/MucPhanHe";
 import { ODatBoLoc } from "@/components/BoLoc";
 import { BAO_CAO_CUA_THE, BaoCaoPhanHe, coBaoCao } from "@/features/qldn/BaoCaoPhanHe";
 import { KiemTraTruSo, OSoLieuKT } from "@/features/qldn/KiemTraTruSo";
-import { CuocKiemTra, DoiSoatKT } from "@/features/qldn/PhongKiemTra";
+import { CuocKiemTra, DoiSoatKT, NhapDuLieuKT } from "@/features/qldn/PhongKiemTra";
 import { HoanGTGT, OHanHoan } from "@/features/qldn/HoanGTGT";
 import { DongMSTDonVi, NopThua, ToKhaiTonTruc, XuPhatDonVi } from "@/features/qldn/QuanLyKeKhai";
 import { DoiChieuDanhSach } from "@/features/qldn/DoiChieuDanhSach";
@@ -251,6 +251,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
          dữ liệu không theo kỳ — ô Kỳ nói giá trị đang áp dụng bằng chữ. */
       : the === "ktdoisoat" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Các Phòng Kiểm tra"/>
       : the === "ktcuoc" ? <ThanhPhamVi pv={pv} kyChu="Năm 2026" phamViChu="Các Phòng Kiểm tra"/>
+      : the === "ktnhap" ? <ThanhPhamVi pv={pv} kyChu="Không theo kỳ" phamViChu="Toàn ngành"/>
       /* Hoàn GTGT là báo cáo toàn ngành theo tháng của ngày quyết định hoàn. */
       : the === "hoangtgt" ? <ThanhPhamVi pv={pv} ky={ky} datKy={datKy} phamViChu="Toàn ngành"/>
       /* Tờ khai tồn trục là ảnh chụp lần kéo gần nhất, không theo tháng: ô Kỳ nói ngày kéo. */
@@ -303,6 +304,7 @@ export function KetQuaCongTac({ user, nhom: nhomId, moNhom, moCanhBao }: {
         : the === "ktnnt" ? <KiemTraTruSo ky={ky} actor={user.name} dd={loaiKT === "dd"} datLoai={datLoaiKT}/>
         : the === "ktcuoc" ? <CuocKiemTra actor={user.name}/>
         : the === "ktdoisoat" ? <DoiSoatKT ky={ky} actor={user.name}/>
+        : the === "ktnhap" ? <NhapDuLieuKT user={user}/>
         : the === "hoangtgt" ? <HoanGTGT ky={ky} actor={user.name}/>
         : the === "tktt" ? <ToKhaiTonTruc pv={pv} actor={user.name}/>
         : the === "nopthua" ? <NopThua pv={pv} ky={ky} actor={user.name}/>
@@ -365,7 +367,7 @@ function TongQuan({ pv, ky, actor, moThe }: { pv: PhamVi; ky: KyQ; actor: string
     <p>Đơn vị chênh lệch: {coChenh ? "điểm %" : "số tuyệt đối"}.</p>
     {chuaDuSo(ky) && <p>{lyDoChuaSo(ky)}.</p>}
   </GhiChu>;
-  return <Panel chinh title="Kết quả các mặt công tác" tieuDeKem={kyHieu} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Kết quả các mặt công tác" tieuDeKem={kyHieu} actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
     <div className="qd-kq">
       {THU_TU_TQ.map((id) => NHOM_Q.find((n) => n.id === id)!).map((n) => ({ n, so: ds.filter((x) => n.the.includes(x.the.id)).length })).filter((x) => x.so).map(({ n, so: soO }) => <section key={n.id} className={`qd-kq-nhom is-${n.id}`} aria-labelledby={`qd-kq-${n.id}`} style={{ ["--o" as string]: soO }}>
         {/* Tên nhóm luôn là tên đầy đủ ("Công tác thu NSNN"): tên ngắn trùng
@@ -522,7 +524,7 @@ function XepHangPhong({ pv, actor }: { pv: PhamVi; actor: string }) {
     rows: xepTheo("tong").map((d) => [hangCua(d, "tong"), d.ten, ...NHOM_DIEM.map((n) => d.diem[n.id]), d.tong]),
   }], { period: KY_XEP_HANG, scope: "Khối phòng QLDN", actor, status: "DRAFT" as const }, "xep-hang-phong-qldn_bcgb-thang-10.xlsx");
 
-  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG}`} tieuDeKem={<GhiChu tieuDe="Nguồn số"><p><b>Số của file chấm điểm, không phải số mô phỏng</b> (sheet “II. Khối QLDN”). Điểm chỉ tiêu từ −1 đến +1; điểm nhóm là trung bình các chỉ tiêu trong nhóm.</p></GhiChu>} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Xếp hạng các phòng QLDN" subtitle={`${KY_XEP_HANG}`} tieuDeKem={<GhiChu tieuDe="Nguồn số"><p><b>Số của file chấm điểm, không phải số mô phỏng</b> (sheet “II. Khối QLDN”). Điểm chỉ tiêu từ −1 đến +1; điểm nhóm là trung bình các chỉ tiêu trong nhóm.</p></GhiChu>} actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
     <div className="qd-overview-guide xhp-guide"><span>{tenTheo ? <>Đang theo: <b>{tenTheo}</b></> : "Chưa chọn phòng"}</span></div>
     <div className="xhp">
       <section className="xhp-tong" aria-labelledby="xhp-tong">
@@ -669,7 +671,7 @@ function ChiTietThe({ the, pv, ky, actor, moCanhBao }: { the: TheId; pv: PhamVi;
           { value: "DONVI", label: "Theo đơn vị" },
           { value: "CANBO", label: "Theo cán bộ", disabled: !motDonVi, title: motDonVi ? undefined : "Chọn một đơn vị để xem theo cán bộ" },
         ]}/>}
-        <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
+        <ExportButton onExport={xuat}>Excel</ExportButton>
       </div>}
     >
       {ds.length > 1 && <div className="qd-cong-tac">

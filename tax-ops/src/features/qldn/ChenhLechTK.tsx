@@ -69,7 +69,7 @@ export function ChenhLechTK({ pv, ky, actor, moDanhSach }: {
       <ChoChot nhan="Chưa nối nguồn">Chưa nối nguồn đối chiếu tờ khai – hóa đơn điện tử.</ChoChot>
     </>}
     subtitle={`${nhanLuyKe(kyQ)} · triệu đồng`}
-    actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}
+    actions={<ExportButton onExport={xuat}>Excel</ExportButton>}
   >
     <TableWrap label="Chênh lệch tờ khai – hóa đơn theo đơn vị">
       <table className="qd-bang qd-bang-goc qd-cl-bang">

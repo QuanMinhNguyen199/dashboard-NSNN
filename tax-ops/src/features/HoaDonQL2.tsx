@@ -91,7 +91,7 @@ function HoaDonQL2NoiDung({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) 
     datMuc("dschenh");
   };
 
-  return <XuatProvider nut={baoCao && boSheet.length ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
+  return <XuatProvider nut={baoCao && boSheet.length ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Excel</ExportButton> : undefined}><div className="page-stack">
     <PageIntro title="Rủi ro hóa đơn"/>
     <ThanhMuc view="hoadon"/>
 

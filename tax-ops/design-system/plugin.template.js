@@ -181,7 +181,8 @@ async function ghiDe(inst,g,dem){
     else if(m.t==='svg'){n.opacity=m.op<1?m.op:1;}
     else{
       const chinh=await mainCua(m._cum,dem);
-      if(n.mainComponent!==chinh){n.swapComponent(chinh);dem.hoanDoi++;}
+      /* dynamic-page cấm đọc n.mainComponent — phải dùng getMainComponentAsync (25/11/2026). */
+      const hienTai=await n.getMainComponentAsync();if(!hienTai||hienTai.id!==chinh.id){n.swapComponent(chinh);dem.hoanDoi++;}
       if(Math.abs(n.width-m.w)>.5||Math.abs(n.height-m.h)>.5){try{n.resize(Math.max(m.w,.01),Math.max(m.h,.01));}catch(e){}}
       await ghiDe(n,m,dem);
     }

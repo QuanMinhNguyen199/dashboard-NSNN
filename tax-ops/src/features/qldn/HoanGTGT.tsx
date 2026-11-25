@@ -122,7 +122,7 @@ export function HoanGTGT({ ky, actor }: { ky: KyQ; actor: string }) {
     <OHanHoan lop="kt-loai-dt"/>
     <Panel title={`Hoàn trước – kiểm sau · tháng ${thangChu}`} subtitle={phatHien}
       tieuDeKem={<GhiChu tieuDe="Cách tính hạn và nguồn"><p>Hạn: {cach.nhan}, ngày làm việc bỏ thứ Bảy, Chủ nhật, kết thúc ở ngày quyết định hoàn (không phải lệnh hoàn) · kỳ theo tháng của ngày quyết định hoàn · nguồn TMS chức năng 6.2 · lọc hoàn trước – kiểm sau theo "Phân loại nhận xét hồ sơ hoàn thuế" · đã loại {integer(tatCa.length - ds.length)} hồ sơ kiểm trước – hoàn sau · không dùng trường "trạng thái" và "số ngày quá hạn" của TMS · ngày lễ chưa trừ · dữ liệu mô phỏng</p></GhiChu>}
-      actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+      actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
       <div className="kt-o-so">
         <OHg ten="Số hồ sơ đã hoàn" to={integer(daHoan.length)} donVi="hồ sơ" cachTinh="có quyết định hoàn trong tháng"
           phu={<>Lũy kế từ 01/01: <b>{integer(lk.length)}</b> hồ sơ</>}

@@ -250,9 +250,9 @@ function BangChiTiet({ ky, dd, chon, datChon, actor }: { ky: KyQ; dd: boolean; c
     actions={<div className="inline-controls kt-dieu-khien">
       <ChonCot nhom={nhomGoc} dd={dd} hien={hien} datHien={datHien}/>
       <Button kind="secondary" className="kt-mo-het" onClick={doiMoHet}>{moHet ? "Thu gọn tất cả" : "Mở tất cả"}</Button>
-      <ExportButton onExport={() => xuatExcel(ky, actor, baoCao())}>Xuất Excel</ExportButton>
+      <ExportButton onExport={() => xuatExcel(ky, actor, baoCao())}>Excel</ExportButton>
       {/* Báo cáo lời văn theo mẫu "Báo cáo tuần bc Trưởng Thuế TP" (thư mục 03-11); bảng Excel là Phụ lục 1 của nó. */}
-      <ExportButton dinhDang="word" onExport={() => xuatWordKiemTra(ky, actor, baoCao())}>Xuất Word</ExportButton>
+      <ExportButton dinhDang="word" onExport={() => xuatWordKiemTra(ky, actor, baoCao())}>Word</ExportButton>
     </div>}>
     <TableWrap label="Kết quả kiểm tra tại trụ sở theo đơn vị">
       <table className="qd-bang qd-bang-goc kt-bang">

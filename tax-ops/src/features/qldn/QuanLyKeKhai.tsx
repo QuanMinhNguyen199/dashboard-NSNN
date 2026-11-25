@@ -94,7 +94,7 @@ function BangDonVi<T>({ pv, title, subtitle, label, nhom, gia, chon, datChon, on
       {haiKhoi && <SelectMenu<"" | Khoi> className="kt-loc-khoi" label="Hiển thị đơn vị" value={locKhoi} onChange={(v) => { datLoc(v); datTrang(1); }}
         options={[{ value: "", label: "Tất cả đơn vị" }, { value: "VP", label: NHAN_KHOI.VP }, { value: "TCS", label: NHAN_KHOI.TCS }]}/>}
       {them}
-      <ExportButton onExport={onXuat}>Xuất Excel</ExportButton>
+      <ExportButton onExport={onXuat}>Excel</ExportButton>
     </div>}>
     <TableWrap label={label}>
       <table className="qd-bang qd-bang-goc kt-bang">

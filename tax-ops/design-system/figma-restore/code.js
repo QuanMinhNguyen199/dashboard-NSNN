@@ -5,7 +5,9 @@
       A. Main component đã xóa nhưng Figma còn giữ (instance vẫn trỏ tới) → đưa về trang "Khôi phục component".
          Giữ nguyên id nên mọi instance tự nối lại, không mất ghi đè. Nếu Figma không cho đưa về, tạo bản sao
          và swap instance sang bản sao (ghi đè giữ theo tên lớp).
-      B. (Tùy chọn, mặc định tắt) Instance không còn main nào → dựng lại component từ một instance mẫu và swap
+      B1. Instance không còn main nhưng trong file có component CÙNG TÊN (ví dụ "Tax Ops / Figure" của thư viện
+         v1.1) → swap sang component đó, chép lại chữ cũ của instance theo tên lớp rồi theo thứ tự (25/11/2026).
+      B. (Tùy chọn, mặc định tắt) Instance không còn main nào và không có component cùng tên → dựng lại component từ một instance mẫu và swap
          các instance cùng tên, cùng cấu trúc sang đó. Đây là dựng lại, không phải bản gốc; nên ưu tiên
          Version history nếu cần đúng bản gốc.
    Plugin không xóa gì. Có thể Undo (Ctrl/Cmd+Z). */
@@ -44,11 +46,13 @@ async function quet() {
   const moCoi = new Map(); // id gốc → {goc, ten, dem, trang:Set, inst:[]}
   const matMain = new Map(); // chữ ký → {ten, dem, trang:Set, inst:[]}
   let tong = 0, thuVien = 0;
+  const theoTen = new Map(); // tên component/set đang nằm trên trang → node
   const trang = figma.root.children;
   for (let i = 0; i < trang.length; i++) {
     const p = trang[i];
     gui({ st: 'Đang quét trang ' + (i + 1) + '/' + trang.length + ': ' + p.name });
     await p.loadAsync();
+    for (const c of p.findAllWithCriteria({ types: ['COMPONENT_SET', 'COMPONENT'] })) if (!(c.type === 'COMPONENT' && c.parent && c.parent.type === 'COMPONENT_SET') && !theoTen.has(c.name)) theoTen.set(c.name, c);
     for (const it of p.findAllWithCriteria({ types: ['INSTANCE'] })) {
       tong++;
       let m = null;
@@ -61,7 +65,10 @@ async function quet() {
       o.dem++; o.trang.add(p.name); o.inst.push(it); moCoi.set(g.id, o);
     }
   }
-  KQ = { moCoi, matMain, tong, thuVien };
+  /* Nhóm mất main nào có component cùng tên thì tách sang B1. */
+  const noiLai = new Map();
+  for (const [k, o] of matMain) { const dich = theoTen.get(o.ten); if (dich) { noiLai.set(k, { ...o, dich }); matMain.delete(k); } }
+  KQ = { moCoi, matMain, noiLai, tong, thuVien };
   return KQ;
 }
 function baoCaoQuet(k) {
@@ -70,11 +77,14 @@ function baoCaoQuet(k) {
   const a = [...k.moCoi.values()].sort((x, y) => y.dem - x.dem);
   L.push('A. Main đã xóa nhưng Figma còn giữ — khôi phục được nguyên bản: ' + a.length + ' component, ' + a.reduce((s, o) => s + o.dem, 0) + ' instance');
   for (const o of a) L.push('   • ' + o.ten + ' — ' + o.dem + ' instance · trang: ' + [...o.trang].join(', '));
+  const b1 = [...k.noiLai.values()].sort((x, y) => y.dem - x.dem);
+  L.push('', 'B1. Instance mất main, có component cùng tên trong file — nối lại và giữ chữ cũ: ' + b1.length + ' nhóm, ' + b1.reduce((s, o) => s + o.dem, 0) + ' instance');
+  for (const o of b1) L.push('   • ' + o.ten + ' — ' + o.dem + ' instance → ' + (o.dich.type === 'COMPONENT_SET' ? 'bộ ' : '') + '"' + o.dich.name + '" trên trang ' + trangCua(o.dich).name + ' · dùng ở: ' + [...o.trang].join(', '));
   const b = [...k.matMain.values()].sort((x, y) => y.dem - x.dem);
   L.push('', 'B. Instance không còn main — chỉ dựng lại được từ instance mẫu: ' + b.length + ' nhóm, ' + b.reduce((s, o) => s + o.dem, 0) + ' instance');
   for (const o of b.slice(0, 60)) L.push('   • ' + o.ten + ' — ' + o.dem + ' instance · trang: ' + [...o.trang].join(', '));
   if (b.length > 60) L.push('   … và ' + (b.length - 60) + ' nhóm nữa');
-  if (!a.length && !b.length) L.push('', 'Không có instance nào mất main component.');
+  if (!a.length && !b.length && !b1.length) L.push('', 'Không có instance nào mất main component.');
   return L.join('\n');
 }
 async function napFont(n) {
@@ -119,6 +129,37 @@ async function khoiPhuc(dungLai) {
     }
   }
   if (!k.moCoi.size) L.push('   (không có)');
+  /* B1: nối lại với component cùng tên. Instance ngoài trước, instance lồng sau (instance lồng bị thay khi
+     swap instance ngoài thì bỏ qua — chữ của nó đã được chép cùng instance ngoài). */
+  const layChu = (n) => n.findAllWithCriteria({ types: ['TEXT'] }).map((t) => ({ ten: t.name, chu: t.characters }));
+  const traChu = async (n, ds) => {
+    const ts = n.findAllWithCriteria({ types: ['TEXT'] }); const dung = new Set(); let doi = 0;
+    for (let i = 0; i < ds.length; i++) {
+      let j = ts.findIndex((t, jj) => !dung.has(jj) && t.name === ds[i].ten);
+      if (j < 0) j = ts.findIndex((t, jj) => !dung.has(jj) && jj >= i);
+      if (j < 0) continue; dung.add(j);
+      if (ts[j].characters !== ds[i].chu) { await napFont(ts[j]); ts[j].characters = ds[i].chu; doi++; }
+    }
+    return doi;
+  };
+  const doSau = (n) => { let d = 0; for (let p = n.parent; p && p.type !== 'PAGE'; p = p.parent) if (p.type === 'INSTANCE') d++; return d; };
+  let noi = 0, rong = 0, loiB1 = 0;
+  L.push('', 'B1. Nối lại với component cùng tên:');
+  const tatCa = [...k.noiLai.values()].flatMap((o) => o.inst.map((it) => ({ it, o }))).sort((x, y) => doSau(x.it) - doSau(y.it));
+  const demNhom = new Map();
+  for (const { it, o } of tatCa) {
+    const d = demNhom.get(o) || { ok: 0, rong: 0, loi: 0, ngoai: 0 }; demNhom.set(o, d);
+    if (it.removed) { d.ngoai++; continue; }
+    try {
+      const chu = layChu(it);
+      const dich = o.dich.type === 'COMPONENT_SET' ? o.dich.defaultVariant || o.dich.children[0] : o.dich;
+      await napFont(it); it.swapComponent(dich);
+      if (chu.some((c) => c.chu.trim())) await traChu(it, chu); else { d.rong++; rong++; }
+      d.ok++; noi++;
+    } catch (e) { d.loi++; loiB1++; if (d.loi <= 2) L.push('   ✗ ' + o.ten + ': ' + String(e.message || e)); }
+  }
+  for (const [o, d] of demNhom) L.push('   ' + (d.loi ? '~' : '✓') + ' ' + o.ten + ' — nối ' + d.ok + '/' + o.dem + (d.ngoai ? ', ' + d.ngoai + ' nằm trong khối ngoài đã nối (chữ đã chép theo khối ngoài)' : '') + (d.rong ? ', ' + d.rong + ' instance không còn chữ cũ (đang hiện chữ mẫu, cần nhập lại)' : '') + (d.loi ? ', ' + d.loi + ' lỗi' : '') + (o.dich.type === 'COMPONENT_SET' ? ' · biến thể mặc định, cần chọn lại biến thể nếu khác' : ''));
+  if (!k.noiLai.size) L.push('   (không có)');
   let dung = 0, swapB = 0, loiB = 0;
   L.push('', 'B. Instance không còn main:');
   if (!dungLai) L.push('   Bỏ qua (chưa bật tùy chọn dựng lại). ' + k.matMain.size + ' nhóm, ' + [...k.matMain.values()].reduce((s, o) => s + o.dem, 0) + ' instance — nên lấy từ Version history.');
@@ -139,14 +180,15 @@ async function khoiPhuc(dungLai) {
   }
   L.push('', 'TÓM TẮT', 'Trang mới: "' + ten + '"',
     'A: ' + nguyen + ' component đưa về nguyên bản, ' + saoCo + ' qua bản sao (swap ' + swapA + ' instance), ' + loiA + ' lỗi.',
+    'B1: nối ' + noi + ' instance với component cùng tên' + (rong ? ' (' + rong + ' instance không còn chữ cũ — cần nhập lại)' : '') + ', ' + loiB1 + ' lỗi.',
     'B: ' + (dungLai ? dung + ' component dựng lại, swap ' + swapB + ' instance, ' + loiB + ' lỗi.' : 'không chạy.'),
-    'Kiểm lại: chạy Quét lần nữa — mục A phải về 0.');
+    'Kiểm lại: chạy Quét lần nữa — mục A và B1 phải về 0.');
   KQ = null;
   return L.join('\n');
 }
 figma.ui.onmessage = async (msg) => {
   try {
-    if (msg.type === 'quet') { const k = await quet(); const coViec = k.moCoi.size > 0 || k.matMain.size > 0; gui({ bc: baoCaoQuet(k), st: coViec ? 'Quét xong. Kiểm báo cáo rồi bấm Khôi phục.' : 'Quét xong — không có gì cần khôi phục.', xong: true, coViec }); }
+    if (msg.type === 'quet') { const k = await quet(); const coViec = k.moCoi.size > 0 || k.matMain.size > 0 || k.noiLai.size > 0; gui({ bc: baoCaoQuet(k), st: coViec ? 'Quét xong. Kiểm báo cáo rồi bấm Khôi phục.' : 'Quét xong — không có gì cần khôi phục.', xong: true, coViec }); }
     if (msg.type === 'khoiphuc') { const bc = await khoiPhuc(!!msg.dungLai); gui({ bc, st: 'Xong. Chép báo cáo dán lại để kiểm tra.', xong: true, coViec: false }); }
   } catch (e) { gui({ st: 'Lỗi: ' + String(e.message || e), bc: String(e.stack || e), xong: true, coViec: false }); }
 };

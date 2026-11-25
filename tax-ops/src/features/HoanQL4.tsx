@@ -73,7 +73,7 @@ export function HoanQL4({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
     status: banGhi?.trangThai ?? "DRAFT",
   };
 
-  return <XuatProvider nut={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Xuất Excel</ExportButton> : undefined}><div className="page-stack">
+  return <XuatProvider nut={baoCao ? <ExportButton onExport={() => exportExcel(boSheet, meta, `${baoCao}_${ky.id}`)}>Excel</ExportButton> : undefined}><div className="page-stack">
     <PageIntro title="Hoàn thuế TNCN và tổng đài"/>
     <ThanhMuc view="hoan"/>
 

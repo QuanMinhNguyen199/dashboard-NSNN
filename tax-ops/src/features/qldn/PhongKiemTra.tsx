@@ -1,23 +1,29 @@
-import { useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { Fragment, useId, useMemo, useRef, useState, useSyncExternalStore, type DragEvent, type FormEvent, type ReactNode } from "react";
 import { GhiChu } from "@/components/GhiChu";
-import { FieldError, Input, Label, TextArea, TextField } from "react-aria-components";
-import { Badge, Button, Pager, Panel, SearchField, Segmented, SelectMenu, TableWrap, integer } from "@/components/ui";
+import { Disclosure, DisclosurePanel, FieldError, Input, Label, TextArea, TextField, Button as AriaButton } from "react-aria-components";
+import { Badge, Button, Icon, Pager, Panel, SearchField, Segmented, SelectMenu, TableWrap, integer } from "@/components/ui";
 import { ExportButton } from "@/components/ExportButton";
 import { exportExcel } from "@/domain/reportFiles";
 import type { ReportSheet } from "@/domain/reportExport";
 import { useThamSo } from "@/state/diaChi";
 import { useAction } from "@/state/ActionContext";
+import type { DemoUser } from "@/auth/demoAuth";
 import type { KyQ } from "@/data/qldn";
+import { DON_VI_KT } from "@/data/kiemTra";
 import {
   DOT_XUAT, LOAI_CUOC, NHAN_TIEN_DO, PHONG_DS, bangDoiSoat, luuCuoc, maMoi, nhanLoai, tenPhongDS, tienDo, useCuocKT,
   type BieuDS, type CuocKT, type DongDS, type LoaiCuoc, type TienDo,
 } from "@/data/cuocKT";
+import { docXlsx } from "@/domain/docXlsx";
+import { MAU_NHAP, doanLoai, kiemTep, type KetQuaKT, type LoaiMau, type LoaiNhap } from "@/domain/nhapPKT";
+import { MA_GOP, TEP_QLRR, kiemTepQLRR, oCuaTep, type KiemTep, type MaTep } from "@/domain/boQLRR";
 
 /*
-  Hai tab bổ sung cho Phòng kiểm tra theo ghi chú folder PKT (03/11/2026):
+  Ba tab bổ sung cho Phòng kiểm tra theo ghi chú folder PKT (03/11/2026):
   - Cuộc kiểm tra — đoàn kiểm tra nhập tay từng cuộc (mục 4);
-  - Đối soát — báo cáo đối soát công tác kiểm tra theo mẫu Module 2 – Mục 3 (mục 5).
-  Tab "Nhập dữ liệu" (mục 3) đã gỡ ngày 05/11/2026 theo yêu cầu người dùng.
+  - Đối soát — báo cáo đối soát công tác kiểm tra theo mẫu Module 2 – Mục 3 (mục 5);
+  - Nhập dữ liệu — nhập chuyên đề, chỉ tiêu, kế hoạch đích danh từ tệp mẫu (mục 3).
+    Gỡ 05/11/2026, khôi phục 25/11/2026 theo yêu cầu người dùng.
   Đối soát đọc đúng kho mà tab Cuộc kiểm tra ghi, nên một cuộc vừa lưu hiện
   ngay trong báo cáo cùng phiên.
 */
@@ -107,7 +113,7 @@ export function CuocKiemTra({ actor }: { actor: string }) {
   const sua = Boolean(phieu.id);
   return <div className="pkt-cuoc">
     <Panel title="Cuộc kiểm tra" subtitle={`${integer(loc.length)} / ${integer(ds.length)} cuộc`}
-      actions={<div className="inline-controls"><Button kind="secondary" icon="file" onClick={moMoi}>Thêm cuộc mới</Button><ExportButton onExport={xuat}>Xuất Excel</ExportButton></div>}>
+      actions={<div className="inline-controls"><Button kind="secondary" icon="file" onClick={moMoi}>Thêm cuộc mới</Button><ExportButton onExport={xuat}>Excel</ExportButton></div>}>
       <div className="pkt-loc">
         <SearchField value={q} onChange={(v) => doiLoc(() => datQ(v))} placeholder="Tìm MST, tên doanh nghiệp"/>
         {/* Một hàng lọc: tên bộ lọc nằm trong lựa chọn đầu ("Mọi phòng"), nhãn đọc màn hình ở aria-label. */}
@@ -266,7 +272,7 @@ export function DoiSoatKT({ ky, actor }: { ky: KyQ; actor: string }) {
   return <Panel title={`${bieu.tieuDe[0]}${bieu.tieuDe.slice(1).toLowerCase()} tháng ${String(thang).padStart(2, "0")}/2026`}
     tieuDeKem={<GhiChu tieuDe="Cách tổng hợp">Tổng hợp từ dữ liệu các đoàn kiểm tra nhập ở tab Cuộc kiểm tra (dữ liệu mô phỏng). Đối soát đếm trong số cuộc đã đăng ký của tháng những cuộc ban hành / hoàn thành ngay trong tháng đó; cuộc trễ sang tháng sau không tính là đúng hẹn (giả định cách đếm, chờ Phòng Kiểm tra xác nhận).</GhiChu>}
     subtitle={tomTat(b, thang, dong, tong)}
-    actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+    actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
     <div className="pkt-bieu-chon"><Segmented label="Biểu" value={b} onChange={datB} options={BIEU.map((x) => ({ value: x.id, label: x.nhan }))}/></div>
     <TableWrap label={`${bieu.nhan} tháng ${thang}/2026`}>
       <table className="qd-bang pkt-bang-ds">
@@ -284,4 +290,220 @@ export function DoiSoatKT({ ky, actor }: { ky: KyQ; actor: string }) {
       </table>
     </TableWrap>
   </Panel>;
+}
+
+/* =====================================================================
+   Tab Nhập dữ liệu — mục 3 của ghi chú PKT
+   ===================================================================== */
+
+interface LanNhap { luc: string; taiKhoan: string; loai: LoaiNhap; choDV: string; tep: string; soDong: number; canhBao: number }
+let lichSu: LanNhap[] = [];
+const ngheLS = new Set<() => void>();
+const useLichSu = () => useSyncExternalStore((f) => { ngheLS.add(f); return () => ngheLS.delete(f); }, () => lichSu);
+const ghiLS = (l: LanNhap) => { lichSu = [l, ...lichSu]; ngheLS.forEach((f) => f()); };
+
+/* Biên bản: Trưởng phòng / Lãnh đạo chọn nhập cho Thuế cơ sở hay Phòng Kiểm tra nào. */
+const CHON_DV = ["TP", "LD_TP"];
+const DV_NHAP = DON_VI_KT.filter((d) => d.coChiTieu);
+
+/*
+  Vùng nhập tự do (25/11/2026, người dùng: "bỏ phần Loại dữ liệu, để import
+  area free"). Không bắt chọn loại trước: kéo một hay nhiều tệp vào cùng một
+  chỗ, hệ thống tự nhận — tệp mẫu theo tên sheet (`doanLoai`), tệp QLRR theo
+  tên tệp (`oCuaTep`). Mỗi tệp mẫu thành một thẻ kết quả riêng, nhập riêng;
+  các tệp QLRR gom vào một bộ bốn ô, chỉ nạp khi đủ bốn.
+*/
+type TepNhap =
+  | { id: number; ten: string; kieu: "doc" }
+  | { id: number; ten: string; kieu: "kq"; loai: LoaiMau; kq: KetQuaKT }
+  | { id: number; ten: string; kieu: "xong"; loai: LoaiMau; soDong: number }
+  | { id: number; ten: string; kieu: "hong"; loi: string };
+let soTep = 0;
+const MAU_TAI = MAU_NHAP.filter((m) => m.tep);
+const tenLoai = (l: LoaiNhap) => MAU_NHAP.find((m) => m.id === l)!.ten;
+const bayGio = () => new Date().toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", year: "numeric" });
+
+export function NhapDuLieuKT({ user }: { user: DemoUser }) {
+  const ls = useLichSu();
+  const duocChon = CHON_DV.includes(user.vaiTro);
+  const [choDV, datChoDV] = useState("");
+  const [ds, datDs] = useState<TepNhap[]>([]);
+  const [bo, datBo] = useState<BoTep>({});
+  const [xongBo, datXongBo] = useState<string | null>(null);
+  const [keo, datKeo] = useState(false);
+  const notify = useAction();
+
+  const tenDV = duocChon ? (choDV ? DV_NHAP.find((d) => d.id === choDV)!.ten : "Tất cả Phòng Kiểm tra và Thuế cơ sở") : user.unit;
+  const sua = (id: number, t: TepNhap) => datDs((x) => x.map((y) => (y.id === id ? t : y)));
+
+  const docMau = async (f: File, id: number) => {
+    if (!/\.xlsx$/i.test(f.name)) { sua(id, { id, ten: f.name, kieu: "hong", loi: "Chỉ nhận tệp Excel .xlsx theo mẫu. Tệp .xls hoặc .csv hãy mở bằng Excel rồi lưu lại dạng .xlsx." }); return; }
+    try {
+      const sheets = await docXlsx(f);
+      const loai = doanLoai(sheets, f.name);
+      if (!loai) { sua(id, { id, ten: f.name, kieu: "hong", loi: "Không nhận ra loại dữ liệu: tệp không có sheet của mẫu chuyên đề, chỉ tiêu hay kế hoạch đích danh, tên tệp cũng không khớp tệp nào của bộ QLRR. Dùng đúng file mẫu, không đổi tên sheet." }); return; }
+      sua(id, { id, ten: f.name, kieu: "kq", loai, kq: kiemTep(loai, sheets, f.name) });
+    } catch (e) { sua(id, { id, ten: f.name, kieu: "hong", loi: e instanceof Error ? e.message : "Không đọc được tệp." }); }
+  };
+
+  const them = async (tep: FileList | null | undefined) => {
+    if (!tep?.length) return;
+    const tatCa = [...tep];
+    const qlrr = tatCa.filter((f) => oCuaTep(f.name));
+    const mau = tatCa.filter((f) => !oCuaTep(f.name)).map((f) => ({ f, id: ++soTep }));
+    if (mau.length) datDs((x) => [...mau.map(({ f, id }) => ({ id, ten: f.name, kieu: "doc" as const })), ...x]);
+    mau.forEach(({ f, id }) => docMau(f, id));
+    if (qlrr.length) {
+      const kq = await Promise.all(qlrr.map(kiemTepQLRR));
+      datBo((t) => ({ ...t, ...Object.fromEntries(kq.map((k) => [k.ma!, k])) }));
+      datXongBo(null);
+    }
+  };
+
+  const nhap = (t: Extract<TepNhap, { kieu: "kq" }>) => {
+    ghiLS({ luc: bayGio(), taiKhoan: user.username, loai: t.loai, choDV: tenDV, tep: t.ten, soDong: t.kq.hopLe, canhBao: t.kq.van.filter((v) => v.muc === "canhBao").length });
+    notify(`Đã nhập ${t.kq.hopLe} dòng ${tenLoai(t.loai).toLowerCase()} cho ${tenDV}. Bản demo chưa gửi lên máy chủ.`);
+    sua(t.id, { id: t.id, ten: t.ten, kieu: "xong", loai: t.loai, soDong: t.kq.hopLe });
+  };
+  const napBo = () => {
+    const luc = bayGio();
+    ghiLS({ luc, taiKhoan: user.username, loai: "boQLRR", choDV: "Cả Cục (Văn phòng Cục và Thuế cơ sở)", tep: TEP_QLRR.map((t) => bo[t.ma]!.ten).join(", "), soDong: 0, canhBao: 0 });
+    notify("Đã gửi bộ 4 tệp QLRR. Bản demo chưa có máy chủ đọc tệp: báo cáo vẫn dùng số liệu mô phỏng.");
+    datXongBo(luc); datBo({});
+  };
+  const bo1 = (id: number) => datDs((x) => x.filter((y) => y.id !== id));
+  const coBo = Object.keys(bo).length > 0 || xongBo !== null;
+
+  return <div className="pkt-nhap">
+    <Panel title="Nhập dữ liệu" subtitle="Chuyên đề, chỉ tiêu, kế hoạch đích danh hoặc bộ file gốc QLRR — hệ thống tự nhận loại theo tệp">
+      <div className="pkt-cho-dv">
+        {duocChon ? <SelectMenu className="compact-field" hienNhan kieu="o" label="Nhập cho" value={choDV} onChange={(v) => datChoDV(v)}
+          options={[{ value: "", label: "Tất cả Phòng Kiểm tra và Thuế cơ sở" },
+            ...DV_NHAP.filter((d) => d.khoi === "VP").map((d) => ({ value: d.id, label: d.ten, nhom: "Phòng Kiểm tra" })),
+            ...DV_NHAP.filter((d) => d.khoi === "TCS").map((d) => ({ value: d.id, label: d.ten, nhom: "Thuế cơ sở" }))]}/> : <p><span>Nhập cho</span><b>{user.unit}</b><small>Chỉ Trưởng phòng và Lãnh đạo chọn được đơn vị khác.</small></p>}
+      </div>
+
+      <label className={`pkt-tha${keo ? " is-keo" : ""}`} onDragOver={(e) => { e.preventDefault(); datKeo(true); }} onDragLeave={() => datKeo(false)}
+        onDrop={(e: DragEvent) => { e.preventDefault(); datKeo(false); them(e.dataTransfer.files); }}>
+        <Icon name="upload" size={22}/>
+        <strong>Kéo thả tệp vào đây, hoặc <span className="pkt-tha-nut">chọn tệp</span></strong>
+        <small>Có thể chọn nhiều tệp một lần · tệp mẫu .xlsx · bộ QLRR giữ nguyên tên và định dạng như khi kết xuất</small>
+        <input className="sr-only" type="file" multiple accept=".xlsx,.xls" onChange={(e) => { them(e.target.files); e.target.value = ""; }}/>
+      </label>
+      <p className="pkt-tai-mau"><span>Tải file mẫu:</span>{MAU_TAI.map((m) => <a key={m.id} href={`${import.meta.env.BASE_URL}mau/${m.tep}`} download={m.tep}><Icon name="file" size={14}/>{m.ten}</a>)}</p>
+
+      {ds.length > 0 && <ul className="pkt-ds-tep" role="list" aria-label="Tệp đã chọn">{ds.map((t) => <li key={t.id}>
+        {t.kieu === "doc" && <p className="pkt-dang-doc" role="status">Đang đọc {t.ten}…</p>}
+        {t.kieu === "hong" && <div className="pkt-tep-hong" role="alert"><Icon name="alert" size={16}/><span><b>{t.ten}</b>{t.loi}</span><Button kind="quiet" onClick={() => bo1(t.id)}>Bỏ tệp</Button></div>}
+        {t.kieu === "kq" && <KetQuaNhap tep={t.ten} loai={tenLoai(t.loai)} kq={t.kq} huy={() => bo1(t.id)} nhap={() => nhap(t)}/>}
+        {t.kieu === "xong" && <div className="pkt-xong" role="status">
+          <Icon name="check" size={20}/>
+          <div><strong>Đã nhập {integer(t.soDong)} dòng {tenLoai(t.loai).toLowerCase()} từ {t.ten}</strong><small>Cho {tenDV}. Hệ thống dùng tệp có ngày mới nhất.</small></div>
+          <Button kind="quiet" onClick={() => bo1(t.id)}>Ẩn</Button>
+        </div>}
+      </li>)}</ul>}
+
+      {coBo && <BoQLRR bo={bo} xong={xongBo} chonLai={() => datBo({})} napLai={() => datXongBo(null)} nap={napBo}/>}
+    </Panel>
+
+    <Panel title="Lịch sử nhập" subtitle="Các lần nhập trong phiên làm việc này" className="pkt-nhap-ls">
+      {ls.length ? <TableWrap label="Lịch sử nhập dữ liệu">
+        <table className="qd-bang">
+          <thead><tr><th scope="col">Thời gian</th><th scope="col">Tài khoản</th><th scope="col">Loại dữ liệu</th><th scope="col">Nhập cho</th><th scope="col">Tệp</th><th scope="col" className="num">Số dòng</th><th scope="col">Trạng thái</th></tr></thead>
+          <tbody>{ls.map((l, i) => <tr key={i}><td>{l.luc}</td><td>{l.taiKhoan}</td><td>{tenLoai(l.loai)}</td><td>{l.choDV}</td><td className="pkt-tep">{l.tep}</td><td className="num">{l.loai === "boQLRR" ? <span className="cell-empty" title="Số dòng đếm khi máy chủ đọc tệp">—</span> : integer(l.soDong)}</td><td><Badge tone={l.canhBao ? "warning" : "positive"}>{l.canhBao ? `Đã nhập · ${l.canhBao} cảnh báo` : "Thành công"}</Badge></td></tr>)}</tbody>
+        </table>
+      </TableWrap> : <p className="pkt-trong">Chưa có lần nhập nào. Tải file mẫu, điền theo sheet HUONG_DAN rồi kéo tệp vào ô bên trên.</p>}
+    </Panel>
+  </div>;
+}
+
+/*
+  Bộ file gốc QLRR (MoM 04/11/2026 §3.3b — phương án Phòng Kiểm tra đề xuất,
+  CHỜ XÁC NHẬN). Hiện khi vùng nhập nhận được tệp QLRR. Bốn ô cố định, mỗi ô
+  một tệp; chỉ nạp khi đủ bốn tệp hợp lệ: thiếu một tệp thì báo cáo "Chi tiết
+  TTKT" thiếu cả một nhóm cột (tiền, số nộp, kết luận). Bộ file luôn của cả
+  Cục nên không theo ô "Nhập cho".
+*/
+type BoTep = Partial<Record<MaTep, KiemTep>>;
+const coKB = (kb: number) => (kb >= 1024 ? `${(kb / 1024).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} MB` : `${integer(kb)} KB`);
+
+function BoQLRR({ bo, xong, chonLai, napLai, nap }: { bo: BoTep; xong: string | null; chonLai: () => void; napLai: () => void; nap: () => void }) {
+  const hopLe = TEP_QLRR.filter((t) => bo[t.ma] && !bo[t.ma]!.loi).length;
+  return <section className="pkt-bo-khoi" aria-labelledby="pkt-bo-t">
+    <h3 id="pkt-bo-t">Bộ file gốc QLRR<small>{xong ? "Đã gửi bộ file" : `${hopLe}/4 tệp hợp lệ · kết xuất hằng tuần từ Phòng QLRR`}</small></h3>
+    <p className="notice warning pkt-bo-cho"><Icon name="alert" size={16}/><span><b>Nguồn dữ liệu chờ xác nhận.</b> Biên bản 04/11/2026 đề xuất thôi kéo từ TTR, dùng bộ file này để sinh báo cáo kết quả kiểm tra.</span></p>
+    {xong ? <div className="pkt-xong" role="status">
+      <Icon name="check" size={20}/>
+      <div><strong>Đã gửi bộ 4 tệp lúc {xong}</strong><small>Cho cả Cục. Máy chủ đọc cột, đếm dòng, gán đơn vị rồi cập nhật báo cáo.</small></div>
+      <Button kind="secondary" onClick={napLai}>Nạp bộ khác</Button>
+    </div> : <>
+      <ul className="pkt-bo" role="list" aria-label="Bốn tệp của bộ">
+        {TEP_QLRR.map((t) => {
+          const k = bo[t.ma];
+          return <li key={t.ma} className={k ? (k.loi ? "is-loi" : "is-ok") : undefined}>
+            <span className="pkt-bo-dau" aria-hidden="true"><Icon name={k && !k.loi ? "check" : k ? "alert" : "file"} size={16}/></span>
+            <span className="pkt-bo-ten"><b>{t.ten}</b><code>{t.ma}</code></span>
+            <span className="pkt-bo-tt">{!k ? <span className="cell-empty">Chưa có — kéo tệp vào ô nhập bên trên</span>
+              : k.loi ? <span className="pkt-bo-loi">{k.ten}: {k.loi}</span>
+              : <><span className="pkt-tep">{k.ten}</span><small>{coKB(k.coKB)} · tệp ngày {k.ngay.toLocaleDateString("vi-VN")}</small></>}</span>
+          </li>;
+        })}
+      </ul>
+      <div className="pkt-kq-nut">
+        <Button kind="secondary" onClick={chonLai}>Bỏ bộ này</Button>
+        <Button kind="primary" icon="upload" disabled={hopLe < 4} onClick={nap}>{hopLe < 4 ? `Còn thiếu ${4 - hopLe} tệp` : "Nạp bộ 4 tệp"}</Button>
+      </div>
+      <p className="pkt-chu-thich">Bản demo kiểm tên, định dạng và chữ ký tệp. Cột bắt buộc và số dòng do máy chủ kiểm khi nạp.</p>
+    </>}
+    <QuyTacGan/>
+  </section>;
+}
+
+/* Quy tắc gán đơn vị — để người nạp biết dòng nào sẽ vào phòng nào, và vì sao một số dòng "chưa gán". */
+function QuyTacGan() {
+  return <Disclosure className="pkt-quy-tac">
+    <AriaButton slot="trigger" className="xhp-mo"><span>Hệ thống gán đơn vị và tên doanh nghiệp thế nào</span><Icon name="chevronDown" size={15}/></AriaButton>
+    <DisclosurePanel className="pkt-quy-tac-than">
+      <TableWrap label="Quy tắc gán đơn vị khi nạp">
+        <table className="qd-bang">
+          <thead><tr><th scope="col">Cột trong tệp</th><th scope="col">Giá trị</th><th scope="col">Dòng trên báo cáo</th></tr></thead>
+          <tbody>
+            {DON_VI_KT.filter((d) => d.khoi === "VP").map((d) => <tr key={d.id}><td>MA_PHONG</td><td><code>{d.ma}</code></td><th scope="row">{d.ten}</th></tr>)}
+            <tr><td>MA_CQT</td><td>Mã của 25 Thuế cơ sở</td><th scope="row">Thuế cơ sở tương ứng</th></tr>
+            <tr><td>MA_CQT</td><td><code>{Object.keys(MA_GOP).join(", ")}</code></td><th scope="row">Gộp vào Thuế cơ sở mới <small>{Object.entries(MA_GOP).map(([a, b]) => `${a}→${b}`).join(" · ")}</small></th></tr>
+            <tr><td>TIN</td><td>Mã số thuế</td><th scope="row">Tên doanh nghiệp lấy theo Danh sách đích danh <small>Tên trong tệp bị mất dấu. MST ngoài danh sách: đoàn nhập tay ở tab Cuộc kiểm tra.</small></th></tr>
+          </tbody>
+        </table>
+      </TableWrap>
+      <p className="pkt-chu-thich">Đo trên bộ tệp mẫu ngày 05/11: tệp quyết định xử lý, số nộp và kết luận gán được 99–100% số dòng. Tệp đang thực hiện chỉ gán được khoảng 41%, vì chứa kế hoạch từ 2005 mang mã phòng của cơ cấu cũ (1010055, 1010048…). Chờ Phòng Kiểm tra cho bảng đổi mã cũ, hoặc chốt chỉ lấy kế hoạch năm hiện hành.</p>
+      <p className="pkt-chu-thich">Cột hệ thống đọc từ mỗi tệp: {TEP_QLRR.map((t) => <span key={t.ma}><b>{t.ma}</b> {t.cot.join(", ")}. </span>)}</p>
+    </DisclosurePanel>
+  </Disclosure>;
+}
+
+function KetQuaNhap({ tep, loai, kq, huy, nhap }: { tep: string; loai: string; kq: KetQuaKT; huy: () => void; nhap: () => void }) {
+  const loi = kq.van.filter((v) => v.muc === "loi"), cb = kq.van.filter((v) => v.muc === "canhBao");
+  return <div className="pkt-kq">
+    <p className="pkt-kq-tep"><em className="pkt-the">{loai}</em><b>{tep}</b>{kq.tomTat && <span>{kq.tomTat}</span>}</p>
+    <ul className="pkt-dem" role="list">
+      <li className="is-ok"><b>{integer(kq.hopLe)}</b> dòng hợp lệ</li>
+      <li className={cb.length ? "is-cb" : undefined}><b>{cb.length}</b> cảnh báo</li>
+      <li className={loi.length ? "is-loi" : undefined}><b>{loi.length}</b> lỗi</li>
+    </ul>
+    {kq.van.length > 0 && <TableWrap label="Lỗi và cảnh báo của tệp">
+      <table className="qd-bang pkt-bang-loi">
+        <thead><tr><th scope="col">Vị trí</th><th scope="col">Nội dung</th></tr></thead>
+        <tbody>{kq.van.map((v, i) => <Fragment key={i}><tr className={v.muc === "loi" ? "is-loi" : undefined}>
+          <td className="pkt-vi-tri">{v.sheet && <small>{v.sheet}</small>}{v.dong ? `Dòng ${v.dong} · ${v.cot}` : v.cot.length <= 3 ? `Cột ${v.cot}` : v.cot}</td>
+          <td><em className={`pkt-muc${v.muc === "loi" ? " is-loi" : ""}`}>{v.muc === "loi" ? "Lỗi" : "Cảnh báo"}</em>{v.noiDung}</td>
+        </tr></Fragment>)}</tbody>
+      </table>
+    </TableWrap>}
+    <div className="pkt-kq-nut">
+      <Button kind="secondary" onClick={huy}>Bỏ tệp</Button>
+      <Button kind="primary" icon="upload" disabled={kq.chan} onClick={nhap} title={kq.chan ? "Sửa các lỗi ở phần đầu tệp rồi chọn lại" : undefined}>
+        {kq.chan ? "Chưa nhập được" : `Nhập ${integer(kq.hopLe)} dòng hợp lệ`}
+      </Button>
+    </div>
+  </div>;
 }

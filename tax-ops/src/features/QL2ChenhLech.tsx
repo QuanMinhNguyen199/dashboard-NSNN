@@ -368,7 +368,7 @@ export function DanhSachChenhLech({ ky, vaiTro, meta }: { ky: KyQL2; vaiTro: Vai
         headers: ["MST", "Tên NNT", "Đơn vị", "Cán bộ quản lý", "Loại tờ khai", "Chênh lệch", "Kết quả rà soát", "Nguồn kết quả"],
         rows: loc.map((r) => [r.mst, r.ten, r.dv.ten, r.canBo, CHIEU_CHENH.find((c) => c.id === r.chieu)!.nhan, r.chenhLech,
           thieuR31.includes(r.dv.id) ? "Thiếu dữ liệu r31" : r.ketQua, thieuR31.includes(r.dv.id) ? "Chưa nhận r31" : "hddtbaocao r31 (mô phỏng)"]),
-      }], meta, `QL2_DS_chenhlech_${ky.id}.xlsx`)}>Xuất Excel</ExportButton>
+      }], meta, `QL2_DS_chenhlech_${ky.id}.xlsx`)}>Excel</ExportButton>
       <Segmented
         label="Lọc kết quả"
         value={chuaCo}

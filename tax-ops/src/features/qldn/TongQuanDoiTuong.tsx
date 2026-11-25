@@ -283,7 +283,7 @@ function DanhSach({ pv, loc, datLoc, actor }: { pv: PhamVi; loc: TrangThaiDN | "
     onClose={dong}
     detail={chon ? <HoSoDN d={chon}/> : null}
   >
-  <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · tỷ đồng`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  <Panel chinh title="Danh sách doanh nghiệp" subtitle={`${integer(tong)} doanh nghiệp${loc ? ` · ${nhanTT(loc).toLowerCase()}` : ""} · tỷ đồng`} actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
     <div className="qd-loc-cb">
       <SelectMenu<TrangThaiDN | ""> className="compact-field qd-loc-tt" hienNhan label="Trạng thái" value={loc} onChange={(v) => { datLoc(v); datTrang(1); datDangMo(""); }}
         options={[{ value: "", label: "Tất cả trạng thái" }, ...TRANG_THAI_DN.map((t) => ({ value: t.id, label: t.ten }))]}/>
@@ -355,7 +355,7 @@ function BoTieuChi({ moNhom, actor, pv }: { moNhom?: (nhom: NhomId, the: TheId, 
     rows: BO_TIEU_CHI.map((t) => [t.stt, t.linhVuc, t.ten, t.phong, t.congThuc, t.ky, t.tinhDiem, t.doiTuong, t.ghiChu, t.bo ? "Đã bỏ" : t.the ? nhanNhom(t.the) : "Chưa có trong khối QLDN"]),
   }], { period: "Tháng 10/2026", scope: nhanPhamVi(pv), actor, status: "DRAFT" }, "bo-tieu-chi-danh-gia.xlsx");
 
-  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" tieuDeKem={<GhiChu tieuDe="Cột Theo dõi">Dấu – : chỉ tiêu chưa có trong khối QLDN (hộ kinh doanh, khối kiểm tra, gói nhiều nguồn). Bấm tên màn để mở đúng chỉ tiêu ở Quản trị công việc.</GhiChu>} subtitle={`${BO_TIEU_CHI.length} chỉ tiêu · tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc`} actions={<ExportButton onExport={xuat}>Xuất Excel</ExportButton>}>
+  return <Panel chinh title="Bộ tiêu chí đánh giá các chỉ tiêu" tieuDeKem={<GhiChu tieuDe="Cột Theo dõi">Dấu – : chỉ tiêu chưa có trong khối QLDN (hộ kinh doanh, khối kiểm tra, gói nhiều nguồn). Bấm tên màn để mở đúng chỉ tiêu ở Quản trị công việc.</GhiChu>} subtitle={`${BO_TIEU_CHI.length} chỉ tiêu · tháng 10 · ${soTheoDoi} đang theo dõi trên Quản trị công việc`} actions={<ExportButton onExport={xuat}>Excel</ExportButton>}>
     <div className="qd-loc-cb">
       <NhomNut label="Lọc chỉ tiêu" value={chiTheoDoi ? "theo" : "tat"} onChange={(v) => datChiTheoDoi(v === "theo")} options={[{ value: "tat", label: "Tất cả" }, { value: "theo", label: "Đang theo dõi" }]}/>
     </div>

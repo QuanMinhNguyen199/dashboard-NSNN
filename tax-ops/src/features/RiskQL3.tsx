@@ -160,7 +160,7 @@ export function RiskQL3({ actor, vaiTro }: { actor: string; vaiTro: VaiTro }) {
   const moMoXemTruoc = choXem && xem !== "" && boSheet.some((x) => x.name === xem);
   const reportMeta: ReportMeta = { period: ky.nhan, scope: chon.donVi.join("; ") || "Toàn ngành", actor, status: layBanGhi(khoaQL3).trangThai };
   const exportReport = () => exportExcel(ql3Workbook(ky, trongPhamVi, (id) => layKpi(ky.id, id)), reportMeta, `QL3_${ky.id}_${reportMeta.status}_mo-phong.xlsx`);
-  return <XuatProvider nut={<ExportButton onExport={exportReport}>Xuất Excel</ExportButton>}><div className="page-stack ql1-page">
+  return <XuatProvider nut={<ExportButton onExport={exportReport}>Excel</ExportButton>}><div className="page-stack ql1-page">
     <PageIntro title="Kiểm tra tại bàn"/>
     <ThanhMuc view="risk"/>
 

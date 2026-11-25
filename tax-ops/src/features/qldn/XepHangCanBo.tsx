@@ -97,7 +97,7 @@ export function XepHangCanBo({ pv, ky, actor }: { pv: PhamVi; ky: KyQ; actor: st
   </>} subtitle={KY.nhan} actions={<div className="inline-controls">
     {DS_DV.length > 1 && <SelectMenu className="compact-field" hienNhan kieu="o" label="Đơn vị" value={phong} onChange={(v) => { datPhong(v === DS_DV[0].id ? "" : v); datDangMo(""); }}
       options={DS_DV.map((p) => ({ value: p.id, label: `${p.ngan}${p.id === cuaToi?.id ? " (của tôi)" : ""}` }))}/>}
-    <ExportButton onExport={xuat}>Xuất Excel</ExportButton>
+    <ExportButton onExport={xuat}>Excel</ExportButton>
   </div>}>
     {cuaMinh && <div className="xhc-summary">
       <p className="xhc-toi" aria-label="Xếp hạng của bạn">
