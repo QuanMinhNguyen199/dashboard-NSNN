@@ -8,7 +8,7 @@ export type IconName =
   | "home" | "debt" | "risk" | "refund" | "report" | "data"
   | "business" | "bell" | "overview" | "treasury" | "receivables" | "procedures" | "support" | "inspection" | "taxReturn"
   | "clock" | "alert" | "check" | "file" | "search" | "upload"
-  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key" | "mail" | "arrowUp" | "arrowDown" | "layers" | "sheet" | "doc";
+  | "arrow" | "chevronDown" | "chevronUp" | "chevronLeft" | "menu" | "money" | "panel" | "close" | "users" | "database" | "external" | "logout" | "key" | "mail" | "arrowUp" | "arrowDown" | "layers" | "sheet" | "doc" | "reset";
 
 const paths: Record<IconName, ReactNode> = {
   business: <><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h1m4 0h1M9 11h1m4 0h1M9 15h1m4 0h1M10 21v-3h4v3"/></>,
@@ -40,6 +40,7 @@ const paths: Record<IconName, ReactNode> = {
   money: <><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5v5M17.5 9.5v5"/></>,
   panel: <><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></>,
   close: <><path d="m6 6 12 12M18 6 6 18"/></>,
+  reset: <><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></>,
   users: <><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 4a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 4v2"/></>,
   database: <><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></>,
   external: <><path d="M14 5h5v5"/><path d="m19 5-8 8"/><path d="M19 13v6H5V5h6"/></>,

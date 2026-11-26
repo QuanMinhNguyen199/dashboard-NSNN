@@ -3801,6 +3801,14 @@ tbody tr.is-selected, :is(.xhp-dong, .xhp-tong-o).is-theo, .qd-bang-goc tr.is-se
 .qd-dc-so-nut:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: var(--radius-control); }
 .qd-dc-so-noi:not([hidden]) { animation: qd-dc-mo 220ms var(--ease-out); }
 @keyframes qd-dc-mo { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+/* Ô lọc năm của sổ (26/11/2026): đứng trên bảng, rộng theo nội dung. */
+.qd-dc-so-loc { display: flex; align-items: flex-end; gap: 8px; padding: 12px 0; }
+/* Nút đặt lại chỉ có icon: vuông, cao bằng ô chọn bên cạnh. */
+.qd-dc-dat-lai.button { width: 32px; min-height: 32px; padding: 0; justify-content: center; }
+.qd-dc-dat-lai.button > span:empty { display: none; }
+@media (max-width: 900px) { .qd-dc-dat-lai.button { width: 44px; min-height: 44px; } }
+.qd-dc-so-loc .chon { display: inline-grid; }
+.qd-dc-so-loc .chon-nut { min-width: 220px; }
 .qd-dc-so-bang { min-width: 560px; }
 /* Cột ngày 112px (25/11/2026): ô lên 14px theo thang bảng thì "dd/mm/yyyy" cần ~76px + 24px đệm — 92px cũ làm ngày tràn sang cột Nghĩa vụ. */
 .qd-dc-so-bang thead th:nth-child(1), .qd-dc-so-bang thead th:nth-child(3) { width: 120px; }

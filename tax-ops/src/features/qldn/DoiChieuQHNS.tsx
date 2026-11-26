@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, Icon, NhomNut, TableWrap, type IconName } from "@/components/ui";
+import { Button, Icon, NhomNut, SelectMenu, TableWrap, type IconName } from "@/components/ui";
 import { GhiChu } from "@/components/GhiChu";
 import { ExportButton } from "@/components/ExportButton";
 import type { DongDN } from "@/data/qldn";
@@ -53,38 +53,90 @@ function Ma({ ma }: { ma: string }) {
   return <abbr className="qd-dc-ma" title={moTaGD(ma)}>{ma}<span className="sr-only"> ({moTaGD(ma)})</span></abbr>;
 }
 
+/*
+  Lọc theo năm hạn nộp (26/11/2026, người dùng: "sổ phải scroll dài"). Một năm
+  một lần xem, mặc định năm mới nhất; "Tất cả các năm" giữ cách xem liền như
+  trước. Ô chọn thay hàng nút: DN lập từ 2015 có hơn chục năm, hàng nút vỡ
+  dòng trong ngăn 760px. Chưa lọc theo ký hiệu / số tiền — biên bản chưa nói
+  cán bộ tra sổ theo các tiêu chí ấy.
+*/
+const TAT_CA = "tat-ca";
+const tenNam = (n: number) => (n === 2014 ? "Trước 2015 · số dư chuyển đổi" : String(n));
+
+/*
+  Sắp xếp theo cột (26/11/2026, người dùng: "increment / decrement ở tiêu đề
+  bảng"). Cùng kiểu `.qd-th-xep` với danh sách DN ở Tổng quan đối tượng. Bấm
+  một cột: giảm dần; bấm lại: đảo chiều (không có lần 3 — người dùng 26/11).
+  Về thứ tự bắt cặp và năm mới nhất bằng nút đặt lại cạnh ô lọc. Xếp TRONG từng năm — xem "Tất cả các năm" thì nhóm năm vẫn giữ.
+  Cột Nghĩa vụ là chữ mô tả, không xếp.
+*/
+type CotSo = "han" | "nop" | "tien";
+const COT_SO: { id: CotSo; nhan: string; so?: boolean }[] = [{ id: "han", nhan: "Hạn nộp" }, { id: "nop", nhan: "Ngày nộp" }, { id: "tien", nhan: "Số tiền", so: true }];
+const tienCap = (c: Cap) => (c.pn.length ? c.pn.reduce((a, x) => a + x.soTien, 0) : c.dn.reduce((a, x) => a + Math.abs(x.soTien), 0) / 2);
+const ngayNopCap = (c: Cap) => (c.dn.length ? Math.min(...c.dn.map((x) => x.ngay.getTime())) : null);
+const giaCot = (c: Cap, cot: CotSo) => (cot === "han" ? dauCap(c).getTime() : cot === "nop" ? ngayNopCap(c) : tienCap(c));
+
 function SoDaGhep({ cap }: { cap: Cap[] }) {
-  const theoNam = useMemo(() => {
+  const tatCaNam = useMemo(() => {
     const m = new Map<number, Cap[]>();
     for (const c of cap) { const n = dauCap(c).getFullYear(); m.set(n, [...(m.get(n) ?? []), c]); }
     return [...m.entries()].sort((a, b) => b[0] - a[0]);
   }, [cap]);
-  return <TableWrap label="sổ phải nộp và đã nộp đã bắt cặp">
+  const [nam, datNam] = useState<string>(() => (tatCaNam[0] ? String(tatCaNam[0][0]) : TAT_CA));
+  const [xep, datXep] = useState<{ cot: CotSo; giam: boolean } | null>(null);
+  const motNam = nam !== TAT_CA;
+  const loc = motNam ? tatCaNam.filter(([n]) => String(n) === nam) : tatCaNam;
+  /* Dòng chưa có ngày nộp luôn nằm cuối, dù xếp chiều nào. */
+  const theoNam = !xep ? loc : loc.map(([n, ds]) => [n, ds.toSorted((a, b) => {
+    const x = giaCot(a, xep.cot), y = giaCot(b, xep.cot);
+    if (x === null || y === null) return x === y ? 0 : x === null ? 1 : -1;
+    return (x - y) * (xep.giam ? -1 : 1);
+  })] as const);
+  const doiXep = (cot: CotSo) => datXep((x) => (!x || x.cot !== cot ? { cot, giam: true } : { cot, giam: !x.giam }));
+  const namMoi = tatCaNam[0] ? String(tatCaNam[0][0]) : TAT_CA;
+  const macDinh = nam === namMoi && !xep;
+  const datLai = () => { datNam(namMoi); datXep(null); };
+  const thXep = (c: (typeof COT_SO)[number]) => {
+    const dang = xep?.cot === c.id;
+    return <th scope="col" className={c.so ? "num" : undefined} aria-sort={dang ? (xep!.giam ? "descending" : "ascending") : "none"}>
+      <button type="button" className={`qd-th-xep${dang ? " is-dang" : ""}`} onClick={() => doiXep(c.id)}>{c.nhan}<Icon name="chevronDown" size={13}/></button>
+    </th>;
+  };
+  return <>
+  <div className="qd-dc-so-loc">
+    <SelectMenu className="compact-field" kieu="o" hienNhan label="Năm hạn nộp" value={nam} onChange={datNam}
+      options={[...tatCaNam.map(([n]) => ({ value: String(n), label: tenNam(n) })), { value: TAT_CA, label: "Tất cả các năm" }]}/>
+    {/* Ô cố định: luôn đứng cạnh ô lọc, mờ khi đang ở mặc định (năm mới nhất, thứ tự bắt cặp). */}
+    <Button kind="secondary" icon="reset" className="qd-dc-dat-lai" disabled={macDinh} aria-label="Đặt lại: năm mới nhất, thứ tự bắt cặp" title="Đặt lại: năm mới nhất, thứ tự bắt cặp" onClick={datLai}/>
+  </div>
+  <TableWrap label="sổ phải nộp và đã nộp đã bắt cặp">
     <table className="qd-bang qd-dn-bang qd-dc-so-bang">
       <thead><tr>
-        <th scope="col">Hạn nộp</th>
+        {thXep(COT_SO[0])}
         <th scope="col">Nghĩa vụ</th>
-        <th scope="col">Ngày nộp</th>
-        <th scope="col" className="num">Số tiền</th>
+        {thXep(COT_SO[1])}
+        {thXep(COT_SO[2])}
       </tr></thead>
-      {theoNam.map(([nam, ds]) => <tbody key={nam}>
-        <tr className="qd-dc-nam"><th scope="rowgroup" colSpan={4}>{nam === 2014 ? "Trước 2015 · số dư chuyển đổi" : nam}<small>{ds.length} nhóm</small></th></tr>
+      {theoNam.map(([namBang, ds]) => <tbody key={namBang}>
+        {/* Đang lọc một năm: ô chọn đã nói năm và số nhóm — không lặp dòng tiêu đề năm. */}
+        {!motNam && <tr className="qd-dc-nam"><th scope="rowgroup" colSpan={4}>{tenNam(namBang)}<small>{ds.length} nhóm</small></th></tr>}
         {ds.map((c, i) => {
           const dau = c.pn[0] ?? c.dn[0];
-          const tien = c.pn.length ? c.pn.reduce((a, x) => a + x.soTien, 0) : c.dn.reduce((a, x) => a + Math.abs(x.soTien), 0) / 2;
-          const nop = c.dn.map((x) => x.ngay.getTime());
+          const tien = tienCap(c);
+          const nop = ngayNopCap(c);
           return <tr key={`${dau.id}-${i}`} title={`Vòng ${c.vong}: ${NHAN_CACH[c.cach]}`}>
             <td>{ngayDoiChieu(dau.ngay)}{dau.hanGoc && <small className="qd-dc-gh">hạn nộp {ngayDoiChieu(dau.hanGoc)}</small>}</td>
             <th scope="row">{dau.moTa}{c.pn.length > 1 && ` + ${c.pn.length - 1} khoản`}
               <small className="qd-dc-ma-day">{[...c.pn, ...c.dn].map((x, j) => <Ma key={j} ma={x.ma}/>)}</small>
             </th>
-            <td>{nop.length ? ngayDoiChieu(new Date(Math.min(...nop))) : "—"}</td>
+            <td>{nop !== null ? ngayDoiChieu(new Date(nop)) : "—"}</td>
             <td className="num">{dong(tien)}{c.lech !== 0 && <small className="qd-dc-lech">lệch {dong(c.lech)}</small>}</td>
           </tr>;
         })}
       </tbody>)}
     </table>
-  </TableWrap>;
+  </TableWrap>
+  </>;
 }
 
 /*
